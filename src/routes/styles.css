@@ -1,0 +1,131 @@
+/**
+* Naming convention to be followed in CSS:
+* https://www.freecodecamp.org/news/css-naming-conventions-that-will-save-you-hours-of-debugging-35cea737d849/
+**/
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+/**
+* Reset Reloaded : To reset all default HTML code
+* http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/
+**/
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: 100%;
+    font-family: inherit;
+    vertical-align: baseline;
+}
+
+/* remember to define focus styles! */
+:focus {
+    outline: 0;
+}
+
+body {
+    line-height: 1;
+    color: var(--text);
+    background: var(--bg);
+}
+
+ol, ul {
+    list-style: none;
+}
+
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+caption, th, td {
+    text-align: left;
+    font-weight: normal;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: "";
+}
+
+blockquote, q {
+    quotes: "" "";
+}
+
+/*****************************************************/
+
+
+:root {
+    box-sizing: border-box;
+    font-family: Inter, 'Montserrat', sans-serif;
+    transition: background 500ms ease-in-out, color 1000ms ease-in-out;
+    --primary: #14FFEC;
+    --secondary: #0D7377;
+    --special-font: bely-display;
+}
+
+a {
+    color: currentColor;
+    text-decoration: none;
+}
+
+.light {
+    --bg: #ffffff;
+    --bg-circle-bottom: radial-gradient(circle at bottom, rgba(13, 115, 119, 1) 12%, rgba(248, 248, 248, 1) 60%);
+    --bg-circle-0: radial-gradient(circle at 0%, rgba(13, 115, 119, 1) 12%, rgba(248, 248, 248, 1) 60%);
+    --bg-circle-100: radial-gradient(circle at 100%, rgba(13, 115, 119, 1) 12%, rgba(248, 248, 248, 1) 60%);
+    --bg-secondary: #ffffff;
+    --text: #000000;
+}
+
+.dark {
+    --bg: #121212;
+    --bg-circle-bottom: radial-gradient(circle at bottom, rgba(13, 115, 119, 1) 0%, rgba(33, 33, 33, 1) 38%);
+    --bg-circle-0: radial-gradient(circle at 0%, rgba(13, 115, 119, 1) 12%, rgba(33, 33, 33, 1) 45%);
+    --bg-circle-100: radial-gradient(circle at 100%, rgba(13, 115, 119, 1) 12%, rgba(33, 33, 33, 1) 45%);
+    --bg-secondary: #323232;
+    --text: #ffffff;
+}
+
+.CenterRowFlex {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.CenterColumnFlex {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.BoxShadow {
+    box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+    0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+    0 12.5px 10px rgba(0, 0, 0, 0.06),
+    0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+    0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+    0 100px 80px rgba(0, 0, 0, 0.12)
+}
+
+/****** Side scrollbar ********/
+body::-webkit-scrollbar {
+    width: 0.25rem;
+}
+
+body::-webkit-scrollbar-track {
+    background: #1e1e24;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: #6649b8;
+}
+/*******************************/

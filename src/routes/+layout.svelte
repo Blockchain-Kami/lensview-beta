@@ -1,7 +1,8 @@
 <script>
+	import "./styles.css";
 </script>
 
-<div class="bg-gradient-to-r from-slate-900 to-slate-700 text-slate-400">
+<div >
 	<main>
 		<slot />
 	</main>

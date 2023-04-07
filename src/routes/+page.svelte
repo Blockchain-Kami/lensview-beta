@@ -783,60 +783,334 @@ fragment ReferenceModuleFields on ReferenceModule {
         }
     }
 
+    /************************************************/
 
+
+    /** Contract Interaction **/
+
+    const lensViewBetaContractAddress = "0x1eFa4D3BC84EF7C06cD8Ff8B0d7747E1a88fbC43";
+    const lensViewBetaContractABI = [{"inputs":[{"internalType":"string","name":"_url","type":"string"},{"internalType":"string","name":"_publicationID","type":"string"}],"name":"addPublication","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"_url","type":"string"}],"name":"getPublications","outputs":[{"internalType":"string[]","name":"","type":"string[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"publications","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"urls","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}];
+    let lensViewBetaContract;
+    let signer2;
+    let url;
+
+    const getPubId = async () => {
+        try{
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+            provider.send("eth_requestAccounts", []).then(() => {
+                provider.listAccounts().then(async (accounts) => {
+                    signer2 = provider.getSigner(accounts[0]);
+                    lensViewBetaContract = new ethers.Contract(
+                        lensViewBetaContractAddress,
+                        lensViewBetaContractABI,
+                        signer2
+                    );
+
+                    const getPubIdPromise = lensViewBetaContract.getPublications(url);
+                    const pubId = await getPubIdPromise;
+                    console.log("Pub ID : " + pubId);
+                });
+            });
+
+
+        }
+        catch(err){
+            console.log("Error while fetching post ID : " + err);
+        }
+
+    }
+
+    const putPubId = async () => {
+        try{
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+            provider.send("eth_requestAccounts", []).then(() => {
+                provider.listAccounts().then(async (accounts) => {
+                    signer2 = provider.getSigner(accounts[0]);
+                    lensViewBetaContract = new ethers.Contract(
+                        lensViewBetaContractAddress,
+                        lensViewBetaContractABI,
+                        signer2
+                    );
+
+                    // let totalPublications = profile.stats.totalPublications;
+                    // console.log("Total Publications : " + totalPublications);
+                    // let publicationID = profile.id + "-0x" + totalPublications.toString(16);
+                    // console.log("Publication ID : " + publicationID);
+
+                    console.log("URL : " + url);
+                    const getPubIdPromise = lensViewBetaContract.addPublication(url, "0x544");
+                    const pubId = await getPubIdPromise;
+                    console.log("Pub ID : " + pubId);
+                });
+            });
+
+
+        }
+        catch(err){
+            console.log("Error while fetching post ID : " + err);
+        }
+
+    }
+
+
+    /************************************************/
 
 </script>
 
 
 <!---------------------------------- HTML --------------------------->
-<div class="main">
-
-    <div class="btn-div">
-        {#if !isConnected}
-            <button on:click="{connect}" class="btn">Connect  Wallet</button>
-        {:else}
-            <div>
-                <b>Connected Address :</b> {address}
+<main>
+    <div class="CenterRowFlex main">
+        <div class="CenterColumnFlex main__menu">
+            <div class="CenterColumnFlex main__menu__items">
+                <div class="main__menu__items__item main__menu__items__item--logo">
+                    <img src="https://img.icons8.com/ios/50/000000/medium-monogram--v1.png" alt="logo"/>
+                </div>
+                <div class="main__menu__items__item">Home</div>
+                <div class="main__menu__items__item">Explore</div>
+                <div class="main__menu__items__item">How It Works</div>
+                <div class="main__menu__items__item">About</div>
             </div>
-            <div>
-                {#if !accessTokenFromLens}
-                    <button on:click={getAccessTokenFromLens} class="btn">Get Access Token</button>
-                {:else}
-                    <b>Access Token From Lens:</b>  {accessTokenFromLens}
-                    <div class="btn-div">
-                        <button on:click={getUserProfile} class="btn">First Get User Profile</button>
-                        <div style="text-align: center">{JSON.stringify(profile)}</div>
-                        <input type="text" bind:value={userEnteredContent}>
-                        <button on:click={savePost} class="btn">Post Trial Text</button>
-                    </div>
-                {/if}
-            </div>
-            <div>
-                <button on:click={getPostById} class="btn">
-                    Fetch Post
+            <div class="main__menu__user">
+                <button class="btn">
+                    Connect Wallet
                 </button>
             </div>
-        {/if}
+        </div>
+        <div class="CenterColumnFlex main__search-area">
+            <div class="CenterRowFlex main__search-area__search-box">
+                <input type="text" class="main__search-area__search-box__input" placeholder="Search for a publication">
+                <button class="btn">
+                    Search
+                </button>
+            </div>
+            <div class="CenterRowFlex main__search-area__filter-area">
+                <div class="CenterRowFlex main__search-area__filter-area__quick-filters">
+                    <div class="main__search-area__filter-area__quick-filters__filter">Popular</div>
+                    <div class="main__search-area__filter-area__quick-filters__filter">Latest</div>
+                    <div class="main__search-area__filter-area__quick-filters__filter">Relevant</div>
+                </div>
+                <div class="main__search-area__filter-area__filter-menu">
+                    <!-- Add filter icon in it -->
+                    <button class="btn">Filter</button>
+                </div>
+            </div>
+            <div class="CenterColumnFlex main__search-area__results">
+                <div class="main__search-area__results__result">
+                    Lorem ipsum dolor sit amet, consectetur adipisic incidunt nesciunt placeat quae rem reprehenderit similique temporibus voluptatibus?
+                </div>
+                <div class="main__search-area__results__result">
+                    Lorem ipsum dolor sit amet, consectetur adipisic vel veniam voluptatibus! Cumque, deleniti facilis libero minus non repellendus.
+                </div>
+                <div class="main__search-area__results__result">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.  error mollitia perspiciatis veniam voluptates! Earum, libero, maxime?
+                </div>
+                <div class="main__search-area__results__result">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing  Beatae eius exercitationem minima perspiciatis vitae.
+                </div>
+                <div class="main__search-area__results__result">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elitcum deserunt doloremque expedita laborum modi perspiciatis possimus, qui!
+                </div>
+                <div class="main__search-area__results__result">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing eli consequuntur cumque fuga id nihil repudiandae veniam. Ipsa, vero.
+                </div>
+                <div class="main__search-area__results__result">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing e voluptatibus. Blanditiis dicta fugit minus mollitia quae.
+                </div>
+                <div class="main__search-area__results__result">
+                    Lorem ipsum dolor sit amet, consectetur adipisic perferendis quibusdam quo quos sit ut velit vitae?
+                </div>
+                <div class="main__search-area__results__result">
+                    Lorem ipsum dolor sit amet, consectetur adipisici quas quod repellat, voluptatem voluptates! Asperiores odit quos reiciendis!
+                </div>
+                <div class="main__search-area__results__result">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing quibusdam, quos rerum sapiente sit ullam, vero voluptatum.
+                </div>
+            </div>
+        </div>
+        <div class="CenterColumnFlex main__content-area">
+            <div class="CenterColumnFlex main__content-area__user-post">
+                <div class="main__content-area__user-post__text">
+                    <input type="text" class="main__content-area__user-post__text__input" placeholder="What's on your mind?">
+                </div>
+                <div class="CenterRowFlex main__content-area__user-post__option-bar">
+                    <div class="CenterRowFlex main__content-area__user-post__option-bar__options">
+                        <div class="main__content-area__user-post__option-bar__options__option">Media</div>
+                        <div class="main__content-area__user-post__option-bar__options__option">Hastags</div>
+                        <div class="main__content-area__user-post__option-bar__options__option">@Mention</div>
+                    </div>
+                    <div class="main__content-area__user-post__option-bar__post-btn">
+                        <button class="btn">Post</button>
+                    </div>
+                </div>
+            </div>
+            <div class="main__content-area__link-preview">
+                <!--
+                Iframe does not because of security issue, use below technique to get around it
+                1. Use AJAX
+                2. You could use a proxy which fetches the requested page on your behalf and then you can host the proxy on your domain and load the web page from this proxy server with the new proxy URL rather then "twitter.com" in this question.
+                -->
+                <iframe src="https://www.w3schools.com" name="iframe_a" title="Iframe Example"></iframe>
+
+<!--                <p><a href="" target="iframe_a">W3Schools.com</a></p>-->
+            </div>
+            <div class="CenterColumnFlex main__content-area__comments">
+                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adip</div>
+                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. El</div>
+                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab a</div>
+                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam a</div>
+                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A</div>
+                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A</div>
+                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A</div>
+                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A</div>
+            </div>
+        </div>
     </div>
-</div>
+</main>
 <!-------------------------------------------------------------------------->
 
 
 <!-------------------------Style ----------------->
 <style>
-    .main{
+
+    .main__menu{
+        width: 15%;
         height: 100vh;
+        justify-content: space-between;
+        padding: 2rem 1rem;
     }
 
-    .btn-div{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-        flex-direction: column;
-        gap: 48px;
+    .main__menu__items{
+        width: 100%;
+        gap: 1rem;
     }
 
+    .main__menu__items__item{
+        width: 100%;
+        background: lightgray;
+        padding: 0.75rem;
+        border-radius: 8px;
+    }
+
+    .main__search-area{
+        width: 35%;
+        height: 100vh;
+        background-color: aliceblue;
+        padding: 2rem 1.5rem;
+        justify-content: flex-start;
+        gap: 1rem;
+    }
+
+    .main__search-area__search-box{
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    .main__search-area__search-box__input{
+        width: 68%;
+        padding: 0.65rem;
+        border-radius: 8px;
+        border: 1px solid lightgray;
+        outline: 0;
+    }
+
+    .main__search-area__filter-area{
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .main__search-area__filter-area__quick-filters{
+        gap: 0.5rem;
+    }
+
+    .main__search-area__filter-area__quick-filters__filter{
+        padding: 0.6rem;
+        border-radius: 17px;
+        background: cadetblue;
+        font-size: small;
+        font-weight: 600;
+    }
+
+    .main__search-area__results{
+        gap: 0.75rem;
+        height: 77vh;
+        overflow: auto;
+    }
+
+    .main__search-area__results__result{
+        background: lightsteelblue;
+        padding: 0.8rem 1rem;
+        border-radius: 10px;
+        margin-right: 0.75rem;
+    }
+
+    .main__content-area{
+        width: 50%;
+        height: 100vh;
+        padding: 2rem 1.5rem;
+        justify-content: flex-start;
+        gap: 1rem;
+        background: azure;
+    }
+
+    .main__content-area__user-post{
+        width: 100%;
+        justify-content: space-between;
+        gap: 1rem;
+        background: white;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    }
+
+    .main__content-area__user-post__text{
+        width: 100%;
+    }
+
+    .main__content-area__user-post__text__input{
+        width: 100%;
+        padding: 0.65rem;
+        border-radius: 8px;
+        border: 1px solid lightgray;
+        outline: 0;
+    }
+
+    .main__content-area__user-post__option-bar{
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .main__content-area__user-post__option-bar__options{
+        gap: 0.5rem;
+    }
+    .main__content-area__user-post__option-bar__options__option{
+        padding: 0.5rem;
+        font-size: medium;
+        font-weight: 500;
+    }
+
+    .main__content-area__comments{
+        width: 100%;
+        gap: 1rem;
+        background: white;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        align-items: flex-start;
+        height: 70vh;
+        overflow: auto;
+    }
+
+    .main__content-area__comments__comment{
+        padding: 1rem;
+        background: khaki;
+        border-radius: 10px;
+    }
+
+    /** Utility Classes **/
     .btn {
         display: inline-block;
         outline: 0;
@@ -845,12 +1119,78 @@ fragment ReferenceModuleFields on ReferenceModule {
         background: #000000;
         color: #FFFFFF;
         border-radius: 8px;
-        padding: 14px 24px 16px;
-        font-size: 18px;
+        padding: 11px 22px 13px;
+        font-size: 15px;
         font-weight: 700;
         line-height: 1;
         transition: transform 200ms, background 200ms;
     }
 
+    /****** Side scrollbar ********/
+    .main__search-area__results::-webkit-scrollbar {
+        width: 0.25rem;
+    }
+
+    .main__search-area__results::-webkit-scrollbar-track {
+        background: #1e1e24;
+    }
+
+    .main__search-area__results::-webkit-scrollbar-thumb {
+        background: #6649b8;
+    }
+    /*******************************/
+
+    /****** Side scrollbar ********/
+    .main__content-area__comments::-webkit-scrollbar {
+        width: 0.25rem;
+    }
+
+    .main__content-area__comments::-webkit-scrollbar-track {
+        background: #1e1e24;
+    }
+
+    .main__content-area__comments::-webkit-scrollbar-thumb {
+        background: #6649b8;
+    }
+    /*******************************/
 </style>
 <!------------------------------------------------>
+
+<!--<div class="btn-div">-->
+<!--    {#if !isConnected}-->
+<!--        <button on:click="{connect}" class="btn">Connect  Wallet</button>-->
+<!--    {:else}-->
+<!--        <div>-->
+<!--            <b>Connected Address :</b> {address}-->
+<!--        </div>-->
+<!--        <div>-->
+<!--            {#if !accessTokenFromLens}-->
+<!--                <button on:click={getAccessTokenFromLens} class="btn">Get Access Token</button>-->
+<!--            {:else}-->
+<!--                <b>Access Token From Lens:</b>  {accessTokenFromLens}-->
+<!--                <div class="btn-div">-->
+<!--                    <button on:click={getUserProfile} class="btn">First Get User Profile</button>-->
+<!--                    <div style="text-align: center">{JSON.stringify(profile)}</div>-->
+<!--                    <input type="text" bind:value={userEnteredContent}>-->
+<!--                    <button on:click={savePost} class="btn">Post Trial Text</button>-->
+<!--                </div>-->
+<!--            {/if}-->
+<!--        </div>-->
+<!--        <div>-->
+<!--            <button on:click={getPostById} class="btn">-->
+<!--                Fetch Post-->
+<!--            </button>-->
+<!--        </div>-->
+<!--    {/if}-->
+
+<!--    <div>-->
+<!--        <p>Here we can get publication id</p>-->
+<!--        <label >Input Url:</label> <br />-->
+<!--        <input type="text" id="mood" bind:value={url}/>-->
+<!--        <button class="btn" on:click={getPubId}>Get Publication Id</button>-->
+<!--        <button class="btn" on:click={putPubId}>Put Publication Id</button>-->
+<!--    </div>-->
+
+<!--</div>-->
+
+
