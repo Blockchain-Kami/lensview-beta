@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
 
     import {ethers} from 'ethers';
-    import {createClient} from "@urql/svelte";
+    import {createClient} from '@urql/core';
 
     const API_URL = 'https://api.lens.dev'
     const challenge = `
@@ -209,7 +209,7 @@ query DefaultProfile($address: EthereumAddress!) {
     import {v4 as uuid} from 'uuid';
 
     /** Hard coded post value for testing **/
-    let userEnteredContent = "";
+    let userEnteredContent: string = "";
 
     /**
      * Web3 Storage Code
@@ -377,7 +377,7 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
         }
 
         try {
-            const signedResult = await signCreatePostTypedData(createPostRequest, accessTokenFromLens)
+            const signedResult = await signCreatePostTypedData(createPostRequest)
             const typedData = signedResult.result.typedData;
             const {v, r, s} = splitSignature(signedResult.signature)
 
@@ -416,7 +416,7 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
 
     /*******************************************************/
 
-    let userEnteredLink = "";
+    let userEnteredLink: string = "";
 
 
     /** Fetch post by ID */
@@ -873,7 +873,7 @@ fragment ReferenceModuleFields on ReferenceModule {
     }
 
 
-    $: isUserFilledTheBoxes = (userEnteredContent, userEnteredLink) => {
+    let isUserFilledTheBoxes = (userEnteredContent, userEnteredLink): boolean => {
         if(userEnteredContent === "" || userEnteredLink === ""){
             console.log("User has not filled the boxes");
             return false;
@@ -1008,7 +1008,7 @@ fragment ReferenceModuleFields on ReferenceModule {
                         <div class="main__content-area__user-post__option-bar__options__option">@Mention</div>
                     </div>
                     <div class="main__content-area__user-post__option-bar__post-btn">
-                        <button on:click={test} disabled='{!isUserFilledTheBoxes(userEnteredContent, userEnteredLink)}' class="btn">Post</button>
+                        <button on:click={savePost} disabled='{!isUserFilledTheBoxes(userEnteredContent, userEnteredLink)}' class="btn">Post</button>
                     </div>
                 </div>
             </div>
@@ -1192,6 +1192,7 @@ fragment ReferenceModuleFields on ReferenceModule {
     .main__search-area__link-preview__reaction-bar{
         width: 100%;
         padding: 1rem;
+        justify-content: space-around;
     }
 
     .main__content-area{
@@ -1216,6 +1217,7 @@ fragment ReferenceModuleFields on ReferenceModule {
     .main__content-area__posts__post__reaction-bar{
         width: 100%;
         padding-top: 1rem;
+        justify-content: space-around;
     }
 
     .main__content-area__user-post__text{
