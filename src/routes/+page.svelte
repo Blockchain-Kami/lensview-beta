@@ -29,6 +29,7 @@
     let address;
     let accessTokenFromLens;
     let isConnected = false;
+    let isSignedIn = false;
     let signer;
 
     let client = createClient({
@@ -59,9 +60,11 @@
 
 
     /**
-     * 2. Get Access Token
+     * 2. i. Sign In with Lens
+     *    ii. Get Access Token
+     *    iii. Update Client with new Access Token
      */
-    async function getAccessTokenFromLens() {
+    async function signInWithLens() {
         try {
             /* first request the challenge from the API server */
             const challengeInfo = await client.query(challenge, {address}).toPromise();
@@ -86,6 +89,10 @@
                     },
                 },
             });
+            isSignedIn = true;
+
+            /** Getting profile of the connected user and saving it to "profile" variable **/
+            profile = await getUserProfile();
         } catch (err) {
             console.log('Error signing in: ', err)
         }
@@ -191,7 +198,7 @@ query DefaultProfile($address: EthereumAddress!) {
             const response = await client.query(getDefaultProfile, {
                 address
             }).toPromise()
-            profile = response.data.defaultProfile;
+            return response.data.defaultProfile;
         } catch (err) {
             console.log('error fetching user profile...: ', err)
         }
@@ -202,7 +209,7 @@ query DefaultProfile($address: EthereumAddress!) {
     import {v4 as uuid} from 'uuid';
 
     /** Hard coded post value for testing **/
-    let userEnteredContent = "Trial Post";
+    let userEnteredContent = "";
 
     /**
      * Web3 Storage Code
@@ -408,6 +415,8 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
 
 
     /*******************************************************/
+
+    let userEnteredLink = "";
 
 
     /** Fetch post by ID */
@@ -857,6 +866,25 @@ fragment ReferenceModuleFields on ReferenceModule {
 
     /************************************************/
 
+    let isLinkClicked = false;
+
+    let toggleLinkClicked = () => {
+        isLinkClicked = !isLinkClicked;
+    }
+
+
+    $: isUserFilledTheBoxes = (userEnteredContent, userEnteredLink) => {
+        if(userEnteredContent === "" || userEnteredLink === ""){
+            console.log("User has not filled the boxes");
+            return false;
+        }
+        console.log("User has filled the boxes");
+        return true;
+    };
+
+    let test = () => {
+        console.log("Test");
+    }
 </script>
 
 
@@ -874,9 +902,17 @@ fragment ReferenceModuleFields on ReferenceModule {
                 <div class="main__menu__items__item">About</div>
             </div>
             <div class="main__menu__user">
-                <button class="btn">
-                    Connect Wallet
-                </button>
+                    {#if !isConnected}
+                        <button on:click="{connect}" class="btn">Connect  Wallet</button>
+                    {:else}
+                        {#if !isSignedIn}
+                            <button on:click="{signInWithLens}" class="btn">Sign-In With Lens</button>
+                        {:else}
+                            <div class="main__menu__user__profile">
+                                {address.slice(0,5)} ... {address.slice(-5)}
+                            </div>
+                        {/if}
+                    {/if}
             </div>
         </div>
         <div class="CenterColumnFlex main__search-area">
@@ -897,8 +933,9 @@ fragment ReferenceModuleFields on ReferenceModule {
                     <button class="btn">Filter</button>
                 </div>
             </div>
-            <div class="CenterColumnFlex main__search-area__results">
-                <div class="main__search-area__results__result">
+            {#if !isLinkClicked}
+                <div class="CenterColumnFlex main__search-area__results">
+                <div on:click="{toggleLinkClicked}" class="main__search-area__results__result">
                     Lorem ipsum dolor sit amet, consectetur adipisic incidunt nesciunt placeat quae rem reprehenderit similique temporibus voluptatibus?
                 </div>
                 <div class="main__search-area__results__result">
@@ -929,11 +966,40 @@ fragment ReferenceModuleFields on ReferenceModule {
                     Lorem ipsum dolor sit amet, consectetur adipisicing quibusdam, quos rerum sapiente sit ullam, vero voluptatum.
                 </div>
             </div>
+            {:else}
+                <div class="CenterColumnFlex main__search-area__link-preview">
+                    <div on:click="{toggleLinkClicked}" class="main__search-area__link-preview__close">
+                        X
+                    </div>
+                    <div class="main__search-area__link-preview__area">
+                        <!--
+                    Iframe does not because of security issue, use below technique to get around it
+                    1. Use AJAX
+                    2. You could use a proxy which fetches the requested page on your behalf and then you can host the proxy on your domain and load the web page from this proxy server with the new proxy URL rather then "twitter.com" in this question.
+                    -->
+                        <iframe src="https://www.w3schools.com" name="iframe_a" title="Iframe Example"></iframe>
+                    </div>
+                    <div class="CenterRowFlex main__search-area__link-preview__reaction-bar">
+                        <div class="main__search-area__link-preview__reaction-bar__reaction">5 👍</div>
+                        <div class="main__search-area__link-preview__reaction-bar__reaction">10 👎</div>
+                        <div class="main__search-area__link-preview__reaction-bar__reaction">7 ☀️</div>
+                        <div class="main__search-area__link-preview__reaction-bar__reaction">2 😈</div>
+                        <div class="main__search-area__link-preview__reaction-bar__reaction">3 😑</div>
+                        <div class="main__search-area__link-preview__reaction-bar__reaction">10 Post(s)</div>
+                        <div class="main__search-area__link-preview__reaction-bar__reaction">30 Search(s)</div>
+                    </div>
+                </div>
+            {/if}
         </div>
         <div class="CenterColumnFlex main__content-area">
             <div class="CenterColumnFlex main__content-area__user-post">
+                {#if !isLinkClicked}
+                    <div class="main__content-area__user-post__text">
+                        <input bind:value={userEnteredLink} type="text" class="main__content-area__user-post__text__input" placeholder="Please add link over here">
+                    </div>
+                {/if}
                 <div class="main__content-area__user-post__text">
-                    <input type="text" class="main__content-area__user-post__text__input" placeholder="What's on your mind?">
+                    <input bind:value={userEnteredContent} type="text" class="main__content-area__user-post__text__input" placeholder="What's on your mind?">
                 </div>
                 <div class="CenterRowFlex main__content-area__user-post__option-bar">
                     <div class="CenterRowFlex main__content-area__user-post__option-bar__options">
@@ -942,31 +1008,77 @@ fragment ReferenceModuleFields on ReferenceModule {
                         <div class="main__content-area__user-post__option-bar__options__option">@Mention</div>
                     </div>
                     <div class="main__content-area__user-post__option-bar__post-btn">
-                        <button class="btn">Post</button>
+                        <button on:click={test} disabled='{!isUserFilledTheBoxes(userEnteredContent, userEnteredLink)}' class="btn">Post</button>
                     </div>
                 </div>
             </div>
-            <div class="main__content-area__link-preview">
-                <!--
-                Iframe does not because of security issue, use below technique to get around it
-                1. Use AJAX
-                2. You could use a proxy which fetches the requested page on your behalf and then you can host the proxy on your domain and load the web page from this proxy server with the new proxy URL rather then "twitter.com" in this question.
-                -->
-                <iframe src="https://www.w3schools.com" name="iframe_a" title="Iframe Example"></iframe>
-
-<!--                <p><a href="" target="iframe_a">W3Schools.com</a></p>-->
-            </div>
-            <div class="CenterColumnFlex main__content-area__comments">
-                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adip</div>
-                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. El</div>
-                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab a</div>
-                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam a</div>
-                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
-                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A</div>
-                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A</div>
-                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A</div>
-                <div class="main__content-area__comments__comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A</div>
-            </div>
+            {#if isLinkClicked}
+                <div class="CenterColumnFlex main__content-area__posts">
+                    <div class="main__content-area__posts__post">
+                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci asperiores, consequatur consequuntur dolorum inventore, iusto labore libero magnam maxime minima nam nemo nostrum numquam quis quo sit suscipit unde voluptatem.</div>
+                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>
+                        </div>
+                    </div>
+                    <div class="main__content-area__posts__post">
+                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorem eligendi enim facere fugit iure magnam molestiae nostrum! Assumenda distinctio eos eum fugit id illo, iste necessitatibus nemo non pariatur, rem?</div>
+                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>
+                        </div>
+                    </div>
+                    <div class="main__content-area__posts__post">
+                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab, animi aut autem dignissimos eius explicabo libero nihil, nostrum odit quae repellat, sed tempora? A commodi delectus dicta harum non sint.</div>
+                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>
+                        </div>
+                    </div>
+                    <div class="main__content-area__posts__post">
+                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci beatae dignissimos ducimus neque quas. Alias animi asperiores beatae corporis culpa cupiditate et illo ipsam odit possimus quaerat quas, reiciendis sed!</div>
+                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>
+                        </div>
+                    </div>
+                    <div class="main__content-area__posts__post">
+                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eligendi ex inventore modi molestias voluptatum? Ab consectetur culpa facere fugit id illum in natus quas, ratione recusandae repellat unde? Animi, minus!</div>
+                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>
+                        </div>
+                    </div>
+                    <div class="main__content-area__posts__post">
+                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. At, cupiditate dolore est ipsum, itaque magnam mollitia quam quis recusandae, reiciendis sequi sit. Beatae consequatur distinctio explicabo iste, molestiae ratione sequi?</div>
+                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>
+                        </div>
+                    </div>
+                    <div class="main__content-area__posts__post">
+                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, dolore dolorem est harum illo incidunt maiores nesciunt porro praesentium quam quidem quod ratione reiciendis sit temporibus tenetur vel voluptate voluptatibus?</div>
+                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>
+                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>
+                        </div>
+                    </div>
+                </div>
+            {/if}
         </div>
     </div>
 </main>
@@ -981,6 +1093,12 @@ fragment ReferenceModuleFields on ReferenceModule {
         height: 100vh;
         justify-content: space-between;
         padding: 2rem 1rem;
+    }
+
+    .main__menu__user__profile{
+        padding: 1rem;
+        background: greenyellow;
+        border-radius: 39px;
     }
 
     .main__menu__items{
@@ -1037,7 +1155,8 @@ fragment ReferenceModuleFields on ReferenceModule {
     .main__search-area__results{
         gap: 0.75rem;
         height: 77vh;
-        overflow: auto;
+        overflow-y: auto;
+        justify-content: flex-start;
     }
 
     .main__search-area__results__result{
@@ -1045,6 +1164,34 @@ fragment ReferenceModuleFields on ReferenceModule {
         padding: 0.8rem 1rem;
         border-radius: 10px;
         margin-right: 0.75rem;
+    }
+
+    .main__search-area__link-preview{
+        width: 100%;
+        background: white;
+        border-radius: 10px;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
+    }
+
+    .main__search-area__link-preview__close{
+        font-weight: 600;
+        font-size: large;
+        margin: 1rem auto 1rem 1rem;
+        cursor: pointer;
+    }
+
+    .main__search-area__link-preview__area{
+        background: black;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        height: 50vh;
+    }
+
+    .main__search-area__link-preview__reaction-bar{
+        width: 100%;
+        padding: 1rem;
     }
 
     .main__content-area{
@@ -1064,6 +1211,11 @@ fragment ReferenceModuleFields on ReferenceModule {
         padding: 1rem;
         border-radius: 12px;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    }
+
+    .main__content-area__posts__post__reaction-bar{
+        width: 100%;
+        padding-top: 1rem;
     }
 
     .main__content-area__user-post__text{
@@ -1086,28 +1238,29 @@ fragment ReferenceModuleFields on ReferenceModule {
     .main__content-area__user-post__option-bar__options{
         gap: 0.5rem;
     }
+
     .main__content-area__user-post__option-bar__options__option{
         padding: 0.5rem;
         font-size: medium;
         font-weight: 500;
     }
 
-    .main__content-area__comments{
+    .main__content-area__posts{
         width: 100%;
         gap: 1rem;
         background: white;
         padding: 1rem;
         border-radius: 12px;
-        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
         align-items: flex-start;
         height: 70vh;
         overflow: auto;
+        justify-content: flex-start;
     }
 
-    .main__content-area__comments__comment{
+    .main__content-area__posts__post{
         padding: 1rem;
-        background: khaki;
         border-radius: 10px;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     }
 
     /** Utility Classes **/
@@ -1126,6 +1279,11 @@ fragment ReferenceModuleFields on ReferenceModule {
         transition: transform 200ms, background 200ms;
     }
 
+    .btn[disabled]{
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
     /****** Side scrollbar ********/
     .main__search-area__results::-webkit-scrollbar {
         width: 0.25rem;
@@ -1141,15 +1299,15 @@ fragment ReferenceModuleFields on ReferenceModule {
     /*******************************/
 
     /****** Side scrollbar ********/
-    .main__content-area__comments::-webkit-scrollbar {
+    .main__content-area__posts::-webkit-scrollbar {
         width: 0.25rem;
     }
 
-    .main__content-area__comments::-webkit-scrollbar-track {
+    .main__content-area__posts::-webkit-scrollbar-track {
         background: #1e1e24;
     }
 
-    .main__content-area__comments::-webkit-scrollbar-thumb {
+    .main__content-area__posts::-webkit-scrollbar-thumb {
         background: #6649b8;
     }
     /*******************************/
