@@ -1,0 +1,11 @@
+#getUrlAt
+query ExampleQuery($getUrlAtId: Int!) {
+    getUrlAt(id: $getUrlAtId)
+}
+
+# Get publications
+query ExampleQuery($url: String!) {
+    getPublicationsForUrl(url: $url)
+}
+
+
