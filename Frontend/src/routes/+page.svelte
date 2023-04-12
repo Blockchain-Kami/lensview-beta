@@ -248,12 +248,12 @@ query DefaultProfile($address: EthereumAddress!) {
             content: userEnteredContent,
             description: userEnteredContent,
             name: `Post by @${profile.handle}`,
-            external_url: `https://lensView.xyz`,
+            external_url: 'https://lensView.xyz',
             metadata_id: uuid(),
             mainContentFocus: 'TEXT_ONLY',
             attributes: [],
             locale: 'en-US',
-            appId: 'lensView-beta'
+            appId: 'http://a.b.c.d.e.f.g.h.i.j.k.l.m.n.oo.pp.qqq.rrrr.ssssss.tttttttt.uuuuuuuuuuu.vvvvvvvvvvvvvvv.wwwwwwwwwwwwwwwwwwwwww.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.me/'
         }
         const blob = new Blob([JSON.stringify(metaData)], {type: 'application/json'})
 

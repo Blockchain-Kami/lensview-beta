@@ -16,7 +16,7 @@ const LensStorageContract = new ethers.Contract(CONTRACT_ADDRESS, contract.abi, 
 
 async function getUrl(id) {
     const url = await LensStorageContract.urls(id)
-    console.log(url)
+    console.log("Url : " + url)
     return url
 }
 
@@ -39,6 +39,6 @@ async function getPublications(url) {
 }
 
 getUrl(0)
-// addPublication("binance.com", "0x123testing")
+addPublication("binance.com", "0x123testing")
 // getPublications("binance.com")
 module.exports = {getUrl, getPublications, addPublication}

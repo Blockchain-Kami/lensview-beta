@@ -14,7 +14,12 @@
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
     "@nomiclabs/hardhat-ethers": "^2.2.2",
     "ethers": "^5.7.2",
-    "hardhat": "^2.13.0"
+    "hardhat": "^2.13.0",
+    "uuid": "^9.0.0",
+    "web3.storage": "^3.1.0",
+    "@urql/core": "^2.0.5",
+    "omit-deep": "^0.3.0",
+    "lodash": "^4.17.21"
   },
   "dependencies": {
     "@graphql-tools/graphql-file-loader": "^7.5.16",
