@@ -114,7 +114,7 @@
             const challengeInfo = await client.query(challenge, {"address": lensviewAddress}).toPromise();
             console.log("challengeInfo", challengeInfo);
             // TODO - update the chain when gas fee issue is fixed
-            const provider = new ethers.providers.AlchemyProvider("maticmum", import.meta.env.VITE_API_KEY);
+            const provider = new ethers.providers.AlchemyProvider("matic", import.meta.env.VITE_API_KEY);
             lensviewSigner = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY, provider);
             /* ask the user to sign a message with the challenge info returned from the server */
             const signature = await lensviewSigner.signMessage(challengeInfo.data.challenge.text);
@@ -509,6 +509,7 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
 
             await tx.wait()
 
+            alert("Posted succesfully ");
             console.log('successfully created Comment: tx hash', tx.hash);
             console.log('successfully created Comment: tx hash', JSON.stringify(tx));
         } catch (err) {
@@ -544,6 +545,10 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
                 lensviewSigner
             )
 
+            const gas = await getGas();
+            const maxFeePerGas = gas[0]
+            const maxPriorityFeePerGas = gas[1]
+
             const tx = await contract.postWithSig({
                 profileId: typedData.value.profileId,
                 contentURI: typedData.value.contentURI,
@@ -557,7 +562,7 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
                     s,
                     deadline: typedData.value.deadline,
                 },
-            })
+            }, {"maxFeePerGas": maxFeePerGas, "maxPriorityFeePerGas": maxPriorityFeePerGas})
 
             await tx.wait()
 
@@ -566,8 +571,12 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
             console.log('successfully created post: tx hash', tx.hash);
             console.log('successfully created post: tx hash', JSON.stringify(tx));
 
-            pubIdByAppId = await getPubIdByAppId();
-            console.log("pubIdByAppId : " + pubIdByAppId);
+            setTimeout(async () => {
+                pubIdByAppId = await getPubIdByAppId();
+                console.log("pubIdByAppId : " + pubIdByAppId);
+                alert("Link Added to LensView");
+            }, 5000)
+
 
             addingLink = false
         } catch (err) {
@@ -1020,7 +1029,6 @@ fragment ReferenceModuleFields on ReferenceModule {
         return true;
     };
 
-
     const publication = `
     query Publications($request: PublicationsQueryRequest!) {
   publications(request: $request) {
@@ -1381,13 +1389,58 @@ fragment ReferenceModuleFields on ReferenceModule {
                 "publicationTypes": ["POST"],
                 "sources": [userEnteredLink]
             }
+            console.log("userEnteredLink : " + userEnteredLink);
+
             const response = await client.query(publication, {
                 "request": request
             }).toPromise();
+
+            console.log("response : " + response);
             return response.data.publications.items[0].id;
         } catch (err) {
             console.log('error fetching user profile...: ', err)
         }
+    }
+
+    const fetchGas = async () => {
+        let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
+        let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
+        try {
+            console.log("FetchGas called")
+            console.log("Estimating gas for the transaction")
+            let data;
+            await fetch('https://gasstation-mainnet.matic.network/v2')
+                .then(response => response.json())
+                .then(dataFromAPI => {
+                    data = dataFromAPI;
+                    console.log("dataFromAPI : " + JSON.stringify(dataFromAPI));
+                })
+                .catch(error => console.error(error));
+
+            console.log("data : " + data);
+
+            maxFeePerGas = ethers.utils.parseUnits(
+                Math.ceil(data.fast.maxFee) + '',
+                'gwei'
+            )
+            maxPriorityFeePerGas = ethers.utils.parseUnits(
+                Math.ceil(data.fast.maxPriorityFee) + '',
+                'gwei'
+            )
+            return [Number(maxFeePerGas._hex),Number(maxPriorityFeePerGas._hex)]
+        } catch (error) {
+            // ignore
+            console.log(error)
+        }
+    }
+
+    const getGas = async() => {
+        let gas = await fetchGas()
+        let maxFeePerGas = gas[0]
+        let maxPriorityFeePerGas = gas[1]
+        console.log("max fee per gas",maxFeePerGas)
+        console.log("max priority fee per gas",maxPriorityFeePerGas)
+        return [maxFeePerGas, maxPriorityFeePerGas]
     }
 </script>
 
