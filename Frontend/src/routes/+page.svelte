@@ -34,6 +34,7 @@
 
     let lensviewAccessTokenFromLens;
     let lensviewSigner;
+    let isLinkAddedToLensView: boolean = false;
 
     let client = createClient({
         url: API_URL
@@ -273,7 +274,7 @@ query DefaultProfile($address: EthereumAddress!) {
         return new Web3Storage({token: getAccessToken()})
     }
 
-    function makeFileObjects(profileHandle: string) {
+    function makeFileObjects(profileHandle: string, userEnteredContent: string) {
         // You can create File objects from a Blob of binary data
         // see: https://developer.mozilla.org/en-US/docs/Web/API/Blob
         // Here we're just storing a JSON object, but you can store images,
@@ -308,11 +309,11 @@ query DefaultProfile($address: EthereumAddress!) {
     /**
      * 4. Upload to IPFS
      */
-    const uploadToIPFS = async (profileHandle) => {
+    const uploadToIPFS = async (profileHandle, userEnteredContent) => {
 
         /*** Web3.storage ***/
         const client = makeStorageClient()
-        const cid = await client.put(makeFileObjects(profileHandle))
+        const cid = await client.put(makeFileObjects(profileHandle, userEnteredContent))
         console.log('stored files with cid:', cid)
         const uri = `https://${cid}.ipfs.w3s.link/metaData.json`
 
@@ -428,7 +429,7 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
     let savePost = async () => {
         isPosting = true;
         console.log("Post called :");
-        const contentURI = await uploadToIPFS(profile.handle)
+        const contentURI = await uploadToIPFS(profile.handle, userEnteredContent)
         const createPostRequest = {
             profileId: profile.id,
             contentURI,
@@ -481,7 +482,7 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
         console.log("lensviewSavePost called :");
         await lensviewSignInWithLens();
         console.log("Signed in with lensview done");
-        const contentURI = await uploadToIPFS('anjaysahoo')
+        const contentURI = await uploadToIPFS('anjaysahoo', userEnteredLink)
         const createPostRequest = {
             profileId: '0x0199aa',
             contentURI,
@@ -522,6 +523,7 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
             await tx.wait()
 
             isPosting = false;
+            isLinkAddedToLensView = true;
             console.log('successfully created post: tx hash', tx.hash);
             console.log('successfully created post: tx hash', JSON.stringify(tx));
         } catch (err) {
@@ -988,14 +990,14 @@ fragment ReferenceModuleFields on ReferenceModule {
         isLinkClicked = !isLinkClicked;
     }
 
-    let isUserEnteredVal = (userEnteredContent, userEnteredLink): boolean => {
+    let disablePost = (userEnteredContent): boolean => {
 
-            if(userEnteredContent === "" || userEnteredLink === ""){
+        if(userEnteredContent === "" || !isLinkAddedToLensView || !isSignedIn){
                 console.log("User has not filled the boxes");
-                return false;
+                return true;
             }
-        console.log("User has filled the boxes");
-        return isConnected;
+            console.log("User has filled the boxes");
+        return false;
     };
 
     let isUserEnteredLink = (userEnteredLink): boolean => {
@@ -1130,7 +1132,7 @@ fragment ReferenceModuleFields on ReferenceModule {
                         <div class="main__content-area__user-post__option-bar__options__option">@Mention</div>
                     </div>
                     <div class="main__content-area__user-post__option-bar__post-btn">
-                        <button on:click={savePost} disabled='{!isUserEnteredVal(userEnteredContent, userEnteredLink)}' class="btn">Post</button>
+                        <button on:click={savePost} disabled='{disablePost(userEnteredContent)}' class="btn">Post</button>
                     </div>
                 </div>
             </div>
