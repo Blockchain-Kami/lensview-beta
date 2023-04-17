@@ -34,7 +34,10 @@
 
     let lensviewAccessTokenFromLens;
     let lensviewSigner;
+    let lensviewAddress = "0xBFfCe813B6c14D8659057dD3111D3F83CEE271b8";
     let isLinkAddedToLensView: boolean = false;
+    let pubIdByAppId = "";
+    let addingLink: boolean = false
 
     let client = createClient({
         url: API_URL
@@ -108,7 +111,6 @@
     async function lensviewSignInWithLens() {
         try {
             /* first request the challenge from the API server */
-            let lensviewAddress = "0xBFfCe813B6c14D8659057dD3111D3F83CEE271b8";
             const challengeInfo = await client.query(challenge, {"address": lensviewAddress}).toPromise();
             console.log("challengeInfo", challengeInfo);
             // TODO - update the chain when gas fee issue is fixed
@@ -359,6 +361,41 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
   }
 }
 `
+    const createCommentTypedData = `
+    mutation CreateCommentTypedData($request: CreatePublicCommentRequest!) {
+  createCommentTypedData(request: $request) {
+    id
+    expiresAt
+    typedData {
+      types {
+        CommentWithSig {
+          name
+          type
+        }
+      }
+      domain {
+        name
+        chainId
+        version
+        verifyingContract
+      }
+      value {
+        nonce
+        deadline
+        profileId
+        profileIdPointed
+        pubIdPointed
+        contentURI
+        referenceModuleData
+        collectModule
+        collectModuleInitData
+        referenceModule
+        referenceModuleInitData
+      }
+    }
+  }
+}
+`
 
     function signedTypeData(domain, types, value) {
         return signer._signTypedData(
@@ -376,20 +413,20 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
         )
     }
 
-    const signCreatePostTypedData = async (request) => {
-        let result = await client.mutation(createPostTypedData, {
+    const signCreateCommentTypedData = async (request) => {
+        let result = await client.mutation(createCommentTypedData, {
             request
         }).toPromise();
-        result = result.data.createPostTypedData;
-        console.log('create post: createPostTypedData', result);
+        result = result.data.createCommentTypedData;
+        console.log('create Comment: createCommentTypedData', result);
 
         const typedData = result.typedData;
-        console.log('create post: typedData', typedData);
+        console.log('create Comment: typedData', typedData);
 
         const signature = await signedTypeData(typedData.domain, typedData.types, typedData.value);
-        console.log('create post: signature', signature);
+        console.log('create Comment: signature', signature);
 
-        return {result, signature};
+        return { result, signature };
     }
 
     const lensviewSignCreatePostTypedData = async (request) => {
@@ -426,23 +463,23 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
     const LENS_HUB_CONTRACT_ADDRESS = "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d"
 
     let isPosting = false;
-    let savePost = async () => {
-        isPosting = true;
-        console.log("Post called :");
-        const contentURI = await uploadToIPFS(profile.handle, userEnteredContent)
-        const createPostRequest = {
+    let saveComment = async () => {
+        console.log("Comment called :");
+        const contentURI = await uploadToIPFS(profile.id, userEnteredContent)
+        const createCommentRequest = {
             profileId: profile.id,
+            publicationId: pubIdByAppId,
             contentURI,
             collectModule: {
                 freeCollectModule: {followerOnly: true}
             },
             referenceModule: {
                 followerOnlyReferenceModule: false
-            }
+            },
         }
 
         try {
-            const signedResult = await signCreatePostTypedData(createPostRequest)
+            const signedResult = await signCreateCommentTypedData(createCommentRequest)
             const typedData = signedResult.result.typedData;
             const {v, r, s} = splitSignature(signedResult.signature)
 
@@ -452,13 +489,16 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
                 signer
             )
 
-            const tx = await contract.postWithSig({
+            const tx = await contract.commentWithSig({
                 profileId: typedData.value.profileId,
                 contentURI: typedData.value.contentURI,
+                profileIdPointed: typedData.value.profileIdPointed,
+                pubIdPointed: typedData.value.pubIdPointed,
                 collectModule: typedData.value.collectModule,
                 collectModuleInitData: typedData.value.collectModuleInitData,
                 referenceModule: typedData.value.referenceModule,
                 referenceModuleInitData: typedData.value.referenceModuleInitData,
+                referenceModuleData: typedData.value.referenceModuleData,
                 sig: {
                     v,
                     r,
@@ -469,16 +509,15 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
 
             await tx.wait()
 
-            isPosting = false;
-            console.log('successfully created post: tx hash', tx.hash);
-            console.log('successfully created post: tx hash', JSON.stringify(tx));
+            console.log('successfully created Comment: tx hash', tx.hash);
+            console.log('successfully created Comment: tx hash', JSON.stringify(tx));
         } catch (err) {
-            console.log('error: ', err);
-            isPosting = false;
+            console.log('error: ', err)
         }
     }
 
     let lensviewSavePost = async () => {
+        addingLink = true;
         console.log("lensviewSavePost called :");
         await lensviewSignInWithLens();
         console.log("Signed in with lensview done");
@@ -526,9 +565,15 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
             isLinkAddedToLensView = true;
             console.log('successfully created post: tx hash', tx.hash);
             console.log('successfully created post: tx hash', JSON.stringify(tx));
+
+            pubIdByAppId = await getPubIdByAppId();
+            console.log("pubIdByAppId : " + pubIdByAppId);
+
+            addingLink = false
         } catch (err) {
             console.log('error: ', err);
             isPosting = false;
+            addingLink = false
         }
     }
 
@@ -948,40 +993,6 @@ fragment ReferenceModuleFields on ReferenceModule {
 
     }
 
-    const putPubId = async () => {
-        try{
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-            provider.send("eth_requestAccounts", []).then(() => {
-                provider.listAccounts().then(async (accounts) => {
-                    signer2 = provider.getSigner(accounts[0]);
-                    lensViewBetaContract = new ethers.Contract(
-                        lensViewBetaContractAddress,
-                        lensViewBetaContractABI,
-                        signer2
-                    );
-
-                    // let totalPublications = profile.stats.totalPublications;
-                    // console.log("Total Publications : " + totalPublications);
-                    // let publicationID = profile.id + "-0x" + totalPublications.toString(16);
-                    // console.log("Publication ID : " + publicationID);
-
-                    console.log("userEnteredLink : " + userEnteredLink);
-                    const getPubIdPromise = lensViewBetaContract.addPublication(userEnteredLink, "0x544");
-                    const pubId = await getPubIdPromise;
-                    console.log("Pub ID : " + pubId);
-                });
-            });
-
-
-        }
-        catch(err){
-            console.log("Error while fetching post ID : " + err);
-        }
-
-    }
-
-
     /************************************************/
 
     let isLinkClicked = false;
@@ -1008,6 +1019,376 @@ fragment ReferenceModuleFields on ReferenceModule {
         console.log("User has filled the boxes");
         return true;
     };
+
+
+    const publication = `
+    query Publications($request: PublicationsQueryRequest!) {
+  publications(request: $request) {
+    items {
+      __typename
+      ... on Post {
+        ...PostFields
+      }
+      ... on Comment {
+        ...CommentFields
+      }
+      ... on Mirror {
+        ...MirrorFields
+      }
+    }
+    pageInfo {
+      prev
+      next
+      totalCount
+    }
+  }
+}
+
+fragment MediaFields on Media {
+  url
+  mimeType
+}
+
+fragment ProfileFields on Profile {
+  id
+  name
+  bio
+  attributes {
+     displayType
+     traitType
+     key
+     value
+  }
+  isFollowedByMe
+  isFollowing(who: null)
+  followNftAddress
+  metadata
+  isDefault
+  handle
+  picture {
+    ... on NftImage {
+      contractAddress
+      tokenId
+      uri
+      verified
+    }
+    ... on MediaSet {
+      original {
+        ...MediaFields
+      }
+    }
+  }
+  coverPicture {
+    ... on NftImage {
+      contractAddress
+      tokenId
+      uri
+      verified
+    }
+    ... on MediaSet {
+      original {
+        ...MediaFields
+      }
+    }
+  }
+  ownedBy
+  dispatcher {
+    address
+  }
+  stats {
+    totalFollowers
+    totalFollowing
+    totalPosts
+    totalComments
+    totalMirrors
+    totalPublications
+    totalCollects
+  }
+  followModule {
+    ...FollowModuleFields
+  }
+}
+
+fragment PublicationStatsFields on PublicationStats {
+  totalAmountOfMirrors
+  totalAmountOfCollects
+  totalAmountOfComments
+  totalUpvotes
+  totalDownvotes
+}
+
+fragment MetadataOutputFields on MetadataOutput {
+  name
+  description
+  content
+  media {
+    original {
+      ...MediaFields
+    }
+  }
+  attributes {
+    displayType
+    traitType
+    value
+  }
+}
+
+fragment Erc20Fields on Erc20 {
+  name
+  symbol
+  decimals
+  address
+}
+
+fragment PostFields on Post {
+  id
+  profile {
+    ...ProfileFields
+  }
+  stats {
+    ...PublicationStatsFields
+  }
+  metadata {
+    ...MetadataOutputFields
+  }
+  createdAt
+  collectModule {
+    ...CollectModuleFields
+  }
+  referenceModule {
+    ...ReferenceModuleFields
+  }
+  appId
+  hidden
+  reaction(request: null)
+  mirrors(by: null)
+  hasCollectedByMe
+}
+
+fragment MirrorBaseFields on Mirror {
+  id
+  profile {
+    ...ProfileFields
+  }
+  stats {
+    ...PublicationStatsFields
+  }
+  metadata {
+    ...MetadataOutputFields
+  }
+  createdAt
+  collectModule {
+    ...CollectModuleFields
+  }
+  referenceModule {
+    ...ReferenceModuleFields
+  }
+  appId
+  hidden
+  reaction(request: null)
+  hasCollectedByMe
+}
+
+fragment MirrorFields on Mirror {
+  ...MirrorBaseFields
+  mirrorOf {
+   ... on Post {
+      ...PostFields
+   }
+   ... on Comment {
+      ...CommentFields
+   }
+  }
+}
+
+fragment CommentBaseFields on Comment {
+  id
+  profile {
+    ...ProfileFields
+  }
+  stats {
+    ...PublicationStatsFields
+  }
+  metadata {
+    ...MetadataOutputFields
+  }
+  createdAt
+  collectModule {
+    ...CollectModuleFields
+  }
+  referenceModule {
+    ...ReferenceModuleFields
+  }
+  appId
+  hidden
+  reaction(request: null)
+  mirrors(by: null)
+  hasCollectedByMe
+}
+
+fragment CommentFields on Comment {
+  ...CommentBaseFields
+  mainPost {
+    ... on Post {
+      ...PostFields
+    }
+    ... on Mirror {
+      ...MirrorBaseFields
+      mirrorOf {
+        ... on Post {
+           ...PostFields
+        }
+        ... on Comment {
+           ...CommentMirrorOfFields
+        }
+      }
+    }
+  }
+}
+
+fragment CommentMirrorOfFields on Comment {
+  ...CommentBaseFields
+  mainPost {
+    ... on Post {
+      ...PostFields
+    }
+    ... on Mirror {
+       ...MirrorBaseFields
+    }
+  }
+}
+
+fragment FollowModuleFields on FollowModule {
+  ... on FeeFollowModuleSettings {
+    type
+    amount {
+      asset {
+        name
+        symbol
+        decimals
+        address
+      }
+      value
+    }
+    recipient
+  }
+  ... on ProfileFollowModuleSettings {
+    type
+    contractAddress
+  }
+  ... on RevertFollowModuleSettings {
+    type
+    contractAddress
+  }
+  ... on UnknownFollowModuleSettings {
+    type
+    contractAddress
+    followModuleReturnData
+  }
+}
+
+fragment CollectModuleFields on CollectModule {
+  __typename
+  ... on FreeCollectModuleSettings {
+    type
+    followerOnly
+    contractAddress
+  }
+  ... on FeeCollectModuleSettings {
+    type
+    amount {
+      asset {
+        ...Erc20Fields
+      }
+      value
+    }
+    recipient
+    referralFee
+  }
+  ... on LimitedFeeCollectModuleSettings {
+    type
+    collectLimit
+    amount {
+      asset {
+        ...Erc20Fields
+      }
+      value
+    }
+    recipient
+    referralFee
+  }
+  ... on LimitedTimedFeeCollectModuleSettings {
+    type
+    collectLimit
+    amount {
+      asset {
+        ...Erc20Fields
+      }
+      value
+    }
+    recipient
+    referralFee
+    endTimestamp
+  }
+  ... on RevertCollectModuleSettings {
+    type
+  }
+  ... on TimedFeeCollectModuleSettings {
+    type
+    amount {
+      asset {
+        ...Erc20Fields
+      }
+      value
+    }
+    recipient
+    referralFee
+    endTimestamp
+  }
+  ... on UnknownCollectModuleSettings {
+    type
+    contractAddress
+    collectModuleReturnData
+  }
+}
+
+fragment ReferenceModuleFields on ReferenceModule {
+  ... on FollowOnlyReferenceModuleSettings {
+    type
+    contractAddress
+  }
+  ... on UnknownReferenceModuleSettings {
+    type
+    contractAddress
+    referenceModuleReturnData
+  }
+  ... on DegreesOfSeparationReferenceModuleSettings {
+    type
+    contractAddress
+    commentsRestricted
+    mirrorsRestricted
+    degreesOfSeparation
+  }
+}
+
+    `;
+
+    let getPubIdByAppId = async () => {
+        try {
+            console.log("getPubIdByAppId Called");
+            let request = {
+                "profileId": "0x0199aa",
+                "publicationTypes": ["POST"],
+                "sources": [userEnteredLink]
+            }
+            const response = await client.query(publication, {
+                "request": request
+            }).toPromise();
+            return response.data.publications.items[0].id;
+        } catch (err) {
+            console.log('error fetching user profile...: ', err)
+        }
+    }
 </script>
 
 
@@ -1119,7 +1500,11 @@ fragment ReferenceModuleFields on ReferenceModule {
                 {#if !isLinkClicked}
                     <div class="main__content-area__user-post__link">
                         <input bind:value={userEnteredLink} type="text" class="main__content-area__user-post__link__input" placeholder="Please insert link over here">
-                        <button on:click={lensviewSavePost} class="btn">Add Link On LensView</button>
+                        {#if !addingLink}
+                            <button on:click={lensviewSavePost} class="btn" disabled="{userEnteredLink === ''}">Add Link On LensView</button>
+                        {:else}
+                            Adding Link....
+                        {/if}
                     </div>
                 {/if}
                 <div class="main__content-area__user-post__text">
@@ -1132,7 +1517,7 @@ fragment ReferenceModuleFields on ReferenceModule {
                         <div class="main__content-area__user-post__option-bar__options__option">@Mention</div>
                     </div>
                     <div class="main__content-area__user-post__option-bar__post-btn">
-                        <button on:click={savePost} disabled='{disablePost(userEnteredContent)}' class="btn">Post</button>
+                        <button on:click={saveComment} disabled='{disablePost(userEnteredContent)}' class="btn">Post</button>
                     </div>
                 </div>
             </div>
