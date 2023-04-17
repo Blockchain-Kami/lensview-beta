@@ -32,6 +32,13 @@
     let isSignedIn = false;
     let signer;
 
+    let lensviewAccessTokenFromLens;
+    let lensviewSigner;
+    let lensviewAddress = "0xBFfCe813B6c14D8659057dD3111D3F83CEE271b8";
+    let isLinkAddedToLensView: boolean = false;
+    let pubIdByAppId = "";
+    let addingLink: boolean = false
+
     let client = createClient({
         url: API_URL
     });
@@ -47,6 +54,9 @@
             if (account.result.length) {
                 address = account.result[0];
                 isConnected = true;
+                console.log("address", address);
+                console.log("address typeOf", typeof address);
+                lensviewAddress = address;
             } else {
                 isConnected = false;
             }
@@ -93,6 +103,38 @@
 
             /** Getting profile of the connected user and saving it to "profile" variable **/
             profile = await getUserProfile();
+        } catch (err) {
+            console.log('Error signing in: ', err)
+        }
+    }
+
+    async function lensviewSignInWithLens() {
+        try {
+            /* first request the challenge from the API server */
+            const challengeInfo = await client.query(challenge, {"address": lensviewAddress}).toPromise();
+            console.log("challengeInfo", challengeInfo);
+            // TODO - update the chain when gas fee issue is fixed
+            const provider = new ethers.providers.AlchemyProvider("matic", import.meta.env.VITE_API_KEY);
+            lensviewSigner = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY, provider);
+            /* ask the user to sign a message with the challenge info returned from the server */
+            const signature = await lensviewSigner.signMessage(challengeInfo.data.challenge.text);
+            /* authenticate the user */
+            const authData = await client.mutation(authenticate, {"address": lensviewAddress, signature}).toPromise();
+            /* if user authentication is successful, you will receive an accessToken and refreshToken */
+            const {data: {authenticate: {accessToken}}} = authData
+            console.log({accessToken})
+            lensviewAccessTokenFromLens = accessToken;
+
+            /** you can now use the accessToken to make authenticated requests to the API server **/
+            /** Update client with new accessToken **/
+            client = createClient({
+                url: API_URL,
+                fetchOptions: {
+                    headers: {
+                        'x-access-token': `Bearer ${lensviewAccessTokenFromLens}`
+                    },
+                },
+            });
         } catch (err) {
             console.log('Error signing in: ', err)
         }
@@ -234,7 +276,7 @@ query DefaultProfile($address: EthereumAddress!) {
         return new Web3Storage({token: getAccessToken()})
     }
 
-    function makeFileObjects() {
+    function makeFileObjects(profileHandle: string, userEnteredContent: string) {
         // You can create File objects from a Blob of binary data
         // see: https://developer.mozilla.org/en-US/docs/Web/API/Blob
         // Here we're just storing a JSON object, but you can store images,
@@ -247,13 +289,13 @@ query DefaultProfile($address: EthereumAddress!) {
             version: '2.0.0',
             content: userEnteredContent,
             description: userEnteredContent,
-            name: `Post by @${profile.handle}`,
+            name: `Post by @${profileHandle}`,
             external_url: 'https://lensView.xyz',
             metadata_id: uuid(),
             mainContentFocus: 'TEXT_ONLY',
             attributes: [],
             locale: 'en-US',
-            appId: 'http://a.b.c.d.e.f.g.h.i.j.k.l.m.n.oo.pp.qqq.rrrr.ssssss.tttttttt.uuuuuuuuuuu.vvvvvvvvvvvvvvv.wwwwwwwwwwwwwwwwwwwwww.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.me/'
+            appId: userEnteredLink
         }
         const blob = new Blob([JSON.stringify(metaData)], {type: 'application/json'})
 
@@ -269,11 +311,11 @@ query DefaultProfile($address: EthereumAddress!) {
     /**
      * 4. Upload to IPFS
      */
-    const uploadToIPFS = async () => {
+    const uploadToIPFS = async (profileHandle, userEnteredContent) => {
 
         /*** Web3.storage ***/
         const client = makeStorageClient()
-        const cid = await client.put(makeFileObjects())
+        const cid = await client.put(makeFileObjects(profileHandle, userEnteredContent))
         console.log('stored files with cid:', cid)
         const uri = `https://${cid}.ipfs.w3s.link/metaData.json`
 
@@ -319,8 +361,43 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
   }
 }
 `
+    const createCommentTypedData = `
+    mutation CreateCommentTypedData($request: CreatePublicCommentRequest!) {
+  createCommentTypedData(request: $request) {
+    id
+    expiresAt
+    typedData {
+      types {
+        CommentWithSig {
+          name
+          type
+        }
+      }
+      domain {
+        name
+        chainId
+        version
+        verifyingContract
+      }
+      value {
+        nonce
+        deadline
+        profileId
+        profileIdPointed
+        pubIdPointed
+        contentURI
+        referenceModuleData
+        collectModule
+        collectModuleInitData
+        referenceModule
+        referenceModuleInitData
+      }
+    }
+  }
+}
+`
 
-    export function signedTypeData(domain, types, value) {
+    function signedTypeData(domain, types, value) {
         return signer._signTypedData(
             omitDeep(domain, '__typename'),
             omitDeep(types, '__typename'),
@@ -328,7 +405,31 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
         )
     }
 
-    const signCreatePostTypedData = async (request) => {
+    function lensviewSignedTypeData(domain, types, value) {
+        return lensviewSigner._signTypedData(
+            omitDeep(domain, '__typename'),
+            omitDeep(types, '__typename'),
+            omitDeep(value, '__typename')
+        )
+    }
+
+    const signCreateCommentTypedData = async (request) => {
+        let result = await client.mutation(createCommentTypedData, {
+            request
+        }).toPromise();
+        result = result.data.createCommentTypedData;
+        console.log('create Comment: createCommentTypedData', result);
+
+        const typedData = result.typedData;
+        console.log('create Comment: typedData', typedData);
+
+        const signature = await signedTypeData(typedData.domain, typedData.types, typedData.value);
+        console.log('create Comment: signature', signature);
+
+        return { result, signature };
+    }
+
+    const lensviewSignCreatePostTypedData = async (request) => {
         let result = await client.mutation(createPostTypedData, {
             request
         }).toPromise();
@@ -338,7 +439,7 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
         const typedData = result.typedData;
         console.log('create post: typedData', typedData);
 
-        const signature = await signedTypeData(typedData.domain, typedData.types, typedData.value);
+        const signature = await lensviewSignedTypeData(typedData.domain, typedData.types, typedData.value);
         console.log('create post: signature', signature);
 
         return {result, signature};
@@ -362,12 +463,68 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
     const LENS_HUB_CONTRACT_ADDRESS = "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d"
 
     let isPosting = false;
-    let savePost = async () => {
-        isPosting = true;
-        console.log("Post called :");
-        const contentURI = await uploadToIPFS()
-        const createPostRequest = {
+    let saveComment = async () => {
+        console.log("Comment called :");
+        const contentURI = await uploadToIPFS(profile.id, userEnteredContent)
+        const createCommentRequest = {
             profileId: profile.id,
+            publicationId: pubIdByAppId,
+            contentURI,
+            collectModule: {
+                freeCollectModule: {followerOnly: true}
+            },
+            referenceModule: {
+                followerOnlyReferenceModule: false
+            },
+        }
+
+        try {
+            const signedResult = await signCreateCommentTypedData(createCommentRequest)
+            const typedData = signedResult.result.typedData;
+            const {v, r, s} = splitSignature(signedResult.signature)
+
+            const contract = new ethers.Contract(
+                LENS_HUB_CONTRACT_ADDRESS,
+                LENSHUB,
+                signer
+            )
+
+            const tx = await contract.commentWithSig({
+                profileId: typedData.value.profileId,
+                contentURI: typedData.value.contentURI,
+                profileIdPointed: typedData.value.profileIdPointed,
+                pubIdPointed: typedData.value.pubIdPointed,
+                collectModule: typedData.value.collectModule,
+                collectModuleInitData: typedData.value.collectModuleInitData,
+                referenceModule: typedData.value.referenceModule,
+                referenceModuleInitData: typedData.value.referenceModuleInitData,
+                referenceModuleData: typedData.value.referenceModuleData,
+                sig: {
+                    v,
+                    r,
+                    s,
+                    deadline: typedData.value.deadline,
+                },
+            })
+
+            await tx.wait()
+
+            alert("Posted succesfully ");
+            console.log('successfully created Comment: tx hash', tx.hash);
+            console.log('successfully created Comment: tx hash', JSON.stringify(tx));
+        } catch (err) {
+            console.log('error: ', err)
+        }
+    }
+
+    let lensviewSavePost = async () => {
+        addingLink = true;
+        console.log("lensviewSavePost called :");
+        await lensviewSignInWithLens();
+        console.log("Signed in with lensview done");
+        const contentURI = await uploadToIPFS('anjaysahoo', userEnteredLink)
+        const createPostRequest = {
+            profileId: '0x0199aa',
             contentURI,
             collectModule: {
                 freeCollectModule: {followerOnly: true}
@@ -378,15 +535,19 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
         }
 
         try {
-            const signedResult = await signCreatePostTypedData(createPostRequest)
+            const signedResult = await lensviewSignCreatePostTypedData(createPostRequest)
             const typedData = signedResult.result.typedData;
             const {v, r, s} = splitSignature(signedResult.signature)
 
             const contract = new ethers.Contract(
                 LENS_HUB_CONTRACT_ADDRESS,
                 LENSHUB,
-                signer
+                lensviewSigner
             )
+
+            const gas = await getGas();
+            const maxFeePerGas = gas[0]
+            const maxPriorityFeePerGas = gas[1]
 
             const tx = await contract.postWithSig({
                 profileId: typedData.value.profileId,
@@ -401,16 +562,27 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
                     s,
                     deadline: typedData.value.deadline,
                 },
-            })
+            }, {"maxFeePerGas": maxFeePerGas, "maxPriorityFeePerGas": maxPriorityFeePerGas})
 
             await tx.wait()
 
             isPosting = false;
+            isLinkAddedToLensView = true;
             console.log('successfully created post: tx hash', tx.hash);
             console.log('successfully created post: tx hash', JSON.stringify(tx));
+
+            setTimeout(async () => {
+                pubIdByAppId = await getPubIdByAppId();
+                console.log("pubIdByAppId : " + pubIdByAppId);
+                alert("Link Added to LensView");
+            }, 5000)
+
+
+            addingLink = false
         } catch (err) {
             console.log('error: ', err);
             isPosting = false;
+            addingLink = false
         }
     }
 
@@ -830,40 +1002,6 @@ fragment ReferenceModuleFields on ReferenceModule {
 
     }
 
-    const putPubId = async () => {
-        try{
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-            provider.send("eth_requestAccounts", []).then(() => {
-                provider.listAccounts().then(async (accounts) => {
-                    signer2 = provider.getSigner(accounts[0]);
-                    lensViewBetaContract = new ethers.Contract(
-                        lensViewBetaContractAddress,
-                        lensViewBetaContractABI,
-                        signer2
-                    );
-
-                    // let totalPublications = profile.stats.totalPublications;
-                    // console.log("Total Publications : " + totalPublications);
-                    // let publicationID = profile.id + "-0x" + totalPublications.toString(16);
-                    // console.log("Publication ID : " + publicationID);
-
-                    console.log("userEnteredLink : " + userEnteredLink);
-                    const getPubIdPromise = lensViewBetaContract.addPublication(userEnteredLink, "0x544");
-                    const pubId = await getPubIdPromise;
-                    console.log("Pub ID : " + pubId);
-                });
-            });
-
-
-        }
-        catch(err){
-            console.log("Error while fetching post ID : " + err);
-        }
-
-    }
-
-
     /************************************************/
 
     let isLinkClicked = false;
@@ -872,13 +1010,14 @@ fragment ReferenceModuleFields on ReferenceModule {
         isLinkClicked = !isLinkClicked;
     }
 
-    let isUserEnteredVal = (userEnteredContent, userEnteredLink): boolean => {
-        if(userEnteredContent === "" || userEnteredLink === ""){
-            console.log("User has not filled the boxes");
-            return false;
-        }
-        console.log("User has filled the boxes");
-        return true;
+    let disablePost = (userEnteredContent): boolean => {
+
+        if(userEnteredContent === "" || !isLinkAddedToLensView || !isSignedIn){
+                console.log("User has not filled the boxes");
+                return true;
+            }
+            console.log("User has filled the boxes");
+        return false;
     };
 
     let isUserEnteredLink = (userEnteredLink): boolean => {
@@ -889,6 +1028,420 @@ fragment ReferenceModuleFields on ReferenceModule {
         console.log("User has filled the boxes");
         return true;
     };
+
+    const publication = `
+    query Publications($request: PublicationsQueryRequest!) {
+  publications(request: $request) {
+    items {
+      __typename
+      ... on Post {
+        ...PostFields
+      }
+      ... on Comment {
+        ...CommentFields
+      }
+      ... on Mirror {
+        ...MirrorFields
+      }
+    }
+    pageInfo {
+      prev
+      next
+      totalCount
+    }
+  }
+}
+
+fragment MediaFields on Media {
+  url
+  mimeType
+}
+
+fragment ProfileFields on Profile {
+  id
+  name
+  bio
+  attributes {
+     displayType
+     traitType
+     key
+     value
+  }
+  isFollowedByMe
+  isFollowing(who: null)
+  followNftAddress
+  metadata
+  isDefault
+  handle
+  picture {
+    ... on NftImage {
+      contractAddress
+      tokenId
+      uri
+      verified
+    }
+    ... on MediaSet {
+      original {
+        ...MediaFields
+      }
+    }
+  }
+  coverPicture {
+    ... on NftImage {
+      contractAddress
+      tokenId
+      uri
+      verified
+    }
+    ... on MediaSet {
+      original {
+        ...MediaFields
+      }
+    }
+  }
+  ownedBy
+  dispatcher {
+    address
+  }
+  stats {
+    totalFollowers
+    totalFollowing
+    totalPosts
+    totalComments
+    totalMirrors
+    totalPublications
+    totalCollects
+  }
+  followModule {
+    ...FollowModuleFields
+  }
+}
+
+fragment PublicationStatsFields on PublicationStats {
+  totalAmountOfMirrors
+  totalAmountOfCollects
+  totalAmountOfComments
+  totalUpvotes
+  totalDownvotes
+}
+
+fragment MetadataOutputFields on MetadataOutput {
+  name
+  description
+  content
+  media {
+    original {
+      ...MediaFields
+    }
+  }
+  attributes {
+    displayType
+    traitType
+    value
+  }
+}
+
+fragment Erc20Fields on Erc20 {
+  name
+  symbol
+  decimals
+  address
+}
+
+fragment PostFields on Post {
+  id
+  profile {
+    ...ProfileFields
+  }
+  stats {
+    ...PublicationStatsFields
+  }
+  metadata {
+    ...MetadataOutputFields
+  }
+  createdAt
+  collectModule {
+    ...CollectModuleFields
+  }
+  referenceModule {
+    ...ReferenceModuleFields
+  }
+  appId
+  hidden
+  reaction(request: null)
+  mirrors(by: null)
+  hasCollectedByMe
+}
+
+fragment MirrorBaseFields on Mirror {
+  id
+  profile {
+    ...ProfileFields
+  }
+  stats {
+    ...PublicationStatsFields
+  }
+  metadata {
+    ...MetadataOutputFields
+  }
+  createdAt
+  collectModule {
+    ...CollectModuleFields
+  }
+  referenceModule {
+    ...ReferenceModuleFields
+  }
+  appId
+  hidden
+  reaction(request: null)
+  hasCollectedByMe
+}
+
+fragment MirrorFields on Mirror {
+  ...MirrorBaseFields
+  mirrorOf {
+   ... on Post {
+      ...PostFields
+   }
+   ... on Comment {
+      ...CommentFields
+   }
+  }
+}
+
+fragment CommentBaseFields on Comment {
+  id
+  profile {
+    ...ProfileFields
+  }
+  stats {
+    ...PublicationStatsFields
+  }
+  metadata {
+    ...MetadataOutputFields
+  }
+  createdAt
+  collectModule {
+    ...CollectModuleFields
+  }
+  referenceModule {
+    ...ReferenceModuleFields
+  }
+  appId
+  hidden
+  reaction(request: null)
+  mirrors(by: null)
+  hasCollectedByMe
+}
+
+fragment CommentFields on Comment {
+  ...CommentBaseFields
+  mainPost {
+    ... on Post {
+      ...PostFields
+    }
+    ... on Mirror {
+      ...MirrorBaseFields
+      mirrorOf {
+        ... on Post {
+           ...PostFields
+        }
+        ... on Comment {
+           ...CommentMirrorOfFields
+        }
+      }
+    }
+  }
+}
+
+fragment CommentMirrorOfFields on Comment {
+  ...CommentBaseFields
+  mainPost {
+    ... on Post {
+      ...PostFields
+    }
+    ... on Mirror {
+       ...MirrorBaseFields
+    }
+  }
+}
+
+fragment FollowModuleFields on FollowModule {
+  ... on FeeFollowModuleSettings {
+    type
+    amount {
+      asset {
+        name
+        symbol
+        decimals
+        address
+      }
+      value
+    }
+    recipient
+  }
+  ... on ProfileFollowModuleSettings {
+    type
+    contractAddress
+  }
+  ... on RevertFollowModuleSettings {
+    type
+    contractAddress
+  }
+  ... on UnknownFollowModuleSettings {
+    type
+    contractAddress
+    followModuleReturnData
+  }
+}
+
+fragment CollectModuleFields on CollectModule {
+  __typename
+  ... on FreeCollectModuleSettings {
+    type
+    followerOnly
+    contractAddress
+  }
+  ... on FeeCollectModuleSettings {
+    type
+    amount {
+      asset {
+        ...Erc20Fields
+      }
+      value
+    }
+    recipient
+    referralFee
+  }
+  ... on LimitedFeeCollectModuleSettings {
+    type
+    collectLimit
+    amount {
+      asset {
+        ...Erc20Fields
+      }
+      value
+    }
+    recipient
+    referralFee
+  }
+  ... on LimitedTimedFeeCollectModuleSettings {
+    type
+    collectLimit
+    amount {
+      asset {
+        ...Erc20Fields
+      }
+      value
+    }
+    recipient
+    referralFee
+    endTimestamp
+  }
+  ... on RevertCollectModuleSettings {
+    type
+  }
+  ... on TimedFeeCollectModuleSettings {
+    type
+    amount {
+      asset {
+        ...Erc20Fields
+      }
+      value
+    }
+    recipient
+    referralFee
+    endTimestamp
+  }
+  ... on UnknownCollectModuleSettings {
+    type
+    contractAddress
+    collectModuleReturnData
+  }
+}
+
+fragment ReferenceModuleFields on ReferenceModule {
+  ... on FollowOnlyReferenceModuleSettings {
+    type
+    contractAddress
+  }
+  ... on UnknownReferenceModuleSettings {
+    type
+    contractAddress
+    referenceModuleReturnData
+  }
+  ... on DegreesOfSeparationReferenceModuleSettings {
+    type
+    contractAddress
+    commentsRestricted
+    mirrorsRestricted
+    degreesOfSeparation
+  }
+}
+
+    `;
+
+    let getPubIdByAppId = async () => {
+        try {
+            console.log("getPubIdByAppId Called");
+            let request = {
+                "profileId": "0x0199aa",
+                "publicationTypes": ["POST"],
+                "sources": [userEnteredLink]
+            }
+            console.log("userEnteredLink : " + userEnteredLink);
+
+            const response = await client.query(publication, {
+                "request": request
+            }).toPromise();
+
+            console.log("response : " + response);
+            return response.data.publications.items[0].id;
+        } catch (err) {
+            console.log('error fetching user profile...: ', err)
+        }
+    }
+
+    const fetchGas = async () => {
+        let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
+        let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
+        try {
+            console.log("FetchGas called")
+            console.log("Estimating gas for the transaction")
+            let data;
+            await fetch('https://gasstation-mainnet.matic.network/v2')
+                .then(response => response.json())
+                .then(dataFromAPI => {
+                    data = dataFromAPI;
+                    console.log("dataFromAPI : " + JSON.stringify(dataFromAPI));
+                })
+                .catch(error => console.error(error));
+
+            console.log("data : " + data);
+
+            maxFeePerGas = ethers.utils.parseUnits(
+                Math.ceil(data.fast.maxFee) + '',
+                'gwei'
+            )
+            maxPriorityFeePerGas = ethers.utils.parseUnits(
+                Math.ceil(data.fast.maxPriorityFee) + '',
+                'gwei'
+            )
+            return [Number(maxFeePerGas._hex),Number(maxPriorityFeePerGas._hex)]
+        } catch (error) {
+            // ignore
+            console.log(error)
+        }
+    }
+
+    const getGas = async() => {
+        let gas = await fetchGas()
+        let maxFeePerGas = gas[0]
+        let maxPriorityFeePerGas = gas[1]
+        console.log("max fee per gas",maxFeePerGas)
+        console.log("max priority fee per gas",maxPriorityFeePerGas)
+        return [maxFeePerGas, maxPriorityFeePerGas]
+    }
 </script>
 
 
@@ -998,8 +1551,13 @@ fragment ReferenceModuleFields on ReferenceModule {
         <div class="CenterColumnFlex main__content-area">
             <div class="CenterColumnFlex main__content-area__user-post">
                 {#if !isLinkClicked}
-                    <div class="main__content-area__user-post__text">
-                        <input bind:value={userEnteredLink} type="text" class="main__content-area__user-post__text__input" placeholder="Please add link over here">
+                    <div class="main__content-area__user-post__link">
+                        <input bind:value={userEnteredLink} type="text" class="main__content-area__user-post__link__input" placeholder="Please insert link over here">
+                        {#if !addingLink}
+                            <button on:click={lensviewSavePost} class="btn" disabled="{userEnteredLink === ''}">Add Link On LensView</button>
+                        {:else}
+                            Adding Link....
+                        {/if}
                     </div>
                 {/if}
                 <div class="main__content-area__user-post__text">
@@ -1012,7 +1570,7 @@ fragment ReferenceModuleFields on ReferenceModule {
                         <div class="main__content-area__user-post__option-bar__options__option">@Mention</div>
                     </div>
                     <div class="main__content-area__user-post__option-bar__post-btn">
-                        <button on:click={savePost} disabled='{!isUserEnteredVal(userEnteredContent, userEnteredLink)}' class="btn">Post</button>
+                        <button on:click={saveComment} disabled='{disablePost(userEnteredContent)}' class="btn">Post</button>
                     </div>
                 </div>
             </div>
@@ -1236,6 +1794,20 @@ fragment ReferenceModuleFields on ReferenceModule {
         outline: 0;
     }
 
+    .main__content-area__user-post__link{
+        width: 100%;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .main__content-area__user-post__link__input{
+        width: 100%;
+        padding: 0.65rem;
+        border-radius: 8px;
+        border: 1px solid lightgray;
+        outline: 0;
+    }
+
     .main__content-area__user-post__option-bar{
         width: 100%;
         justify-content: space-between;
@@ -1319,361 +1891,3 @@ fragment ReferenceModuleFields on ReferenceModule {
     /*******************************/
 </style>
 <!------------------------------------------------>
-
-<!--Lens Protocol Publication fetching query-->
-<!--query Publications($request: PublicationsQueryRequest!) {-->
-<!--    publications(request: $request) {-->
-<!--    items {-->
-<!--    __typename-->
-<!--    ... on Post {-->
-<!--    ...PostFields-->
-<!--}-->
-<!--    ... on Comment {-->
-<!--    ...CommentFields-->
-<!--}-->
-<!--    ... on Mirror {-->
-<!--    ...MirrorFields-->
-<!--}-->
-<!--}-->
-<!--    pageInfo {-->
-<!--    prev-->
-<!--    next-->
-<!--    totalCount-->
-<!--}-->
-<!--}-->
-<!--}-->
-
-<!--fragment MediaFields on Media {-->
-<!--    url-->
-<!--    mimeType-->
-<!--}-->
-
-<!--fragment ProfileFields on Profile {-->
-<!--    id-->
-<!--    name-->
-<!--    bio-->
-<!--    attributes {-->
-<!--    displayType-->
-<!--    traitType-->
-<!--    key-->
-<!--    value-->
-<!--}-->
-<!--    isFollowedByMe-->
-<!--    isFollowing(who: null)-->
-<!--    followNftAddress-->
-<!--    metadata-->
-<!--    isDefault-->
-<!--    handle-->
-<!--    picture {-->
-<!--    ... on NftImage {-->
-<!--    contractAddress-->
-<!--    tokenId-->
-<!--    uri-->
-<!--    verified-->
-<!--}-->
-<!--    ... on MediaSet {-->
-<!--    original {-->
-<!--    ...MediaFields-->
-<!--}-->
-<!--}-->
-<!--}-->
-<!--    coverPicture {-->
-<!--    ... on NftImage {-->
-<!--    contractAddress-->
-<!--    tokenId-->
-<!--    uri-->
-<!--    verified-->
-<!--}-->
-<!--    ... on MediaSet {-->
-<!--    original {-->
-<!--    ...MediaFields-->
-<!--}-->
-<!--}-->
-<!--}-->
-<!--    ownedBy-->
-<!--    dispatcher {-->
-<!--    address-->
-<!--}-->
-<!--    stats {-->
-<!--    totalFollowers-->
-<!--    totalFollowing-->
-<!--    totalPosts-->
-<!--    totalComments-->
-<!--    totalMirrors-->
-<!--    totalPublications-->
-<!--    totalCollects-->
-<!--}-->
-<!--    followModule {-->
-<!--    ...FollowModuleFields-->
-<!--}-->
-<!--}-->
-
-<!--fragment PublicationStatsFields on PublicationStats {-->
-<!--    totalAmountOfMirrors-->
-<!--    totalAmountOfCollects-->
-<!--    totalAmountOfComments-->
-<!--    totalUpvotes-->
-<!--    totalDownvotes-->
-<!--}-->
-
-<!--fragment MetadataOutputFields on MetadataOutput {-->
-<!--    name-->
-<!--    description-->
-<!--    content-->
-<!--    media {-->
-<!--    original {-->
-<!--    ...MediaFields-->
-<!--}-->
-<!--}-->
-<!--    attributes {-->
-<!--    displayType-->
-<!--    traitType-->
-<!--    value-->
-<!--}-->
-<!--}-->
-
-<!--fragment Erc20Fields on Erc20 {-->
-<!--    name-->
-<!--    symbol-->
-<!--    decimals-->
-<!--    address-->
-<!--}-->
-
-<!--fragment PostFields on Post {-->
-<!--    id-->
-<!--    profile {-->
-<!--    ...ProfileFields-->
-<!--}-->
-<!--    stats {-->
-<!--    ...PublicationStatsFields-->
-<!--}-->
-<!--    metadata {-->
-<!--    ...MetadataOutputFields-->
-<!--}-->
-<!--    createdAt-->
-<!--    collectModule {-->
-<!--    ...CollectModuleFields-->
-<!--}-->
-<!--    referenceModule {-->
-<!--    ...ReferenceModuleFields-->
-<!--}-->
-<!--    appId-->
-<!--    hidden-->
-<!--    reaction(request: null)-->
-<!--    mirrors(by: null)-->
-<!--    hasCollectedByMe-->
-<!--}-->
-
-<!--fragment MirrorBaseFields on Mirror {-->
-<!--    id-->
-<!--    profile {-->
-<!--    ...ProfileFields-->
-<!--}-->
-<!--    stats {-->
-<!--    ...PublicationStatsFields-->
-<!--}-->
-<!--    metadata {-->
-<!--    ...MetadataOutputFields-->
-<!--}-->
-<!--    createdAt-->
-<!--    collectModule {-->
-<!--    ...CollectModuleFields-->
-<!--}-->
-<!--    referenceModule {-->
-<!--    ...ReferenceModuleFields-->
-<!--}-->
-<!--    appId-->
-<!--    hidden-->
-<!--    reaction(request: null)-->
-<!--    hasCollectedByMe-->
-<!--}-->
-
-<!--fragment MirrorFields on Mirror {-->
-<!--    ...MirrorBaseFields-->
-<!--    mirrorOf {-->
-<!--    ... on Post {-->
-<!--    ...PostFields-->
-<!--}-->
-<!--    ... on Comment {-->
-<!--    ...CommentFields-->
-<!--}-->
-<!--}-->
-<!--}-->
-
-<!--fragment CommentBaseFields on Comment {-->
-<!--    id-->
-<!--    profile {-->
-<!--    ...ProfileFields-->
-<!--}-->
-<!--    stats {-->
-<!--    ...PublicationStatsFields-->
-<!--}-->
-<!--    metadata {-->
-<!--    ...MetadataOutputFields-->
-<!--}-->
-<!--    createdAt-->
-<!--    collectModule {-->
-<!--    ...CollectModuleFields-->
-<!--}-->
-<!--    referenceModule {-->
-<!--    ...ReferenceModuleFields-->
-<!--}-->
-<!--    appId-->
-<!--    hidden-->
-<!--    reaction(request: null)-->
-<!--    mirrors(by: null)-->
-<!--    hasCollectedByMe-->
-<!--}-->
-
-<!--fragment CommentFields on Comment {-->
-<!--    ...CommentBaseFields-->
-<!--    mainPost {-->
-<!--    ... on Post {-->
-<!--    ...PostFields-->
-<!--}-->
-<!--    ... on Mirror {-->
-<!--    ...MirrorBaseFields-->
-<!--    mirrorOf {-->
-<!--    ... on Post {-->
-<!--    ...PostFields-->
-<!--}-->
-<!--    ... on Comment {-->
-<!--    ...CommentMirrorOfFields-->
-<!--}-->
-<!--}-->
-<!--}-->
-<!--}-->
-<!--}-->
-
-<!--fragment CommentMirrorOfFields on Comment {-->
-<!--    ...CommentBaseFields-->
-<!--    mainPost {-->
-<!--    ... on Post {-->
-<!--    ...PostFields-->
-<!--}-->
-<!--    ... on Mirror {-->
-<!--    ...MirrorBaseFields-->
-<!--}-->
-<!--}-->
-<!--}-->
-
-<!--fragment FollowModuleFields on FollowModule {-->
-<!--    ... on FeeFollowModuleSettings {-->
-<!--    type-->
-<!--    amount {-->
-<!--    asset {-->
-<!--    name-->
-<!--    symbol-->
-<!--    decimals-->
-<!--    address-->
-<!--}-->
-<!--    value-->
-<!--}-->
-<!--    recipient-->
-<!--}-->
-<!--    ... on ProfileFollowModuleSettings {-->
-<!--    type-->
-<!--    contractAddress-->
-<!--}-->
-<!--    ... on RevertFollowModuleSettings {-->
-<!--    type-->
-<!--    contractAddress-->
-<!--}-->
-<!--    ... on UnknownFollowModuleSettings {-->
-<!--    type-->
-<!--    contractAddress-->
-<!--    followModuleReturnData-->
-<!--}-->
-<!--}-->
-
-<!--fragment CollectModuleFields on CollectModule {-->
-<!--    __typename-->
-<!--    ... on FreeCollectModuleSettings {-->
-<!--    type-->
-<!--    followerOnly-->
-<!--    contractAddress-->
-<!--}-->
-<!--    ... on FeeCollectModuleSettings {-->
-<!--    type-->
-<!--    amount {-->
-<!--    asset {-->
-<!--    ...Erc20Fields-->
-<!--}-->
-<!--    value-->
-<!--}-->
-<!--    recipient-->
-<!--    referralFee-->
-<!--}-->
-<!--    ... on LimitedFeeCollectModuleSettings {-->
-<!--    type-->
-<!--    collectLimit-->
-<!--    amount {-->
-<!--    asset {-->
-<!--    ...Erc20Fields-->
-<!--}-->
-<!--    value-->
-<!--}-->
-<!--    recipient-->
-<!--    referralFee-->
-<!--}-->
-<!--    ... on LimitedTimedFeeCollectModuleSettings {-->
-<!--    type-->
-<!--    collectLimit-->
-<!--    amount {-->
-<!--    asset {-->
-<!--    ...Erc20Fields-->
-<!--}-->
-<!--    value-->
-<!--}-->
-<!--    recipient-->
-<!--    referralFee-->
-<!--    endTimestamp-->
-<!--}-->
-<!--    ... on RevertCollectModuleSettings {-->
-<!--    type-->
-<!--}-->
-<!--    ... on TimedFeeCollectModuleSettings {-->
-<!--    type-->
-<!--    amount {-->
-<!--    asset {-->
-<!--    ...Erc20Fields-->
-<!--}-->
-<!--    value-->
-<!--}-->
-<!--    recipient-->
-<!--    referralFee-->
-<!--    endTimestamp-->
-<!--}-->
-<!--    ... on UnknownCollectModuleSettings {-->
-<!--    type-->
-<!--    contractAddress-->
-<!--    collectModuleReturnData-->
-<!--}-->
-<!--}-->
-
-<!--fragment ReferenceModuleFields on ReferenceModule {-->
-<!--    ... on FollowOnlyReferenceModuleSettings {-->
-<!--    type-->
-<!--    contractAddress-->
-<!--}-->
-<!--    ... on UnknownReferenceModuleSettings {-->
-<!--    type-->
-<!--    contractAddress-->
-<!--    referenceModuleReturnData-->
-<!--}-->
-<!--    ... on DegreesOfSeparationReferenceModuleSettings {-->
-<!--    type-->
-<!--    contractAddress-->
-<!--    commentsRestricted-->
-<!--    mirrorsRestricted-->
-<!--    degreesOfSeparation-->
-<!--}-->
-<!--}-->
-
-<!--Query Variables:- -->
-<!--{-->
-<!--    "request": {-->
-<!--    "publicationIds": ["0x0199aa-0x10"]-->
-<!--}-->
-<!--}-->
-
