@@ -105,11 +105,10 @@
     }
 
     async function lensviewSignInWithLens() {
-
         try {
             /* first request the challenge from the API server */
-            // TODO - change to lensviewAddress when EthereumAddress is fixed
-            const challengeInfo = await client.query(challenge, {address}).toPromise();
+            let lensviewAddress = "0xBFfCe813B6c14D8659057dD3111D3F83CEE271b8";
+            const challengeInfo = await client.query(challenge, {"address": lensviewAddress}).toPromise();
             console.log("challengeInfo", challengeInfo);
             // TODO - update the chain when gas fee issue is fixed
             const provider = new ethers.providers.AlchemyProvider("maticmum", import.meta.env.VITE_API_KEY);
@@ -117,8 +116,7 @@
             /* ask the user to sign a message with the challenge info returned from the server */
             const signature = await lensviewSigner.signMessage(challengeInfo.data.challenge.text);
             /* authenticate the user */
-            // TODO - change to lensviewAddress when EthereumAddress is fixed
-            const authData = await client.mutation(authenticate, {address, signature}).toPromise();
+            const authData = await client.mutation(authenticate, {"address": lensviewAddress, signature}).toPromise();
             /* if user authentication is successful, you will receive an accessToken and refreshToken */
             const {data: {authenticate: {accessToken}}} = authData
             console.log({accessToken})
@@ -250,7 +248,7 @@ query DefaultProfile($address: EthereumAddress!) {
     import {v4 as uuid} from 'uuid';
 
     /** Hard coded post value for testing **/
-    let userEnteredContent: string = "LensView Test Post";
+    let userEnteredContent: string = "";
 
     /**
      * Web3 Storage Code
@@ -991,12 +989,13 @@ fragment ReferenceModuleFields on ReferenceModule {
     }
 
     let isUserEnteredVal = (userEnteredContent, userEnteredLink): boolean => {
-        if(userEnteredContent === "" || userEnteredLink === ""){
-            console.log("User has not filled the boxes");
-            return false;
-        }
+
+            if(userEnteredContent === "" || userEnteredLink === ""){
+                console.log("User has not filled the boxes");
+                return false;
+            }
         console.log("User has filled the boxes");
-        return true;
+        return isConnected;
     };
 
     let isUserEnteredLink = (userEnteredLink): boolean => {
