@@ -47,15 +47,12 @@
      * 1. Connect Wallet
      */
     async function connect() {
-        console.log("connect called")
         /* this allows the user to connect their wallet */
         try {
             const account = await window.ethereum.send('eth_requestAccounts')
             if (account.result.length) {
                 address = account.result[0];
                 isConnected = true;
-                console.log("address", address);
-                console.log("address typeOf", typeof address);
                 lensviewAddress = address;
             } else {
                 isConnected = false;
@@ -100,7 +97,6 @@
                 },
             });
             isSignedIn = true;
-
             /** Getting profile of the connected user and saving it to "profile" variable **/
             profile = await getUserProfile();
         } catch (err) {
@@ -112,8 +108,6 @@
         try {
             /* first request the challenge from the API server */
             const challengeInfo = await client.query(challenge, {"address": lensviewAddress}).toPromise();
-            console.log("challengeInfo", challengeInfo);
-            // TODO - update the chain when gas fee issue is fixed
             const provider = new ethers.providers.AlchemyProvider("matic", import.meta.env.VITE_API_KEY);
             lensviewSigner = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY, provider);
             /* ask the user to sign a message with the challenge info returned from the server */
@@ -276,7 +270,7 @@ query DefaultProfile($address: EthereumAddress!) {
         return new Web3Storage({token: getAccessToken()})
     }
 
-    function makeFileObjects(profileHandle: string, userEnteredContent: string) {
+    function makeFileObjects(profileHandle: string, userEnteredContent: string, urlHash: string) {
         // You can create File objects from a Blob of binary data
         // see: https://developer.mozilla.org/en-US/docs/Web/API/Blob
         // Here we're just storing a JSON object, but you can store images,
@@ -295,7 +289,8 @@ query DefaultProfile($address: EthereumAddress!) {
             mainContentFocus: 'TEXT_ONLY',
             attributes: [],
             locale: 'en-US',
-            appId: userEnteredLink
+            tags: [urlHash],
+            appId: 'lensview-beta'
         }
         const blob = new Blob([JSON.stringify(metaData)], {type: 'application/json'})
 
@@ -311,11 +306,11 @@ query DefaultProfile($address: EthereumAddress!) {
     /**
      * 4. Upload to IPFS
      */
-    const uploadToIPFS = async (profileHandle, userEnteredContent) => {
+    const uploadToIPFS = async (profileHandle, userEnteredContent, urlHash) => {
 
         /*** Web3.storage ***/
         const client = makeStorageClient()
-        const cid = await client.put(makeFileObjects(profileHandle, userEnteredContent))
+        const cid = await client.put(makeFileObjects(profileHandle, userEnteredContent, urlHash))
         console.log('stored files with cid:', cid)
         const uri = `https://${cid}.ipfs.w3s.link/metaData.json`
 
@@ -418,13 +413,9 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
             request
         }).toPromise();
         result = result.data.createCommentTypedData;
-        console.log('create Comment: createCommentTypedData', result);
-
         const typedData = result.typedData;
-        console.log('create Comment: typedData', typedData);
 
         const signature = await signedTypeData(typedData.domain, typedData.types, typedData.value);
-        console.log('create Comment: signature', signature);
 
         return { result, signature };
     }
@@ -434,13 +425,10 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
             request
         }).toPromise();
         result = result.data.createPostTypedData;
-        console.log('create post: createPostTypedData', result);
 
         const typedData = result.typedData;
-        console.log('create post: typedData', typedData);
 
         const signature = await lensviewSignedTypeData(typedData.domain, typedData.types, typedData.value);
-        console.log('create post: signature', signature);
 
         return {result, signature};
     }
@@ -464,8 +452,10 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
 
     let isPosting = false;
     let saveComment = async () => {
+        isPosting = true;
         console.log("Comment called :");
-        const contentURI = await uploadToIPFS(profile.id, userEnteredContent)
+        let urlHash = await createHash(userEnteredLink);
+        const contentURI = await uploadToIPFS(profile.id, userEnteredContent, urlHash)
         const createCommentRequest = {
             profileId: profile.id,
             publicationId: pubIdByAppId,
@@ -509,11 +499,18 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
 
             await tx.wait()
 
-            alert("Posted succesfully ");
             console.log('successfully created Comment: tx hash', tx.hash);
             console.log('successfully created Comment: tx hash', JSON.stringify(tx));
+
+            setTimeout(async () => {
+                await getCommentByPubId();
+                isPosting = false;
+                alert("Posted succesfully ");
+                userEnteredContent = "";
+            }, 3000)
         } catch (err) {
-            console.log('error: ', err)
+            console.log('error: ', err);
+            isPosting = false;
         }
     }
 
@@ -521,8 +518,10 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
         addingLink = true;
         console.log("lensviewSavePost called :");
         await lensviewSignInWithLens();
-        console.log("Signed in with lensview done");
-        const contentURI = await uploadToIPFS('anjaysahoo', userEnteredLink)
+
+        let urlHash = await createHash(userEnteredLink);
+
+        const contentURI = await uploadToIPFS('anjaysahoo', userEnteredLink, urlHash);
         const createPostRequest = {
             profileId: '0x0199aa',
             contentURI,
@@ -566,13 +565,12 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
 
             await tx.wait()
 
-            isPosting = false;
             isLinkAddedToLensView = true;
             console.log('successfully created post: tx hash', tx.hash);
             console.log('successfully created post: tx hash', JSON.stringify(tx));
 
             setTimeout(async () => {
-                pubIdByAppId = await getPubIdByAppId();
+                await getPubIdByUrlHash();
                 console.log("pubIdByAppId : " + pubIdByAppId);
                 alert("Link Added to LensView");
             }, 5000)
@@ -581,7 +579,6 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
             addingLink = false
         } catch (err) {
             console.log('error: ', err);
-            isPosting = false;
             addingLink = false
         }
     }
@@ -591,441 +588,16 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
 
     let userEnteredLink: string = "";
 
-
-    /** Fetch post by ID */
-
-    const getPost = `
-    query Publications($request: PublicationsQueryRequest!) {
-  publications(request: $request) {
-    items {
-      __typename
-      ... on Post {
-        ...PostFields
-      }
-      ... on Comment {
-        ...CommentFields
-      }
-      ... on Mirror {
-        ...MirrorFields
-      }
-    }
-    pageInfo {
-      prev
-      next
-      totalCount
-    }
-  }
-}
-
-fragment MediaFields on Media {
-  url
-  mimeType
-}
-
-fragment ProfileFields on Profile {
-  id
-  name
-  bio
-  attributes {
-     displayType
-     traitType
-     key
-     value
-  }
-  isFollowedByMe
-  isFollowing(who: null)
-  followNftAddress
-  metadata
-  isDefault
-  handle
-  picture {
-    ... on NftImage {
-      contractAddress
-      tokenId
-      uri
-      verified
-    }
-    ... on MediaSet {
-      original {
-        ...MediaFields
-      }
-    }
-  }
-  coverPicture {
-    ... on NftImage {
-      contractAddress
-      tokenId
-      uri
-      verified
-    }
-    ... on MediaSet {
-      original {
-        ...MediaFields
-      }
-    }
-  }
-  ownedBy
-  dispatcher {
-    address
-  }
-  stats {
-    totalFollowers
-    totalFollowing
-    totalPosts
-    totalComments
-    totalMirrors
-    totalPublications
-    totalCollects
-  }
-  followModule {
-    ...FollowModuleFields
-  }
-}
-
-fragment PublicationStatsFields on PublicationStats {
-  totalAmountOfMirrors
-  totalAmountOfCollects
-  totalAmountOfComments
-  totalUpvotes
-  totalDownvotes
-}
-
-fragment MetadataOutputFields on MetadataOutput {
-  name
-  description
-  content
-  media {
-    original {
-      ...MediaFields
-    }
-  }
-  attributes {
-    displayType
-    traitType
-    value
-  }
-}
-
-fragment Erc20Fields on Erc20 {
-  name
-  symbol
-  decimals
-  address
-}
-
-fragment PostFields on Post {
-  id
-  profile {
-    ...ProfileFields
-  }
-  stats {
-    ...PublicationStatsFields
-  }
-  metadata {
-    ...MetadataOutputFields
-  }
-  createdAt
-  collectModule {
-    ...CollectModuleFields
-  }
-  referenceModule {
-    ...ReferenceModuleFields
-  }
-  appId
-  hidden
-  reaction(request: null)
-  mirrors(by: null)
-  hasCollectedByMe
-}
-
-fragment MirrorBaseFields on Mirror {
-  id
-  profile {
-    ...ProfileFields
-  }
-  stats {
-    ...PublicationStatsFields
-  }
-  metadata {
-    ...MetadataOutputFields
-  }
-  createdAt
-  collectModule {
-    ...CollectModuleFields
-  }
-  referenceModule {
-    ...ReferenceModuleFields
-  }
-  appId
-  hidden
-  reaction(request: null)
-  hasCollectedByMe
-}
-
-fragment MirrorFields on Mirror {
-  ...MirrorBaseFields
-  mirrorOf {
-   ... on Post {
-      ...PostFields
-   }
-   ... on Comment {
-      ...CommentFields
-   }
-  }
-}
-
-fragment CommentBaseFields on Comment {
-  id
-  profile {
-    ...ProfileFields
-  }
-  stats {
-    ...PublicationStatsFields
-  }
-  metadata {
-    ...MetadataOutputFields
-  }
-  createdAt
-  collectModule {
-    ...CollectModuleFields
-  }
-  referenceModule {
-    ...ReferenceModuleFields
-  }
-  appId
-  hidden
-  reaction(request: null)
-  mirrors(by: null)
-  hasCollectedByMe
-}
-
-fragment CommentFields on Comment {
-  ...CommentBaseFields
-  mainPost {
-    ... on Post {
-      ...PostFields
-    }
-    ... on Mirror {
-      ...MirrorBaseFields
-      mirrorOf {
-        ... on Post {
-           ...PostFields
-        }
-        ... on Comment {
-           ...CommentMirrorOfFields
-        }
-      }
-    }
-  }
-}
-
-fragment CommentMirrorOfFields on Comment {
-  ...CommentBaseFields
-  mainPost {
-    ... on Post {
-      ...PostFields
-    }
-    ... on Mirror {
-       ...MirrorBaseFields
-    }
-  }
-}
-
-fragment FollowModuleFields on FollowModule {
-  ... on FeeFollowModuleSettings {
-    type
-    amount {
-      asset {
-        name
-        symbol
-        decimals
-        address
-      }
-      value
-    }
-    recipient
-  }
-  ... on ProfileFollowModuleSettings {
-    type
-    contractAddress
-  }
-  ... on RevertFollowModuleSettings {
-    type
-    contractAddress
-  }
-  ... on UnknownFollowModuleSettings {
-    type
-    contractAddress
-    followModuleReturnData
-  }
-}
-
-fragment CollectModuleFields on CollectModule {
-  __typename
-  ... on FreeCollectModuleSettings {
-    type
-    followerOnly
-    contractAddress
-  }
-  ... on FeeCollectModuleSettings {
-    type
-    amount {
-      asset {
-        ...Erc20Fields
-      }
-      value
-    }
-    recipient
-    referralFee
-  }
-  ... on LimitedFeeCollectModuleSettings {
-    type
-    collectLimit
-    amount {
-      asset {
-        ...Erc20Fields
-      }
-      value
-    }
-    recipient
-    referralFee
-  }
-  ... on LimitedTimedFeeCollectModuleSettings {
-    type
-    collectLimit
-    amount {
-      asset {
-        ...Erc20Fields
-      }
-      value
-    }
-    recipient
-    referralFee
-    endTimestamp
-  }
-  ... on RevertCollectModuleSettings {
-    type
-  }
-  ... on TimedFeeCollectModuleSettings {
-    type
-    amount {
-      asset {
-        ...Erc20Fields
-      }
-      value
-    }
-    recipient
-    referralFee
-    endTimestamp
-  }
-  ... on UnknownCollectModuleSettings {
-    type
-    contractAddress
-    collectModuleReturnData
-  }
-}
-
-fragment ReferenceModuleFields on ReferenceModule {
-  ... on FollowOnlyReferenceModuleSettings {
-    type
-    contractAddress
-  }
-  ... on UnknownReferenceModuleSettings {
-    type
-    contractAddress
-    referenceModuleReturnData
-  }
-  ... on DegreesOfSeparationReferenceModuleSettings {
-    type
-    contractAddress
-    commentsRestricted
-    mirrorsRestricted
-    degreesOfSeparation
-  }
-}
-`
-    let publications;
-    const getPostById = async () => {
-        try {
-            console.log("Get Publication Called");
-
-            const response = await client.query(getPost,
-                {
-                    "request": {
-                        "publicationIds": ["0x0199aa-0x10"]
-                    }
-                }
-                ).toPromise()
-
-            console.log("response : " + JSON.stringify(response));
-
-            publications = response.data.publications;
-        } catch (err) {
-            console.log('error fetching publication...: ', err)
-        }
-    }
-
-    /************************************************/
-
-
-    /** Contract Interaction **/
-
-    const lensViewBetaContractAddress = "0x1eFa4D3BC84EF7C06cD8Ff8B0d7747E1a88fbC43";
-    const lensViewBetaContractABI = [{"inputs":[{"internalType":"string","name":"_url","type":"string"},{"internalType":"string","name":"_publicationID","type":"string"}],"name":"addPublication","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"_url","type":"string"}],"name":"getPublications","outputs":[{"internalType":"string[]","name":"","type":"string[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"publications","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"urls","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}];
-    let lensViewBetaContract;
-    let signer2;
-
-    const getPubId = async () => {
-        try{
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-            provider.send("eth_requestAccounts", []).then(() => {
-                provider.listAccounts().then(async (accounts) => {
-                    signer2 = provider.getSigner(accounts[0]);
-                    lensViewBetaContract = new ethers.Contract(
-                        lensViewBetaContractAddress,
-                        lensViewBetaContractABI,
-                        signer2
-                    );
-
-                    const getPubIdPromise = lensViewBetaContract.getPublications(userEnteredLink);
-                    const pubId = await getPubIdPromise;
-                    console.log("Pub ID : " + pubId);
-                });
-            });
-
-
-        }
-        catch(err){
-            console.log("Error while fetching post ID : " + err);
-        }
-
-    }
-
-    /************************************************/
-
     let isLinkClicked = false;
 
     let toggleLinkClicked = () => {
         isLinkClicked = !isLinkClicked;
     }
 
-    let disablePost = (userEnteredContent): boolean => {
-
-        if(userEnteredContent === "" || !isLinkAddedToLensView || !isSignedIn){
-                console.log("User has not filled the boxes");
-                return true;
-            }
-            console.log("User has filled the boxes");
-        return false;
-    };
-
     let isUserEnteredLink = (userEnteredLink): boolean => {
         if(userEnteredLink === ""){
-            console.log("User has not filled the boxes");
             return false;
         }
-        console.log("User has filled the boxes");
         return true;
     };
 
@@ -1378,16 +950,24 @@ fragment ReferenceModuleFields on ReferenceModule {
     degreesOfSeparation
   }
 }
+`;
 
-    `;
+    let isSearching: boolean = true;
+    let displayLink = "";
 
-    let getPubIdByAppId = async () => {
+    let getPubIdByUrlHash = async () => {
+        isSearching = true;
         try {
-            console.log("getPubIdByAppId Called");
+            console.log("getPubIdByUrlHash Called");
+            let urlHash = await createHash(userEnteredLink);
             let request = {
                 "profileId": "0x0199aa",
                 "publicationTypes": ["POST"],
-                "sources": [userEnteredLink]
+                "metadata": {
+                    "tags":{
+                        "all": [urlHash]
+                    }
+                }
             }
             console.log("userEnteredLink : " + userEnteredLink);
 
@@ -1395,10 +975,55 @@ fragment ReferenceModuleFields on ReferenceModule {
                 "request": request
             }).toPromise();
 
-            console.log("response : " + response);
-            return response.data.publications.items[0].id;
+            isSearching = false;
+            if(response.data.publications.items.length === 0){
+                console.log("response is null");
+                isLinkAddedToLensView = false;
+                isLinkClicked = false;
+                return "";
+            }
+            else {
+                console.log("Pub ID : " + response.data.publications.items[0].id);
+                isLinkClicked = true;
+                isLinkAddedToLensView = true;
+                pubIdByAppId = response.data.publications.items[0].id;
+                displayLink = userEnteredLink;
+                await getCommentByPubId();
+                return response.data.publications.items[0].id;
+            }
         } catch (err) {
-            console.log('error fetching user profile...: ', err)
+            console.log('error fetching user profile...: ', err);
+            isSearching = false;
+        }
+    }
+
+    let commentsList = [];
+    let getCommentByPubId = async () => {
+        commentsList = [];
+        try {
+            console.log("getCommentByPubId Called");
+            let request = {
+                    "commentsOf": pubIdByAppId,
+                    "commentsOfOrdering": "RANKING",
+                    "commentsRankingFilter": "RELEVANT"
+            }
+            const response = await client.query(publication, {
+                "request": request
+            }).toPromise();
+
+            if(response.data.publications.items.length === 0){
+                console.log("no comment found");
+                return "";
+            }
+            else {
+                response.data.publications.items.forEach(obj => {
+                    commentsList = [...commentsList, obj["metadata"]["content"]];
+                })
+                return response.data.publications.items;
+            }
+        } catch (err) {
+            console.log('error fetching user profile...: ', err);
+            isSearching = false;
         }
     }
 
@@ -1406,7 +1031,6 @@ fragment ReferenceModuleFields on ReferenceModule {
         let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
         let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
         try {
-            console.log("FetchGas called")
             console.log("Estimating gas for the transaction")
             let data;
             await fetch('https://gasstation-mainnet.matic.network/v2')
@@ -1438,9 +1062,17 @@ fragment ReferenceModuleFields on ReferenceModule {
         let gas = await fetchGas()
         let maxFeePerGas = gas[0]
         let maxPriorityFeePerGas = gas[1]
-        console.log("max fee per gas",maxFeePerGas)
-        console.log("max priority fee per gas",maxPriorityFeePerGas)
         return [maxFeePerGas, maxPriorityFeePerGas]
+    }
+
+    const createHash = async (url) => {
+        const msgUint8 = new TextEncoder().encode(url); // encode as (utf-8) Uint8Array
+        const hashBuffer = await crypto.subtle.digest("SHA-1", msgUint8); // hash the message
+        const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+        const hashHex = hashArray
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join(""); // convert bytes to hex string
+        return hashHex;
     }
 </script>
 
@@ -1475,7 +1107,7 @@ fragment ReferenceModuleFields on ReferenceModule {
         <div class="CenterColumnFlex main__search-area">
             <div class="CenterRowFlex main__search-area__search-box">
                 <input bind:value={userEnteredLink} type="text" class="main__search-area__search-box__input" placeholder="Search for a publication">
-                <button on:click={getPubId} disabled='{!isUserEnteredLink(userEnteredLink)}' class="btn">
+                <button on:click={getPubIdByUrlHash(userEnteredLink)} disabled='{!isUserEnteredLink(userEnteredLink)}' class="btn">
                     Search
                 </button>
             </div>
@@ -1528,6 +1160,9 @@ fragment ReferenceModuleFields on ReferenceModule {
                     <div on:click="{toggleLinkClicked}" class="main__search-area__link-preview__close">
                         X
                     </div>
+                    <div class="main__search-area__link-preview__link">
+                        <a href="{displayLink}">{displayLink}</a>
+                    </div>
                     <div class="main__search-area__link-preview__area">
                         <!--
                     Iframe does not because of security issue, use below technique to get around it
@@ -1549,6 +1184,7 @@ fragment ReferenceModuleFields on ReferenceModule {
             {/if}
         </div>
         <div class="CenterColumnFlex main__content-area">
+            {#if !isSearching}
             <div class="CenterColumnFlex main__content-area__user-post">
                 {#if !isLinkClicked}
                     <div class="main__content-area__user-post__link">
@@ -1560,6 +1196,7 @@ fragment ReferenceModuleFields on ReferenceModule {
                         {/if}
                     </div>
                 {/if}
+                <div class="main__content-area__user-post__info">Connect your wallet for posting</div>
                 <div class="main__content-area__user-post__text">
                     <input bind:value={userEnteredContent} type="text" class="main__content-area__user-post__text__input" placeholder="What's on your mind?">
                 </div>
@@ -1570,14 +1207,20 @@ fragment ReferenceModuleFields on ReferenceModule {
                         <div class="main__content-area__user-post__option-bar__options__option">@Mention</div>
                     </div>
                     <div class="main__content-area__user-post__option-bar__post-btn">
-                        <button on:click={saveComment} disabled='{disablePost(userEnteredContent)}' class="btn">Post</button>
+                        {#if !isPosting}
+                            <button on:click={saveComment} disabled='{userEnteredContent === "" || !isLinkAddedToLensView || !isSignedIn}' class="btn">Post</button>
+                        {:else}
+                            Posting...
+                        {/if}
                     </div>
                 </div>
             </div>
+            {/if}
             {#if isLinkClicked}
                 <div class="CenterColumnFlex main__content-area__posts">
-                    <div class="main__content-area__posts__post">
-                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci asperiores, consequatur consequuntur dolorum inventore, iusto labore libero magnam maxime minima nam nemo nostrum numquam quis quo sit suscipit unde voluptatem.</div>
+                    {#each commentsList as comment}
+                        <div class="main__content-area__posts__post">
+                        <div class="main__content-area__posts__post__content">{comment}</div>
                         <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">
                             <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>
                             <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>
@@ -1585,60 +1228,61 @@ fragment ReferenceModuleFields on ReferenceModule {
                             <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>
                         </div>
                     </div>
-                    <div class="main__content-area__posts__post">
-                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorem eligendi enim facere fugit iure magnam molestiae nostrum! Assumenda distinctio eos eum fugit id illo, iste necessitatibus nemo non pariatur, rem?</div>
-                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>
-                        </div>
-                    </div>
-                    <div class="main__content-area__posts__post">
-                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab, animi aut autem dignissimos eius explicabo libero nihil, nostrum odit quae repellat, sed tempora? A commodi delectus dicta harum non sint.</div>
-                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>
-                        </div>
-                    </div>
-                    <div class="main__content-area__posts__post">
-                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci beatae dignissimos ducimus neque quas. Alias animi asperiores beatae corporis culpa cupiditate et illo ipsam odit possimus quaerat quas, reiciendis sed!</div>
-                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>
-                        </div>
-                    </div>
-                    <div class="main__content-area__posts__post">
-                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eligendi ex inventore modi molestias voluptatum? Ab consectetur culpa facere fugit id illum in natus quas, ratione recusandae repellat unde? Animi, minus!</div>
-                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>
-                        </div>
-                    </div>
-                    <div class="main__content-area__posts__post">
-                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. At, cupiditate dolore est ipsum, itaque magnam mollitia quam quis recusandae, reiciendis sequi sit. Beatae consequatur distinctio explicabo iste, molestiae ratione sequi?</div>
-                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>
-                        </div>
-                    </div>
-                    <div class="main__content-area__posts__post">
-                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, dolore dolorem est harum illo incidunt maiores nesciunt porro praesentium quam quidem quod ratione reiciendis sit temporibus tenetur vel voluptate voluptatibus?</div>
-                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>
-                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>
-                        </div>
-                    </div>
+                    {/each}
+<!--                    <div class="main__content-area__posts__post">-->
+<!--                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorem eligendi enim facere fugit iure magnam molestiae nostrum! Assumenda distinctio eos eum fugit id illo, iste necessitatibus nemo non pariatur, rem?</div>-->
+<!--                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="main__content-area__posts__post">-->
+<!--                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab, animi aut autem dignissimos eius explicabo libero nihil, nostrum odit quae repellat, sed tempora? A commodi delectus dicta harum non sint.</div>-->
+<!--                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="main__content-area__posts__post">-->
+<!--                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci beatae dignissimos ducimus neque quas. Alias animi asperiores beatae corporis culpa cupiditate et illo ipsam odit possimus quaerat quas, reiciendis sed!</div>-->
+<!--                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="main__content-area__posts__post">-->
+<!--                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eligendi ex inventore modi molestias voluptatum? Ab consectetur culpa facere fugit id illum in natus quas, ratione recusandae repellat unde? Animi, minus!</div>-->
+<!--                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="main__content-area__posts__post">-->
+<!--                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. At, cupiditate dolore est ipsum, itaque magnam mollitia quam quis recusandae, reiciendis sequi sit. Beatae consequatur distinctio explicabo iste, molestiae ratione sequi?</div>-->
+<!--                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="main__content-area__posts__post">-->
+<!--                        <div class="main__content-area__posts__post__content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, dolore dolorem est harum illo incidunt maiores nesciunt porro praesentium quam quidem quod ratione reiciendis sit temporibus tenetur vel voluptate voluptatibus?</div>-->
+<!--                        <div class="CenterRowFlex main__content-area__posts__post__reaction-bar">-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">1 👍</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">10 👎</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">5 💬</div>-->
+<!--                            <div class="main__content-area__posts__post__reaction-bar__reaction">2 📨</div>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
             {/if}
         </div>
@@ -1743,6 +1387,15 @@ fragment ReferenceModuleFields on ReferenceModule {
         cursor: pointer;
     }
 
+    .main__search-area__link-preview__link{
+        font-weight: bold;
+        cursor: pointer;
+        text-align: center;
+        width: 100%;
+        padding: 2rem;
+        overflow: auto;
+    }
+
     .main__search-area__link-preview__area{
         background: black;
         width: 100%;
@@ -1774,6 +1427,10 @@ fragment ReferenceModuleFields on ReferenceModule {
         padding: 1rem;
         border-radius: 12px;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    }
+
+    .main__content-area__user-post__info{
+        font-weight: bold;
     }
 
     .main__content-area__posts__post__reaction-bar{
@@ -1839,6 +1496,7 @@ fragment ReferenceModuleFields on ReferenceModule {
         padding: 1rem;
         border-radius: 10px;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        width: 100%;
     }
 
     /** Utility Classes **/
