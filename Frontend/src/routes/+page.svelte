@@ -507,7 +507,7 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
                 isPosting = false;
                 alert("Posted succesfully ");
                 userEnteredContent = "";
-            }, 3000)
+            }, 5000)
         } catch (err) {
             console.log('error: ', err);
             isPosting = false;
