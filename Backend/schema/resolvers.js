@@ -1,4 +1,4 @@
-const {addPublication} = require('./../scripts/post')
+const {addPublication, createNewProfile} = require('./../scripts/post')
 const {createHash} = require('./../scripts/utils')
 
 // async function getPublications(url) {
@@ -29,6 +29,10 @@ const resolvers = {
                 console.log(exception)
             }
 
+        },
+
+        createNewProfile: async(_, args) => {
+            await createNewProfile(args.handle)
         }
     }
 }
