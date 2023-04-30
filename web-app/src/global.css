@@ -126,3 +126,8 @@ body::-webkit-scrollbar-thumb {
     line-height: 1;
     transition: transform 200ms, background 200ms;
 }
+
+.btn[disabled]{
+    opacity: 0.6;
+    cursor: not-allowed;
+}

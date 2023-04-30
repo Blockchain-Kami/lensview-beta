@@ -1,11 +1,12 @@
 <script lang="ts">
     import "../global.css";
     import { userAddress } from "../services/userAddress";
-    import userAuthentication from "../utils/authenticate";
+    import { userAuthentication } from "../utils/authenticate";
 
     let isConnected = false;
     let isSignedIn = false;
     let signingIn = false;
+    let userEnteredLink = "";
 
     /**TODO: 1. Check for chain and if it is not polygon testnet then do necessary changes
      *       2. Check if there is any stored address in local storage if yes then do not ask for connect wallet
@@ -78,14 +79,20 @@
             </div>
         </div>
         <div class="CenterColumnFlex middle">
+            <div class="CenterRowFlex middle__search-box">
+                <input bind:value={userEnteredLink} type="text" class="middle__search-box__input" placeholder="Search for a publication">
+                <button disabled={userEnteredLink.length === 0} class="btn">
+                    Search
+                </button>
+            </div>
             <slot name="middle"></slot>
         </div>
-        <div class="CenterColumnFlex right">
+        <div class="CenterColumnFlex right">Getting
             <slot name="right"></slot>
         </div>
     </div>
 </main>
-<!-------------------------------------------------------------------------->
+<!------------------------------------------------------------------->
 
 <!---------------------------------- Style --------------------------->
 <style lang="scss">
@@ -123,6 +130,19 @@
       gap: 1rem;
     }
 
+    .middle__search-box{
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    .middle__search-box__input{
+        width: 68%;
+        padding: 0.65rem;
+        border-radius: 8px;
+        border: 1px solid lightgray;
+        outline: 0;
+    }
+
     .right{
       width: 50%;
       height: 100vh;
@@ -134,5 +154,4 @@
 
 
 </style>
-
 <!-------------------------------------------------------------------->

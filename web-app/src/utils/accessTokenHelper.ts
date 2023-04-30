@@ -1,3 +1,6 @@
+import baseClient from "./baseClient";
+import refreshMutation from "../graphql/refreshMutation";
+
 const STORAGE_KEY = "LH_STORAGE_KEY";
 
 // Simple function to say if the token is expired or not
@@ -60,4 +63,27 @@ function parseJwt(token: string) {
   );
 
   return JSON.parse(jsonPayload);
+}
+
+type accessToken = string;
+
+export async function refreshAuthToken(): Promise<accessToken | undefined> {
+  const data = readAccessToken();
+
+  if (!data) return
+  try {
+    const authData = await baseClient.mutation(refreshMutation, {
+      refreshToken: data.refreshToken
+    }).toPromise()
+
+    if (!authData) return
+
+    const { accessToken, refreshToken } = authData.data.refresh;
+
+    setAccessToken(accessToken, refreshToken);
+
+    return accessToken
+  } catch (err) {
+    console.log('error:', err)
+  }
 }
