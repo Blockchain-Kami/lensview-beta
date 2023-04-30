@@ -33,6 +33,6 @@ export async function GET(url) {
 
         return json(response);
     } catch {
-        console.log("error")
+        console.log("error");
     }
 }
