@@ -14,6 +14,7 @@ const typeDefs = gql`
     
     type Mutation {
         addPublicationTo(url: String!, publicationId: String!): Boolean 
+        createNewProfile(handle: String!): Boolean
     }
 
 `;
