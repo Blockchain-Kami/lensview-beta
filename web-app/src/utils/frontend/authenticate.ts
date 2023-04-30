@@ -1,7 +1,7 @@
 import baseClient from './baseClient';
-import authenticate from '../graphql/authenticate';
-import {userAddress} from "../services/userAddress";
-import challenge from "../graphql/challenge";
+import authenticate from '../../graphql/authenticate';
+import {userAddress} from "../../services/userAddress";
+import challenge from "../../graphql/challenge";
 import { getSigner } from "./web3";
 import { setAccessToken } from "./accessTokenHelper";
 import { APP_ADDRESS } from '$env/static/private';

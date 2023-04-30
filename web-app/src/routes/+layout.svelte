@@ -1,7 +1,7 @@
 <script lang="ts">
     import "../global.css";
     import { userAddress } from "../services/userAddress";
-    import { userAuthentication } from "../utils/authenticate";
+    import { userAuthentication } from "../utils/frontend/authenticate";
 
     let isConnected = false;
     let isSignedIn = false;

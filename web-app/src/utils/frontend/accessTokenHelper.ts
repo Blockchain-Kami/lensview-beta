@@ -1,5 +1,5 @@
 import baseClient from "./baseClient";
-import refreshMutation from "../graphql/refreshMutation";
+import refreshMutation from "../../graphql/refreshMutation";
 
 const STORAGE_KEY = "LH_STORAGE_KEY";
 
