@@ -87,7 +87,7 @@
             </div>
             <slot name="middle"></slot>
         </div>
-        <div class="CenterColumnFlex right">Getting
+        <div class="CenterColumnFlex right">
             <slot name="right"></slot>
         </div>
     </div>
