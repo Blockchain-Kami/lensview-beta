@@ -1,5 +1,5 @@
 const getPosts = `
-query Publications($hashedURL: String!, $lensId: String!) {
+query Publications($hashedURL: String!, $lensId: ProfileId) {
   publications(request: {
     profileId: $lensId,
     publicationTypes: [POST, COMMENT, MIRROR],
@@ -10,8 +10,7 @@ query Publications($hashedURL: String!, $lensId: String!) {
       }
     }
   }) {
-    items {
-      __typename 
+    items { 
     ... on Post {
       ...PostFields
     }
@@ -22,34 +21,11 @@ query Publications($hashedURL: String!, $lensId: String!) {
       ...MirrorFields
     }
     }
-    pageInfo {
-      prev
-      next
-      totalCount
-    }
   }
-}
-
-fragment MediaFields on Media {
-  url
-  mimeType
 }
 
 fragment ProfileFields on Profile {
-  id
   name
-  bio
-  attributes {
-    displayType
-    traitType
-    key
-    value
-  }
-  isFollowedByMe
-  isFollowing(who: null)
-  followNftAddress
-  metadata
-  isDefault
   handle
   picture {
     ... on NftImage {
@@ -58,40 +34,10 @@ fragment ProfileFields on Profile {
       uri
       verified
     }
-    ... on MediaSet {
-      original {
-        ...MediaFields
-      }
-    }
-  }
-  coverPicture {
-    ... on NftImage {
-      contractAddress
-      tokenId
-      uri
-      verified
-    }
-    ... on MediaSet {
-      original {
-        ...MediaFields
-      }
-    }
   }
   ownedBy
   dispatcher {
     address
-  }
-  stats {
-    totalFollowers
-    totalFollowing
-    totalPosts
-    totalComments
-    totalMirrors
-    totalPublications
-    totalCollects
-  }
-  followModule {
-    ...FollowModuleFields
   }
 }
 
@@ -103,19 +49,8 @@ fragment PublicationStatsFields on PublicationStats {
 }
 
 fragment MetadataOutputFields on MetadataOutput {
-  name
   description
   content
-  media {
-    original {
-      ...MediaFields
-    }
-  }
-  attributes {
-    displayType
-    traitType
-    value
-  }
   tags
 }
 
@@ -138,17 +73,10 @@ fragment PostFields on Post {
     ...MetadataOutputFields
   }
   createdAt
-  collectModule {
-    ...CollectModuleFields
-  }
-  referenceModule {
-    ...ReferenceModuleFields
-  }
   appId
   hidden
   reaction(request: null)
   mirrors(by: null)
-  hasCollectedByMe
 }
 
 fragment MirrorBaseFields on Mirror {
@@ -199,14 +127,7 @@ fragment CommentBaseFields on Comment {
     ...MetadataOutputFields
   }
   createdAt
-  collectModule {
-    ...CollectModuleFields
-  }
-  referenceModule {
-    ...ReferenceModuleFields
-  }
   appId
-  hidden
   reaction(request: null)
   mirrors(by: null)
   hasCollectedByMe
@@ -244,34 +165,6 @@ fragment CommentMirrorOfFields on Comment {
   }
 }
 
-fragment FollowModuleFields on FollowModule {
-  ... on FeeFollowModuleSettings {
-    type
-    amount {
-      asset {
-        name
-        symbol
-        decimals
-        address
-      }
-      value
-    }
-    recipient
-  }
-  ... on ProfileFollowModuleSettings {
-    type
-    contractAddress
-  }
-  ... on RevertFollowModuleSettings {
-    type
-    contractAddress
-  }
-  ... on UnknownFollowModuleSettings {
-    type
-    contractAddress
-    followModuleReturnData
-  }
-}
 
 fragment CollectModuleFields on CollectModule {
   __typename

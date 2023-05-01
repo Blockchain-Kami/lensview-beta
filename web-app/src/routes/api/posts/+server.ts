@@ -4,7 +4,10 @@ import { json } from '@sveltejs/kit';
 import { APP_LENS_ID } from '$env/static/private';
 
 
-export async function GET(hashedURL: string) {
+export async function GET(request) {
+
+    const hashedURL = request.url.searchParams.get('hashedURL');
+
     try {
         const data = await fetch(PUBLIC_LENS_API_URL, {
                 method: 'POST',
@@ -27,3 +30,4 @@ export async function GET(hashedURL: string) {
         console.log("error");
     }
 }
+
