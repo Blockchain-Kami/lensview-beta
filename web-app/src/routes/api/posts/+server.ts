@@ -1,20 +1,10 @@
-
-import { APP_ADDRESS } from "$env/static/private";
 import { PUBLIC_LENS_API_URL } from "$env/static/public";
 import getPosts from '../../../graphql/getPosts';
 import { json } from '@sveltejs/kit';
-import createHash from "../../../utils/backend/getHash";
+import { APP_LENS_ID } from '$env/static/private';
 
 
-
-
-
-export async function GET(url) {
-
-    console.log(url.length)
-    const hashedURL = createHash(url)
-
-    console.log(hashedURL)
+export async function GET(hashedURL: string) {
     try {
         const data = await fetch(PUBLIC_LENS_API_URL, {
                 method: 'POST',
@@ -24,7 +14,8 @@ export async function GET(url) {
                 body: JSON.stringify({
                     query: getPosts,
                     variables: {
-                        url: hashedURL,
+                      hashedURL: hashedURL,
+                      lensId: APP_LENS_ID
                     },
                 }),
             })

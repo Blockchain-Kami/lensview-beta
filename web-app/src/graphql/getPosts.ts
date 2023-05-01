@@ -1,12 +1,12 @@
 const getPosts = `
-query Publications($url: String!) {
+query Publications($hashedURL: String!, $lensId: String!) {
   publications(request: {
-    profileId: "0x36d6",
+    profileId: $lensId,
     publicationTypes: [POST, COMMENT, MIRROR],
     metadata: {
       locale: "en-us"
       tags: {
-        oneOf: [$url]
+        oneOf: [$hashedURL]
       }
     }
   }) {
