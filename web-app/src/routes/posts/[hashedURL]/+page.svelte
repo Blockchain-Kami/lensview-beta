@@ -1,10 +1,9 @@
 <script>
-  import { PageData } from "./$types";
   import LinkPreview from "../../../components/posts-page/LinkPreview.svelte";
   import UserPost from "../../../components/posts-page/UserPost.svelte";
   import Posts from "../../../components/posts-page/Posts.svelte";
 
-  export let data: PageData;
+  export let data;
 
 </script>
 
