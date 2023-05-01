@@ -1,23 +1,22 @@
 <script>
+  import { PageData } from "./$types";
   import LinkPreview from "../../../components/posts-page/LinkPreview.svelte";
   import UserPost from "../../../components/posts-page/UserPost.svelte";
   import Posts from "../../../components/posts-page/Posts.svelte";
 
-  export let data;
+  export let data: PageData;
 
-  let userEnteredURL = data["URL"];
-  let postsList = data["items"];
 </script>
 
 
 <!------------------------------ HTML ------------------------------>
 <section class="CenterRowFlex">
   <div class="CenterColumnFlex link-preview">
-    <LinkPreview {userEnteredURL}/>
+    <LinkPreview userEnteredURL={data["URL"]} />
   </div>
   <div class="CenterColumnFlex posts">
-    <UserPost/>
-    <Posts {postsList}/>
+    <UserPost hashedURL={data["hashedURL"]} mainPostPubId={data["mainPostPubId"]} />
+    <Posts postsList={data["items"]} />
   </div>
 </section>
 <!-------------------------------------------------------------------->
@@ -36,10 +35,11 @@
         background-color: aliceblue;
     }
 
-    .posts{
+    .posts {
         width: 55%;
         height: 100vh;
         background: azure;
+        gap: 1rem;
     }
 </style>
 

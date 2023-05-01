@@ -4,9 +4,9 @@
     import { userAuthentication } from "../utils/frontend/authenticate";
     import { goto } from "$app/navigation";
     import createHash from "../utils/frontend/createURLHash";
+    import { isSignedIn } from "../services/signInStatus";
 
     let isConnected = false;
-    let isSignedIn = false;
     let signingIn = false;
     let userEnteredLink = "";
 
@@ -37,11 +37,11 @@
             signingIn = true;
             await userAuthentication();
             signingIn = false;
-            isSignedIn = true;
+            isSignedIn.setSignInStatus(true);
         }
         catch (error){
             console.log("Error authenticating user");
-            isSignedIn = false;
+            isSignedIn.setSignInStatus(false);
             signingIn = false;
         }
     }
@@ -69,7 +69,7 @@
                 {#if !isConnected}
                     <button on:click="{connect}" class="btn">Connect  Wallet</button>
                 {:else}
-                    {#if !isSignedIn}
+                    {#if !$isSignedIn}
                         {#if !signingIn}
                             <button on:click="{signInWithLens}" class="btn">Sign-In With Lens</button>
                         {:else}
