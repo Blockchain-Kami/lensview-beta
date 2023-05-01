@@ -2,6 +2,8 @@
     import "../global.css";
     import { userAddress } from "../services/userAddress";
     import { userAuthentication } from "../utils/frontend/authenticate";
+    import { goto } from "$app/navigation";
+    import createHash from "../utils/frontend/createURLHash";
 
     let isConnected = false;
     let isSignedIn = false;
@@ -44,6 +46,10 @@
         }
     }
 
+    const redirectToPostsPage = async () => {
+        const hash = await createHash(userEnteredLink);
+        goto(`/posts/${hash}`);
+    }
 </script>
 
 
@@ -79,7 +85,7 @@
         </div>
         <div class="CenterRowFlex search-box">
         <input bind:value={userEnteredLink} type="text" class="search-box__input" placeholder="Search for a publication">
-        <button disabled={userEnteredLink.length === 0} class="btn">
+        <button on:click={redirectToPostsPage} disabled={userEnteredLink.length === 0} class="btn">
             Search
         </button>
     </div>
