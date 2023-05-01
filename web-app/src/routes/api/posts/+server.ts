@@ -49,6 +49,7 @@ export async function GET(request) {
 
             const responseComments = {
                 URL: sourceURL,
+                parentPublicationID:parentPostID,
                 items : commentItems
             };
 
