@@ -49,7 +49,6 @@
 
 <!---------------------------------- HTML --------------------------->
 <main>
-    <div class="CenterRowFlex">
         <div class="CenterColumnFlex menu">
             <div class="CenterColumnFlex menu__items">
                 <div class="menu__items__item menu__items__item--logo">
@@ -78,24 +77,24 @@
                 {/if}
             </div>
         </div>
-        <div class="CenterColumnFlex middle">
-            <div class="CenterRowFlex middle__search-box">
-                <input bind:value={userEnteredLink} type="text" class="middle__search-box__input" placeholder="Search for a publication">
-                <button disabled={userEnteredLink.length === 0} class="btn">
-                    Search
-                </button>
-            </div>
-            <slot name="middle"></slot>
-        </div>
-        <div class="CenterColumnFlex right">
-            <slot name="right"></slot>
-        </div>
+        <div class="CenterRowFlex search-box">
+        <input bind:value={userEnteredLink} type="text" class="search-box__input" placeholder="Search for a publication">
+        <button disabled={userEnteredLink.length === 0} class="btn">
+            Search
+        </button>
     </div>
+        <slot/>
 </main>
 <!------------------------------------------------------------------->
 
 <!---------------------------------- Style --------------------------->
 <style lang="scss">
+    main{
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+    }
+
     .menu{
         width: 15%;
         height: 100vh;
@@ -121,37 +120,21 @@
         border-radius: 8px;
     }
 
-    .middle{
-      width: 35%;
-      height: 100vh;
-      background-color: aliceblue;
-      padding: 2rem 1.5rem;
-      justify-content: flex-start;
-      gap: 1rem;
-    }
-
-    .middle__search-box{
-        width: 100%;
+    .search-box{
+        position: absolute;
+        width: 35%;
         justify-content: space-around;
+        top: 2rem;
+        left: 15%;
     }
 
-    .middle__search-box__input{
+    .search-box__input{
         width: 68%;
         padding: 0.65rem;
         border-radius: 8px;
         border: 1px solid lightgray;
         outline: 0;
     }
-
-    .right{
-      width: 50%;
-      height: 100vh;
-      padding: 2rem 1.5rem;
-      justify-content: flex-start;
-      gap: 1rem;
-      background: azure;
-    }
-
 
 </style>
 <!-------------------------------------------------------------------->

@@ -1,2 +1,40 @@
-<!--<h1>Welcome to SvelteKit</h1>-->
-<!--<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>-->
+<script>
+  import Feeds from "../components/main-page/Feeds.svelte";
+  import HowItWorks from "../components/main-page/HowItWorks.svelte";
+</script>
+
+
+
+<!------------------------------ HTML ------------------------------>
+<section class="CenterRowFlex">
+  <div class="CenterColumnFlex feeds">
+    <Feeds/>
+  </div>
+  <div class="CenterColumnFlex how-it-works">
+    <HowItWorks/>
+  </div>
+</section>
+<!-------------------------------------------------------------------->
+
+
+<!------------------------------ Style ------------------------------>
+<style>
+    section{
+        width: 100%;
+        height: 100vh;
+    }
+
+    .feeds{
+        width: 45%;
+        height: 100vh;
+        background-color: aliceblue;
+    }
+
+    .how-it-works{
+        width: 55%;
+        height: 100vh;
+        background: azure;
+    }
+</style>
+
+<!-------------------------------------------------------------------->
