@@ -1,36 +1,42 @@
-<script lang="ts">
-  import Feeds from "../components/main-page/Feeds.svelte";
-  import HowItWorks from "../components/main-page/HowItWorks.svelte";
-</script>
+<script>
+  import LinkPreview from "../../../components/posts-page/LinkPreview.svelte";
+  import UserPost from "../../../components/posts-page/UserPost.svelte";
+  import Posts from "../../../components/posts-page/Posts.svelte";
 
+  export let data;
+
+  let userEnteredURL = data["URL"];
+  let postsList = data["items"];
+</script>
 
 
 <!------------------------------ HTML ------------------------------>
 <section class="CenterRowFlex">
-  <div class="CenterColumnFlex feeds">
-    <Feeds/>
+  <div class="CenterColumnFlex link-preview">
+    <LinkPreview {userEnteredURL}/>
   </div>
-  <div class="CenterColumnFlex how-it-works">
-    <HowItWorks/>
+  <div class="CenterColumnFlex posts">
+    <UserPost/>
+    <Posts {postsList}/>
   </div>
 </section>
 <!-------------------------------------------------------------------->
 
 
 <!------------------------------ Style ------------------------------>
-<style lang="scss">
+<style>
     section{
         width: 100%;
         height: 100vh;
     }
 
-    .feeds{
+    .link-preview{
         width: 45%;
         height: 100vh;
         background-color: aliceblue;
     }
 
-    .how-it-works{
+    .posts{
         width: 55%;
         height: 100vh;
         background: azure;
