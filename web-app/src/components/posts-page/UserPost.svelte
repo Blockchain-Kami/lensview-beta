@@ -7,7 +7,7 @@
   import { PUBLIC_LENS_HUB_CONTRACT_ADDRESS } from "$env/static/public";
   import LENSHUB from "../.././abi/lenshub.json";
   import { getSigner } from "../../utils/web3";
-
+  import { invalidate } from "$app/navigation";
 
   export let hashedURL;
   export let mainPostPubId;
@@ -71,12 +71,13 @@
       console.log("successfully created Comment: tx hash", tx.hash);
       console.log("successfully created Comment: tx hash", JSON.stringify(tx));
 
-      // setTimeout(async () => {
-      //   await getCommentByPubId();
-      //   isPosting = false;
-      //   alert("Posted succesfully ");
-      //   userEnteredContent = "";
-      // }, 5000)
+
+      setTimeout(async () => {
+        isPosting = false;
+        alert("Posted successfully ");
+        userEnteredContent = "";
+        await invalidate("posts: updated-posts");
+      }, 5000);
     } catch (err) {
       console.log("error: ", err);
       isPosting = false;
