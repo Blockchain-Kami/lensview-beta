@@ -29,7 +29,7 @@
     padding: 1rem;
     border-radius: 12px;
     align-items: flex-start;
-    height: 70vh;
+    height: 75vh;
     overflow: auto;
     justify-content: flex-start;
   }
@@ -41,7 +41,7 @@
     width: 100%;
   }
 
-  .posts__post__reaction-bar__reaction{
+  .posts__post__reaction-bar {
     margin-top: 1rem;
     justify-content: space-between;
   }

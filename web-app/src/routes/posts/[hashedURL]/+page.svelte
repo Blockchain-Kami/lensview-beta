@@ -5,19 +5,17 @@
 
   export let data;
 
-  let userEnteredURL = data["URL"];
-  let postsList = data["items"];
 </script>
 
 
 <!------------------------------ HTML ------------------------------>
 <section class="CenterRowFlex">
   <div class="CenterColumnFlex link-preview">
-    <LinkPreview {userEnteredURL}/>
+    <LinkPreview userEnteredURL={data["URL"]} />
   </div>
   <div class="CenterColumnFlex posts">
-    <UserPost/>
-    <Posts {postsList}/>
+    <UserPost hashedURL={data["hashedURL"]} mainPostPubId={data["mainPostPubId"]} />
+    <Posts postsList={data["items"]} />
   </div>
 </section>
 <!-------------------------------------------------------------------->
@@ -36,10 +34,11 @@
         background-color: aliceblue;
     }
 
-    .posts{
+    .posts {
         width: 55%;
         height: 100vh;
         background: azure;
+        gap: 1rem;
     }
 </style>
 

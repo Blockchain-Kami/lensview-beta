@@ -2,7 +2,7 @@ const getPosts = `
 query Publications($hashedURL: String!, $lensId: ProfileId) {
   publications(request: {
     profileId: $lensId,
-    publicationTypes: [POST, COMMENT, MIRROR],
+    publicationTypes: [POST],
     metadata: {
       locale: "en-us"
       tags: {

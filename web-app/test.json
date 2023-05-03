@@ -1,0 +1,624 @@
+[
+  {
+    "data": {
+      "publications": {
+        "items": [
+          {
+            "__typename": "Comment",
+            "id": "0x36d6-0x39",
+            "profile": {
+              "id": "0x36d6",
+              "name": "parikshit",
+              "bio": "building LensView on Lens ☘️",
+              "attributes": [
+                {
+                  "displayType": null,
+                  "traitType": null,
+                  "key": "location",
+                  "value": "India"
+                },
+                {
+                  "displayType": null,
+                  "traitType": null,
+                  "key": "website",
+                  "value": "https://lensview-beta.vercel.app/"
+                },
+                {
+                  "displayType": null,
+                  "traitType": null,
+                  "key": "twitter",
+                  "value": "parikshit_barua"
+                },
+                {
+                  "displayType": null,
+                  "traitType": null,
+                  "key": "app",
+                  "value": "Lenster"
+                }
+              ],
+              "isFollowedByMe": false,
+              "isFollowing": false,
+              "followNftAddress": "0x8e2f8D94ac5FacC8729deA9f26a6C1Aaefc7D915",
+              "metadata": "https://arweave.net/ViW84Yk2nRRw0k5QTHh00H6Kc_iNhBVA5wawj1nh3Ig",
+              "isDefault": true,
+              "handle": "parikshitbarua.lens",
+              "picture": {
+                "original": {
+                  "url": "ipfs://bafybeihww6u6gudbex3jlyd3kwmqfwkqjurl6zfpqh26q2fovput7mnh3e",
+                  "mimeType": null
+                }
+              },
+              "coverPicture": null,
+              "ownedBy": "0x6588A930Ed24e5Cee498AAc0b5Fa6567ca914FAa",
+              "dispatcher": {
+                "address": "0x999119915b0d11aE86087F03E312aCC1C2aC750E"
+              },
+              "stats": {
+                "totalFollowers": 35,
+                "totalFollowing": 104,
+                "totalPosts": 31,
+                "totalComments": 26,
+                "totalMirrors": 7,
+                "totalPublications": 64,
+                "totalCollects": 0
+              },
+              "followModule": {
+                "type": "ProfileFollowModule",
+                "contractAddress": "0x057ccDf5153bE1081830a6C3D507C9dfE1ac8e4E"
+              }
+            },
+            "stats": {
+              "totalAmountOfMirrors": 0,
+              "totalAmountOfCollects": 0,
+              "totalAmountOfComments": 0,
+              "totalUpvotes": 0,
+              "totalDownvotes": 0
+            },
+            "metadata": {
+              "name": "Post by @0x36d6",
+              "description": "This is a phishing site.",
+              "content": "This is a phishing site.",
+              "media": [],
+              "attributes": []
+            },
+            "createdAt": "2023-04-22T21:49:06.000Z",
+            "collectModule": {
+              "__typename": "FreeCollectModuleSettings",
+              "type": "FreeCollectModule",
+              "followerOnly": true,
+              "contractAddress": "0x23b9467334bEb345aAa6fd1545538F3d54436e96"
+            },
+            "referenceModule": null,
+            "appId": "lensview-beta",
+            "hidden": false,
+            "reaction": null,
+            "mirrors": [],
+            "hasCollectedByMe": false,
+            "mainPost": {
+              "id": "0x0199aa-0x42",
+              "profile": {
+                "id": "0x0199aa",
+                "name": "Anjay",
+                "bio": "Blockchain \nEnthusiast",
+                "attributes": [
+                  {
+                    "displayType": null,
+                    "traitType": null,
+                    "key": "app",
+                    "value": "Lenster"
+                  }
+                ],
+                "isFollowedByMe": false,
+                "isFollowing": false,
+                "followNftAddress": "0x24A3A4556d2ce642cf4D6be28CFFab8F1900c6a6",
+                "metadata": "https://arweave.net/PsG8xRXEgcwmegkaaivy0taMWOsB5YmwRTJGiJa2T0s",
+                "isDefault": true,
+                "handle": "anjaysahoo-dev.lens",
+                "picture": {
+                  "original": {
+                    "url": "ipfs://QmWaxxauQkczxYkU6FcVuCWRiqU95aGhoLeBgks5L5yT7S",
+                    "mimeType": null
+                  }
+                },
+                "coverPicture": null,
+                "ownedBy": "0xBFfCe813B6c14D8659057dD3111D3F83CEE271b8",
+                "dispatcher": {
+                  "address": "0xC9FA5F824530b0DB3Df97820ded190F849b9bc0d"
+                },
+                "stats": {
+                  "totalFollowers": 13,
+                  "totalFollowing": 64,
+                  "totalPosts": 52,
+                  "totalComments": 15,
+                  "totalMirrors": 4,
+                  "totalPublications": 71,
+                  "totalCollects": 6
+                },
+                "followModule": {
+                  "type": "FeeFollowModule",
+                  "amount": {
+                    "asset": {
+                      "name": "Wrapped Matic",
+                      "symbol": "WMATIC",
+                      "decimals": 18,
+                      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
+                    },
+                    "value": "10.0"
+                  },
+                  "recipient": "0xBFfCe813B6c14D8659057dD3111D3F83CEE271b8"
+                }
+              },
+              "stats": {
+                "totalAmountOfMirrors": 0,
+                "totalAmountOfCollects": 0,
+                "totalAmountOfComments": 3,
+                "totalUpvotes": 0,
+                "totalDownvotes": 0
+              },
+              "metadata": {
+                "name": "Post by @anjaysahoo",
+                "description": "https://lens.gs/",
+                "content": "https://lens.gs/",
+                "media": [],
+                "attributes": []
+              },
+              "createdAt": "2023-04-22T21:47:32.000Z",
+              "collectModule": {
+                "__typename": "FreeCollectModuleSettings",
+                "type": "FreeCollectModule",
+                "followerOnly": true,
+                "contractAddress": "0x23b9467334bEb345aAa6fd1545538F3d54436e96"
+              },
+              "referenceModule": null,
+              "appId": "lensview-beta",
+              "hidden": false,
+              "reaction": null,
+              "mirrors": [],
+              "hasCollectedByMe": false
+            }
+          },
+          {
+            "__typename": "Comment",
+            "id": "0x36d6-0x3a",
+            "profile": {
+              "id": "0x36d6",
+              "name": "parikshit",
+              "bio": "building LensView on Lens ☘️",
+              "attributes": [
+                {
+                  "displayType": null,
+                  "traitType": null,
+                  "key": "location",
+                  "value": "India"
+                },
+                {
+                  "displayType": null,
+                  "traitType": null,
+                  "key": "website",
+                  "value": "https://lensview-beta.vercel.app/"
+                },
+                {
+                  "displayType": null,
+                  "traitType": null,
+                  "key": "twitter",
+                  "value": "parikshit_barua"
+                },
+                {
+                  "displayType": null,
+                  "traitType": null,
+                  "key": "app",
+                  "value": "Lenster"
+                }
+              ],
+              "isFollowedByMe": false,
+              "isFollowing": false,
+              "followNftAddress": "0x8e2f8D94ac5FacC8729deA9f26a6C1Aaefc7D915",
+              "metadata": "https://arweave.net/ViW84Yk2nRRw0k5QTHh00H6Kc_iNhBVA5wawj1nh3Ig",
+              "isDefault": true,
+              "handle": "parikshitbarua.lens",
+              "picture": {
+                "original": {
+                  "url": "ipfs://bafybeihww6u6gudbex3jlyd3kwmqfwkqjurl6zfpqh26q2fovput7mnh3e",
+                  "mimeType": null
+                }
+              },
+              "coverPicture": null,
+              "ownedBy": "0x6588A930Ed24e5Cee498AAc0b5Fa6567ca914FAa",
+              "dispatcher": {
+                "address": "0x999119915b0d11aE86087F03E312aCC1C2aC750E"
+              },
+              "stats": {
+                "totalFollowers": 35,
+                "totalFollowing": 104,
+                "totalPosts": 31,
+                "totalComments": 26,
+                "totalMirrors": 7,
+                "totalPublications": 64,
+                "totalCollects": 0
+              },
+              "followModule": {
+                "type": "ProfileFollowModule",
+                "contractAddress": "0x057ccDf5153bE1081830a6C3D507C9dfE1ac8e4E"
+              }
+            },
+            "stats": {
+              "totalAmountOfMirrors": 0,
+              "totalAmountOfCollects": 0,
+              "totalAmountOfComments": 0,
+              "totalUpvotes": 0,
+              "totalDownvotes": 0
+            },
+            "metadata": {
+              "name": "Post by @0x36d6",
+              "description": "do not interact with this site, your funds will be stolen!",
+              "content": "do not interact with this site, your funds will be stolen!",
+              "media": [],
+              "attributes": []
+            },
+            "createdAt": "2023-04-22T21:50:06.000Z",
+            "collectModule": {
+              "__typename": "FreeCollectModuleSettings",
+              "type": "FreeCollectModule",
+              "followerOnly": true,
+              "contractAddress": "0x23b9467334bEb345aAa6fd1545538F3d54436e96"
+            },
+            "referenceModule": null,
+            "appId": "lensview-beta",
+            "hidden": false,
+            "reaction": null,
+            "mirrors": [],
+            "hasCollectedByMe": false,
+            "mainPost": {
+              "id": "0x0199aa-0x42",
+              "profile": {
+                "id": "0x0199aa",
+                "name": "Anjay",
+                "bio": "Blockchain \nEnthusiast",
+                "attributes": [
+                  {
+                    "displayType": null,
+                    "traitType": null,
+                    "key": "app",
+                    "value": "Lenster"
+                  }
+                ],
+                "isFollowedByMe": false,
+                "isFollowing": false,
+                "followNftAddress": "0x24A3A4556d2ce642cf4D6be28CFFab8F1900c6a6",
+                "metadata": "https://arweave.net/PsG8xRXEgcwmegkaaivy0taMWOsB5YmwRTJGiJa2T0s",
+                "isDefault": true,
+                "handle": "anjaysahoo-dev.lens",
+                "picture": {
+                  "original": {
+                    "url": "ipfs://QmWaxxauQkczxYkU6FcVuCWRiqU95aGhoLeBgks5L5yT7S",
+                    "mimeType": null
+                  }
+                },
+                "coverPicture": null,
+                "ownedBy": "0xBFfCe813B6c14D8659057dD3111D3F83CEE271b8",
+                "dispatcher": {
+                  "address": "0xC9FA5F824530b0DB3Df97820ded190F849b9bc0d"
+                },
+                "stats": {
+                  "totalFollowers": 13,
+                  "totalFollowing": 64,
+                  "totalPosts": 52,
+                  "totalComments": 15,
+                  "totalMirrors": 4,
+                  "totalPublications": 71,
+                  "totalCollects": 6
+                },
+                "followModule": {
+                  "type": "FeeFollowModule",
+                  "amount": {
+                    "asset": {
+                      "name": "Wrapped Matic",
+                      "symbol": "WMATIC",
+                      "decimals": 18,
+                      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
+                    },
+                    "value": "10.0"
+                  },
+                  "recipient": "0xBFfCe813B6c14D8659057dD3111D3F83CEE271b8"
+                }
+              },
+              "stats": {
+                "totalAmountOfMirrors": 0,
+                "totalAmountOfCollects": 0,
+                "totalAmountOfComments": 3,
+                "totalUpvotes": 0,
+                "totalDownvotes": 0
+              },
+              "metadata": {
+                "name": "Post by @anjaysahoo",
+                "description": "https://lens.gs/",
+                "content": "https://lens.gs/",
+                "media": [],
+                "attributes": []
+              },
+              "createdAt": "2023-04-22T21:47:32.000Z",
+              "collectModule": {
+                "__typename": "FreeCollectModuleSettings",
+                "type": "FreeCollectModule",
+                "followerOnly": true,
+                "contractAddress": "0x23b9467334bEb345aAa6fd1545538F3d54436e96"
+              },
+              "referenceModule": null,
+              "appId": "lensview-beta",
+              "hidden": false,
+              "reaction": null,
+              "mirrors": [],
+              "hasCollectedByMe": false
+            }
+          },
+          {
+            "__typename": "Comment",
+            "id": "0x0199aa-0x4a",
+            "profile": {
+              "id": "0x0199aa",
+              "name": "Anjay",
+              "bio": "Blockchain \nEnthusiast",
+              "attributes": [
+                {
+                  "displayType": null,
+                  "traitType": null,
+                  "key": "app",
+                  "value": "Lenster"
+                }
+              ],
+              "isFollowedByMe": false,
+              "isFollowing": false,
+              "followNftAddress": "0x24A3A4556d2ce642cf4D6be28CFFab8F1900c6a6",
+              "metadata": "https://arweave.net/PsG8xRXEgcwmegkaaivy0taMWOsB5YmwRTJGiJa2T0s",
+              "isDefault": true,
+              "handle": "anjaysahoo-dev.lens",
+              "picture": {
+                "original": {
+                  "url": "ipfs://QmWaxxauQkczxYkU6FcVuCWRiqU95aGhoLeBgks5L5yT7S",
+                  "mimeType": null
+                }
+              },
+              "coverPicture": null,
+              "ownedBy": "0xBFfCe813B6c14D8659057dD3111D3F83CEE271b8",
+              "dispatcher": {
+                "address": "0xC9FA5F824530b0DB3Df97820ded190F849b9bc0d"
+              },
+              "stats": {
+                "totalFollowers": 13,
+                "totalFollowing": 64,
+                "totalPosts": 52,
+                "totalComments": 15,
+                "totalMirrors": 4,
+                "totalPublications": 71,
+                "totalCollects": 6
+              },
+              "followModule": {
+                "type": "FeeFollowModule",
+                "amount": {
+                  "asset": {
+                    "name": "Wrapped Matic",
+                    "symbol": "WMATIC",
+                    "decimals": 18,
+                    "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
+                  },
+                  "value": "10.0"
+                },
+                "recipient": "0xBFfCe813B6c14D8659057dD3111D3F83CEE271b8"
+              }
+            },
+            "stats": {
+              "totalAmountOfMirrors": 0,
+              "totalAmountOfCollects": 0,
+              "totalAmountOfComments": 0,
+              "totalUpvotes": 0,
+              "totalDownvotes": 0
+            },
+            "metadata": {
+              "name": "Post by @0x0199aa",
+              "description": "Testing ",
+              "content": "Testing ",
+              "media": [],
+              "attributes": []
+            },
+            "createdAt": "2023-05-01T17:00:45.000Z",
+            "collectModule": {
+              "__typename": "FreeCollectModuleSettings",
+              "type": "FreeCollectModule",
+              "followerOnly": true,
+              "contractAddress": "0x23b9467334bEb345aAa6fd1545538F3d54436e96"
+            },
+            "referenceModule": null,
+            "appId": "lensview-beta",
+            "hidden": false,
+            "reaction": null,
+            "mirrors": [],
+            "hasCollectedByMe": false,
+            "mainPost": {
+              "id": "0x0199aa-0x42",
+              "profile": {
+                "id": "0x0199aa",
+                "name": "Anjay",
+                "bio": "Blockchain \nEnthusiast",
+                "attributes": [
+                  {
+                    "displayType": null,
+                    "traitType": null,
+                    "key": "app",
+                    "value": "Lenster"
+                  }
+                ],
+                "isFollowedByMe": false,
+                "isFollowing": false,
+                "followNftAddress": "0x24A3A4556d2ce642cf4D6be28CFFab8F1900c6a6",
+                "metadata": "https://arweave.net/PsG8xRXEgcwmegkaaivy0taMWOsB5YmwRTJGiJa2T0s",
+                "isDefault": true,
+                "handle": "anjaysahoo-dev.lens",
+                "picture": {
+                  "original": {
+                    "url": "ipfs://QmWaxxauQkczxYkU6FcVuCWRiqU95aGhoLeBgks5L5yT7S",
+                    "mimeType": null
+                  }
+                },
+                "coverPicture": null,
+                "ownedBy": "0xBFfCe813B6c14D8659057dD3111D3F83CEE271b8",
+                "dispatcher": {
+                  "address": "0xC9FA5F824530b0DB3Df97820ded190F849b9bc0d"
+                },
+                "stats": {
+                  "totalFollowers": 13,
+                  "totalFollowing": 64,
+                  "totalPosts": 52,
+                  "totalComments": 15,
+                  "totalMirrors": 4,
+                  "totalPublications": 71,
+                  "totalCollects": 6
+                },
+                "followModule": {
+                  "type": "FeeFollowModule",
+                  "amount": {
+                    "asset": {
+                      "name": "Wrapped Matic",
+                      "symbol": "WMATIC",
+                      "decimals": 18,
+                      "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
+                    },
+                    "value": "10.0"
+                  },
+                  "recipient": "0xBFfCe813B6c14D8659057dD3111D3F83CEE271b8"
+                }
+              },
+              "stats": {
+                "totalAmountOfMirrors": 0,
+                "totalAmountOfCollects": 0,
+                "totalAmountOfComments": 3,
+                "totalUpvotes": 0,
+                "totalDownvotes": 0
+              },
+              "metadata": {
+                "name": "Post by @anjaysahoo",
+                "description": "https://lens.gs/",
+                "content": "https://lens.gs/",
+                "media": [],
+                "attributes": []
+              },
+              "createdAt": "2023-04-22T21:47:32.000Z",
+              "collectModule": {
+                "__typename": "FreeCollectModuleSettings",
+                "type": "FreeCollectModule",
+                "followerOnly": true,
+                "contractAddress": "0x23b9467334bEb345aAa6fd1545538F3d54436e96"
+              },
+              "referenceModule": null,
+              "appId": "lensview-beta",
+              "hidden": false,
+              "reaction": null,
+              "mirrors": [],
+              "hasCollectedByMe": false
+            }
+          }
+        ],
+        "pageInfo": {
+          "prev": "{\"entityIdentifier\":\"0x36d6-0x39\",\"timestamp\":1682200146,\"cursorDirection\":\"BEFORE\"}",
+          "next": "{\"entityIdentifier\":\"0x0199aa-0x4a\",\"timestamp\":1682960445,\"cursorDirection\":\"AFTER\"}",
+          "totalCount": null
+        }
+      }
+    }
+  },
+  {
+    "data": {
+      "publications": {
+        "items": [
+          {
+            "__typename": "Post",
+            "id": "0x0199aa-0x42",
+            "profile": {
+              "id": "0x0199aa",
+              "name": "Anjay",
+              "bio": "Blockchain \nEnthusiast",
+              "attributes": [
+                {
+                  "displayType": null,
+                  "traitType": null,
+                  "key": "app",
+                  "value": "Lenster"
+                }
+              ],
+              "isFollowedByMe": false,
+              "isFollowing": false,
+              "followNftAddress": "0x24A3A4556d2ce642cf4D6be28CFFab8F1900c6a6",
+              "metadata": "https://arweave.net/PsG8xRXEgcwmegkaaivy0taMWOsB5YmwRTJGiJa2T0s",
+              "isDefault": true,
+              "handle": "anjaysahoo-dev.lens",
+              "picture": {
+                "original": {
+                  "url": "ipfs://QmWaxxauQkczxYkU6FcVuCWRiqU95aGhoLeBgks5L5yT7S",
+                  "mimeType": null
+                }
+              },
+              "coverPicture": null,
+              "ownedBy": "0xBFfCe813B6c14D8659057dD3111D3F83CEE271b8",
+              "dispatcher": {
+                "address": "0xC9FA5F824530b0DB3Df97820ded190F849b9bc0d"
+              },
+              "stats": {
+                "totalFollowers": 13,
+                "totalFollowing": 64,
+                "totalPosts": 52,
+                "totalComments": 15,
+                "totalMirrors": 4,
+                "totalPublications": 71,
+                "totalCollects": 6
+              },
+              "followModule": {
+                "type": "FeeFollowModule",
+                "amount": {
+                  "asset": {
+                    "name": "Wrapped Matic",
+                    "symbol": "WMATIC",
+                    "decimals": 18,
+                    "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
+                  },
+                  "value": "10.0"
+                },
+                "recipient": "0xBFfCe813B6c14D8659057dD3111D3F83CEE271b8"
+              }
+            },
+            "stats": {
+              "totalAmountOfMirrors": 0,
+              "totalAmountOfCollects": 0,
+              "totalAmountOfComments": 3,
+              "totalUpvotes": 0,
+              "totalDownvotes": 0
+            },
+            "metadata": {
+              "name": "Post by @anjaysahoo",
+              "description": "https://lens.gs/",
+              "content": "https://lens.gs/",
+              "media": [],
+              "attributes": []
+            },
+            "createdAt": "2023-04-22T21:47:32.000Z",
+            "collectModule": {
+              "__typename": "FreeCollectModuleSettings",
+              "type": "FreeCollectModule",
+              "followerOnly": true,
+              "contractAddress": "0x23b9467334bEb345aAa6fd1545538F3d54436e96"
+            },
+            "referenceModule": null,
+            "appId": "lensview-beta",
+            "hidden": false,
+            "reaction": null,
+            "mirrors": [],
+            "hasCollectedByMe": false
+          }
+        ],
+        "pageInfo": {
+          "prev": "{\"entityIdentifier\":\"0x0199aa-0x42\",\"timestamp\":1682200052,\"filter\":\"{\\\"mainContentFocus\\\":[\\\"ARTICLE\\\",\\\"AUDIO\\\",\\\"VIDEO\\\",\\\"EMBED\\\",\\\"IMAGE\\\",\\\"LINK\\\",\\\"TEXT_ONLY\\\"],\\\"tags\\\":{\\\"oneOf\\\":[\\\"8B9B14322191BC54CF25E0817C5EE773A7DF3C8C\\\"]}}\",\"cursorDirection\":\"BEFORE\"}",
+          "next": "{\"entityIdentifier\":\"0x0199aa-0x42\",\"timestamp\":1682200052,\"filter\":\"{\\\"mainContentFocus\\\":[\\\"ARTICLE\\\",\\\"AUDIO\\\",\\\"VIDEO\\\",\\\"EMBED\\\",\\\"IMAGE\\\",\\\"LINK\\\",\\\"TEXT_ONLY\\\"],\\\"tags\\\":{\\\"oneOf\\\":[\\\"8B9B14322191BC54CF25E0817C5EE773A7DF3C8C\\\"]}}\",\"cursorDirection\":\"AFTER\"}",
+          "totalCount": null
+        }
+      }
+    }
+  }
+]

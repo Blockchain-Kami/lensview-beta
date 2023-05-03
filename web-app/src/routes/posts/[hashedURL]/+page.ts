@@ -1,5 +1,14 @@
-export async function load({ fetch, params }) {
-  const { hashedURL }= params;
+import type { LoadEvent } from "@sveltejs/kit";
+
+export async function load({ fetch, params, depends }: LoadEvent) {
+  depends("posts: updated-posts");
+  const { hashedURL } = params;
   const res = await fetch(`/api/posts?hashedURL=${hashedURL}`);
-  return await res.json();
+  const fetchedData = await res.json();
+  return {
+    "hashedURL": hashedURL,
+    "URL": fetchedData["URL"],
+    "items": fetchedData["items"],
+    "mainPostPubId": fetchedData["parentPublicationID"]
+  };
 }

@@ -1,16 +1,29 @@
 <script lang="ts">
 
-    import {ethers} from 'ethers';
-    import {createClient} from '@urql/core';
+    /**
+     * 6. Split Signature
+     */
+    import { ethers, utils } from "ethers";
+    import { createClient } from "@urql/core";
+    import { v4 as uuid } from "uuid";
+    /**
+     * Web3 Storage Code
+     */
+    import { Web3Storage } from "web3.storage";
+    /**
+     * 5. Create Signed Post Typed Data
+     */
+    import omitDeep from "omit-deep";
+    import LENSHUB from "../abi/lenshub.json";
 
-    const API_URL = 'https://api.lens.dev'
+    const API_URL = "https://api-mumbai.lens.dev";
     const challenge = `
     query Challenge($address: EthereumAddress!) {
         challenge(request: { address: $address }) {
             text
         }
     }
-`
+`;
     const authenticate = `
     mutation Authenticate(
         $address: EthereumAddress!
@@ -107,8 +120,8 @@
     async function lensviewSignInWithLens() {
         try {
             /* first request the challenge from the API server */
-            const challengeInfo = await client.query(challenge, {"address": lensviewAddress}).toPromise();
-            const provider = new ethers.providers.AlchemyProvider("matic", import.meta.env.VITE_API_KEY);
+            const challengeInfo = await client.query(challenge, { "address": lensviewAddress }).toPromise();
+            const provider = new ethers.providers.AlchemyProvider("maticmum", import.meta.env.VITE_API_KEY);
             lensviewSigner = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY, provider);
             /* ask the user to sign a message with the challenge info returned from the server */
             const signature = await lensviewSigner.signMessage(challengeInfo.data.challenge.text);
@@ -242,15 +255,8 @@ query DefaultProfile($address: EthereumAddress!) {
 
     /*********************************************************/
 
-    import {v4 as uuid} from 'uuid';
-
     /** Hard coded post value for testing **/
     let userEnteredContent: string = "";
-
-    /**
-     * Web3 Storage Code
-     */
-    import {Web3Storage} from 'web3.storage'
 
     function getAccessToken() {
         // If you're just testing, you can paste in a token
@@ -290,7 +296,7 @@ query DefaultProfile($address: EthereumAddress!) {
             attributes: [],
             locale: 'en-US',
             tags: [urlHash],
-            appId: 'lensview-beta'
+            appId: "Lenster"
         }
         const blob = new Blob([JSON.stringify(metaData)], {type: 'application/json'})
 
@@ -318,11 +324,6 @@ query DefaultProfile($address: EthereumAddress!) {
         return uri
     }
     /*********************************/
-
-    /**
-     * 5. Create Signed Post Typed Data
-     */
-    import omitDeep from 'omit-deep'
 
     const createPostTypedData = `
 mutation createPostTypedData($request: CreatePublicPostRequest!) {
@@ -435,20 +436,13 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
 
     /**********************************************************/
 
-    /**
-     * 6. Split Signature
-     */
-    import {utils} from 'ethers'
-
     function splitSignature(signature) {
         return utils.splitSignature(signature)
     }
 
     /*********************************/
 
-    import LENSHUB from '../abi/lenshub.json';
-
-    const LENS_HUB_CONTRACT_ADDRESS = "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d"
+    const LENS_HUB_CONTRACT_ADDRESS = "0x60Ae865ee4C725cd04353b5AAb364553f56ceF82";
 
     let isPosting = false;
     let saveComment = async () => {
@@ -523,10 +517,10 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
 
         const contentURI = await uploadToIPFS('anjaysahoo', userEnteredLink, urlHash);
         const createPostRequest = {
-            profileId: '0x0199aa',
+            profileId: "0x7e11",
             contentURI,
             collectModule: {
-                freeCollectModule: {followerOnly: true}
+                freeCollectModule: { followerOnly: true }
             },
             referenceModule: {
                 followerOnlyReferenceModule: false
@@ -961,10 +955,10 @@ fragment ReferenceModuleFields on ReferenceModule {
             console.log("getPubIdByUrlHash Called");
             let urlHash = await createHash(userEnteredLink);
             let request = {
-                "profileId": "0x0199aa",
+                "profileId": "0x7e11",
                 "publicationTypes": ["POST"],
                 "metadata": {
-                    "tags":{
+                    "tags": {
                         "all": [urlHash]
                     }
                 }
@@ -1033,13 +1027,13 @@ fragment ReferenceModuleFields on ReferenceModule {
         try {
             console.log("Estimating gas for the transaction")
             let data;
-            await fetch('https://gasstation-mainnet.matic.network/v2')
-                .then(response => response.json())
-                .then(dataFromAPI => {
-                    data = dataFromAPI;
-                    console.log("dataFromAPI : " + JSON.stringify(dataFromAPI));
-                })
-                .catch(error => console.error(error));
+            await fetch("https://gasstation-mumbai.matic.today/v2")
+              .then(response => response.json())
+              .then(dataFromAPI => {
+                  data = dataFromAPI;
+                  console.log("dataFromAPI : " + JSON.stringify(dataFromAPI));
+              })
+              .catch(error => console.error(error));
 
             console.log("data : " + data);
 
