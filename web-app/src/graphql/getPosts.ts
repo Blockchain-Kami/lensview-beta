@@ -118,7 +118,7 @@ fragment MirrorFields on Mirror {
 fragment CommentBaseFields on Comment {
   id
   profile {
-    ...ProfileFields
+    ...ProfileFieldsa
   }
   stats {
     ...PublicationStatsFields

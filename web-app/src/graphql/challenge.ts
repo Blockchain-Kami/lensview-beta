@@ -1,4 +1,4 @@
-const challenge = `
+export const challenge = `
     query Challenge($address: EthereumAddress!) {
         challenge(request: { address: $address }) {
             text
@@ -6,4 +6,4 @@ const challenge = `
     }
 `;
 
-export default challenge;
+

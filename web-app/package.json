@@ -12,10 +12,13 @@
     "format": "prettier --plugin-search-dir . --write ."
   },
   "dependencies": {
+    "@apollo/client": "^3.7.13",
     "@urql/svelte": "^3.0.1",
+    "axios": "^1.4.0",
+    "cross-fetch": "^3.1.5",
     "ethers": "^5.7.2",
-    "graphql": "^16.6.0",
     "ipfs-http-client": "^60.0.0",
+    "lodash": "^4.17.21",
     "omit-deep": "^0.3.0",
     "uuid": "^9.0.0",
     "web3.storage": "^3.1.0"
