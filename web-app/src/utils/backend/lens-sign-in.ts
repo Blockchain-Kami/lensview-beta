@@ -1,5 +1,5 @@
 import {challenge} from "../../graphql/challenge";
-import {API_KEY, APP_ADDRESS, PRIVATE_KEY} from "$env/static/private";
+import {API_KEY, APP_ADDRESS, VITE_PRIVATE_KEY} from "$env/static/private";
 import {ethers} from "ethers";
 import authenticate from "../../graphql/authenticate";
 import getDefaultProfile from "../../graphql/getDefaultProfile";
@@ -35,7 +35,7 @@ export const signInWithLens = async () => {
         console.log(challengeInfo)
         const provider = new ethers.providers.AlchemyProvider("maticmum", API_KEY);
 
-        signer = new ethers.Wallet(PRIVATE_KEY, provider);
+        signer = new ethers.Wallet(VITE_PRIVATE_KEY, provider);
         /* ask the user to sign a message with the challenge info returned from the server */
         const signature = await signer.signMessage(challengeInfo.data.challenge.text);
         /* authenticate the user */
