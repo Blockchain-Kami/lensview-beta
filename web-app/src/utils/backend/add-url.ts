@@ -10,7 +10,6 @@ import createPostTypedData from "../../graphql/createPostTypedData";
 let isPosting = false;
 
 
-
 function splitSignature(signature) {
     return utils.splitSignature(signature)
 }

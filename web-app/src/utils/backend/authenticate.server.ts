@@ -1,5 +1,5 @@
 import authenticate from '../../graphql/authenticate';
-import challenge from "../../graphql/challenge";
+import {challenge} from "../../graphql/challenge";
 import { getSigner } from "../web3";
 import { APP_ADDRESS } from '$env/static/private';
 //TODO : Update this with backend client which may be appolo client
