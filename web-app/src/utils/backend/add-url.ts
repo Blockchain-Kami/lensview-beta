@@ -74,8 +74,8 @@ const savePost = async (url, hashedURL, client, signer, profile) => {
 
         // get gas estimates
         const gas = await getGas();
-        const maxFeePerGas = gas[0]
-        const maxPriorityFeePerGas = gas[1]
+        const maxFeePerGas = gas[0];
+        const maxPriorityFeePerGas = gas[1];
 
         const tx = await contract.postWithSig({
             profileId: signedResult.result.data.createPostTypedData.typedData.value.profileId,
