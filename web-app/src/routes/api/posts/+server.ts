@@ -6,10 +6,9 @@ import getComments from "../../../graphql/getComments";
 
 
 export async function GET(request) {
+    let statusCode;
 
     const hashedURL = request.url.searchParams.get('hashedURL');
-    console.log(hashedURL);
-
     try {
         const posts = await fetch(PUBLIC_LENS_API_URL, {
                 method: 'POST',
@@ -24,13 +23,10 @@ export async function GET(request) {
                     },
                 }),
             })
-
+        statusCode = posts.status;
         const response = await posts.json()
-        console.log(response);
         const parentPostID = response.data.publications.items[0].id;
         const sourceURL = response.data.publications.items[0].metadata.description;
-
-        console.log(sourceURL);
 
         try {
             const comments = await fetch(PUBLIC_LENS_API_URL, {
@@ -45,11 +41,13 @@ export async function GET(request) {
                     },
                 }),
             })
+            statusCode = comments.status;
 
             const commentsJSON = await comments.json();
             const commentItems = commentsJSON.data.publications.items;
 
             const responseComments = {
+                status_code: statusCode,
                 URL: sourceURL,
                 parentPublicationID: parentPostID,
                 items: commentItems
@@ -61,13 +59,15 @@ export async function GET(request) {
         } catch (err) {
             console.log(err);
             return json({
-                error: `Could not fetch comments for Publication ID, hashed URl: ${hashedURL}`
+                status_code: statusCode,
+                error: `Could not fetch comments for Publication ID, hashed URl: ${parentPostID}`
             });
         }
 
     } catch (err) {
         console.log(err);
         return json({
+            status_code: statusCode,
             error: `Could not fetch Publication ID for hashed URl: ${hashedURL}`
         });
     }

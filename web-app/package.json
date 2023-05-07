@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@urql/svelte": "^3.0.1",
-    "cross-fetch": "^3.1.5",
+    "axios": "^1.4.0",
     "ethers": "^5.7.2",
     "lodash": "^4.17.21",
     "omit-deep": "^0.3.0",
@@ -35,7 +35,7 @@
     "svelte": "^3.54.0",
     "svelte-check": "^3.0.1",
     "tslib": "^2.4.1",
-    "typescript": "^5.0.0",
+    "typescript": "^5.0.4",
     "vite": "^4.3.0"
   },
   "type": "module"

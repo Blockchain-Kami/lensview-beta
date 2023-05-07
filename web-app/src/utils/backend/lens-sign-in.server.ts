@@ -26,17 +26,17 @@ let client = createClient({
  *    iii. Update Client with new Access Token
  */
 export const signInWithLens = async () => {
-
+    let statusCode;
     try {
         // console.log(challenge);
         /* first request the challenge from the API server */
         const challengeInfo = await client.query(challenge, {address: APP_ADDRESS}).toPromise();
-        console.log(challengeInfo)
         const provider = new ethers.providers.AlchemyProvider("maticmum", API_KEY);
 
         signer = new ethers.Wallet(PRIVATE_KEY, provider);
         /* ask the user to sign a message with the challenge info returned from the server */
         const signature = await signer.signMessage(challengeInfo.data.challenge.text);
+
         /* authenticate the user */
         const authData = await client.mutation(authenticate, {address: APP_ADDRESS, signature: signature}).toPromise();
         /* if user authentication is successful, you will receive an accessToken and refreshToken */
