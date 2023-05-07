@@ -83,6 +83,6 @@ query DefaultProfile($address: EthereumAddress!) {
   }
 }
 
-`;
+`
 
 export default getDefaultProfile;
