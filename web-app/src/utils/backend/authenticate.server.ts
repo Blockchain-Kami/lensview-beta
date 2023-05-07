@@ -1,9 +1,9 @@
-import authenticate from '../../graphql/authenticate';
-import {challenge} from "../../graphql/challenge";
+import authenticate from "../../graphql/authenticate";
+import challenge from "../../graphql/challenge";
 import { getSigner } from "../web3";
-import { APP_ADDRESS } from '$env/static/private';
+import { APP_ADDRESS } from "$env/static/private";
 //TODO : Update this with backend client which may be appolo client
-import baseClient from '../frontend/baseClient';
+import baseClient from "../frontend/baseClient";
 
 export const appAuthentication = async () => {
   try{

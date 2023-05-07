@@ -5,6 +5,7 @@
     import { goto } from "$app/navigation";
     import createHash from "../utils/frontend/createURLHash";
     import { isSignedIn } from "../services/signInStatus";
+    import { userEnteredURL } from "../services/userEnteredURL";
 
     let isConnected = false;
     let signingIn = false;
@@ -47,6 +48,7 @@
     }
 
     const redirectToPostsPage = async () => {
+        userEnteredURL.set(userEnteredLink);
         const hash = await createHash(userEnteredLink);
         goto(`/posts/${hash}`);
     }

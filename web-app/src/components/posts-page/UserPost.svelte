@@ -8,12 +8,14 @@
   import LENSHUB from "../.././abi/lenshub.json";
   import { getSigner } from "../../utils/web3";
   import { invalidate } from "$app/navigation";
+  import { userEnteredURL } from "../../services/userEnteredURL";
 
   export let hashedURL;
   export let mainPostPubId;
 
   let userEnteredContent = "";
   let isPosting = false;
+  let addingLink = false;
 
 
   function splitSignature(signature) {
@@ -77,17 +79,62 @@
         alert("Posted successfully ");
         userEnteredContent = "";
         await invalidate("posts: updated-posts");
-      }, 5000);
+      }, 15000);
     } catch (err) {
       console.log("error: ", err);
       isPosting = false;
     }
+  };
+
+  let addURLToLensview = async () => {
+    addingLink = true;
+
+    let urlToBeAdded;
+    const unsub = userEnteredURL.subscribe((value) => {
+      urlToBeAdded = value;
+    });
+    unsub();
+
+    await fetch(`/api/add-url`, {
+      method: "POST",
+      body: JSON.stringify(urlToBeAdded),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }).then(async (res) => {
+      if (res.status === 200) {
+        console.log("Res : " + res);
+        //TODO: Add logic to handle timer thing
+        setTimeout(async () => {
+          addingLink = false;
+          await invalidate("posts: updated-posts");
+        }, 15000);
+      } else {
+        addingLink = false;
+        throw new Error("Error adding link");
+      }
+    }).catch(err => {
+        console.log("Error : ", err);
+      }
+    );
   };
 </script>
 
 
 <!----------------------------- HTML ----------------------------->
 <div class="CenterColumnFlex user-post">
+  {#if mainPostPubId === ""}
+    <div class="user-post__link">
+      <input bind:value={$userEnteredURL} type="text" class="user-post__link__input"
+             placeholder="Please insert link over here">
+      {#if !addingLink}
+        <button on:click={addURLToLensview} class="btn" disabled="{$userEnteredURL === ''}">Add Link On LensView
+        </button>
+      {:else}
+        Adding Link....
+      {/if}
+    </div>
+  {/if}
   <div class="user-post__info">Connect your wallet for posting</div>
   <div class="user-post__text">
     <input bind:value={userEnteredContent} type="text" class="user-post__text__input"
@@ -101,7 +148,9 @@
     </div>
     <div class="user-post__option-bar__post-btn">
       {#if !isPosting}
-        <button on:click={savePost} disabled='{userEnteredContent === "" || !$isSignedIn}' class="btn">Post</button>
+        <button on:click={savePost} disabled='{userEnteredContent === "" || !$isSignedIn || mainPostPubId === ""}'
+                class="btn">Post
+        </button>
       {:else}
         Posting...
       {/if}
@@ -125,12 +174,6 @@
 
   .user-post__info {
     font-weight: bold;
-  }
-
-  .main__content-area__posts__post__reaction-bar {
-    width: 100%;
-    padding-top: 1rem;
-    justify-content: space-around;
   }
 
   .user-post__text {
