@@ -1,7 +1,7 @@
 /**
  * Web3 Storage Code
  */
-import {WEB3STORAGE_TOKEN} from "$env/static/private";
+import {PUBLIC_WEB3STORAGE_TOKEN} from "$env/static/public";
 import {File, Web3Storage} from "web3.storage";
 import {v4 as uuidv4} from "uuid";
 
@@ -16,7 +16,7 @@ function getAccessToken() {
     // WEB3STORAGE_TOKEN environment variable before you run your code.
     // Get the web3.storage access token from the API token section
 
-    return WEB3STORAGE_TOKEN;
+    return PUBLIC_WEB3STORAGE_TOKEN;
 }
 
 function makeStorageClient() {

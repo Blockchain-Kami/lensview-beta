@@ -1,11 +1,12 @@
-import {_} from 'lodash';
-
-import uploadToIPFS from "./ipfs-upload";
+import pkg from 'lodash';
+import uploadToIPFS from "./ipfs-upload.server";
 import {ethers, utils} from "ethers";
 import {PUBLIC_LENS_HUB_CONTRACT_ADDRESS} from "$env/static/public";
 import LENS_HUB_ABI from "../../abis/lens-hub-contract-abi.json";
 import {getGas} from "./fetch-gas.server";
 import createPostTypedData from "../../graphql/createPostTypedData";
+
+const {_} = pkg;
 
 let isPosting = false;
 

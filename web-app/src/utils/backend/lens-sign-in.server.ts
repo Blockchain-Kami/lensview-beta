@@ -1,9 +1,12 @@
-import {challenge} from "../../graphql/challenge";
-import {API_KEY, APP_ADDRESS, VITE_PRIVATE_KEY} from "$env/static/private";
 import {ethers} from "ethers";
+import {createClient} from "@urql/core";
+
+import challenge from "../../graphql/challenge";
 import authenticate from "../../graphql/authenticate";
 import getDefaultProfile from "../../graphql/getDefaultProfile";
 
+import {API_KEY, APP_ADDRESS, PRIVATE_KEY} from "$env/static/private";
+import {PUBLIC_LENS_API_URL} from "$env/static/public";
 
 
 let accessTokenFromLens;
@@ -11,14 +14,10 @@ let isSignedIn = false;
 let signer;
 let profile;
 
-import {createClient} from "@urql/core";
-import { PUBLIC_LENS_API_URL } from "$env/static/public";
-
 
 let client = createClient({
     url: PUBLIC_LENS_API_URL
 });
-
 
 
 /**
@@ -35,7 +34,7 @@ export const signInWithLens = async () => {
         console.log(challengeInfo)
         const provider = new ethers.providers.AlchemyProvider("maticmum", API_KEY);
 
-        signer = new ethers.Wallet(VITE_PRIVATE_KEY, provider);
+        signer = new ethers.Wallet(PRIVATE_KEY, provider);
         /* ask the user to sign a message with the challenge info returned from the server */
         const signature = await signer.signMessage(challengeInfo.data.challenge.text);
         /* authenticate the user */
