@@ -1,13 +1,13 @@
 <script lang="ts">
-    import "../global.css";
-    import { userAddress } from "../services/userAddress";
-    import { userAuthentication } from "../utils/frontend/authenticate";
-    import { goto } from "$app/navigation";
-    import createHash from "../utils/frontend/createURLHash";
-    import { isSignedIn } from "../services/signInStatus";
-    import { userEnteredURL } from "../services/userEnteredURL";
+  import "../global.css";
+  import { userAddress } from "../services/userAddress";
+  import { userAuthentication } from "../utils/frontend/authenticate";
+  import { goto } from "$app/navigation";
+  import createHash from "../utils/frontend/createURLHash";
+  import { isSignedIn } from "../services/signInStatus";
+  import { userEnteredURL } from "../services/userEnteredURL";
 
-    let isConnected = false;
+  let isConnected = false;
     let signingIn = false;
     let userEnteredLink = "";
 
@@ -59,13 +59,17 @@
 <main>
         <div class="CenterColumnFlex menu">
             <div class="CenterColumnFlex menu__items">
-                <div class="menu__items__item menu__items__item--logo">
-                    <img src="https://img.icons8.com/ios/50/000000/medium-monogram--v1.png" alt="logo"/>
-                </div>
-                <div class="menu__items__item">Home</div>
-                <div class="menu__items__item">Explore</div>
-                <div class="menu__items__item">How It Works</div>
-                <div class="menu__items__item">About</div>
+              <div class="menu__items__item menu__items__item--logo">
+                <a href="/">
+                  <img src="https://img.icons8.com/ios/50/000000/medium-monogram--v1.png" alt="logo" />
+                </a>
+              </div>
+              <div class="menu__items__item">
+                <a href="/">Home</a>
+              </div>
+              <div class="menu__items__item">Explore</div>
+              <div class="menu__items__item">How It Works</div>
+              <div class="menu__items__item">About</div>
             </div>
             <div class="menu__user">
                 {#if !isConnected}

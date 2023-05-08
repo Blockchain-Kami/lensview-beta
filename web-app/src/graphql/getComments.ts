@@ -26,7 +26,19 @@ fragment MediaFields on Media {
 }
 
 fragment ProfileFields on Profile {
+  id
   name
+  attributes {
+    displayType
+    traitType
+    key
+    value
+  }
+  isFollowedByMe
+  isFollowing(who: null)
+  followNftAddress
+  metadata
+  isDefault
   handle
   picture {
     ... on NftImage {
@@ -35,11 +47,26 @@ fragment ProfileFields on Profile {
       uri
       verified
     }
+    ... on MediaSet {
+      original {
+        ...MediaFields
+      }
+    }
+  }
+  coverPicture {
+    ... on NftImage {
+      contractAddress
+      tokenId
+      uri
+      verified
+    }
+    ... on MediaSet {
+      original {
+        ...MediaFields
+      }
+    }
   }
   ownedBy
-  dispatcher {
-    address
-  }
 }
 
 fragment PublicationStatsFields on PublicationStats { 
@@ -47,6 +74,7 @@ fragment PublicationStatsFields on PublicationStats {
   totalAmountOfCollects
   totalAmountOfComments
   totalUpvotes
+  totalDownvotes
 }
 
 fragment MetadataOutputFields on MetadataOutput {
@@ -162,6 +190,7 @@ fragment CommentMirrorOfFields on Comment {
     }
   }
 }
+
 `
 
 export default getComments;
