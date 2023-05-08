@@ -1,5 +1,6 @@
 import type { LoadEvent } from "@sveltejs/kit";
 import { userEnteredURL } from "../../../services/userEnteredURL";
+import { currentTotalPosts, isMainPostAdded } from "../../../services/isPostAddedToLensGraph";
 
 export async function load({ fetch, params, depends }: LoadEvent) {
   depends("posts: updated-posts");
@@ -23,6 +24,10 @@ export async function load({ fetch, params, depends }: LoadEvent) {
       "mainPostPubId": ""
     };
   }
+
+  console.log("No error");
+  isMainPostAdded.set(true);
+  currentTotalPosts.set(fetchedData["items"].length);
 
   return {
     "hashedURL": hashedURL,
