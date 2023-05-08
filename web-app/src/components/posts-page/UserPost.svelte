@@ -4,11 +4,12 @@
   import uploadToIPFS from "../../utils/frontend/uploadToIPFS";
   import signCreateCommentTypedData from "../../utils/frontend/signCreateCommentTypedData";
   import { ethers, utils } from "ethers";
-  import { PUBLIC_LENS_HUB_CONTRACT_ADDRESS } from "$env/static/public";
   import LENSHUB from "../.././abi/lenshub.json";
   import { getSigner } from "../../utils/web3";
   import { invalidate } from "$app/navigation";
   import { userEnteredURL } from "../../services/userEnteredURL";
+  import { PUBLIC_LENS_HUB_CONTRACT_ADDRESS } from "$env/static/public";
+  import { currentTotalPosts, isMainPostAdded } from "../../services/isPostAddedToLensGraph";
 
   export let hashedURL;
   export let mainPostPubId;
@@ -16,6 +17,7 @@
   let userEnteredContent = "";
   let isPosting = false;
   let addingLink = false;
+  let prevTotalPosts: number;
 
 
   function splitSignature(signature) {
@@ -73,13 +75,12 @@
       console.log("successfully created Comment: tx hash", tx.hash);
       console.log("successfully created Comment: tx hash", JSON.stringify(tx));
 
+      const unsub = currentTotalPosts.subscribe((value) => {
+        prevTotalPosts = value;
+      });
+      unsub();
 
-      setTimeout(async () => {
-        isPosting = false;
-        alert("Posted successfully ");
-        userEnteredContent = "";
-        await invalidate("posts: updated-posts");
-      }, 15000);
+      checkUntilPostAdded();
     } catch (err) {
       console.log("error: ", err);
       isPosting = false;
@@ -104,11 +105,8 @@
     }).then(async (res) => {
       if (res.status === 200) {
         console.log("Res : " + res);
-        //TODO: Add logic to handle timer thing
-        setTimeout(async () => {
-          addingLink = false;
-          await invalidate("posts: updated-posts");
-        }, 15000);
+        isMainPostAdded.set(false);
+        checkUntilMainPostAdded();
       } else {
         addingLink = false;
         throw new Error("Error adding link");
@@ -117,6 +115,43 @@
         console.log("Error : ", err);
       }
     );
+  };
+
+  const checkUntilMainPostAdded = () => {
+    let isMainPostAddedStatus;
+    const unsub = isMainPostAdded.subscribe((value) => {
+      console.log("isMainPostAddedStatus : ", value);
+      isMainPostAddedStatus = value;
+    });
+
+    if (!isMainPostAddedStatus) {
+      console.log("Waiting for main post to be added to graph");
+      invalidate("posts: updated-posts");
+      setTimeout(checkUntilMainPostAdded, 1000);
+    } else {
+      console.log("Main post added to graph");
+      addingLink = false;
+    }
+    unsub();
+  };
+
+  const checkUntilPostAdded = () => {
+    let currentTotalPostsValue;
+    const unsub = currentTotalPosts.subscribe((value) => {
+      console.log("currentTotalPostsValue : ", value);
+      currentTotalPostsValue = value;
+    });
+
+    if (currentTotalPostsValue === prevTotalPosts) {
+      console.log("Waiting for post to be added to graph");
+      invalidate("posts: updated-posts");
+      setTimeout(checkUntilPostAdded, 1000);
+    } else {
+      console.log("post added to graph");
+      isPosting = false;
+      userEnteredContent = "";
+    }
+    unsub();
   };
 </script>
 
@@ -143,7 +178,7 @@
   <div class="CenterRowFlex user-post__option-bar">
     <div class="CenterRowFlex user-post__option-bar__options">
       <div class="user-post__option-bar__options__option">Media</div>
-      <div class="user-post__option-bar__options__option">Hastags</div>
+      <div class="user-post__option-bar__options__option">Hashtags</div>
       <div class="user-post__option-bar__options__option">@Mention</div>
     </div>
     <div class="user-post__option-bar__post-btn">
