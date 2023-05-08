@@ -1,5 +1,13 @@
 <script lang="ts">
   export let postsList;
+
+  let getPictureURL = (fetchedLensURL) => {
+    if (fetchedLensURL.substring(0, 4) === "ipfs") {
+      return `https://gateway.ipfscdn.io/ipfs/${fetchedLensURL.substring(6)}`;
+    } else {
+      return fetchedLensURL;
+    }
+  };
 </script>
 
 
@@ -9,7 +17,7 @@
       <div class="posts__post">
         <div class="posts__post__avatar">
           <img
-            src={post["profile"]["picture"]["original"]["url"]}
+            src={getPictureURL(post["profile"]["picture"]["original"]["url"])}
             alt="avatar" />
         </div>
         <div class="posts__post__data">
@@ -67,7 +75,18 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+  }
+
+  .posts__post__data__header__handle {
     font-weight: 600;
+  }
+
+  .posts__post__data__header__date {
+    font-size: small;
+  }
+
+  .posts__post__data__content {
+    font-size: large;
   }
 
   .posts__post__data__reaction-bar {
