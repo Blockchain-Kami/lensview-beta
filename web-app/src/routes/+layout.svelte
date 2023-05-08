@@ -1,13 +1,13 @@
 <script lang="ts">
-  import "../global.css";
-  import { userAddress } from "../services/userAddress";
-  import { userAuthentication } from "../utils/frontend/authenticate";
-  import { goto } from "$app/navigation";
-  import createHash from "../utils/frontend/createURLHash";
-  import { isSignedIn } from "../services/signInStatus";
-  import { userEnteredURL } from "../services/userEnteredURL";
+    import "../global.css";
+    import {userAddress} from "../services/userAddress";
+    import {userAuthentication} from "../utils/frontend/authenticate";
+    import {goto} from "$app/navigation";
+    import createHash from "../utils/frontend/createURLHash";
+    import {isSignedIn} from "../services/signInStatus";
+    import {userEnteredURL} from "../services/userEnteredURL";
 
-  let isConnected = false;
+    let isConnected = false;
     let signingIn = false;
     let userEnteredLink = "";
 
@@ -59,17 +59,19 @@
 <main>
         <div class="CenterColumnFlex menu">
             <div class="CenterColumnFlex menu__items">
-              <div class="menu__items__item menu__items__item--logo">
-                <a href="/">
-                  <img src="https://img.icons8.com/ios/50/000000/medium-monogram--v1.png" alt="logo" />
-                </a>
-              </div>
-              <div class="menu__items__item">
-                <a href="/">Home</a>
-              </div>
-              <div class="menu__items__item">Explore</div>
-              <div class="menu__items__item">How It Works</div>
-              <div class="menu__items__item">About</div>
+                <div class="menu__items__item menu__items__item--logo"
+                     style="background:none; margin-right: 60px; padding-bottom: 0; padding-top: 0; margin-bottom: 40px">
+                    <a href='https://postimages.org/' target='_blank'><img alt='Untitled-presentation-3' height="80px"
+                                                                           src='https://i.postimg.cc/mgzXmdNF/Screenshot-2023-05-08-at-11-42-29-PM.png'
+                                                                           width="190px"/></a>
+
+                </div>
+                <div class="menu__items__item">
+                    <a href="/">Home</a>
+                </div>
+                <div class="menu__items__item">Explore</div>
+                <div class="menu__items__item">How It Works</div>
+                <div class="menu__items__item">About</div>
             </div>
             <div class="menu__user">
                 {#if !isConnected}
@@ -125,11 +127,12 @@
         gap: 1rem;
     }
 
-    .menu__items__item{
-        width: 100%;
-        background: lightgray;
-        padding: 0.75rem;
-        border-radius: 8px;
+    .menu__items__item {
+      width: 100%;
+      background: rgb(191, 230, 107);
+      background: radial-gradient(circle, rgba(191, 230, 107, 1) 35%, rgba(215, 251, 144, 1) 100%);
+      padding: 0.75rem;
+      border-radius: 8px;
     }
 
     .search-box{
@@ -137,15 +140,22 @@
         width: 35%;
         justify-content: space-around;
         top: 2rem;
-        left: 15%;
+      left: 15%;
     }
 
-    .search-box__input{
-        width: 68%;
-        padding: 0.65rem;
-        border-radius: 8px;
-        border: 1px solid lightgray;
-        outline: 0;
+    .search-box__input {
+      width: 68%;
+      padding: 0.65rem;
+      border-radius: 8px;
+      border: 1px solid lightgray;
+      outline: 0;
+    }
+
+    .btn {
+      color: black;
+      border: 2px solid #121212;
+      background: rgb(191, 230, 107);
+      background: radial-gradient(circle, rgba(191, 230, 107, 1) 35%, rgba(215, 251, 144, 1) 100%);
     }
 
 </style>
