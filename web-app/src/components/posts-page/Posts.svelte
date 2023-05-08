@@ -9,13 +9,13 @@
       <div class="posts__post">
         <div class="posts__post__avatar">
           <img
-            src="https://api.dicebear.com/6.x/bottts-neutral/svg?seed=Felix&radius=50&size=48"
+            src={post["profile"]["picture"]["original"]["url"]}
             alt="avatar" />
         </div>
         <div class="posts__post__data">
           <div class="posts__post__data__header">
             <div class="posts__post__data__header__handle">@{post["profile"]["handle"]}</div>
-            <div class="posts__post__data__header__date">8 May, 2023</div>
+            <div class="posts__post__data__header__date">{new Date(post["createdAt"]).toDateString()}</div>
           </div>
           <div class="posts__post__data__content">{post["metadata"]["description"]}</div>
           <div class="posts__post__data__reaction-bar">
@@ -76,5 +76,10 @@
     gap: 2rem;
   }
 
+  img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+  }
 </style>
 <!----------------------------------------------------------------->
