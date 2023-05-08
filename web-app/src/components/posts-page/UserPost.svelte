@@ -130,6 +130,7 @@
       setTimeout(checkUntilMainPostAdded, 1000);
     } else {
       console.log("Main post added to graph");
+      alert("Link added to Lensview");
       addingLink = false;
     }
     unsub();
