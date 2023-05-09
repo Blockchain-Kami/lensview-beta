@@ -33,7 +33,6 @@
             <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalAmountOfMirrors"]} 📨</div>
           </div>
         </div>
-
       </div>
     {/each}
   </div>
