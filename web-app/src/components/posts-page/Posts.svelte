@@ -1,7 +1,44 @@
 <script lang="ts">
   export let postsList;
 
-  let getPictureURL = (fetchedLensURL) => {
+  /**
+   * It handles the error if any field is missing in post
+   * which are getting used.
+   * UPDATE THIS FUNCTION IF ANY NEW FIELD IS ADDED IN POST
+   * @param post
+   */
+  const isPostValid = (post) => {
+
+    if (!post?.profile?.picture?.original?.url)
+      return false;
+
+    if (!post?.profile?.handle)
+      return false;
+
+    if (!post?.createdAt)
+      return false;
+
+    if (!post?.metadata?.description)
+      return false;
+
+    if (!post?.stats) {
+      if (post.stats.totalUpvotes === undefined)
+        return false;
+
+      if (post.stats.totalDownvotes === undefined)
+        return false;
+
+      if (post.stats.totalAmountOfComments === undefined)
+        return false;
+
+      if (post.stats.totalAmountOfMirrors === undefined)
+        return false;
+    }
+
+    return true;
+  };
+
+  const getPictureURL = (fetchedLensURL) => {
     if (fetchedLensURL.substring(0, 4) === "ipfs") {
       return `https://gateway.ipfscdn.io/ipfs/${fetchedLensURL.substring(6)}`;
     } else {
@@ -14,26 +51,28 @@
 <!----------------------------- HTML ----------------------------->
   <div class="CenterColumnFlex posts">
     {#each postsList as post}
-      <div class="posts__post">
-        <div class="posts__post__avatar">
-          <img
-            src={getPictureURL(post["profile"]["picture"]["original"]["url"])}
-            alt="avatar" />
-        </div>
-        <div class="posts__post__data">
-          <div class="posts__post__data__header">
-            <div class="posts__post__data__header__handle">@{post["profile"]["handle"]}</div>
-            <div class="posts__post__data__header__date">{new Date(post["createdAt"]).toDateString()}</div>
+      {#if isPostValid(post)}
+        <div class="posts__post">
+          <div class="posts__post__avatar">
+            <img
+              src={ getPictureURL(post["profile"]["picture"]["original"]["url"])}
+              alt="avatar" />
           </div>
-          <div class="posts__post__data__content">{post["metadata"]["description"]}</div>
-          <div class="posts__post__data__reaction-bar">
-            <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalUpvotes"]} 👍</div>
-            <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalDownvotes"]} 👎</div>
-            <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalAmountOfComments"]} 💬</div>
-            <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalAmountOfMirrors"]} 📨</div>
+          <div class="posts__post__data">
+            <div class="posts__post__data__header">
+              <div class="posts__post__data__header__handle">@{post["profile"]["handle"]}</div>
+              <div class="posts__post__data__header__date">{new Date(post["createdAt"]).toDateString()}</div>
+            </div>
+            <div class="posts__post__data__content">{post["metadata"]["description"]}</div>
+            <div class="posts__post__data__reaction-bar">
+              <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalUpvotes"]} 👍</div>
+              <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalDownvotes"]} 👎</div>
+              <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalAmountOfComments"]} 💬</div>
+              <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalAmountOfMirrors"]} 📨</div>
+            </div>
           </div>
         </div>
-      </div>
+      {/if}
     {/each}
   </div>
 <!---------------------------------------------------------------->
