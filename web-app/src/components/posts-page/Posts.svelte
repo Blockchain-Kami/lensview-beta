@@ -18,7 +18,7 @@
     if (!post?.createdAt)
       return false;
 
-    if (!post?.metadata?.description)
+    if (!post?.metadata?.content)
       return false;
 
     if (!post?.stats) {
@@ -63,7 +63,7 @@
               <div class="posts__post__data__header__handle">@{post["profile"]["handle"]}</div>
               <div class="posts__post__data__header__date">{new Date(post["createdAt"]).toDateString()}</div>
             </div>
-            <div class="posts__post__data__content">{post["metadata"]["description"]}</div>
+            <div class="posts__post__data__content">{post["metadata"]["content"]}</div>
             <div class="posts__post__data__reaction-bar">
               <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalUpvotes"]} 👍</div>
               <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalDownvotes"]} 👎</div>
