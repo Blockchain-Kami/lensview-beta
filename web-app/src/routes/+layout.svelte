@@ -73,7 +73,7 @@
     </div>
     <div class="menu__user">
       <button class="btn">
-        <a href="https://lens-do-it.vercel.app/" target="_blank">Create Lens Handle</a>
+        <a href="https://testnet.lenster.xyz/" target="_blank">Create Lens Handle</a>
       </button>
       {#if !isConnected}
         <button on:click="{connect}" class="btn">Connect Wallet</button>
