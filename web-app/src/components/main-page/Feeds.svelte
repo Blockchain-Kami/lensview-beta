@@ -6,13 +6,13 @@
 <!----------------------------- HTML ----------------------------->
 <div class="CenterColumnFlex main__search-area__results">
   <div class="main__search-area__results__result">
-    <a href="/posts/45e7d79c30bf167964814af1c907cf8f1599c5ae">https://buildspace.so/</a>
+    <a href="/posts/7eb7685fc0e93b18ac1cc4d0b9f27c22226354be">https://buildspace.so</a>
   </div>
   <div class="main__search-area__results__result">
     <a href="/posts/862a4fb3d7b604df38a6dd5125d341b2fa14b20b">https://www.lens.xyz/</a>
   </div>
   <div class="main__search-area__results__result">
-    <a href="/posts/9d92106704a34bb81cf0aaca557e0b210e58f3d2">https://lenster.xyz/</a>
+    <a href="/posts/a022d31368593358174caf9a5b08f15d29bb4181">https://lenster.xyz</a>
   </div>
 </div>
 <!---------------------------------------------------------------->
