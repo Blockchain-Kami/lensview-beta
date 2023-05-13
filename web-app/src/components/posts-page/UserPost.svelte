@@ -1,6 +1,5 @@
 <script lang="ts">
   import { isSignedIn } from "../../services/signInStatus";
-  import getUserProfile from "../../utils/frontend/getUserProfile";
   import uploadToIPFS from "../../utils/frontend/uploadToIPFS";
   import signCreateCommentTypedData from "../../utils/frontend/signCreateCommentTypedData";
   import { ethers, utils } from "ethers";
@@ -10,6 +9,7 @@
   import { userEnteredURL } from "../../services/userEnteredURL";
   import { PUBLIC_LENS_HUB_CONTRACT_ADDRESS } from "$env/static/public";
   import { currentTotalPosts, isMainPostAdded } from "../../services/isPostAddedToLensGraph";
+  import { userProfile } from "../../services/profile";
 
   export let hashedURL;
   export let mainPostPubId;
@@ -26,7 +26,14 @@
 
   let savePost = async () => {
     isPosting = true;
-    const profile = await getUserProfile();
+    let profile;
+    const unsub = userProfile.subscribe((value) => {
+      profile = value;
+    });
+    unsub();
+
+    console.log("profile: ", profile);
+
     const contentURI = await uploadToIPFS(profile.id, userEnteredContent, hashedURL);
     const createCommentRequest = {
       profileId: profile.id,
@@ -117,6 +124,7 @@
     );
   };
 
+  //TODO: Handle edges cases of below function running into infinite loop
   const checkUntilMainPostAdded = () => {
     let isMainPostAddedStatus;
     const unsub = isMainPostAdded.subscribe((value) => {
@@ -136,6 +144,7 @@
     unsub();
   };
 
+  //TODO: Handle edges cases of below function running into infinite loop
   const checkUntilPostAdded = () => {
     let currentTotalPostsValue;
     const unsub = currentTotalPosts.subscribe((value) => {

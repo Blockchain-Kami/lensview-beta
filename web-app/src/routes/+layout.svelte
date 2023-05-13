@@ -6,10 +6,15 @@
   import createHash from "../utils/frontend/createURLHash";
   import { isSignedIn } from "../services/signInStatus";
   import { userEnteredURL } from "../services/userEnteredURL";
+  import getDefaultUserProfile from "../utils/frontend/getDefaultUserProfile";
+  import CreateLensHandle from "../components/main-page/CreateLensHandle.svelte";
+  import { userProfile } from "../services/profile";
+  import getUserProfiles from "../utils/frontend/getUserProfiles";
 
   let isConnected = false;
   let signingIn = false;
   let userEnteredLink = "";
+  let showCreateLensHandleModal = false;
 
   /**TODO: 1. Check for chain and if it is not polygon testnet then do necessary changes
    *       2. Check if there is any stored address in local storage if yes then do not ask for connect wallet
@@ -20,13 +25,13 @@
     /* this allows the user to connect their wallet */
     try {
       const account = await window.ethereum.request({ method: "eth_requestAccounts" });
-      console.log("Account : " + JSON.stringify(account));
       if (account.length) {
         userAddress.setUserAddress(account[0]);
         isConnected = true;
       } else {
         isConnected = false;
       }
+      console.log("Account : " + JSON.stringify(account));
     } catch (error) {
       console.log(error);
     }
@@ -37,8 +42,25 @@
     try {
       signingIn = true;
       await userAuthentication();
-      signingIn = false;
-      isSignedIn.setSignInStatus(true);
+      const fetchedProfiles = await getUserProfiles();
+
+      if (fetchedProfiles.length === 0) {
+        console.log("Fetched Profile : " + JSON.stringify(fetchedProfiles));
+        showCreateLensHandleModal = true;
+        signingIn = false;
+      } else {
+        showCreateLensHandleModal = false;
+        const defaultProfile = await getDefaultUserProfile();
+
+        if (defaultProfile !== null) {
+          userProfile.setUserProfile(defaultProfile);
+        } else {
+          userProfile.setUserProfile(fetchedProfiles[0]);
+        }
+        signingIn = false;
+        isSignedIn.setSignInStatus(true);
+      }
+
     } catch (error) {
       console.log("Error authenticating user");
       isSignedIn.setSignInStatus(false);
@@ -72,21 +94,19 @@
       <div class="menu__items__item">About</div>
     </div>
     <div class="menu__user">
-      <button class="btn">
-        <a href="https://testnet.lenster.xyz/" target="_blank">Create Lens Handle</a>
-      </button>
       {#if !isConnected}
         <button on:click="{connect}" class="btn">Connect Wallet</button>
       {:else}
         {#if !$isSignedIn}
-          {#if !signingIn}
+          {#if !signingIn }
             <button on:click="{signInWithLens}" class="btn">Sign-In With Lens</button>
           {:else}
             Signing In ...
           {/if}
         {:else}
           <div class="menu__user__profile">
-            {$userAddress.slice(0, 5)} ... {$userAddress.slice(-5)}
+            {$userProfile.handle}
+            <!--{$userAddress.slice(0, 5)} ... {$userAddress.slice(-5)}-->
           </div>
         {/if}
       {/if}
@@ -99,7 +119,13 @@
     </button>
   </div>
   <slot />
+
 </main>
+
+<CreateLensHandle bind:showCreateLensHandleModal>
+</CreateLensHandle>
+
+
 <!------------------------------------------------------------------->
 
 <!---------------------------------- Style --------------------------->
