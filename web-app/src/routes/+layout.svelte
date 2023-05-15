@@ -15,10 +15,12 @@
   let signingIn = false;
   let userEnteredLink = "";
   let showCreateLensHandleModal = false;
+  let isHandleCreated = true;
 
   /**TODO: 1. Check for chain and if it is not polygon testnet then do necessary changes
    *       2. Check if there is any stored address in local storage if yes then do not ask for connect wallet
    *       3. Check if refresh token is present in local storage and not expired, if yes then do not ask for sign in
+   *       4. Handle scenarios when user switches network
    */
 
   async function connect() {
@@ -48,7 +50,9 @@
         console.log("Fetched Profile : " + JSON.stringify(fetchedProfiles));
         showCreateLensHandleModal = true;
         signingIn = false;
+        isHandleCreated = false;
       } else {
+        isHandleCreated = true;
         showCreateLensHandleModal = false;
         const defaultProfile = await getDefaultUserProfile();
 
@@ -99,7 +103,11 @@
       {:else}
         {#if !$isSignedIn}
           {#if !signingIn }
-            <button on:click="{signInWithLens}" class="btn">Sign-In With Lens</button>
+            {#if isHandleCreated}
+              <button on:click="{signInWithLens}" class="btn">Sign-In With Lens</button>
+            {:else}
+              <button on:click="{() => showCreateLensHandleModal = true}" class="btn">Create Lens Handle</button>
+            {/if}
           {:else}
             Signing In ...
           {/if}

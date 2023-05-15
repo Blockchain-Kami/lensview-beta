@@ -14,7 +14,6 @@ export const userAuthentication = async () => {
     unsubscribe();
 
     const challengeInfo = await baseClient.query(challenge, { address }).toPromise();
-    console.log("Challenge Info: ", challengeInfo);
     const signer = getSigner();
     const signature = await signer.signMessage(challengeInfo.data.challenge.text);
     const authData = await baseClient.mutation(authenticate, { address, signature }).toPromise();

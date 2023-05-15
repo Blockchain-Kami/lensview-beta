@@ -1,7 +1,6 @@
 <script>
   import createLensHandle from "../../utils/frontend/createLensHandle.ts";
   import { isSignedIn } from "../../services/signInStatus.ts";
-  import checkTxHashBeenIndexed from "../../utils/frontend/checkTxHashBeenIndexed.ts";
   import getDefaultUserProfile from "../../utils/frontend/getDefaultUserProfile.ts";
   import { userProfile } from "../../services/profile.ts";
   import getUserProfiles from "../../utils/frontend/getUserProfiles.ts";
@@ -11,6 +10,8 @@
   let dialog;
   let userEnteredHandle = "";
   let isCreatingLensHandle = false;
+  let isInputInvalid = true;
+  let inputInvalidReason = "";
 
   $: if (dialog && showCreateLensHandleModal) dialog.showModal();
 
@@ -24,41 +25,56 @@
     }
 
     if (response.data.createProfile?.txHash) {
-      await isTxHashed(response.data.createProfile.txHash);
+      await isProfileCreated();
     } else {
       isCreatingLensHandle = false;
       alert("Something went wrong, please try again");
     }
   };
 
-  //TODO: Update this function so that don't have to wait 15 seconds
-  const isTxHashed = async (txHash) => {
-    const response = await checkTxHashBeenIndexed(txHash);
-    console.log("checking if txHashed" + response.data?.hasTxHashBeenIndexed?.indexed);
+  //TODO: See if we can use hasTxBeenHashed instead of this, may be better
+  const isProfileCreated = async () => {
+    const fetchedProfiles = await getUserProfiles();
 
-    // if(response.data?.hasTxHashBeenIndexed?.indexed === 'true'){
-    setTimeout(async () => {
-      isCreatingLensHandle = false;
-
+    if (fetchedProfiles.length === 0) {
+      setTimeout(() => {
+        isProfileCreated();
+      }, 1000);
+    } else {
       const defaultProfile = await getDefaultUserProfile();
 
       if (defaultProfile !== null) {
         userProfile.setUserProfile(defaultProfile);
       } else {
-        const fetchedProfiles = await getUserProfiles();
         userProfile.setUserProfile(fetchedProfiles[0]);
       }
 
       isSignedIn.setSignInStatus(true);
       dialog.close();
-    }, 15000);
+    }
+  };
 
-    // }
-    // else{
-    //   setTimeout(() => {
-    //     isTxHashed(txHash)
-    //   }, 1000);
-    // }
+
+  const checkInputIsValid = () => {
+    if (userEnteredHandle.length === 0) {
+      isInputInvalid = true;
+      inputInvalidReason = "";
+    } else if (/[A-Z]/.test(userEnteredHandle)) {
+      isInputInvalid = true;
+      inputInvalidReason = "Handle must be lowercase";
+    } else if (!/^[a-z0-9]+$/.test(userEnteredHandle)) {
+      isInputInvalid = true;
+      inputInvalidReason = "Handle must be alphanumeric";
+    } else if (userEnteredHandle.length < 5) {
+      isInputInvalid = true;
+      inputInvalidReason = "Handle must be at least 5 characters long";
+    } else if (userEnteredHandle.length > 20) {
+      isInputInvalid = true;
+      inputInvalidReason = "Handle must be less than 20 characters long";
+    } else {
+      isInputInvalid = false;
+      inputInvalidReason = "";
+    }
   };
 </script>
 
@@ -78,14 +94,14 @@
         Create Your Lens Handle
       </div>
       <div class="body__input">
-        <input type="text" placeholder="Vitalik" bind:value={userEnteredHandle}>
+        <input type="text" placeholder="vitalik" bind:value={userEnteredHandle} on:input={checkInputIsValid}>
+        {#if isInputInvalid}
+          <div class="body__input__err-msg">{inputInvalidReason}</div>
+        {/if}
       </div>
       <div class="body__notes">
         <div class="body__notes__note">
           Your Lens Handle is a unique identifier that will be used to identify you on the Lens Network.
-        </div>
-        <div class="body__notes__note">
-          Please enter alphanumeric characters only.Your Lens Handle must be between 5 and 20 characters long.
         </div>
         <div class="body__notes__note">
           Your handle will receive the `.test` extension on lens testnet.
@@ -94,7 +110,7 @@
     </div>
     <div class="footer">
       {#if !isCreatingLensHandle}
-        <button class="btn" on:click={initiateCreateLensHandle}>Create</button>
+        <button class="btn" on:click={initiateCreateLensHandle} disabled={isInputInvalid}>Create</button>
       {:else}
         <button class="btn" disabled>Creating...</button>
       {/if}
@@ -129,6 +145,11 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .body__input__err-msg {
+    color: red;
+    font-size: 0.75rem;
   }
 
   .body__content {
