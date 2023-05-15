@@ -1,10 +1,10 @@
 import { createUserClient } from "./createClient";
-import getDefaultProfile from "../../graphql/getDefaultProfile";
 import { userAddress } from "../../services/userAddress";
+import profiles from "../../graphql/profiles";
 
-const getUserProfile = async () => {
+const getUserProfiles = async () => {
   try {
-    console.log("Get User Profile Called");
+    console.log("Get User Profiles Called");
     const client = await createUserClient();
     let address;
     const unsubscribe = userAddress.subscribe((addr) => {
@@ -12,13 +12,16 @@ const getUserProfile = async () => {
       }
     );
     unsubscribe();
-    const response = await client.query(getDefaultProfile, {
-      address
+    const response = await client.query(profiles, {
+      "request": {
+        "ownedBy": address,
+        "limit": 10
+      }
     }).toPromise();
-    return response.data.defaultProfile;
+    return response.data.profiles.items;
   } catch (err) {
     console.log("error fetching user profile...: ", err);
   }
 };
 
-export default getUserProfile;
+export default getUserProfiles;

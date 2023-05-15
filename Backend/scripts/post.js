@@ -235,7 +235,7 @@ function makeFileObjects(url) {
     // audio, or whatever you want!
 
     // //Getting profile of the connected user and saving it to "profile" variable
-    // getUserProfile(address);
+    // getDefaultUserProfile(address);
 
     const metaData = {
         version: '2.0.0',

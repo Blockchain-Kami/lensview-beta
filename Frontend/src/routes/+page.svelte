@@ -283,28 +283,27 @@ query DefaultProfile($address: EthereumAddress!) {
         // audio, or whatever you want!
 
         // //Getting profile of the connected user and saving it to "profile" variable
-        // getUserProfile(address);
+        // getDefaultUserProfile(address);
 
         const metaData = {
-            version: '2.0.0',
+            version: "2.0.0",
             content: userEnteredContent,
             description: userEnteredContent,
             name: `Post by @${profileHandle}`,
-            external_url: 'https://lensView.xyz',
+            external_url: "https://lensView.xyz",
             metadata_id: uuid(),
-            mainContentFocus: 'TEXT_ONLY',
+            mainContentFocus: "TEXT_ONLY",
             attributes: [],
-            locale: 'en-US',
+            locale: "en-US",
             tags: [urlHash],
             appId: "Lenster"
         }
-        const blob = new Blob([JSON.stringify(metaData)], {type: 'application/json'})
+        const blob = new Blob([JSON.stringify(metaData)], { type: "application/json" });
 
-        const files = [
-            new File(['contents-of-file-1'], 'plain-utf8.txt'),
-            new File([blob], 'metaData.json')
-        ]
-        return files
+        return [
+            new File(["contents-of-file-1"], "plain-utf8.txt"),
+            new File([blob], "metaData.json")
+        ];
     }
 
     /*********************************/
@@ -1063,10 +1062,10 @@ fragment ReferenceModuleFields on ReferenceModule {
         const msgUint8 = new TextEncoder().encode(url); // encode as (utf-8) Uint8Array
         const hashBuffer = await crypto.subtle.digest("SHA-1", msgUint8); // hash the message
         const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
-        const hashHex = hashArray
-            .map((b) => b.toString(16).padStart(2, "0"))
-            .join(""); // convert bytes to hex string
-        return hashHex;
+         // convert bytes to hex string
+        return hashArray
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
     }
 </script>
 
@@ -1366,11 +1365,11 @@ fragment ReferenceModuleFields on ReferenceModule {
         margin-right: 0.75rem;
     }
 
-    .main__search-area__link-preview{
+    .main__search-area__link-preview {
         width: 100%;
         background: white;
         border-radius: 10px;
-        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0;
 
     }
 
@@ -1413,14 +1412,14 @@ fragment ReferenceModuleFields on ReferenceModule {
         background: azure;
     }
 
-    .main__content-area__user-post{
+    .main__content-area__user-post {
         width: 100%;
         justify-content: space-between;
         gap: 1rem;
         background: white;
         padding: 1rem;
         border-radius: 12px;
-        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0;
     }
 
     .main__content-area__user-post__info{
@@ -1486,10 +1485,10 @@ fragment ReferenceModuleFields on ReferenceModule {
         justify-content: flex-start;
     }
 
-    .main__content-area__posts__post{
+    .main__content-area__posts__post {
         padding: 1rem;
         border-radius: 10px;
-        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0;
         width: 100%;
     }
 
