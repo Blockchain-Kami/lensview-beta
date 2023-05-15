@@ -93,7 +93,7 @@
     </div>
   </div>
   <div class="CenterRowFlex search-box">
-    <input bind:value={userEnteredLink} type="text" class="search-box__input" placeholder="Search for a publication">
+    <input bind:value={userEnteredLink} type="text" class="search-box__input" placeholder="Search for a link">
     <button on:click={redirectToPostsPage} disabled={userEnteredLink.length === 0} class="btn">
       Search
     </button>
