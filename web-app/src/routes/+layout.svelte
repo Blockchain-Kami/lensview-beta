@@ -10,34 +10,141 @@
   import CreateLensHandle from "../components/main-page/CreateLensHandle.svelte";
   import { userProfile } from "../services/profile";
   import getUserProfiles from "../utils/frontend/getUserProfiles";
+  import { onMount } from "svelte";
+  import { PUBLIC_IS_PROD } from "$env/static/public";
 
   let isConnected = false;
   let signingIn = false;
   let userEnteredLink = "";
   let showCreateLensHandleModal = false;
   let isHandleCreated = true;
+  let isThisConnectWalletAccountChange = false;
+  let chainIDToBeUsed: string;
+
+
+  onMount(async () => {
+
+    if (PUBLIC_IS_PROD === "false") {
+      chainIDToBeUsed = "0x13881";
+    } else {
+      chainIDToBeUsed = "0x89";
+    }
+
+    if (typeof window.ethereum === "undefined") {
+      alert("Please install metamask to interact with this application, but you can still view the others posts");
+    }
+
+    window.ethereum.on("chainChanged", (chainId) => {
+      if (chainId !== chainIDToBeUsed) {
+        window.location.reload();
+      }
+    });
+
+    window.ethereum.on("accountsChanged", (switchedAddress) => {
+      if (!isThisConnectWalletAccountChange) {
+        window.location.reload();
+      } else {
+        isThisConnectWalletAccountChange = false;
+      }
+    });
+  });
 
   /**TODO: 1. Check for chain and if it is not polygon testnet then do necessary changes
    *       2. Check if there is any stored address in local storage if yes then do not ask for connect wallet
    *       3. Check if refresh token is present in local storage and not expired, if yes then do not ask for sign in
    *       4. Handle scenarios when user switches network
    */
-
   async function connect() {
-    /* this allows the user to connect their wallet */
-    try {
-      const account = await window.ethereum.request({ method: "eth_requestAccounts" });
-      if (account.length) {
-        userAddress.setUserAddress(account[0]);
-        isConnected = true;
-      } else {
-        isConnected = false;
+    if (typeof window.ethereum === "undefined") {
+      alert("Please install metamask to interact with this application, but you can still view the others posts");
+    } else {
+      /* this allows the user to connect their wallet */
+      try {
+        await switchUserToCorrectChain();
+
+        isThisConnectWalletAccountChange = true;
+
+        const account = await window.ethereum.request({ method: "eth_requestAccounts" });
+
+        isThisConnectWalletAccountChange = false;
+        if (account.length) {
+          userAddress.setUserAddress(account[0]);
+          isConnected = true;
+        } else {
+          isConnected = false;
+        }
+        console.log("Account : " + JSON.stringify(account));
+      } catch (error) {
+        isThisConnectWalletAccountChange = false;
+        console.log(error);
       }
-      console.log("Account : " + JSON.stringify(account));
-    } catch (error) {
-      console.log(error);
     }
   }
+
+  const switchUserToCorrectChain = async () => {
+    const chainId = await window.ethereum.request({ method: "eth_chainId" });
+
+    console.log("Chain Id : " + chainId);
+
+    if (chainId !== chainIDToBeUsed) {
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: chainIDToBeUsed }]
+        });
+
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask.
+        if (switchError.code === 4902) {
+          try {
+
+            if (PUBLIC_IS_PROD === "false") {
+              await window.ethereum.request({
+                method: "wallet_addEthereumChain",
+                params: [
+                  {
+                    chainId: "0x13881",
+                    chainName: "Mumbai",
+                    rpcUrls: ["https://matic-mumbai.chainstacklabs.com"],
+                    blockExplorerUrls: ["https://mumbai.polygonscan.com"],
+                    nativeCurrency: {
+                      name: "MATIC",
+                      symbol: "MATIC",
+                      decimals: 18
+                    }
+                  }
+                ]
+              });
+            } else {
+              await window.ethereum.request({
+                method: "wallet_addEthereumChain",
+                params: [
+                  {
+                    chainId: "0x89",
+                    chainName: "Polygon",
+                    rpcUrls: ["https://polygon-rpc.com"],
+                    blockExplorerUrls: ["https://polygonscan.com"],
+                    nativeCurrency: {
+                      name: "MATIC",
+                      symbol: "MATIC",
+                      decimals: 18
+                    }
+                  }
+                ]
+              });
+            }
+
+          } catch (addError) {
+            console.log("Error adding chain", addError);
+            throw new Error(addError);
+          }
+        } else {
+          console.log("Error switching chain", switchError);
+          throw new Error(switchError);
+        }
+      }
+    }
+  };
 
   const signInWithLens = async () => {
     /*** Authenticate **/
