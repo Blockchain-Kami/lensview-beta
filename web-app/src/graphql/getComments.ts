@@ -2,6 +2,8 @@ const getComments = `
 query Publications ($publicationId: InternalPublicationId!) {
   publications(request: {
     commentsOf: $publicationId,
+    commentsOfOrdering: RANKING,
+    commentsRankingFilter: RELEVANT,
     metadata: {
       locale: "en-us"
     }
