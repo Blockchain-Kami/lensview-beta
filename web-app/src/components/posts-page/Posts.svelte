@@ -1,4 +1,9 @@
 <script lang="ts">
+  import { addReactionToAPost } from "../../utils/frontend/addReactionToAPost";
+  import { isSignedIn } from "../../services/signInStatus";
+  import { invalidate } from "$app/navigation";
+
+
   export let postsList;
 
   /**
@@ -95,6 +100,27 @@
       }
     }
   };
+
+  const callAddReaction = async (postID, reaction) => {
+    let signedStatus;
+    const unsub = isSignedIn.subscribe((value) => {
+      signedStatus = value;
+    });
+    unsub();
+
+    if (!signedStatus) {
+      alert("Please connect wallet and sign in to react to a post");
+    } else {
+      const response = await addReactionToAPost(postID, reaction);
+
+      if (response?.error) {
+        alert(response?.error?.graphQLErrors[0]?.message);
+        return;
+      }
+      await invalidate("posts: updated-posts");
+    }
+
+  };
 </script>
 
 
@@ -115,8 +141,18 @@
             </div>
             <div class="posts__post__data__content">{post["metadata"]["content"]}</div>
             <div class="posts__post__data__reaction-bar">
-              <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalUpvotes"]} 👍</div>
-              <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalDownvotes"]} 👎</div>
+              <div class="posts__post__data__reaction-bar__reaction">
+                {post["stats"]["totalUpvotes"]}
+                <button on:click={callAddReaction(post["id"], "UPVOTE")}>
+                  👍
+                </button>
+              </div>
+              <div class="posts__post__data__reaction-bar__reaction">
+                {post["stats"]["totalDownvotes"]}
+                <button on:click={callAddReaction(post["id"], "DOWNVOTE")}>
+                  👎
+                </button>
+              </div>
               <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalAmountOfComments"]} 💬</div>
               <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalAmountOfMirrors"]} 📨</div>
             </div>
@@ -182,6 +218,13 @@
     flex-direction: row;
     gap: 2rem;
   }
+
+  .posts__post__data__reaction-bar__reaction button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
 
   img {
     width: 60px;
