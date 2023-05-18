@@ -5,6 +5,7 @@
 
 
   export let postsList;
+  export let hashedURL;
 
   /**
    * It handles the error if any field is missing in post
@@ -13,9 +14,6 @@
    * @param post
    */
   const isPostValid = (post) => {
-
-    if (!post?.profile?.picture?.original?.url)
-      return false;
 
     if (!post?.profile?.handle)
       return false;
@@ -43,7 +41,11 @@
     return true;
   };
 
-  const getPictureURL = (fetchedLensURL) => {
+  const getPictureURL = (fetchedLensURL, ownedByAddress) => {
+    if (fetchedLensURL === undefined) {
+      return `https://cdn.stamp.fyi/avatar/eth:${ownedByAddress}?s=300`;
+    }
+
     if (fetchedLensURL.substring(0, 4) === "ipfs") {
       return `https://gateway.ipfscdn.io/ipfs/${fetchedLensURL.substring(6)}`;
     } else {
@@ -131,7 +133,7 @@
         <div class="posts__post">
           <div class="posts__post__avatar">
             <img
-              src={ getPictureURL(post["profile"]["picture"]["original"]["url"])}
+              src={ getPictureURL(post?.profile?.picture?.original?.url, post?.profile?.ownedBy)}
               alt="avatar" />
           </div>
           <div class="posts__post__data">
@@ -153,7 +155,12 @@
                   👎
                 </button>
               </div>
-              <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalAmountOfComments"]} 💬</div>
+              <div class="posts__post__data__reaction-bar__reaction">
+                {post["stats"]["totalAmountOfComments"]}
+                <a href={`/posts/${hashedURL}/${post?.id}`}>
+                  💬
+                </a>
+              </div>
               <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalAmountOfMirrors"]} 📨</div>
             </div>
           </div>

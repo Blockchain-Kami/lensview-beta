@@ -14,8 +14,8 @@
     <LinkPreview userEnteredURL={data["URL"]} />
   </div>
   <div class="CenterColumnFlex posts">
-    <UserPost hashedURL={data["hashedURL"]} mainPostPubId={data["mainPostPubId"]} />
-    <Posts postsList={data["items"]} />
+    <UserPost hashedURL={data["hashedURL"]} pubId={data["pubId"]} />
+    <Posts hashedURL={data["hashedURL"]} postsList={data["items"]} />
   </div>
 </section>
 <!-------------------------------------------------------------------->

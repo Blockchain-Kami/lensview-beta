@@ -1,36 +1,27 @@
 import type { LoadEvent } from "@sveltejs/kit";
 import { userEnteredURL } from "../../../services/userEnteredURL";
-import { currentTotalPosts, isMainPostAdded } from "../../../services/isPostAddedToLensGraph";
+import { isMainPostAdded } from "../../../services/isPostAddedToLensGraph";
 import { getCommentOfPublication } from "../../../utils/frontend/getCommentOfPublication";
 
 export async function load({ fetch, params, depends }: LoadEvent) {
   depends("posts: updated-posts");
-  console.log("Params", JSON.stringify(params));
-  const postInfo: string[] | undefined = params.postsInfo?.split("/");
 
+  const postInfo: string[] | undefined = params.postsInfo?.split("/");
   let hashedURL;
-  let pubId;
+  let commentPubId;
+
   if (postInfo !== undefined) {
     hashedURL = postInfo[0];
-    pubId = postInfo[1];
-    console.log("hashedURL" + hashedURL);
-    console.log("pubId" + pubId);
-  }
-
-  let comments;
-  if (pubId !== undefined) {
-    console.log("pubId" + pubId);
-    comments = await getCommentOfPublication(pubId);
-    console.log("comments" + JSON.stringify(comments));
+    commentPubId = postInfo[1];
   }
 
 
   const res = await fetch(`/api/posts?hashedURL=${hashedURL}`);
-  const fetchedData = await res.json();
+  const fetchedMainPostData = await res.json();
 
-  console.log("fetchedData", fetchedData);
+  console.log("fetchedMainPostData", fetchedMainPostData);
 
-  if (fetchedData["error"] != null) {
+  if (fetchedMainPostData["error"] != null) {
     let enteredURL;
     const unsub = userEnteredURL.subscribe((url) => {
       enteredURL = url;
@@ -41,20 +32,35 @@ export async function load({ fetch, params, depends }: LoadEvent) {
       "hashedURL": hashedURL,
       "URL": enteredURL,
       "items": [],
-      "mainPostPubId": "",
-      "comments": []
+      "pubId": "",
+      "openCommentSection": false
     };
   }
 
   console.log("No error");
   isMainPostAdded.set(true);
-  currentTotalPosts.set(fetchedData["items"].length);
 
-  return {
-    "hashedURL": hashedURL,
-    "URL": fetchedData["URL"],
-    "items": fetchedData["items"],
-    "mainPostPubId": fetchedData["parentPublicationID"],
-    "comments": comments
-  };
+  let comments;
+  if (commentPubId !== undefined) {
+    console.log("commentPubId" + commentPubId);
+    comments = await getCommentOfPublication(commentPubId);
+    console.log("comment", comments);
+
+    return {
+      "hashedURL": hashedURL,
+      "URL": fetchedMainPostData["URL"],
+      "items": comments?.data?.publications?.items,
+      "pubId": commentPubId,
+      "openCommentSection": true
+    };
+  } else {
+    return {
+      "hashedURL": hashedURL,
+      "URL": fetchedMainPostData["URL"],
+      "items": fetchedMainPostData["items"],
+      "pubId": fetchedMainPostData["parentPublicationID"],
+      "openCommentSection": false
+    };
+  }
+
 }

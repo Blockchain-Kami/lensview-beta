@@ -4,6 +4,7 @@
   import getDefaultUserProfile from "../../utils/frontend/getDefaultUserProfile.ts";
   import { userProfile } from "../../services/profile.ts";
   import getUserProfiles from "../../utils/frontend/getUserProfiles.ts";
+  import checkTxHashBeenIndexed from "../../utils/frontend/checkTxHashBeenIndexed.ts";
 
   export let showCreateLensHandleModal; // boolean
 
@@ -25,7 +26,7 @@
     }
 
     if (response.data.createProfile?.txHash) {
-      await isProfileCreated();
+      await isProfileCreated(response.data.createProfile?.txHash);
     } else {
       isCreatingLensHandle = false;
       alert("Something went wrong, please try again");
@@ -33,19 +34,19 @@
   };
 
   //TODO: See if we can use hasTxBeenHashed instead of this, may be better
-  const isProfileCreated = async () => {
-    const fetchedProfiles = await getUserProfiles();
+  const isProfileCreated = async (txHash) => {
+    const hasIndexedResponse = await checkTxHashBeenIndexed(txHash);
 
-    if (fetchedProfiles.length === 0) {
-      setTimeout(() => {
-        isProfileCreated();
-      }, 1000);
+    if (hasIndexedResponse?.data?.hasTxHashBeenIndexed?.indexed === false) {
+      console.log("Waiting for tx to be indexed");
+      setTimeout(() => isProfileCreated(txHash), 10);
     } else {
       const defaultProfile = await getDefaultUserProfile();
 
       if (defaultProfile !== null) {
         userProfile.setUserProfile(defaultProfile);
       } else {
+        const fetchedProfiles = await getUserProfiles();
         userProfile.setUserProfile(fetchedProfiles[0]);
       }
 
