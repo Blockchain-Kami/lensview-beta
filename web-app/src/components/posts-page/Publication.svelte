@@ -1,40 +1,40 @@
 <script lang="ts">
-  import { addReactionToAPost } from "../../utils/frontend/addReactionToAPost";
+
   import { isSignedIn } from "../../services/signInStatus";
+  import { addReactionToAPost } from "../../utils/frontend/addReactionToAPost";
   import { invalidate } from "$app/navigation";
 
-
-  export let postsList;
+  export let pub;
   export let hashedURL;
 
   /**
-   * It handles the error if any field is missing in post
+   * It handles the error if any field is missing in comment
    * which are getting used.
-   * UPDATE THIS FUNCTION IF ANY NEW FIELD IS ADDED IN POST
-   * @param post
+   * UPDATE THIS FUNCTION IF ANY NEW FIELD IS ADDED IN comment
+   * @param pub
    */
-  const isPostValid = (post) => {
+  const isPubValid = (pub) => {
 
-    if (!post?.profile?.handle)
+    if (!pub?.profile?.handle)
       return false;
 
-    if (!post?.createdAt)
+    if (!pub?.createdAt)
       return false;
 
-    if (!post?.metadata?.content)
+    if (!pub?.metadata?.content)
       return false;
 
-    if (!post?.stats) {
-      if (post.stats.totalUpvotes === undefined)
+    if (!pub?.stats) {
+      if (pub.stats.totalUpvotes === undefined)
         return false;
 
-      if (post.stats.totalDownvotes === undefined)
+      if (pub.stats.totalDownvotes === undefined)
         return false;
 
-      if (post.stats.totalAmountOfComments === undefined)
+      if (pub.stats.totalAmountOfpubs === undefined)
         return false;
 
-      if (post.stats.totalAmountOfMirrors === undefined)
+      if (pub.stats.totalAmountOfMirrors === undefined)
         return false;
     }
 
@@ -63,9 +63,9 @@
    */
   const getFormattedDate = (date) => {
     const today = new Date();
-    const postDate = new Date(date);
+    const commentDate = new Date(date);
 
-    const diffTime = Math.abs(today.getTime() - postDate.getTime());
+    const diffTime = Math.abs(today.getTime() - commentDate.getTime());
     const oneDay = 24 * 60 * 60 * 1000;
     const diffDays = Math.floor(diffTime / oneDay);
 
@@ -103,7 +103,7 @@
     }
   };
 
-  const callAddReaction = async (postID, reaction) => {
+  const callAddReaction = async (pubID, reaction) => {
     let signedStatus;
     const unsub = isSignedIn.subscribe((value) => {
       signedStatus = value;
@@ -111,9 +111,9 @@
     unsub();
 
     if (!signedStatus) {
-      alert("Please connect wallet and sign in to react to a post");
+      alert("Please connect wallet and sign in to react to a comment");
     } else {
-      const response = await addReactionToAPost(postID, reaction);
+      const response = await addReactionToAPost(pubID, reaction);
 
       if (response?.error) {
         alert(response?.error?.graphQLErrors[0]?.message);
@@ -123,69 +123,56 @@
     }
 
   };
+
 </script>
 
 
 <!----------------------------- HTML ----------------------------->
-  <div class="CenterColumnFlex posts">
-    {#each postsList as post}
-      {#if isPostValid(post)}
-        <div class="posts__post">
-          <div class="posts__post__avatar">
-            <img
-              src={ getPictureURL(post?.profile?.picture?.original?.url, post?.profile?.ownedBy)}
-              alt="avatar" />
-          </div>
-          <div class="posts__post__data">
-            <div class="posts__post__data__header">
-              <div class="posts__post__data__header__handle">@{post["profile"]["handle"]}</div>
-              <div class="posts__post__data__header__date">{getFormattedDate(post["createdAt"])}</div>
-            </div>
-            <div class="posts__post__data__content">{post["metadata"]["content"]}</div>
-            <div class="posts__post__data__reaction-bar">
-              <div class="posts__post__data__reaction-bar__reaction">
-                {post["stats"]["totalUpvotes"]}
-                <button on:click={callAddReaction(post["id"], "UPVOTE")}>
-                  👍
-                </button>
-              </div>
-              <div class="posts__post__data__reaction-bar__reaction">
-                {post["stats"]["totalDownvotes"]}
-                <button on:click={callAddReaction(post["id"], "DOWNVOTE")}>
-                  👎
-                </button>
-              </div>
-              <div class="posts__post__data__reaction-bar__reaction">
-                {post["stats"]["totalAmountOfComments"]}
-                <a href={`/posts/${hashedURL}/${post?.id}`}>
-                  💬
-                </a>
-              </div>
-              <div class="posts__post__data__reaction-bar__reaction">{post["stats"]["totalAmountOfMirrors"]} 📨</div>
-            </div>
-          </div>
+{#if isPubValid}
+  <div class="pub">
+    <div class="pub__avatar">
+      <img
+        src={ getPictureURL(pub?.profile?.picture?.original?.url, pub?.profile?.ownedBy)}
+        alt="avatar" />
+    </div>
+    <div class="pub__data">
+      <div class="pub__data__header">
+        <div class="pub__data__header__handle">@{pub["profile"]["handle"]}</div>
+        <div class="pub__data__header__date">{getFormattedDate(pub["createdAt"])}</div>
+      </div>
+      <div class="pub__data__content">{pub["metadata"]["content"]}</div>
+      <div class="pub__data__reaction-bar">
+        <div class="pub__data__reaction-bar__reaction">
+          {pub["stats"]["totalUpvotes"]}
+          <button on:click={callAddReaction(pub["id"], "UPVOTE")}>
+            👍
+          </button>
         </div>
-      {/if}
-    {/each}
+        <div class="pub__data__reaction-bar__reaction">
+          {pub["stats"]["totalDownvotes"]}
+          <button on:click={callAddReaction(pub["id"], "DOWNVOTE")}>
+            👎
+          </button>
+        </div>
+        <div class="pub__data__reaction-bar__reaction">
+          {pub["stats"]["totalAmountOfComments"]}
+          <a href={`/posts/${hashedURL}/${pub?.id}`}>
+            💬
+          </a>
+        </div>
+        <div class="pub__data__reaction-bar__reaction">{pub["stats"]["totalAmountOfMirrors"]} 📨</div>
+      </div>
+    </div>
   </div>
+{/if}
+
 <!---------------------------------------------------------------->
 
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
-  .posts{
-    width: 100%;
-    gap: 1rem;
-    background: white;
-    padding: 1rem;
-    border-radius: 12px;
-    align-items: flex-start;
-    height: 75vh;
-    overflow: auto;
-    justify-content: flex-start;
-  }
 
-  .posts__post {
+  .pub {
     display: flex;
     flex-direction: row;
     gap: 1rem;
@@ -193,40 +180,43 @@
     border-radius: 10px;
     box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0;
     width: 100%;
+    background: white;
+    margin-top: 0.3rem;
   }
 
-  .posts__post__data {
+  .pub__data {
     display: flex;
     flex-direction: column;
     gap: 2rem;
     width: 100%;
   }
 
-  .posts__post__data__header {
+  .pub__data__header {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
   }
 
-  .posts__post__data__header__handle {
+  .pub__data__header__handle {
     font-weight: 600;
   }
 
-  .posts__post__data__header__date {
+  .pub__data__header__date {
     font-size: small;
   }
 
-  .posts__post__data__content {
+  .pub__data__content {
     font-size: large;
   }
 
-  .posts__post__data__reaction-bar {
+  .pub__data__reaction-bar {
     display: flex;
     flex-direction: row;
+    align-items: center;
     gap: 2rem;
   }
 
-  .posts__post__data__reaction-bar__reaction button {
+  .pub__data__reaction-bar__reaction button {
     background: none;
     border: none;
     cursor: pointer;

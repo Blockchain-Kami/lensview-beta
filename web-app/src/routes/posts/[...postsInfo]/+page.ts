@@ -2,6 +2,7 @@ import type { LoadEvent } from "@sveltejs/kit";
 import { userEnteredURL } from "../../../services/userEnteredURL";
 import { isMainPostAdded } from "../../../services/isPostAddedToLensGraph";
 import { getCommentOfPublication } from "../../../utils/frontend/getCommentOfPublication";
+import { fetchPublication } from "../../../utils/frontend/fetchPublication";
 
 export async function load({ fetch, params, depends }: LoadEvent) {
   depends("posts: updated-posts");
@@ -13,6 +14,26 @@ export async function load({ fetch, params, depends }: LoadEvent) {
   if (postInfo !== undefined) {
     hashedURL = postInfo[0];
     commentPubId = postInfo[1];
+  }
+
+  if (commentPubId !== undefined) {
+    console.log("commentPubId" + commentPubId);
+    const comments = await getCommentOfPublication(commentPubId);
+    console.log("comment", comments);
+
+    const publicationResponse = await fetchPublication(commentPubId);
+    console.log("publication", publicationResponse);
+
+    const res = await fetch(`/api/get-url?hashedURL=${hashedURL}`);
+    const getURLResponse = await res.json();
+    return {
+      "hashedURL": hashedURL,
+      "URL": getURLResponse["source_url"],
+      "items": comments?.data?.publications?.items,
+      "pubId": commentPubId,
+      "pub": publicationResponse?.data?.publications?.items[0],
+      "openCommentSection": true
+    };
   }
 
 
@@ -40,20 +61,6 @@ export async function load({ fetch, params, depends }: LoadEvent) {
   console.log("No error");
   isMainPostAdded.set(true);
 
-  let comments;
-  if (commentPubId !== undefined) {
-    console.log("commentPubId" + commentPubId);
-    comments = await getCommentOfPublication(commentPubId);
-    console.log("comment", comments);
-
-    return {
-      "hashedURL": hashedURL,
-      "URL": fetchedMainPostData["URL"],
-      "items": comments?.data?.publications?.items,
-      "pubId": commentPubId,
-      "openCommentSection": true
-    };
-  } else {
     return {
       "hashedURL": hashedURL,
       "URL": fetchedMainPostData["URL"],
@@ -61,6 +68,5 @@ export async function load({ fetch, params, depends }: LoadEvent) {
       "pubId": fetchedMainPostData["parentPublicationID"],
       "openCommentSection": false
     };
-  }
 
 }

@@ -14,6 +14,7 @@
 
   export let hashedURL;
   export let pubId;
+  export let openCommentSection;
 
   let userEnteredContent = "";
   let isPosting = false;
@@ -141,7 +142,6 @@
     unsub();
   };
 
-  //TODO: Handle edges cases of below function running into infinite loop
   const checkUntilPostAdded = async (txHash) => {
 
     const hasIndexedResponse = await checkTxHashBeenIndexed(txHash);
@@ -173,7 +173,13 @@
       {/if}
     </div>
   {/if}
-  <div class="user-post__info">Connect your wallet for posting</div>
+  <div class="user-post__info">Connect your wallet for
+    {#if openCommentSection}
+      commenting
+    {:else}
+      posting
+    {/if}
+  </div>
   <div class="user-post__text">
     <input bind:value={userEnteredContent} type="text" class="user-post__text__input"
            placeholder="What's on your mind?">
@@ -187,10 +193,19 @@
     <div class="user-post__option-bar__post-btn">
       {#if !isPosting}
         <button on:click={savePost} disabled='{userEnteredContent === "" || !$isSignedIn || pubId === ""}'
-                class="btn">Post
+                class="btn">
+          {#if openCommentSection}
+            Comment
+          {:else}
+            Post
+          {/if}
         </button>
       {:else}
-        Posting...
+        {#if openCommentSection}
+          commenting...
+        {:else}
+          posting...
+        {/if}
       {/if}
     </div>
   </div>
