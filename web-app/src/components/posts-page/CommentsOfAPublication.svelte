@@ -127,53 +127,68 @@
 
 
 <!----------------------------- HTML ----------------------------->
-<div class="CenterColumnFlex comments">
-  {#each commentsList as comment}
-    {#if isCommentValid(comment)}
-      <div class="comments__comment">
-        <div class="comments__comment__avatar">
-          <img
-            src={ getPictureURL(comment?.profile?.picture?.original?.url, comment?.profile?.ownedBy)}
-            alt="avatar" />
-        </div>
-        <div class="comments__comment__data">
-          <div class="comments__comment__data__header">
-            <div class="comments__comment__data__header__handle">@{comment["profile"]["handle"]}</div>
-            <div class="comments__comment__data__header__date">{getFormattedDate(comment["createdAt"])}</div>
+{#if commentsList.length !== 0}
+  <div class="CenterColumnFlex comments">
+    {#each commentsList as comment}
+      {#if isCommentValid(comment)}
+        <div class="comments__comment">
+          <div class="comments__comment__avatar">
+            <img
+              src={ getPictureURL(comment?.profile?.picture?.original?.url, comment?.profile?.ownedBy)}
+              alt="avatar" />
           </div>
-          <div class="comments__comment__data__content">{comment["metadata"]["content"]}</div>
-          <div class="comments__comment__data__reaction-bar">
-            <div class="comments__comment__data__reaction-bar__reaction">
-              {comment["stats"]["totalUpvotes"]}
-              <button on:click={callAddReaction(comment["id"], "UPVOTE")}>
-                👍
-              </button>
+          <div class="comments__comment__data">
+            <div class="comments__comment__data__header">
+              <div class="comments__comment__data__header__handle">@{comment["profile"]["handle"]}</div>
+              <div class="comments__comment__data__header__date">{getFormattedDate(comment["createdAt"])}</div>
             </div>
-            <div class="comments__comment__data__reaction-bar__reaction">
-              {comment["stats"]["totalDownvotes"]}
-              <button on:click={callAddReaction(comment["id"], "DOWNVOTE")}>
-                👎
-              </button>
-            </div>
-            <div class="comments__comment__data__reaction-bar__reaction">
-              {comment["stats"]["totalAmountOfComments"]}
-              <a href={`/posts/${hashedURL}/${comment?.id}`}>
-                💬
-              </a>
-            </div>
-            <div class="comments__comment__data__reaction-bar__reaction">{comment["stats"]["totalAmountOfMirrors"]}📨
+            <div class="comments__comment__data__content">{comment["metadata"]["content"]}</div>
+            <div class="comments__comment__data__reaction-bar">
+              <div class="comments__comment__data__reaction-bar__reaction">
+                {comment["stats"]["totalUpvotes"]}
+                <button on:click={callAddReaction(comment["id"], "UPVOTE")}>
+                  👍
+                </button>
+              </div>
+              <div class="comments__comment__data__reaction-bar__reaction">
+                {comment["stats"]["totalDownvotes"]}
+                <button on:click={callAddReaction(comment["id"], "DOWNVOTE")}>
+                  👎
+                </button>
+              </div>
+              <div class="comments__comment__data__reaction-bar__reaction">
+                {comment["stats"]["totalAmountOfComments"]}
+                <a href={`/posts/${hashedURL}/${comment?.id}`}>
+                  💬
+                </a>
+              </div>
+              <div class="comments__comment__data__reaction-bar__reaction">{comment["stats"]["totalAmountOfMirrors"]}📨
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    {/if}
-  {/each}
-</div>
+      {/if}
+    {/each}
+  </div>
+{:else}
+  <div class="no-comments">Be first to share your views.</div>
+{/if}
+
+
 <!---------------------------------------------------------------->
 
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
+  .no-comments {
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.3rem;
+    height: 75vh;
+    align-items: center;
+  }
+
   .comments {
     width: 100%;
     gap: 1rem;
