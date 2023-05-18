@@ -8,16 +8,17 @@
   import { invalidate } from "$app/navigation";
   import { userEnteredURL } from "../../services/userEnteredURL";
   import { PUBLIC_LENS_HUB_CONTRACT_ADDRESS } from "$env/static/public";
-  import { currentTotalPosts, isMainPostAdded } from "../../services/isPostAddedToLensGraph";
+  import { isMainPostAdded } from "../../services/isPostAddedToLensGraph";
   import { userProfile } from "../../services/profile";
+  import checkTxHashBeenIndexed from "../../utils/frontend/checkTxHashBeenIndexed";
 
   export let hashedURL;
-  export let mainPostPubId;
+  export let pubId;
+  export let openCommentSection;
 
   let userEnteredContent = "";
   let isPosting = false;
   let addingLink = false;
-  let prevTotalPosts: number;
 
 
   function splitSignature(signature) {
@@ -37,7 +38,7 @@
     const contentURI = await uploadToIPFS(profile.id, userEnteredContent, hashedURL);
     const createCommentRequest = {
       profileId: profile.id,
-      publicationId: mainPostPubId,
+      publicationId: pubId,
       contentURI,
       collectModule: {
         freeCollectModule: { followerOnly: true }
@@ -82,12 +83,7 @@
       console.log("successfully created Comment: tx hash", tx.hash);
       console.log("successfully created Comment: tx hash", JSON.stringify(tx));
 
-      const unsub = currentTotalPosts.subscribe((value) => {
-        prevTotalPosts = value;
-      });
-      unsub();
-
-      checkUntilPostAdded();
+      await checkUntilPostAdded(tx.hash);
     } catch (err) {
       console.log("error: ", err);
       isPosting = false;
@@ -111,7 +107,7 @@
       }
     }).then(async (res) => {
       if (res.status === 200) {
-        console.log("Res : " + res);
+        console.log("Res : ", res);
         isMainPostAdded.set(false);
         checkUntilMainPostAdded();
       } else {
@@ -125,7 +121,9 @@
   };
 
   //TODO: Handle edges cases of below function running into infinite loop
+  //TODO: Update this function with checkUntilPostAdded() which uses hasTxHashBeenIndexed
   const checkUntilMainPostAdded = () => {
+
     let isMainPostAddedStatus;
     const unsub = isMainPostAdded.subscribe((value) => {
       console.log("isMainPostAddedStatus : ", value);
@@ -144,31 +142,26 @@
     unsub();
   };
 
-  //TODO: Handle edges cases of below function running into infinite loop
-  const checkUntilPostAdded = () => {
-    let currentTotalPostsValue;
-    const unsub = currentTotalPosts.subscribe((value) => {
-      console.log("currentTotalPostsValue : ", value);
-      currentTotalPostsValue = value;
-    });
+  const checkUntilPostAdded = async (txHash) => {
 
-    if (currentTotalPostsValue === prevTotalPosts) {
+    const hasIndexedResponse = await checkTxHashBeenIndexed(txHash);
+
+    if (hasIndexedResponse?.data?.hasTxHashBeenIndexed?.indexed === false) {
       console.log("Waiting for post to be added to graph");
-      invalidate("posts: updated-posts");
-      setTimeout(checkUntilPostAdded, 1000);
+      setTimeout(() => checkUntilPostAdded(txHash), 10);
     } else {
-      console.log("post added to graph");
       isPosting = false;
       userEnteredContent = "";
+      txHash = "";
+      await invalidate("posts: updated-posts");
     }
-    unsub();
   };
 </script>
 
 
 <!----------------------------- HTML ----------------------------->
 <div class="CenterColumnFlex user-post">
-  {#if mainPostPubId === ""}
+  {#if pubId === ""}
     <div class="user-post__link">
       <input bind:value={$userEnteredURL} type="text" class="user-post__link__input"
              placeholder="Please insert link over here">
@@ -180,7 +173,13 @@
       {/if}
     </div>
   {/if}
-  <div class="user-post__info">Connect your wallet for posting</div>
+  <div class="user-post__info">Connect your wallet for
+    {#if openCommentSection}
+      commenting
+    {:else}
+      posting
+    {/if}
+  </div>
   <div class="user-post__text">
     <input bind:value={userEnteredContent} type="text" class="user-post__text__input"
            placeholder="What's on your mind?">
@@ -193,11 +192,20 @@
     </div>
     <div class="user-post__option-bar__post-btn">
       {#if !isPosting}
-        <button on:click={savePost} disabled='{userEnteredContent === "" || !$isSignedIn || mainPostPubId === ""}'
-                class="btn">Post
+        <button on:click={savePost} disabled='{userEnteredContent === "" || !$isSignedIn || pubId === ""}'
+                class="btn">
+          {#if openCommentSection}
+            Comment
+          {:else}
+            Post
+          {/if}
         </button>
       {:else}
-        Posting...
+        {#if openCommentSection}
+          commenting...
+        {:else}
+          posting...
+        {/if}
       {/if}
     </div>
   </div>

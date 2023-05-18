@@ -1,7 +1,8 @@
 <script>
   import LinkPreview from "../../../components/posts-page/LinkPreview.svelte";
-  import UserPost from "../../../components/posts-page/UserPost.svelte";
-  import Posts from "../../../components/posts-page/Posts.svelte";
+  import PostAPublication from "../../../components/posts-page/PostAPublication.svelte";
+  import CommentsOfAPublication from "../../../components/posts-page/CommentsOfAPublication.svelte";
+  import Publication from "../../../components/posts-page/Publication.svelte";
 
   export let data;
 
@@ -14,8 +15,12 @@
     <LinkPreview userEnteredURL={data["URL"]} />
   </div>
   <div class="CenterColumnFlex posts">
-    <UserPost hashedURL={data["hashedURL"]} mainPostPubId={data["mainPostPubId"]} />
-    <Posts postsList={data["items"]} />
+    {#if data["openCommentSection"]}
+      <Publication hashedURL={data["hashedURL"]} pub={data["pub"]} />
+    {/if}
+    <PostAPublication hashedURL={data["hashedURL"]} pubId={data["pubId"]}
+                      openCommentSection={data["openCommentSection"]} />
+    <CommentsOfAPublication hashedURL={data["hashedURL"]} commentsList={data["items"]} />
   </div>
 </section>
 <!-------------------------------------------------------------------->
