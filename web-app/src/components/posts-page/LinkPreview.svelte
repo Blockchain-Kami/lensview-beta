@@ -1,19 +1,136 @@
 <script lang="ts">
-  export let userEnteredURL;
+  import { isSignedIn } from "../../services/signInStatus";
+  import { addReactionToAPost } from "../../utils/frontend/addReactionToAPost";
+  import { invalidate } from "$app/navigation";
+
+  export let mainPostPub;
+
+
+  const callAddReaction = async (pubID, reaction) => {
+    let signedStatus;
+    const unsub = isSignedIn.subscribe((value) => {
+      signedStatus = value;
+    });
+    unsub();
+
+    if (!signedStatus) {
+      alert("Please connect wallet and sign in to react to a comment");
+    } else {
+      const response = await addReactionToAPost(pubID, reaction);
+
+      if (response?.error) {
+        alert(response?.error?.graphQLErrors[0]?.message);
+        return;
+      }
+      await invalidate("posts: updated-posts");
+    }
+
+  };
+
+  const getSlicedURL = (url) => {
+    if (url.length > 40) {
+      return url.slice(0, 30) + "..." + url.slice(-10);
+    }
+    return url;
+  };
+
+  const copyPostUrl = () => {
+    navigator.clipboard.writeText(window.location.href);
+    alert("Post URL copied to clipboard, now you can share this post with your friends!");
+  };
+
 </script>
 
 
 <!----------------------------- HTML ----------------------------->
-<h1>
-  <a href={userEnteredURL} style="cursor: pointer" target="_blank">
-    Entered link : {userEnteredURL}
+
+<div class="CenterColumnFlex main-post">
+  <div class="main-post__img">
+    <img
+      src={mainPostPub?.metadata?.image}
+      alt="post image" />
+  </div>
+  <a href={mainPostPub?.metadata?.description} target="_blank" class="main-post__url">
+    {getSlicedURL(mainPostPub?.metadata?.description)}
   </a>
-</h1>
+  <div class="CenterRowFlex main-post__stats">
+    <div class="CenterRowFlex main-post__stats__reaction-bar">
+      <div class="main-post__stats__reaction-bar__reaction">
+        {mainPostPub?.stats?.totalUpvotes}
+        <button on:click={callAddReaction(mainPostPub["id"], "UPVOTE")}>
+          👍
+        </button>
+      </div>
+      <div class="main-post__stats__reaction-bar__reaction">
+        {mainPostPub?.stats?.totalDownvotes}
+        <button on:click={callAddReaction(mainPostPub?.id, "DOWNVOTE")}>
+          👎
+        </button>
+      </div>
+      <div class="main-post__stats__reaction-bar__reaction">
+        <button on:click={copyPostUrl}>
+          📨
+        </button>
+      </div>
+    </div>
+    <div class="main-post__stats__post-count">
+      {mainPostPub?.stats?.totalAmountOfComments} Post(s)
+    </div>
+  </div>
+
+</div>
 <!---------------------------------------------------------------->
 
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
+  .main-post {
+    padding: 1rem;
+    width: 100%;
+    gap: 1rem;
+  }
 
+  .main-post__img img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0;
+  }
+
+  .main-post__url {
+    width: 100%;
+    font-size: 1rem;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0;
+    background: white;
+  }
+
+  .main-post__stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .main-post__stats__reaction-bar {
+    background: #aedaf3;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0;
+    justify-content: space-evenly;
+    width: 60%;
+
+  }
+
+  .main-post__stats__reaction-bar button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .main-post__stats__post-count {
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0;
+    background: deeppink;
+  }
 </style>
 <!----------------------------------------------------------------->

@@ -21,17 +21,22 @@ export async function load({ fetch, params, depends }: LoadEvent) {
     const comments = await getCommentOfPublication(commentPubId);
     console.log("comment", comments);
 
-    const publicationResponse = await fetchPublication(commentPubId);
-    console.log("publication", publicationResponse);
+    const commentPublicationResponse = await fetchPublication(commentPubId);
+    // console.log("commentPublicationResponse", commentPublicationResponse);
 
     const res = await fetch(`/api/get-url?hashedURL=${hashedURL}`);
     const getURLResponse = await res.json();
+
+    const mainPostPublicationResponse = await fetchPublication(getURLResponse["parent_publication_ID"]);
+    console.log("mainPostPublicationResponse", mainPostPublicationResponse);
+
     return {
       "hashedURL": hashedURL,
       "URL": getURLResponse["source_url"],
       "items": comments?.data?.publications?.items,
       "pubId": commentPubId,
-      "pub": publicationResponse?.data?.publications?.items[0],
+      "pub": commentPublicationResponse?.data?.publications?.items[0],
+      "mainPostPub": mainPostPublicationResponse?.data?.publications?.items[0],
       "openCommentSection": true
     };
   }
@@ -54,19 +59,24 @@ export async function load({ fetch, params, depends }: LoadEvent) {
       "URL": enteredURL,
       "items": [],
       "pubId": "",
+      "mainPostPub": {},
       "openCommentSection": false
     };
   }
 
+  const mainPostPublicationResponse = await fetchPublication(fetchedMainPostData["parentPublicationID"]);
+  console.log("mainPostPublicationResponse", mainPostPublicationResponse);
+
   console.log("No error");
   isMainPostAdded.set(true);
 
-    return {
-      "hashedURL": hashedURL,
-      "URL": fetchedMainPostData["URL"],
-      "items": fetchedMainPostData["items"],
-      "pubId": fetchedMainPostData["parentPublicationID"],
-      "openCommentSection": false
-    };
+  return {
+    "hashedURL": hashedURL,
+    "URL": fetchedMainPostData["URL"],
+    "items": fetchedMainPostData["items"],
+    "pubId": fetchedMainPostData["parentPublicationID"],
+    "mainPostPub": mainPostPublicationResponse?.data?.publications?.items[0],
+    "openCommentSection": false
+  };
 
 }

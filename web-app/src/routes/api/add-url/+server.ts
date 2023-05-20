@@ -1,8 +1,8 @@
-import {json} from '@sveltejs/kit'
-import {createHash} from "../../../utils/backend/sha1.server";
-import {signInWithLens} from '../../../utils/backend/lens-sign-in.server';
-import {preprocessURL} from "../../../utils/backend/process-url.server.ts";
-import {uploadImage} from "../../../utils/backend/upload-page-screenshot.server";
+import { json } from "@sveltejs/kit";
+import { createHash } from "../../../utils/backend/sha1.server";
+import { signInWithLens } from "../../../utils/backend/lens-sign-in.server";
+import { preprocessURL } from "../../../utils/backend/process-url.server";
+import { uploadImage } from "../../../utils/backend/upload-page-screenshot.server";
 import savePost from "../../../utils/backend/add-url.server";
 
 export async function POST(requestEvent) {

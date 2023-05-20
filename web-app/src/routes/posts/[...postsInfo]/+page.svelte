@@ -12,7 +12,7 @@
 <!------------------------------ HTML ------------------------------>
 <section class="CenterRowFlex">
   <div class="CenterColumnFlex link-preview">
-    <LinkPreview userEnteredURL={data["URL"]} />
+    <LinkPreview mainPostPub={data["mainPostPub"]} />
   </div>
   <div class="CenterColumnFlex posts">
     {#if data["openCommentSection"]}

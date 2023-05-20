@@ -98,6 +98,7 @@ fragment MetadataOutputFields on MetadataOutput {
   name
   description
   content
+  image
   media {
     original {
       ...MediaFields
