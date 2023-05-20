@@ -191,11 +191,11 @@
 <main>
   <div class="CenterColumnFlex menu">
     <div class="CenterColumnFlex menu__items">
-      <div class="menu__items__item menu__items__item--logo"
-           style="background:none; margin-right: 60px; padding-bottom: 0; padding-top: 0; margin-bottom: 40px">
-        <a href="/"><img alt="Untitled-presentation-3" height="80px"
-                         src="https://i.postimg.cc/mgzXmdNF/Screenshot-2023-05-08-at-11-42-29-PM.png"
-                         width="190px" /></a>
+      <div class="menu__items__item menu__items__item--logo">
+        <a href="/"><img alt="Untitled-presentation-3"
+                         src="https://i.postimg.cc/3JG1b9Cv/Lensview-Logo.png"
+                         height="120rem"
+                         width="130rem" /></a>
       </div>
       <div class="menu__items__item">
         <a href="/">Home</a>
@@ -266,7 +266,7 @@
 
   .menu__user__profile {
     padding: 1rem;
-    background: greenyellow;
+    background: #38b6ff;
     border-radius: 39px;
   }
 
@@ -277,10 +277,16 @@
 
   .menu__items__item {
     width: 100%;
-    background: rgb(191, 230, 107);
-    background: radial-gradient(circle, rgba(191, 230, 107, 1) 35%, rgba(215, 251, 144, 1) 100%);
+    background: #38b6ff;
     padding: 0.75rem;
     border-radius: 8px;
+  }
+
+  .menu__items__item--logo {
+    background: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .search-box {

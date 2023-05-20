@@ -5,7 +5,7 @@
 
 <!----------------------------- HTML ----------------------------->
 <h1>
-  <a href={userEnteredURL} style="cursor: pointer">
+  <a href={userEnteredURL} style="cursor: pointer" target="_blank">
     Entered link : {userEnteredURL}
   </a>
 </h1>
