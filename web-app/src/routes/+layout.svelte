@@ -266,7 +266,7 @@
 
   .menu__user__profile {
     padding: 1rem;
-    background: greenyellow;
+    background: #38b6ff;
     border-radius: 39px;
   }
 
