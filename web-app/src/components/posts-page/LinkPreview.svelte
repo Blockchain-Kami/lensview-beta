@@ -28,8 +28,10 @@
   };
 
   const getSlicedURL = (url) => {
-    if (url.length > 40) {
-      return url.slice(0, 30) + "..." + url.slice(-10);
+    if (!url) return;
+
+    if (url.length > 50) {
+      return url.slice(0, 30) + "..." + url.slice(-20);
     }
     return url;
   };
@@ -43,42 +45,47 @@
 
 
 <!----------------------------- HTML ----------------------------->
-
-<div class="CenterColumnFlex main-post">
-  <div class="main-post__img">
-    <img
-      src={mainPostPub?.metadata?.image}
-      alt="post image" />
-  </div>
-  <a href={mainPostPub?.metadata?.description} target="_blank" class="main-post__url">
-    {getSlicedURL(mainPostPub?.metadata?.description)}
-  </a>
-  <div class="CenterRowFlex main-post__stats">
-    <div class="CenterRowFlex main-post__stats__reaction-bar">
-      <div class="main-post__stats__reaction-bar__reaction">
-        {mainPostPub?.stats?.totalUpvotes}
-        <button on:click={callAddReaction(mainPostPub["id"], "UPVOTE")}>
-          👍
-        </button>
+{#if Object.keys(mainPostPub).length > 0}
+  <div class="CenterColumnFlex main-post">
+    <div class="main-post__img">
+      <img
+        src={mainPostPub?.metadata?.image}
+        alt="post image" />
+    </div>
+    <a href={mainPostPub?.metadata?.description} target="_blank" class="main-post__url">
+      {getSlicedURL(mainPostPub?.metadata?.description)}
+    </a>
+    <div class="CenterRowFlex main-post__stats">
+      <div class="CenterRowFlex main-post__stats__reaction-bar">
+        <div class="main-post__stats__reaction-bar__reaction">
+          {mainPostPub?.stats?.totalUpvotes}
+          <button on:click={callAddReaction(mainPostPub["id"], "UPVOTE")}>
+            👍
+          </button>
+        </div>
+        <div class="main-post__stats__reaction-bar__reaction">
+          {mainPostPub?.stats?.totalDownvotes}
+          <button on:click={callAddReaction(mainPostPub?.id, "DOWNVOTE")}>
+            👎
+          </button>
+        </div>
+        <div class="main-post__stats__reaction-bar__reaction">
+          <button on:click={copyPostUrl}>
+            📨
+          </button>
+        </div>
       </div>
-      <div class="main-post__stats__reaction-bar__reaction">
-        {mainPostPub?.stats?.totalDownvotes}
-        <button on:click={callAddReaction(mainPostPub?.id, "DOWNVOTE")}>
-          👎
-        </button>
-      </div>
-      <div class="main-post__stats__reaction-bar__reaction">
-        <button on:click={copyPostUrl}>
-          📨
-        </button>
+      <div class="main-post__stats__post-count">
+        {mainPostPub?.stats?.totalAmountOfComments} Post(s)
       </div>
     </div>
-    <div class="main-post__stats__post-count">
-      {mainPostPub?.stats?.totalAmountOfComments} Post(s)
-    </div>
   </div>
+{:else}
+  <div class="main-no-post">
+    <h1>No post found</h1>
+  </div>
+{/if}
 
-</div>
 <!---------------------------------------------------------------->
 
 
@@ -103,6 +110,7 @@
     border-radius: 10px;
     box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0;
     background: white;
+    color: dodgerblue;
   }
 
   .main-post__stats {
