@@ -1,9 +1,9 @@
 /**
  * Web3 Storage Code
  */
-import { PUBLIC_WEB3STORAGE_TOKEN } from "$env/static/public";
-import { File, Web3Storage } from "web3.storage";
-import { v4 as uuidv4 } from "uuid";
+import {PUBLIC_WEB3STORAGE_TOKEN} from "$env/static/public";
+import {File, Web3Storage} from "web3.storage";
+import {v4 as uuidv4} from "uuid";
 
 function getAccessToken() {
     // If you're just testing, you can paste in a token
@@ -23,36 +23,37 @@ function makeStorageClient() {
     return new Web3Storage({token: getAccessToken()})
 }
 
-function makeFileObjects(url: string, hashedURL: string) {
+function makeFileObjects(urlObj) {
     // You can create File objects from a Blob of binary data
     // see: https://developer.mozilla.org/en-US/docs/Web/API/Blob
     // Here we're just storing a JSON object, but you can store images,
     // audio, or whatever you want!
 
     // //Getting profile of the connected user and saving it to "profile" variable
-    // getDefaultUserProfile(address);
+    // getUserProfile(address);
 
     const metaData = {
-        version: "2.0.0",
-        content: url,
-        description: `LensView post: ${url}`,
+        version: '2.0.0',
+        content: urlObj['url'],
+        description: `LensView post: ${urlObj['url']}`,
         name: `Posting on test-net through lensView`,
-        external_url: "https://lensView.xyz",
+        external_url: urlObj['imageURL'],
         metadata_id: uuidv4(),
-        mainContentFocus: "TEXT_ONLY",
+        mainContentFocus: 'TEXT_ONLY',
         attributes: [],
-        locale: "en-US",
-        appId: "LensView",
-        tags: [hashedURL]
-    };
-    const blob = new Blob([JSON.stringify(metaData)], { type: "application/json" });
+        locale: 'en-US',
+        appId: 'LensView',
+        tags: [urlObj['hashedURL'], urlObj['origin'], urlObj['hashedOrigin'], urlObj['hashedPath']]
+    }
+    const blob = new Blob([JSON.stringify(metaData)], {type: 'application/json'})
     // const buffer = Buffer.from(JSON.stringify(metaData))
 
 
-    return [
-        new File(["contents-of-file-1"], "plain-utf8.txt"),
-        new File([blob as BlobPart], "metaData.json")
-    ];
+    const files = [
+        new File(['contents-of-file-1'], 'plain-utf8.txt'),
+        new File([blob as BlobPart], 'metaData.json')
+    ]
+    return files
 }
 
 /*********************************/
@@ -60,16 +61,16 @@ function makeFileObjects(url: string, hashedURL: string) {
 /**
  * 4. Upload to IPFS
  */
-const uploadToIPFS = async (url: string, hashedURL: string) => {
+const uploadToIPFS = async (urlObj) => {
 
     /*** Web3.storage ***/
-    const client = makeStorageClient();
-    const cid = await client.put(makeFileObjects(url, hashedURL));
-    console.log("stored files with cid:", cid);
-    const uri = `https://${cid}.ipfs.w3s.link/metaData.json`;
+    const client = makeStorageClient()
+    const cid = await client.put(makeFileObjects(urlObj))
+    console.log('stored files with cid:', cid)
+    const uri = `https://${cid}.ipfs.w3s.link/metaData.json`
 
     console.log("URI : " + uri);
-    return uri;
-};
+    return uri
+}
 
 export default uploadToIPFS;
