@@ -12,8 +12,7 @@ export async function POST(requestEvent) {
     try {
         let imgURL;
         const {request} = requestEvent;
-        const body = await request.json();
-        const url = body['url'];
+        const url = await request.json();
 
         const [origin, path] = preprocessURL(url);
         const hashedURL = createHash(url);
@@ -24,7 +23,6 @@ export async function POST(requestEvent) {
             imgURL = await uploadImage(path, hashedURL);
 
         } catch (err) {
-            console.log(err);
             return json({
                 code: 404,
                 description: "Could not add url image to web3.js. Function uploadImage(url, hashedURL)",
@@ -69,10 +67,12 @@ export async function POST(requestEvent) {
         }
 
     } catch (err) {
-        return json({
-            code: 404,
-            error: err,
-            reason: "Invalid URL provided"
-        })
+        console.log("ERROR!!!!: ", err);
+        throw new Error(err);
+        // return json({
+        //     code: 404,
+        //     error: err,
+        //     reason: "Invalid URL provided"
+        // })
     }
 }

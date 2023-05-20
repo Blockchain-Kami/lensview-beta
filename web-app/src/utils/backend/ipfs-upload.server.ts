@@ -37,7 +37,8 @@ function makeFileObjects(urlObj) {
         content: urlObj['url'],
         description: `LensView post: ${urlObj['url']}`,
         name: `Posting on test-net through lensView`,
-        external_url: urlObj['imageURL'],
+        external_url: urlObj['url'],
+        image: urlObj['imageURL'],
         metadata_id: uuidv4(),
         mainContentFocus: 'TEXT_ONLY',
         attributes: [],
@@ -49,11 +50,10 @@ function makeFileObjects(urlObj) {
     // const buffer = Buffer.from(JSON.stringify(metaData))
 
 
-    const files = [
+    return [
         new File(['contents-of-file-1'], 'plain-utf8.txt'),
         new File([blob as BlobPart], 'metaData.json')
-    ]
-    return files
+    ];
 }
 
 /*********************************/
