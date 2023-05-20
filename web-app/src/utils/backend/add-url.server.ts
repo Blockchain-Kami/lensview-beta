@@ -40,10 +40,10 @@ const signCreatePostTypedData = async (request, client, signer) => {
     return {result, signature};
 }
 
-const savePost = async (url, hashedURL, client, signer, profile) => {
+const savePost = async (urlObj, client, signer, profile) => {
     isPosting = true;
     console.log("Post called :");
-    const contentURI = await uploadToIPFS(url, hashedURL)
+    const contentURI = await uploadToIPFS(urlObj)
     const createPostRequest = {
         profileId: profile.id,
         contentURI,

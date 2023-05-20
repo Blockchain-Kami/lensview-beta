@@ -32,7 +32,7 @@
     padding: 0.8rem 1rem;
     border-radius: 10px;
     margin-right: 0.75rem;
-    width: 75%;
+    width: 85%;
     text-align: center;
   }
 </style>
