@@ -171,7 +171,7 @@
     {/each}
   </div>
 {:else}
-  <div class="no-comments">Be first to share your views.</div>
+  <div class="no-comments">Be the first to share your views.</div>
 {/if}
 
 
