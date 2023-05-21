@@ -1,7 +1,11 @@
 import {PUBLIC_WEB3STORAGE_TOKEN} from "$env/static/public";
 import {Web3Storage} from "web3.storage";
-import * as play from "playwright-core";
+import edgeChromium from 'chrome-aws-lambda';
+import puppeteer from 'puppeteer-core';
 import {Blob} from "buffer";
+
+const LOCAL_CHROME_EXECUTABLE = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+
 
 function makeGatewayURLImage(imgCID, imgName) {
     return `https://${imgCID}.ipfs.w3s.link/${imgName}`;
@@ -10,13 +14,17 @@ function makeGatewayURLImage(imgCID, imgName) {
 export const uploadImage = async (url, hashedURL) => {
 
     try {
+        const executablePath = await edgeChromium.executablePath || LOCAL_CHROME_EXECUTABLE;
 
-        const browser = await play.chromium.launch({
-            executablePath: await play.chromium.executablePath(),
-            args: ['--no-sandbox'],
+        const browser = await puppeteer.launch({
+            executablePath,
+            args: edgeChromium.args,
+            headless: false,
         });
+
         const page = await browser.newPage();
-        await page.goto(url, );
+
+        await page.goto(url,{waitUntil: 'networkidle2'});
         const img = await page.screenshot();
         const imgName = 'img.jpg'
 
