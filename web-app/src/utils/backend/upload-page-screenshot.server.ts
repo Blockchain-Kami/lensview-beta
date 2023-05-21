@@ -1,6 +1,6 @@
 import {PUBLIC_WEB3STORAGE_TOKEN} from "$env/static/public";
 import {Web3Storage} from "web3.storage";
-import {chromium} from "playwright";
+import {chromium} from "playwright-core";
 import {Blob} from "buffer";
 
 function makeGatewayURLImage(imgCID, imgName) {
