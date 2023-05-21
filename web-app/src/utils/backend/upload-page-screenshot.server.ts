@@ -1,6 +1,6 @@
 import {PUBLIC_WEB3STORAGE_TOKEN} from "$env/static/public";
 import {Web3Storage} from "web3.storage";
-import puppeteer from "puppeteer";
+import {chromium} from "playwright";
 import {Blob} from "buffer";
 
 function makeGatewayURLImage(imgCID, imgName) {
@@ -11,9 +11,9 @@ export const uploadImage = async (url, hashedURL) => {
 
     try {
 
-        const browser = await puppeteer.launch({headless: "new"});
+        const browser = await chromium.launch();
         const page = await browser.newPage();
-        await page.goto(url, {waitUntil: 'networkidle2'});
+        await page.goto(url, );
         const img = await page.screenshot();
         const imgName = 'img.jpg'
 
