@@ -20,8 +20,8 @@
     "omit-deep": "^0.3.0",
     "uuid": "^9.0.0",
     "web3.storage": "^3.1.0",
-    "chrome-aws-lambda": "6.0.0",
-    "puppeteer-core": "6.0.0"
+    "chrome-aws-lambda": "10.1.0",
+    "puppeteer-core": "10.1.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^2.0.0",
