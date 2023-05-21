@@ -11,7 +11,10 @@ export const uploadImage = async (url, hashedURL) => {
 
     try {
 
-        const browser = await play.chromium.launch();
+        const browser = await play.chromium.launch({
+            executablePath: await play.chromium.executablePath(),
+            args: ['--no-sandbox'],
+        });
         const page = await browser.newPage();
         await page.goto(url, );
         const img = await page.screenshot();
