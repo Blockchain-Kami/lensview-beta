@@ -1,7 +1,7 @@
 import {PUBLIC_WEB3STORAGE_TOKEN} from "$env/static/public";
-import {getFilesFromPath, Web3Storage} from "web3.storage";
-import * as fs from "fs";
+import {Web3Storage} from "web3.storage";
 import puppeteer from "puppeteer";
+import {Blob} from "buffer";
 
 function makeGatewayURLImage(imgCID, imgName) {
     return `https://${imgCID}.ipfs.w3s.link/${imgName}`;
@@ -14,26 +14,29 @@ export const uploadImage = async (url, hashedURL) => {
         const browser = await puppeteer.launch({headless: "new"});
         const page = await browser.newPage();
         await page.goto(url, {waitUntil: 'networkidle2'});
-        await page.screenshot({path: './img.jpg'});
+        const img = await page.screenshot();
+        const imgName = 'img.jpg'
+
+        // const imgBlob = new Blob([img]);
+        const screenshotBlob = new Blob([img]);
+        const file = new File([screenshotBlob as BlobPart], imgName)
+
+        const client = new Web3Storage({token: PUBLIC_WEB3STORAGE_TOKEN});
+
+        const imgCID = await client.put([file], {name: imgName});
+        const imgURL = makeGatewayURLImage(imgCID, imgName);
+
+        console.log("Screenshot URI:", imgURL);
+
         await browser.close();
+
+
+        return imgURL;
 
     } catch {
         console.log("Failed to save");
         return;
     }
 
-    const client = new Web3Storage({token: PUBLIC_WEB3STORAGE_TOKEN});
-    const img = await getFilesFromPath('./img.jpg');
-    const imgName = img[0].name;
-    console.log(imgName);
 
-    const imgCID = await client.put(img, {name: imgName});
-    const imgURL = makeGatewayURLImage(imgCID, imgName);
-
-    console.log(imgURL);
-
-    fs.unlinkSync('./img.jpg');
-
-
-    return imgURL;
 }

@@ -52,6 +52,7 @@ fragment MetadataOutputFields on MetadataOutput {
   description
   content
   tags
+  image
 }
 
 fragment Erc20Fields on Erc20 {
