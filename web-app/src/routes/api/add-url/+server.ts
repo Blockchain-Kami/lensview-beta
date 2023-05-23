@@ -10,17 +10,19 @@ export async function POST(requestEvent) {
     // will always return a 200 OK Status Code, even in case of error.
     // You'll get a 5xx error in case the server is not available at all.)
     try {
+
         let imgURL;
         const {request} = requestEvent;
-        const url = await request.json();
-
-        const [origin, path] = preprocessURL(url);
+        const rawUrl = await request.json();
+        const [url, origin, path, query] = preprocessURL(rawUrl);
         const hashedURL = createHash(url);
         const hashedOrigin = createHash(origin);
         const hashedPath = createHash(path);
 
+        console.log(URL);
+
         try {
-            imgURL = await uploadImage(path, hashedURL);
+            imgURL = await uploadImage(url);
 
         } catch (err) {
             return json({
@@ -48,7 +50,7 @@ export async function POST(requestEvent) {
                 return json({
                     statusCode: 201,
                     message: 'Post saved successfully',
-                    url: url,
+                    url: URL,
                     hashedURL: hashedURL
                 })
 
@@ -62,7 +64,7 @@ export async function POST(requestEvent) {
         } catch (err) {
             return json({
                 status_code: 404,
-                error: "Error signing in with Lens"
+                error: "Error signing in with Lens",
             });
         }
 

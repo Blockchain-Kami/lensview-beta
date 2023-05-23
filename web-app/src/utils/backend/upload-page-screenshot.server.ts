@@ -11,7 +11,7 @@ function makeGatewayURLImage(imgCID, imgName) {
     return `https://${imgCID}.ipfs.w3s.link/${imgName}`;
 }
 
-export const uploadImage = async (url, hashedURL) => {
+export const uploadImage = async (url) => {
 
     try {
         const executablePath = await edgeChromium.executablePath || LOCAL_CHROME_EXECUTABLE;

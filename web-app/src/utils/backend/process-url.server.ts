@@ -1,9 +1,27 @@
 import {URL} from 'url';
 
 export const preprocessURL = (url) => {
-    url = new URL(url);
-    const parsedURL = new URL(url);
-    const origin = parsedURL.origin;
-    const path = origin + parsedURL.pathname;
-    return [origin.trim(), path.trim()];
+    try {
+        url = url.trim().split('#')[0];
+
+        const parsedURL  = new URL(url);
+
+        url = 'https://' + parsedURL.toString().substring(8,).replaceAll(/[/]+/g,'/');
+        const processedURL = new URL(url);
+        const origin = processedURL.origin;
+        const path = origin + processedURL.pathname;
+        const query = processedURL.searchParams;
+
+        return [
+            processedURL.toString().trim(),
+            origin.trim(),
+            path.trim(),
+            query.toString().trim(),
+        ];
+
+
+    } catch {
+        console.log('Failed to process URL');
+        throw new Error();
+    }
 }
