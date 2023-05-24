@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer-core";
-import {json} from '@sveltejs/kit';
-import {PRIVATE_BROWSERLESS_KEY} from "$env/static/private";
+import { json } from "@sveltejs/kit";
+import { PRIVATE_BROWSERLESS_KEY } from "$env/static/private";
 
 const getBrowser = () => {
     return puppeteer.connect({ browserWSEndpoint: `wss://chrome.browserless.io?token=${PRIVATE_BROWSERLESS_KEY}` })

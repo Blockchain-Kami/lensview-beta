@@ -11,17 +11,22 @@
 
 <!------------------------------ HTML ------------------------------>
 <section class="CenterRowFlex">
-  <div class="CenterColumnFlex link-preview">
-    <LinkPreview mainPostPub={data["mainPostPub"]} />
-  </div>
-  <div class="CenterColumnFlex posts">
-    {#if data["openCommentSection"]}
-      <Publication hashedURL={data["hashedURL"]} pub={data["pub"]} />
-    {/if}
-    <PostAPublication hashedURL={data["hashedURL"]} pubId={data["pubId"]}
-                      openCommentSection={data["openCommentSection"]} />
-    <CommentsOfAPublication hashedURL={data["hashedURL"]} commentsList={data["items"]} />
-  </div>
+  {#if data}
+    <div class="CenterColumnFlex link-preview">
+      <LinkPreview mainPostPub={data["mainPostPub"]} url={data["URL"]} />
+    </div>
+    <div class="CenterColumnFlex posts">
+      {#if data["openCommentSection"]}
+        <Publication hashedURL={data["hashedURL"]} pub={data["pub"]} />
+      {/if}
+      <PostAPublication hashedURL={data["hashedURL"]} pubId={data["pubId"]}
+                        openCommentSection={data["openCommentSection"]} />
+      <CommentsOfAPublication hashedURL={data["hashedURL"]} commentsList={data["items"]} />
+    </div>
+  {:else}
+    <h1>404</h1>
+  {/if}
+
 </section>
 <!-------------------------------------------------------------------->
 
