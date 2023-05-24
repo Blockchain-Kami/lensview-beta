@@ -38,7 +38,6 @@ function makeFileObjects(urlObj) {
         description: urlObj['url'],
         name: `Posting on test-net through lensView`,
         external_url: urlObj['url'],
-        image: urlObj['imageURL'],
         metadata_id: uuidv4(),
         mainContentFocus: 'TEXT_ONLY',
         attributes: [],

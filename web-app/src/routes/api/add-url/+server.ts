@@ -2,7 +2,6 @@ import { json } from "@sveltejs/kit";
 import { createHash } from "../../../utils/backend/sha1.server";
 import { signInWithLens } from "../../../utils/backend/lens-sign-in.server";
 import { preprocessURL } from "../../../utils/backend/process-url.server";
-import { uploadImage } from "../../../utils/backend/upload-page-screenshot.server";
 import savePost from "../../../utils/backend/add-url.server";
 
 export async function POST(requestEvent) {
@@ -10,7 +9,6 @@ export async function POST(requestEvent) {
     // will always return a 200 OK Status Code, even in case of error.
     // You'll get a 5xx error in case the server is not available at all.)
     try {
-        let imgURL;
         const {request} = requestEvent;
         const url = await request.json();
 
@@ -18,16 +16,6 @@ export async function POST(requestEvent) {
         const hashedURL = createHash(url);
         const hashedOrigin = createHash(origin);
         const hashedPath = createHash(path);
-
-        try {
-            imgURL = await uploadImage(path, hashedURL);
-
-        } catch (err) {
-            return json({
-                code: 404,
-                description: "Could not add url image to web3.js. Function uploadImage(url, hashedURL)",
-            })
-        }
 
 
         const urlObj = {
@@ -37,7 +25,6 @@ export async function POST(requestEvent) {
             "hashedOrigin": hashedOrigin,
             "path": path,
             "hashedPath": hashedPath,
-            "imageURL": imgURL
         };
 
         try {
