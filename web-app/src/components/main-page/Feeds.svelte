@@ -7,6 +7,7 @@
     let STRING_CHAR;
     await fetch('/api/get-img', {
       method: 'POST',
+      body: "https://dev.to/joelgriffith/vercel-puppeteer-4l7c",
       headers: {
         'Content-Type': 'application/json'
       }
