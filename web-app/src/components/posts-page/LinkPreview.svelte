@@ -68,8 +68,8 @@
         <iframe src="https://giphy.com/embed/l3nWhI38IWDofyDrW" allowFullScreen></iframe>
       {/if}
     </div>
-    <a href={mainPostPub?.metadata?.description} target="_blank" class="main-post__url">
-      {getSlicedURL(mainPostPub?.metadata?.description)}
+    <a href={url} target="_blank" class="main-post__url">
+      {getSlicedURL(url)}
     </a>
     <div class="CenterRowFlex main-post__stats">
       <div class="CenterRowFlex main-post__stats__reaction-bar">
