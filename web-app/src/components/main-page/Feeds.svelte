@@ -13,7 +13,7 @@
     }).then(async(res) => {
       const json = await res.json()
       console.log("RESPONSE", json);
-      const img = new Uint8Array(json["data"]["data"]);
+      const img = new Uint8Array(json["image"]["data"]);
 
       STRING_CHAR = img.reduce((data, byte) => {
         return data + String.fromCharCode(byte);
