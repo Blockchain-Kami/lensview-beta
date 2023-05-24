@@ -39,6 +39,7 @@
   };
 
   const getSlicedURL = (url) => {
+    console.log("url er", url);
     if (!url) return;
 
     if (url.length > 50) {
@@ -68,8 +69,8 @@
         <iframe src="https://giphy.com/embed/l3nWhI38IWDofyDrW" allowFullScreen></iframe>
       {/if}
     </div>
-    <a href={url} target="_blank" class="main-post__url">
-      {getSlicedURL(url)}
+    <a href={url.match(/(https?:\/\/\S+)/g)[0]} target="_blank" class="main-post__url">
+      {getSlicedURL(url.match(/(https?:\/\/\S+)/g)[0])}
     </a>
     <div class="CenterRowFlex main-post__stats">
       <div class="CenterRowFlex main-post__stats__reaction-bar">
