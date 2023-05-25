@@ -1,3 +1,6 @@
+<h1>
+  Nothing to show here 👀
+</h1>
 <h2>
-  How to use this app will explained here
+  Search for a link or select one from the recommendation section
 </h2>
