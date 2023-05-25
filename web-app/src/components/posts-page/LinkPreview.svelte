@@ -2,8 +2,19 @@
   import { isSignedIn } from "../../services/signInStatus";
   import { addReactionToAPost } from "../../utils/frontend/addReactionToAPost";
   import { invalidate } from "$app/navigation";
+  import getImageFromURL from "../../utils/frontend/getImageFromURL";
+  import { afterUpdate } from "svelte";
 
   export let mainPostPub;
+  export let url;
+  let imageURL;
+
+  afterUpdate(async () => {
+    $: if (url) {
+      console.log(url.match(/(https?:\/\/\S+)/g)[0]);
+      imageURL = await getImageFromURL(url.match(/(https?:\/\/\S+)/g)[0]);
+    }
+  });
 
 
   const callAddReaction = async (pubID, reaction) => {
@@ -28,6 +39,7 @@
   };
 
   const getSlicedURL = (url) => {
+    console.log("url er", url);
     if (!url) return;
 
     if (url.length > 50) {
@@ -48,12 +60,17 @@
 {#if Object.keys(mainPostPub).length > 0}
   <div class="CenterColumnFlex main-post">
     <div class="main-post__img">
-      <img
-        src={mainPostPub?.metadata?.image}
-        alt="post image" />
+      {#if imageURL}
+        <img
+          src={imageURL}
+          alt="post image" />
+      {:else}
+        <!--        <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="">-->
+        <iframe src="https://giphy.com/embed/l3nWhI38IWDofyDrW" allowFullScreen></iframe>
+      {/if}
     </div>
-    <a href={mainPostPub?.metadata?.description} target="_blank" class="main-post__url">
-      {getSlicedURL(mainPostPub?.metadata?.description)}
+    <a href={url.match(/(https?:\/\/\S+)/g)[0]} target="_blank" class="main-post__url">
+      {getSlicedURL(url.match(/(https?:\/\/\S+)/g)[0])}
     </a>
     <div class="CenterRowFlex main-post__stats">
       <div class="CenterRowFlex main-post__stats__reaction-bar">
@@ -95,6 +112,12 @@
     padding: 1rem;
     width: 100%;
     gap: 1rem;
+  }
+
+  .main-post__img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .main-post__img img {
