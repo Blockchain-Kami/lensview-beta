@@ -1,46 +1,63 @@
 import {PUBLIC_WEB3STORAGE_TOKEN} from "$env/static/public";
 import {Web3Storage} from "web3.storage";
-import edgeChromium from 'chrome-aws-lambda';
+
 import puppeteer from 'puppeteer-core';
 import {Blob} from "buffer";
 
-const LOCAL_CHROME_EXECUTABLE = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-
-
-function makeGatewayURLImage(imgCID, imgName) {
+const makeGatewayURLImage = (imgCID, imgName) => {
     return `https://${imgCID}.ipfs.w3s.link/${imgName}`;
 }
 
-export const uploadImage = async (url, hashedURL) => {
+const Screenshot = async (url) => {
 
     try {
-        const executablePath = await edgeChromium.executablePath || LOCAL_CHROME_EXECUTABLE;
 
-        const browser = await puppeteer.launch({
-            executablePath,
-            args: edgeChromium.args,
-            headless: false,
-        });
-
+        console.log("Launching playwright", url);
+        const browser = await puppeteer
+            .launch({headless:false
+            });
+        console.log("Launched")
         const page = await browser.newPage();
+        await page.goto(url);
+        const screenshot = await page.screenshot();
+        await page.close();
+        await browser.close();
+        return screenshot;
 
-        await page.goto(url,{waitUntil: 'networkidle2'});
-        const img = await page.screenshot();
-        const imgName = 'img.jpg'
+    } catch(e){
 
-        // const imgBlob = new Blob([img]);
-        const screenshotBlob = new Blob([img]);
-        const file = new File([screenshotBlob as BlobPart], imgName)
+        console.log("Could not connect to puppeteer");
+        console.log(e);
+
+    }
+
+}
+
+export const uploadImage = async () => {
+
+    const imgName = "image.jpg";
+
+    try {
+        const screenshot = await Screenshot("https://google.com/");
+
+        console.log(screenshot,"From puppeteer");
+
+        const screenshotBlob = new Blob([screenshot]);
+
+        console.log("Screenshot blob", screenshotBlob);
+
+        const file = new File([screenshotBlob], imgName )
+
+        console.log("File", file);
 
         const client = new Web3Storage({token: PUBLIC_WEB3STORAGE_TOKEN});
 
+        console.log("Putting files");
         const imgCID = await client.put([file], {name: imgName});
+        console.log("Image uploded");
         const imgURL = makeGatewayURLImage(imgCID, imgName);
 
         console.log("Screenshot URI:", imgURL);
-
-        await browser.close();
-
 
         return imgURL;
 

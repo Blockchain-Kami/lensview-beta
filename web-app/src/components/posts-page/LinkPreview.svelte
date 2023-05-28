@@ -2,19 +2,20 @@
   import { isSignedIn } from "../../services/signInStatus";
   import { addReactionToAPost } from "../../utils/frontend/addReactionToAPost";
   import { invalidate } from "$app/navigation";
-  import getImageFromURL from "../../utils/frontend/getImageFromURL";
-  import { afterUpdate } from "svelte";
+  // import getImageFromURL from "../../utils/frontend/getImageFromURL";
+  // import { afterUpdate } from "svelte";
 
   export let mainPostPub;
   export let url;
-  let imageURL;
 
-  afterUpdate(async () => {
-    $: if (url) {
-      console.log(url.match(/(https?:\/\/\S+)/g)[0]);
-      imageURL = await getImageFromURL(url.match(/(https?:\/\/\S+)/g)[0]);
-    }
-  });
+  let imageURL = null;
+  //
+  // afterUpdate(async () => {
+  //   $: if (url) {
+  //     console.log(url.match(/(https?:\/\/\S+)/g)[0]);
+  //     imageURL = await getImageFromURL(url.match(/(https?:\/\/\S+)/g)[0]);
+  //   }
+  // });
 
 
   const callAddReaction = async (pubID, reaction) => {

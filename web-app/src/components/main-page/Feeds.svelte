@@ -1,30 +1,4 @@
 <script lang="ts">
-  import {onMount} from "svelte";
-
-  let imageurl;
-
-  onMount(async () => {
-    let STRING_CHAR;
-    await fetch('/api/get-img', {
-      method: 'POST',
-      body: "https://dev.to/joelgriffith/vercel-puppeteer-4l7c",
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }).then(async(res) => {
-      const json = await res.json()
-      console.log("RESPONSE", json);
-      const img = new Uint8Array(json["image"]["data"]);
-
-      STRING_CHAR = img.reduce((data, byte) => {
-        return data + String.fromCharCode(byte);
-      }, '');
-
-      let base64String = btoa(STRING_CHAR);
-
-      imageurl = `data:image/jpg;base64,` + base64String;
-    })
-  })
 
 </script>
 
@@ -40,7 +14,6 @@
   <div class="main__search-area__results__result">
     <a href="/posts/a022d31368593358174caf9a5b08f15d29bb4181">https://lenster.xyz</a>
   </div>
-  <img src={imageurl} alt="">
 </div>
 <!---------------------------------------------------------------->
 
