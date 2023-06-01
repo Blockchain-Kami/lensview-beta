@@ -1,9 +1,9 @@
 /**
  * Web3 Storage Code
  */
-import {PUBLIC_WEB3STORAGE_TOKEN} from "$env/static/public";
-import {File, Web3Storage} from "web3.storage";
-import {v4 as uuidv4} from "uuid";
+import { PUBLIC_WEB3STORAGE_TOKEN } from "$env/static/public";
+import { File, Web3Storage } from "web3.storage";
+import { v4 as uuidv4 } from "uuid";
 
 
 function getAccessToken() {
@@ -39,7 +39,6 @@ function makeFileObjects(urlObj) {
         description: urlObj['url'],
         name: `Posting on test-net through lensView`,
         external_url: urlObj['url'],
-        image: urlObj["image"],
         metadata_id: uuidv4(),
         mainContentFocus: 'TEXT_ONLY',
         attributes: [],

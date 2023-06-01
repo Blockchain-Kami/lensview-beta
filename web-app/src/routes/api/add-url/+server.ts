@@ -3,7 +3,6 @@ import { createHash } from "../../../utils/backend/sha1.server";
 import { signInWithLens } from "../../../utils/backend/lens-sign-in.server";
 import { preprocessURL } from "../../../utils/backend/process-url.server";
 import savePost from "../../../utils/backend/add-url.server";
-import {uploadImage} from "../../../utils/backend/upload-page-screenshot.server";
 
 export async function POST(requestEvent) {
     //TODO: Get status code from graphQL server. (NOTE:A GraphQL API
@@ -13,11 +12,6 @@ export async function POST(requestEvent) {
         const {request} = requestEvent;
         const url = await request.json();
 
-        console.log("Uploading image");
-
-        const imageURL = await uploadImage(url);
-
-        console.log(imageURL);
 
         const [origin, path] = preprocessURL(url);
         const hashedURL = createHash(url);
@@ -32,7 +26,6 @@ export async function POST(requestEvent) {
             "hashedOrigin": hashedOrigin,
             "path": path,
             "hashedPath": hashedPath,
-            "image": imageURL
         };
 
         try {

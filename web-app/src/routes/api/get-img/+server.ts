@@ -1,37 +1,21 @@
-import puppeteer from "puppeteer-core";
+import puppeteer from "puppeteer";
 import { json } from "@sveltejs/kit";
-import { PRIVATE_BROWSERLESS_KEY } from "$env/static/private";
-
-
-const getBrowser = () => {
-    return puppeteer.connect({ browserWSEndpoint: `wss://chrome.browserless.io?token=${PRIVATE_BROWSERLESS_KEY}` })
-}
-
 
 export async function POST(requestEvent) {
-    const {request} = requestEvent;
+
+    const { request } = requestEvent;
     const url = await request.json();
+    /**
+     * Reason why we need pass args: ['--no-sandbox'] is because we are running this in docker container
+     * https://stackoverflow.com/questions/59087200/google-chrome-failed-to-move-to-new-namespace
+     */
+    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+    const page = await browser.newPage();
+    await page.goto(url, { timeout: 0 });
+    const img = await page.screenshot({ path: "example.png" });
+    await browser.close();
 
-    let browser;
-
-    try {
-        const browser = await getBrowser();
-        const page = await browser.newPage();
-
-        await page.goto(url);
-        const screenshot = await page.screenshot();
-
-        return json({
-            image: screenshot
-        })
-
-
-    } catch (error) {
-        console.log("failed to take screenshot")
-    } finally {
-        if (browser) {
-            browser.close();
-        }
-    }
+    return json({
+        image: img
+    });
 }
-
