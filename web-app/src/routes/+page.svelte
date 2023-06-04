@@ -28,7 +28,7 @@
       width: 45%;
       height: 100vh;
       background-color: aliceblue;
-      margin-top: 3rem;
+      padding-top: 3rem;
     }
 
     .how-it-works{
