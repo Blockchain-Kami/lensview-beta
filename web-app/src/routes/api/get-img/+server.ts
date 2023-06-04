@@ -12,7 +12,7 @@ export async function POST(requestEvent) {
     const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
     const page = await browser.newPage();
     await page.goto(url, { timeout: 0 });
-    const img = await page.screenshot({ path: "example.png" });
+    const img = await page.screenshot();
     await browser.close();
 
     return json({

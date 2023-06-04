@@ -200,9 +200,9 @@
       <div class="menu__items__item">
         <a href="/">Home</a>
       </div>
-      <div class="menu__items__item">Explore</div>
-      <div class="menu__items__item">How It Works</div>
-      <div class="menu__items__item">About</div>
+      <a href="https://getwaitlist.com/waitlist/8129" target="_blank">
+        <div class="menu__items__item menu__items__item--email">Get Lensview Updates</div>
+      </a>
     </div>
     <div class="menu__user">
       {#if !isConnected}
@@ -287,6 +287,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  .menu__items__item--email {
+    background: deeppink;
+    font-weight: bold;
   }
 
   .search-box {
