@@ -1,9 +1,10 @@
 /**
  * Web3 Storage Code
  */
-import {PUBLIC_WEB3STORAGE_TOKEN} from "$env/static/public";
-import {File, Web3Storage} from "web3.storage";
-import {v4 as uuidv4} from "uuid";
+import { PUBLIC_WEB3STORAGE_TOKEN } from "$env/static/public";
+import { File, Web3Storage } from "web3.storage";
+import { v4 as uuidv4 } from "uuid";
+
 
 function getAccessToken() {
     // If you're just testing, you can paste in a token
@@ -45,14 +46,15 @@ function makeFileObjects(urlObj) {
         appId: 'LensView',
         tags: [urlObj['hashedURL'], urlObj['origin'], urlObj['hashedOrigin'], urlObj['hashedPath']]
     }
-    const blob = new Blob([JSON.stringify(metaData)], {type: 'application/json'})
-    // const buffer = Buffer.from(JSON.stringify(metaData))
 
-
-    return [
-        new File(['contents-of-file-1'], 'plain-utf8.txt'),
-        new File([blob as BlobPart], 'metaData.json')
-    ];
+    try {
+        return [
+            new File(['contents-of-file-1'], 'plain-utf8.txt'),
+            new File([JSON.stringify(metaData)], 'metaData.json')];
+    } catch {
+        console.log("failed to create metadata file")
+        return
+    }
 }
 
 /*********************************/
@@ -62,14 +64,23 @@ function makeFileObjects(urlObj) {
  */
 const uploadToIPFS = async (urlObj) => {
 
-    /*** Web3.storage ***/
-    const client = makeStorageClient()
-    const cid = await client.put(makeFileObjects(urlObj))
-    console.log('stored files with cid:', cid)
-    const uri = `https://${cid}.ipfs.w3s.link/metaData.json`
+    try {
+        /*** Web3.storage ***/
+        const client = makeStorageClient()
+        const files = makeFileObjects(urlObj);
+        const cid = await client.put(files);
+        console.log('stored files with cid:', cid)
+        const uri = `https://${cid}.ipfs.w3s.link/metaData.json`;
 
-    console.log("URI : " + uri);
-    return uri
+        console.log("URI : " + uri);
+
+        return uri
+
+    } catch (e) {
+        console.log("Failed to upload file to IPFS");
+        console.log(e)
+    }
+
 }
 
 export default uploadToIPFS;

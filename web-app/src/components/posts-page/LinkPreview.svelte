@@ -7,7 +7,8 @@
 
   export let mainPostPub;
   export let url;
-  let imageURL;
+
+  let imageURL = null;
 
   afterUpdate(async () => {
     $: if (url) {
@@ -59,16 +60,18 @@
 <!----------------------------- HTML ----------------------------->
 {#if Object.keys(mainPostPub).length > 0}
   <div class="CenterColumnFlex main-post">
-    <div class="main-post__img">
       {#if imageURL}
-        <img
-          src={imageURL}
-          alt="post image" />
+        <div class="main-post__img">
+          <img
+            src={imageURL}
+            alt="post image" />
+        </div>
       {:else}
-        <!--        <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="">-->
-        <iframe src="https://giphy.com/embed/l3nWhI38IWDofyDrW" allowFullScreen></iframe>
+        <div class="CenterColumnFlex main-post__img__loader">
+          <!--                <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="">-->
+          <iframe src="https://giphy.com/embed/l3nWhI38IWDofyDrW" allowFullScreen></iframe>
+        </div>
       {/if}
-    </div>
     <a href={url.match(/(https?:\/\/\S+)/g)[0]} target="_blank" class="main-post__url">
       {getSlicedURL(url.match(/(https?:\/\/\S+)/g)[0])}
     </a>
@@ -114,10 +117,13 @@
     gap: 1rem;
   }
 
+  .main-post__img__loader {
+    height: 63vh;
+  }
+
   .main-post__img {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    height: 63vh;
+    overflow: auto;
   }
 
   .main-post__img img {
@@ -163,5 +169,20 @@
     box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0;
     background: deeppink;
   }
+
+  /****** Side scrollbar ********/
+  .main-post__img::-webkit-scrollbar {
+    width: 0.25rem;
+  }
+
+  .main-post__img::-webkit-scrollbar-track {
+    background: white;
+  }
+
+  .main-post__img::-webkit-scrollbar-thumb {
+    background: deeppink;
+  }
+
+  /*******************************/
 </style>
 <!----------------------------------------------------------------->

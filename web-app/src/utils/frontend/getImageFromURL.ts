@@ -9,6 +9,7 @@ const getImageFromURL = async (url: string) => {
       "Content-Type": "application/json"
     }
   }).then(async (res) => {
+
     const json = await res.json();
 
     const img = new Uint8Array(json["image"]["data"]);
@@ -20,6 +21,7 @@ const getImageFromURL = async (url: string) => {
     let base64String = btoa(STRING_CHAR);
 
     imageURL = `data:image/jpg;base64,` + base64String;
+    // imageURL = res;
   });
 
   return imageURL;

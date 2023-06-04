@@ -12,6 +12,7 @@ export async function POST(requestEvent) {
         const {request} = requestEvent;
         const url = await request.json();
 
+
         const [origin, path] = preprocessURL(url);
         const hashedURL = createHash(url);
         const hashedOrigin = createHash(origin);

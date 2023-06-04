@@ -25,9 +25,10 @@
     }
 
     .feeds{
-        width: 45%;
-        height: 100vh;
-        background-color: aliceblue;
+      width: 45%;
+      height: 100vh;
+      background-color: aliceblue;
+      margin-top: 3rem;
     }
 
     .how-it-works{

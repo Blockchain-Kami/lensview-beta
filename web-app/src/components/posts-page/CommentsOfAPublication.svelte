@@ -255,5 +255,20 @@
     height: 60px;
     border-radius: 50%;
   }
+
+  /****** Side scrollbar ********/
+  .comments::-webkit-scrollbar {
+    width: 0.25rem;
+  }
+
+  .comments::-webkit-scrollbar-track {
+    background: white;
+  }
+
+  .comments::-webkit-scrollbar-thumb {
+    background: deeppink;
+  }
+
+  /*******************************/
 </style>
 <!----------------------------------------------------------------->
