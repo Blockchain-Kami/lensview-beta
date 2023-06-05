@@ -370,10 +370,6 @@
       top: 6rem;
       left: 0;
     }
-
-    .btn {
-      font-size: 12px;
-    }
   }
 
 </style>
