@@ -337,7 +337,7 @@
     }
 
     .menu__logo img {
-      height: 4rem;
+      height: 4.5rem;
       width: 5rem;
     }
 
