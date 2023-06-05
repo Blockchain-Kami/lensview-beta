@@ -50,6 +50,22 @@
         background: azure;
         gap: 1rem;
     }
+
+    @media only screen and (max-width: 700px) {
+        section {
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-top: 4rem;
+        }
+
+        .posts {
+            width: 100%;
+        }
+
+        .link-preview {
+            width: 100%;
+        }
+    }
 </style>
 
 <!-------------------------------------------------------------------->
