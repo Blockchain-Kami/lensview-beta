@@ -28,13 +28,23 @@
       width: 45%;
       height: 100vh;
       background-color: aliceblue;
-      margin-top: 3rem;
+      padding-top: 3rem;
     }
 
-    .how-it-works{
-        width: 55%;
-        height: 100vh;
-        background: azure;
+    .how-it-works {
+      width: 55%;
+      height: 100vh;
+      background: azure;
+    }
+
+    @media only screen and (max-width: 700px) {
+      .feeds {
+        width: 100%;
+      }
+
+      .how-it-works {
+        display: none;
+      }
     }
 </style>
 
