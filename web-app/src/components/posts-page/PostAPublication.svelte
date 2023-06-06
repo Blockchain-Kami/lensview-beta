@@ -187,7 +187,6 @@
   <div class="CenterRowFlex user-post__option-bar">
     <div class="CenterRowFlex user-post__option-bar__options">
       <div class="user-post__option-bar__options__option">Media</div>
-      <div class="user-post__option-bar__options__option">Hashtags</div>
       <div class="user-post__option-bar__options__option">@Mention</div>
     </div>
     <div class="user-post__option-bar__post-btn">
