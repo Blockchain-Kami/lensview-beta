@@ -102,6 +102,8 @@ const savePost = async (urlObj, client, signer, profile) => {
         console.log('successfully created post: tx hash', tx.hash);
         console.log('successfully created post: tx hash', JSON.stringify(tx));
 
+        return tx.hash;
+
     } catch (err) {
         console.log('error: ', err);
         isPosting = false;

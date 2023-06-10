@@ -32,12 +32,13 @@ export async function POST(requestEvent) {
             const [client, signer, profile] = await signInWithLens();
 
             try {
-                await savePost(urlObj, client, signer, profile);
+                const txHash = await savePost(urlObj, client, signer, profile);
                 return json({
                     statusCode: 201,
                     message: 'Post saved successfully',
                     url: url,
-                    hashedURL: hashedURL
+                    hashedURL: hashedURL,
+                    txHash
                 })
 
             } catch (err) {
