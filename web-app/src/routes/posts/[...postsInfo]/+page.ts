@@ -1,6 +1,5 @@
 import type { LoadEvent } from "@sveltejs/kit";
 import { userEnteredURL } from "../../../services/userEnteredURL";
-import { isMainPostAdded } from "../../../services/isPostAddedToLensGraph";
 import { getCommentOfPublication } from "../../../utils/frontend/getCommentOfPublication";
 import { fetchPublication } from "../../../utils/frontend/fetchPublication";
 
@@ -68,7 +67,6 @@ export async function load({ fetch, params, depends }: LoadEvent) {
   console.log("mainPostPublicationResponse", mainPostPublicationResponse);
 
   console.log("No error");
-  isMainPostAdded.set(true);
 
   return {
     "hashedURL": hashedURL,

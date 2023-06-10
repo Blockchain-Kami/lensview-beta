@@ -104,10 +104,10 @@
       headers: {
         "Content-Type": "application/json"
       }
-    }).then(async (res) => {
-      if (res.status === 200) {
-        console.log("Res : ", res);
-        await checkUntilMainPostAdded(res?.txHash, Date.now());
+    }).then(response => response.json()).then(async (responseData) => {
+      if (responseData?.statusCode === 201) {
+        console.log("responseData : ", responseData);
+        await checkUntilMainPostAdded(responseData?.txHash, Date.now());
       } else {
         addingLink = false;
         throw new Error("Error adding link");
