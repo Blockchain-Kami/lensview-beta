@@ -8,7 +8,6 @@
   import { invalidate } from "$app/navigation";
   import { userEnteredURL } from "../../services/userEnteredURL";
   import { PUBLIC_LENS_HUB_CONTRACT_ADDRESS } from "$env/static/public";
-  import { isMainPostAdded } from "../../services/isPostAddedToLensGraph";
   import { userProfile } from "../../services/profile";
   import checkTxHashBeenIndexed from "../../utils/frontend/checkTxHashBeenIndexed";
 
@@ -83,7 +82,7 @@
       console.log("successfully created Comment: tx hash", tx.hash);
       console.log("successfully created Comment: tx hash", JSON.stringify(tx));
 
-      await checkUntilPostAdded(tx.hash);
+      await checkUntilPostAdded(tx.hash, Date.now());
     } catch (err) {
       console.log("error: ", err);
       isPosting = false;
@@ -108,8 +107,7 @@
     }).then(async (res) => {
       if (res.status === 200) {
         console.log("Res : ", res);
-        isMainPostAdded.set(false);
-        checkUntilMainPostAdded();
+        await checkUntilMainPostAdded(res?.txHash, Date.now());
       } else {
         addingLink = false;
         throw new Error("Error adding link");
@@ -120,39 +118,45 @@
     );
   };
 
-  //TODO: Handle edges cases of below function running into infinite loop
-  //TODO: Update this function with checkUntilPostAdded() which uses hasTxHashBeenIndexed
-  const checkUntilMainPostAdded = () => {
 
-    let isMainPostAddedStatus;
-    const unsub = isMainPostAdded.subscribe((value) => {
-      console.log("isMainPostAddedStatus : ", value);
-      isMainPostAddedStatus = value;
-    });
-
-    if (!isMainPostAddedStatus) {
-      console.log("Waiting for main post to be added to graph");
-      invalidate("posts: updated-posts");
-      setTimeout(checkUntilMainPostAdded, 1000);
-    } else {
-      console.log("Main post added to graph");
-      alert("Link added to Lensview");
+  const checkUntilMainPostAdded = async (txHash, startTime) => {
+    /** If link is not added to lensview within 25 seconds, then stop checking */
+    if (Date.now() - startTime > 25000) {
       addingLink = false;
+      alert("Error adding post");
+      return;
     }
-    unsub();
+
+    const hasIndexedResponse = await checkTxHashBeenIndexed(txHash);
+
+    if (hasIndexedResponse?.data?.hasTxHashBeenIndexed?.indexed === false) {
+      console.log("Waiting for link to be added to lensview");
+      setTimeout(() => checkUntilMainPostAdded(txHash, startTime), 100);
+    } else {
+      addingLink = false;
+      await invalidate("posts: updated-posts");
+      alert("Link added to Lensview");
+    }
   };
 
-  const checkUntilPostAdded = async (txHash) => {
+  const checkUntilPostAdded = async (txHash, startTime) => {
+
+    /** If post is not added to lens within 25 seconds, then stop checking */
+    if (Date.now() - startTime > 25000) {
+      isPosting = false;
+      userEnteredContent = "";
+      alert("Error adding post");
+      return;
+    }
 
     const hasIndexedResponse = await checkTxHashBeenIndexed(txHash);
 
     if (hasIndexedResponse?.data?.hasTxHashBeenIndexed?.indexed === false) {
       console.log("Waiting for post to be added to graph");
-      setTimeout(() => checkUntilPostAdded(txHash), 10);
+      setTimeout(() => checkUntilPostAdded(txHash, startTime), 100);
     } else {
       isPosting = false;
       userEnteredContent = "";
-      txHash = "";
       await invalidate("posts: updated-posts");
     }
   };

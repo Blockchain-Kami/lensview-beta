@@ -11,6 +11,7 @@ function manageMainPostAdded() {
   };
 }
 
+//TODO: Clean this after testing checkUntilMainPostAdded is working
 export const isMainPostAdded = manageMainPostAdded();
 
 

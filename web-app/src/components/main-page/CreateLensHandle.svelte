@@ -26,20 +26,27 @@
     }
 
     if (response.data.createProfile?.txHash) {
-      await isProfileCreated(response.data.createProfile?.txHash);
+      await checkUntilProfileIsCreated(response.data.createProfile?.txHash, Date.now());
     } else {
       isCreatingLensHandle = false;
       alert("Something went wrong, please try again");
     }
   };
 
-  //TODO: See if we can use hasTxBeenHashed instead of this, may be better
-  const isProfileCreated = async (txHash) => {
+  const checkUntilProfileIsCreated = async (txHash, startTime) => {
+
+    /** If handle is not created within 25 seconds, then stop checking */
+    if (Date.now() - startTime > 25000) {
+      isCreatingLensHandle = false;
+      alert("Something went wrong, please try again");
+      return;
+    }
+
     const hasIndexedResponse = await checkTxHashBeenIndexed(txHash);
 
     if (hasIndexedResponse?.data?.hasTxHashBeenIndexed?.indexed === false) {
       console.log("Waiting for tx to be indexed");
-      setTimeout(() => isProfileCreated(txHash), 10);
+      setTimeout(() => checkUntilProfileIsCreated(txHash, startTime), 100);
     } else {
       const defaultProfile = await getDefaultUserProfile();
 
