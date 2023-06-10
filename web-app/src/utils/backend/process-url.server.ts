@@ -9,6 +9,7 @@ function stripWww(s) {
 
 export const preprocessURL = (url) => {
     try {
+
         url = url.trim().split('#')[0];
 
         url = stripWww(url);
