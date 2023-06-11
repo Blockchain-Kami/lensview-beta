@@ -12,6 +12,7 @@
   import getUserProfiles from "../utils/frontend/getUserProfiles";
   import { onMount } from "svelte";
   import { PUBLIC_IS_PROD } from "$env/static/public";
+  import getCleanUrl from "../utils/frontend/getCleanUrl";
 
   let isConnected = false;
   let signingIn = false;
@@ -181,7 +182,8 @@
 
   const redirectToPostsPage = async () => {
     userEnteredURL.set(userEnteredLink);
-    const hash = await createHash(userEnteredLink);
+    let cleanUrl = getCleanUrl(userEnteredLink);
+    const hash = await createHash(cleanUrl);
     goto(`/posts/${hash}`);
   };
 </script>

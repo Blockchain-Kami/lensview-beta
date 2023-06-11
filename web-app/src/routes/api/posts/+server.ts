@@ -1,19 +1,19 @@
-import {PUBLIC_LENS_API_URL} from "$env/static/public";
-import {json} from '@sveltejs/kit';
+import { PUBLIC_LENS_API_URL } from "$env/static/public";
+import { json } from "@sveltejs/kit";
 import getComments from "../../../graphql/getComments";
-import {getParentPost} from "../../../utils/backend/get-parent-url.server";
+import { getParentPost } from "../../../utils/backend/get-parent-url.server";
 
 export async function GET(request) {
 
     try {
         const res = await getParentPost(request);
-        const parentPostID = res['parent_post_ID'];
-        const sourceURL = res['source_url'];
+        const parentPostID = res?.parent_post_ID;
+        const sourceURL = res?.source_url;
 
         const comments = await fetch(PUBLIC_LENS_API_URL, {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 query: getComments,
