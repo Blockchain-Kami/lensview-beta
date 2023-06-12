@@ -1,6 +1,9 @@
 <script lang="ts">
+  import type { PageData } from "./$types";
   import Feeds from "../components/main-page/Feeds.svelte";
   import HowItWorks from "../components/main-page/HowItWorks.svelte";
+
+  export let data: PageData;
 </script>
 
 
@@ -8,10 +11,10 @@
 <!------------------------------ HTML ------------------------------>
 <section class="CenterRowFlex">
   <div class="CenterColumnFlex feeds">
-    <Feeds/>
+    <Feeds explorePublicationsForApp={data["explorePublicationsForApp"]} />
   </div>
   <div class="CenterColumnFlex how-it-works">
-    <HowItWorks/>
+    <HowItWorks />
   </div>
 </section>
 <!-------------------------------------------------------------------->

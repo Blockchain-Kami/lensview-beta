@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import LinkPreview from "../../../components/posts-page/LinkPreview.svelte";
   import PostAPublication from "../../../components/posts-page/PostAPublication.svelte";
   import CommentsOfAPublication from "../../../components/posts-page/CommentsOfAPublication.svelte";
@@ -32,27 +32,27 @@
 
 
 <!------------------------------ Style ------------------------------>
-<style>
-    section{
-        width: 100%;
-        height: 100vh;
-    }
+<style lang="scss">
+  section {
+    width: 100%;
+    height: 100vh;
+  }
 
-    .link-preview{
-        width: 45%;
-        height: 100vh;
-        background-color: aliceblue;
-    }
+  .link-preview {
+    width: 45%;
+    height: 100vh;
+    background-color: aliceblue;
+  }
 
-    .posts {
-        width: 55%;
-        height: 100vh;
-        background: azure;
-        gap: 1rem;
-    }
+  .posts {
+    width: 55%;
+    height: 100vh;
+    background: azure;
+    gap: 1rem;
+  }
 
-    @media only screen and (max-width: 700px) {
-        section {
+  @media only screen and (max-width: 700px) {
+    section {
             flex-direction: column;
             justify-content: flex-start;
             padding-top: 4rem;

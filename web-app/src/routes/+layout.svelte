@@ -1,5 +1,5 @@
 <script lang="ts">
-  import "../global.css";
+  import "../global.scss";
   import { userAddress } from "../services/userAddress";
   import { userAuthentication } from "../utils/frontend/authenticate";
   import { goto } from "$app/navigation";
