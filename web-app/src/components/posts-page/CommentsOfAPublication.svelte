@@ -180,6 +180,10 @@
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
+  @import '../../global';
+
+  @include sideScrollbar("comments");
+
   .no-comments {
     display: flex;
     justify-content: center;
@@ -200,6 +204,7 @@
     overflow: auto;
     justify-content: flex-start;
   }
+
 
   .comments__comment {
     display: flex;
@@ -256,19 +261,5 @@
     border-radius: 50%;
   }
 
-  /****** Side scrollbar ********/
-  .comments::-webkit-scrollbar {
-    width: 0.25rem;
-  }
-
-  .comments::-webkit-scrollbar-track {
-    background: white;
-  }
-
-  .comments::-webkit-scrollbar-thumb {
-    background: deeppink;
-  }
-
-  /*******************************/
 </style>
 <!----------------------------------------------------------------->

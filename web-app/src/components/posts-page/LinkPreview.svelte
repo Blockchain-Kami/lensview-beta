@@ -111,6 +111,10 @@
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
+  @import '../../global';
+
+  @include sideScrollbar("main-post__img");
+
   .main-post {
     padding: 1rem;
     width: 100%;
@@ -169,21 +173,6 @@
     box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0;
     background: deeppink;
   }
-
-  /****** Side scrollbar ********/
-  .main-post__img::-webkit-scrollbar {
-    width: 0.25rem;
-  }
-
-  .main-post__img::-webkit-scrollbar-track {
-    background: white;
-  }
-
-  .main-post__img::-webkit-scrollbar-thumb {
-    background: deeppink;
-  }
-
-  /*******************************/
 
   @media only screen and (max-width: 700px) {
     .main-post__img {

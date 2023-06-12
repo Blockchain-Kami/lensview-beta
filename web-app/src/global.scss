@@ -138,3 +138,19 @@ body::-webkit-scrollbar-thumb {
         font-size: 12px;
     }
 }
+
+
+@mixin sideScrollbar($className) {
+    .#{$className}::-webkit-scrollbar {
+        width: 0.25rem;
+        height: 0.25rem;
+    }
+
+    .#{$className}::-webkit-scrollbar-track {
+        background: white;
+    }
+
+    .#{$className}::-webkit-scrollbar-thumb {
+        background: deeppink;
+    }
+}
