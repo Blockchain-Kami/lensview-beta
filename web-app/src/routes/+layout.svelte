@@ -257,9 +257,10 @@
   }
 
   .menu {
+    display: flex;
+    flex-direction: column;
     width: 15%;
     height: 100vh;
-    justify-content: space-between;
     padding: 2rem 1rem;
   }
 
@@ -280,7 +281,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin-top: 29rem;
+    margin-top: auto;
   }
 
   .menu__user__profile {
