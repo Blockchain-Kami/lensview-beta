@@ -16,9 +16,9 @@ export async function load({ fetch, params, depends }: LoadEvent) {
   }
 
   if (commentPubId !== undefined) {
-    console.log("commentPubId" + commentPubId);
+    // console.log("commentPubId" + commentPubId);
     const comments = await getCommentOfPublication(commentPubId);
-    console.log("comment", comments);
+    // console.log("comment", comments);
 
     const commentPublicationResponse = await fetchPublication(commentPubId);
     // console.log("commentPublicationResponse", commentPublicationResponse);
@@ -27,7 +27,7 @@ export async function load({ fetch, params, depends }: LoadEvent) {
     const getURLResponse = await res.json();
 
     const mainPostPublicationResponse = await fetchPublication(getURLResponse["parent_publication_ID"]);
-    console.log("mainPostPublicationResponse", mainPostPublicationResponse);
+    // console.log("mainPostPublicationResponse", mainPostPublicationResponse);
 
     return {
       "hashedURL": hashedURL,
@@ -44,7 +44,7 @@ export async function load({ fetch, params, depends }: LoadEvent) {
   const res = await fetch(`/api/posts?hashedURL=${hashedURL}`);
   const fetchedMainPostData = await res.json();
 
-  console.log("fetchedMainPostData", fetchedMainPostData);
+  // console.log("fetchedMainPostData", fetchedMainPostData);
 
   if (fetchedMainPostData["error"] != null) {
     let enteredURL;
@@ -64,9 +64,9 @@ export async function load({ fetch, params, depends }: LoadEvent) {
   }
 
   const mainPostPublicationResponse = await fetchPublication(fetchedMainPostData["parentPublicationID"]);
-  console.log("mainPostPublicationResponse", mainPostPublicationResponse);
+  // console.log("mainPostPublicationResponse", mainPostPublicationResponse);
 
-  console.log("No error");
+  // console.log("No error");
 
   return {
     "hashedURL": hashedURL,

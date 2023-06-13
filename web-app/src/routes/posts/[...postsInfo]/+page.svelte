@@ -42,6 +42,7 @@
     width: 45%;
     height: 100vh;
     background-color: aliceblue;
+    justify-content: flex-end;
   }
 
   .posts {
