@@ -1,7 +1,7 @@
 import {PUBLIC_WEB3STORAGE_TOKEN} from "$env/static/public";
 import {Web3Storage} from "web3.storage";
 
-import puppeteer from 'puppeteer-core';
+import puppeteer from 'puppeteer';
 import {Blob} from "buffer";
 
 const makeGatewayURLImage = (imgCID, imgName) => {
@@ -33,12 +33,12 @@ const Screenshot = async (url) => {
 
 }
 
-export const uploadImage = async () => {
+export const uploadImage = async (url) => {
 
     const imgName = "image.jpg";
 
     try {
-        const screenshot = await Screenshot("https://google.com/");
+        const screenshot = await Screenshot(url);
 
         console.log(screenshot,"From puppeteer");
 
@@ -46,7 +46,7 @@ export const uploadImage = async () => {
 
         console.log("Screenshot blob", screenshotBlob);
 
-        const file = new File([screenshotBlob], imgName )
+        const file = new File([screenshotBlob as BlobPart], imgName )
 
         console.log("File", file);
 

@@ -2,9 +2,7 @@ import {PUBLIC_LENS_API_URL} from "$env/static/public";
 import {APP_LENS_ID} from "$env/static/private";
 import getPosts from "../../graphql/getPosts";
 
-export const getParentPost = async (request) => {
-
-    const hashedURL = request.url.searchParams.get('hashedURL');
+export const getParentPost = async (hashedURL) => {
     try {
         const posts = await fetch(PUBLIC_LENS_API_URL, {
             method: 'POST',

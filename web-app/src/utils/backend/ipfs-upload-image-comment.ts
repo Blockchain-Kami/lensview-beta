@@ -35,8 +35,8 @@ function makeFileObjects(urlObj) {
 
     const metaData = {
         version: '2.0.0',
-        content:`LensView post: ${urlObj['url']}`,
-        description: urlObj['url'],
+        content:`LensView comment: ${urlObj['image']}`,
+        description: 'Post Image',
         name: `Posting on test-net through lensView`,
         external_url: urlObj['url'],
         image: urlObj['image'],
@@ -63,7 +63,7 @@ function makeFileObjects(urlObj) {
 /**
  * 4. Upload to IPFS
  */
-const uploadToIPFS = async (urlObj) => {
+const uploadImageCommentToIPFS = async (urlObj) => {
 
     try {
         /*** Web3.storage ***/
@@ -84,4 +84,4 @@ const uploadToIPFS = async (urlObj) => {
 
 }
 
-export default uploadToIPFS;
+export default uploadImageCommentToIPFS;
