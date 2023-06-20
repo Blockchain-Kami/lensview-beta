@@ -17,9 +17,7 @@ const fetchGas = async () => {
         console.log("Estimating gas for the transaction");
         const { data } = await axios({
             method: 'get',
-            url: PUBLIC_IS_PROD
-                ? 'https://gasstation-mainnet.matic.network/v2'
-                : 'https://gasstation-mumbai.matic.today/v2',
+            url: 'https://gasstation-testnet.polygon.technology/v2'
         });
         maxFeePerGas = ethers.utils.parseUnits(
             Math.ceil(data.fast.maxFee) + '',

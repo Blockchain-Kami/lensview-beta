@@ -6,7 +6,7 @@ export const getExplorePublicationsForApp = async () => {
     const client = baseClient;
     const request = {
       "sortCriteria": "LATEST",
-      "publicationTypes": ["POST", "COMMENT", "MIRROR"],
+      "publicationTypes": ["POST"],
       "limit": 10,
       "sources": ["lensview"]
     };

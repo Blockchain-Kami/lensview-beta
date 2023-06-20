@@ -4,7 +4,7 @@
   import getDefaultUserProfile from "../../utils/frontend/getDefaultUserProfile.ts";
   import { userProfile } from "../../services/profile.ts";
   import getUserProfiles from "../../utils/frontend/getUserProfiles.ts";
-  import checkTxHashBeenIndexed from "../../utils/frontend/checkTxHashBeenIndexed.ts";
+  import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed.ts";
 
   export let showCreateLensHandleModal; // boolean
 

@@ -3,6 +3,8 @@ import { createHash } from "../../../utils/backend/sha1.server";
 import { signInWithLens } from "../../../utils/backend/lens-sign-in.server";
 import { preprocessURL } from "../../../utils/backend/process-url.server";
 import savePost from "../../../utils/backend/add-url.server";
+import {imageQueue} from "../../../jobs/imageQueue";
+
 
 export async function POST(requestEvent) {
     //TODO: Get status code from graphQL server. (NOTE:A GraphQL API
@@ -26,6 +28,7 @@ export async function POST(requestEvent) {
             "hashedOrigin": hashedOrigin,
             "path": path,
             "hashedPath": hashedPath,
+            "image": ''
         };
 
         try {
@@ -33,6 +36,9 @@ export async function POST(requestEvent) {
 
             try {
                 const txHash = await savePost(urlObj, client, signer, profile);
+
+                await imageQueue.add({ txHash, urlObj });
+
                 return json({
                     statusCode: 201,
                     message: 'Post saved successfully',

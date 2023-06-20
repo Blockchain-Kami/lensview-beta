@@ -1,21 +1,34 @@
 <script lang="ts">
-  import { isSignedIn } from "../../services/signInStatus";
-  import { addReactionToAPost } from "../../utils/frontend/addReactionToAPost";
-  import { invalidate } from "$app/navigation";
+  import {isSignedIn} from "../../services/signInStatus";
+  import {addReactionToAPost} from "../../utils/frontend/addReactionToAPost";
+  import {invalidate} from "$app/navigation";
   import getImageFromURL from "../../utils/frontend/getImageFromURL";
-  import { afterUpdate } from "svelte";
 
   export let mainPostPub;
   export let url;
+  let imageURL = 'https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif';
 
-  let imageURL = null;
-
-  afterUpdate(async () => {
-    $: if (url) {
+  const getImageURL = async (url) => {
+    if (url) {
       console.log(url.match(/(https?:\/\/\S+)/g)[0]);
       imageURL = await getImageFromURL(url.match(/(https?:\/\/\S+)/g)[0]);
+      console.log("imageURL : " + imageURL);
+
+      if (imageURL === undefined) {
+        console.log("image undefined")
+        setTimeout(() => {
+          getImageURL(url);
+        }, 10000)
+        imageURL = 'https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif';
+      } else if (imageURL === null) {
+        console.log("no image found")
+        imageURL = 'https://media.istockphoto.com/id/1392182937/vector/no-image-available-photo-coming-soon.jpg?s=170667a&w=0&k=20&c=HOCGNLwt3LkB92ZlyHAupxbwHY5X2143KDlbA-978dE=';
+      } else {
+        console.log("image found")
+        imageURL;
+      }
     }
-  });
+  };
 
 
   const callAddReaction = async (pubID, reaction) => {
@@ -40,6 +53,7 @@
   };
 
   const getSlicedURL = (url) => {
+
     console.log("url er", url);
     if (!url) return;
 
@@ -60,18 +74,11 @@
 <!----------------------------- HTML ----------------------------->
 {#if Object.keys(mainPostPub).length > 0}
   <div class="CenterColumnFlex main-post">
-      {#if imageURL}
         <div class="main-post__img">
           <img
-            src={imageURL}
-            alt="post image" />
+                  src={imageURL}
+                  alt={getImageURL(url.match(/(https?:\/\/\S+)/g)[0])}/>
         </div>
-      {:else}
-        <div class="CenterColumnFlex main-post__img__loader">
-          <!--                <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="">-->
-          <iframe src="https://giphy.com/embed/l3nWhI38IWDofyDrW" allowFullScreen></iframe>
-        </div>
-      {/if}
     <a href={url.match(/(https?:\/\/\S+)/g)[0]} target="_blank" class="main-post__url">
       {getSlicedURL(url.match(/(https?:\/\/\S+)/g)[0])}
     </a>
