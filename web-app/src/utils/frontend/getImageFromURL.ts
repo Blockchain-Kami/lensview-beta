@@ -1,30 +1,31 @@
+import baseClient from "./baseClient";
+import getPublication from "../../graphql/getPublication";
+import createURLHash from "./createURLHash";
+
 const getImageFromURL = async (url: string) => {
-  let STRING_CHAR;
-  let imageURL;
 
-  await fetch("/api/get-img", {
-    method: "POST",
-    body: JSON.stringify(url),
-    headers: {
-      "Content-Type": "application/json"
-    }
-  }).then(async (res) => {
+  const urlHash = await createURLHash(url);
+  try {
+    const client = baseClient;
+    const request = {
+      "profileId": "0x7e11",
+      "publicationTypes": ["COMMENT"],
+      "metadata": {
+        "locale": "en-us",
+        "tags": {
+          "all": [urlHash]
+        }
+      }
+    };
+    const response = await client.query(getPublication, {
+      request
+    }).toPromise();
 
-    const json = await res.json();
-
-    const img = new Uint8Array(json["image"]["data"]);
-
-    STRING_CHAR = img.reduce((data, byte) => {
-      return data + String.fromCharCode(byte);
-    }, "");
-
-    let base64String = btoa(STRING_CHAR);
-
-    imageURL = `data:image/jpg;base64,` + base64String;
-    // imageURL = res;
-  });
-
-  return imageURL;
+    return response?.data?.publications?.items[0]?.metadata?.image;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
 };
 
 export default getImageFromURL;
