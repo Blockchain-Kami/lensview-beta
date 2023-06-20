@@ -9,7 +9,7 @@
   import { userEnteredURL } from "../../services/userEnteredURL";
   import { PUBLIC_LENS_HUB_CONTRACT_ADDRESS } from "$env/static/public";
   import { userProfile } from "../../services/profile";
-  import checkTxHashBeenIndexed from "../../utils/frontend/checkTxHashBeenIndexed";
+  import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
 
   export let hashedURL;
   export let pubId;

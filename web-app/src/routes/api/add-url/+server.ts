@@ -37,7 +37,7 @@ export async function POST(requestEvent) {
             try {
                 const txHash = await savePost(urlObj, client, signer, profile);
 
-                await imageQueue.add({urlObj, hashedURL}, {delay:30000});
+                await imageQueue.add({ txHash, urlObj });
 
                 return json({
                     statusCode: 201,
