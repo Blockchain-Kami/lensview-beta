@@ -6,9 +6,8 @@ import {getParentPost} from "./get-parent-url.server";
 
 export const addImageToPublication = async (job) => {
 
-    const [client, signer, profile] = await signInWithLens();
-    const {urlObj,hashedURL} = job['data'];
-    console.log("Hashed URL", hashedURL, urlObj);
+    const [ client, signer, profile ] = await signInWithLens();
+    const { urlObj, hashedURL } = job['data'];
 
     const res = await getParentPost(hashedURL);
     const parentPostID = res['parent_post_ID'];

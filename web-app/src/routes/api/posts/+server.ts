@@ -6,7 +6,8 @@ import {getParentPost} from "../../../utils/backend/get-parent-url.server";
 export async function GET(request) {
 
     try {
-        const res = await getParentPost(request);
+        const hashedURL = request.url.searchParams.get('hashedURL')
+        const res = await getParentPost(hashedURL);
         const parentPostID = res['parent_post_ID'];
         const sourceURL = res['source_url'];
 

@@ -26,6 +26,7 @@ const signCreateCommentTypedData = async (request, client, signer) => {
     let result = await client.mutation(createCommentTypedData, {
         request
     }).toPromise();
+
     result = result.data.createCommentTypedData;
     const typedData = result.typedData;
 
@@ -37,8 +38,9 @@ const signCreateCommentTypedData = async (request, client, signer) => {
 
 
 const postImageComment = async (urlObj, pubId, client, signer, profile) => {
+
     isPosting = true;
-    console.log("Posting comment:");
+
     const contentURI = await uploadImageCommentToIPFS(urlObj)
     const createCommentRequest = {
         profileId: profile.id,
@@ -99,7 +101,7 @@ const postImageComment = async (urlObj, pubId, client, signer, profile) => {
         return tx.hash;
 
     } catch (err) {
-        console.log('error: ', err);
+        console.log('error while trying to post image comment to post with publication ID: ', pubId);
         isPosting = false;
     }
 
