@@ -23,7 +23,8 @@ RUN apk add --no-cache \
       ca-certificates \
       ttf-freefont \
       nodejs \
-      yarn
+      yarn \
+      redis
 
 # Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
@@ -45,4 +46,6 @@ WORKDIR /lensview-beta-docker
 COPY --from=builder --chown=pptruser /lensview-beta-docker/build ./build
 COPY --from=builder --chown=pptruser /lensview-beta-docker/node_modules ./node_modules
 COPY --chown=pptruser package.json .
-CMD ["node","build"]
+
+# It will start the redis server and then start the node server.
+CMD sh -c "redis-server & sleep 5 && node build"
