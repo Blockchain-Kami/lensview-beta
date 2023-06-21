@@ -3,7 +3,9 @@ import {json} from "@sveltejs/kit";
 
 export async function GET(request) {
     try {
-        const res = await getParentPost(request);
+        const res = await getParentPost(request.url.searchParams.get('hashedURL'));
+        console.log(res)
+
         const parentPostID = res['parent_post_ID'];
         const sourceURL = res['source_url'];
 

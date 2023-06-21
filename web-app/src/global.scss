@@ -75,24 +75,6 @@ a {
     text-decoration: none;
 }
 
-.light {
-    --bg: #ffffff;
-    --bg-circle-bottom: radial-gradient(circle at bottom, rgba(13, 115, 119, 1) 12%, rgba(248, 248, 248, 1) 60%);
-    --bg-circle-0: radial-gradient(circle at 0%, rgba(13, 115, 119, 1) 12%, rgba(248, 248, 248, 1) 60%);
-    --bg-circle-100: radial-gradient(circle at 100%, rgba(13, 115, 119, 1) 12%, rgba(248, 248, 248, 1) 60%);
-    --bg-secondary: #ffffff;
-    --text: #000000;
-}
-
-.dark {
-    --bg: #121212;
-    --bg-circle-bottom: radial-gradient(circle at bottom, rgba(13, 115, 119, 1) 0%, rgba(33, 33, 33, 1) 38%);
-    --bg-circle-0: radial-gradient(circle at 0%, rgba(13, 115, 119, 1) 12%, rgba(33, 33, 33, 1) 45%);
-    --bg-circle-100: radial-gradient(circle at 100%, rgba(13, 115, 119, 1) 12%, rgba(33, 33, 33, 1) 45%);
-    --bg-secondary: #323232;
-    --text: #ffffff;
-}
-
 .CenterRowFlex {
     display: flex;
     flex-direction: row;
@@ -129,3 +111,46 @@ body::-webkit-scrollbar-thumb {
     background: #6649b8;
 }
 /*******************************/
+
+.btn {
+    display: inline-block;
+    outline: 0;
+    border: 0;
+    cursor: pointer;
+    background: #000000;
+    color: #FFFFFF;
+    border-radius: 8px;
+    padding: 11px 22px 13px;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+    transition: transform 200ms, background 200ms;
+}
+
+.btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media only screen and (max-width: 600px) {
+
+    .btn {
+        font-size: 12px;
+    }
+}
+
+
+@mixin sideScrollbar($className) {
+    .#{$className}::-webkit-scrollbar {
+        width: 0.25rem;
+        height: 0.25rem;
+    }
+
+    .#{$className}::-webkit-scrollbar-track {
+        background: white;
+    }
+
+    .#{$className}::-webkit-scrollbar-thumb {
+        background: deeppink;
+    }
+}

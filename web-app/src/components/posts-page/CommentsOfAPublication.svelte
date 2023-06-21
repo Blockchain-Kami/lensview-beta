@@ -180,6 +180,10 @@
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
+  @import '../../global';
+
+  @include sideScrollbar("comments");
+
   .no-comments {
     display: flex;
     justify-content: center;
@@ -200,6 +204,7 @@
     overflow: auto;
     justify-content: flex-start;
   }
+
 
   .comments__comment {
     display: flex;
@@ -255,5 +260,6 @@
     height: 60px;
     border-radius: 50%;
   }
+
 </style>
 <!----------------------------------------------------------------->

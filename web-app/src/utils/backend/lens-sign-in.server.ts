@@ -26,7 +26,7 @@ let client = createClient({
  *    iii. Update Client with new Access Token
  */
 export const signInWithLens = async () => {
-    let statusCode;
+
     try {
         // console.log(challenge);
         /* first request the challenge from the API server */

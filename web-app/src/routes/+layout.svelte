@@ -1,5 +1,5 @@
 <script lang="ts">
-  import "../global.css";
+  import "../global.scss";
   import { userAddress } from "../services/userAddress";
   import { userAuthentication } from "../utils/frontend/authenticate";
   import { goto } from "$app/navigation";
@@ -189,20 +189,25 @@
 
 <!---------------------------------- HTML --------------------------->
 <main>
-  <div class="CenterColumnFlex menu">
+  <div class="menu">
+    <div class="menu__logo">
+      <a href="/"><img alt="Untitled-presentation-3"
+                       src="https://i.postimg.cc/3JG1b9Cv/Lensview-Logo.png"
+      />
+      </a>
+    </div>
     <div class="CenterColumnFlex menu__items">
-      <div class="menu__items__item menu__items__item--logo">
-        <a href="/"><img alt="Untitled-presentation-3"
-                         src="https://i.postimg.cc/3JG1b9Cv/Lensview-Logo.png"
-                         height="120rem"
-                         width="130rem" /></a>
-      </div>
-      <div class="menu__items__item">
-        <a href="/">Home</a>
-      </div>
-      <div class="menu__items__item">Explore</div>
-      <div class="menu__items__item">How It Works</div>
-      <div class="menu__items__item">About</div>
+      <a href="/" class="menu__items__item menu__items__item--home">
+        Home
+      </a>
+      <a href="https://getwaitlist.com/waitlist/8129"
+         target="_blank"
+         class="menu__items__item menu__items__item--email"
+      >
+        Get Lensview
+        <br>
+        Updates
+      </a>
     </div>
     <div class="menu__user">
       {#if !isConnected}
@@ -252,16 +257,31 @@
   }
 
   .menu {
+    display: flex;
+    flex-direction: column;
     width: 15%;
     height: 100vh;
-    justify-content: space-between;
     padding: 2rem 1rem;
+  }
+
+  .menu__logo {
+    background: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .menu__logo img {
+    height: 7rem;
+    width: 8rem;
   }
 
   .menu__user {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    margin-top: auto;
   }
 
   .menu__user__profile {
@@ -282,11 +302,9 @@
     border-radius: 8px;
   }
 
-  .menu__items__item--logo {
-    background: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .menu__items__item--email {
+    background: deeppink;
+    font-weight: bold;
   }
 
   .search-box {
@@ -303,6 +321,56 @@
     border-radius: 8px;
     border: 1px solid lightgray;
     outline: 0;
+  }
+
+  @media only screen and (max-width: 700px) {
+    main {
+      flex-direction: column;
+      background-color: aliceblue;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: 10vh;
+      width: 100%;
+    }
+
+    .menu__logo img {
+      height: 4.5rem;
+      width: 5rem;
+    }
+
+    .menu__logo {
+      margin-bottom: 0;
+    }
+
+    .menu__items {
+      display: none;
+      //flex-direction: row;
+      //justify-content: flex-end;
+      //margin: 0 1rem;
+    }
+
+    //.menu__items__item--home{
+    //  display: none;
+    //}
+    //
+    //.menu__items__item--email {
+    //  width: auto;
+    //}
+
+    .menu__user {
+      margin-top: 0;
+      margin-left: auto;
+    }
+
+    .search-box {
+      width: 100%;
+      top: 6rem;
+      left: 0;
+    }
   }
 
 </style>

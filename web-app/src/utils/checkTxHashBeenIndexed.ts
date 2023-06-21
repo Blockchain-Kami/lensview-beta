@@ -1,5 +1,5 @@
-import baseClient from "./baseClient";
-import hasTxHashBeenIndexed from "../../graphql/hasTxHashBeenIndexed";
+import baseClient from "./frontend/baseClient";
+import hasTxHashBeenIndexed from "../graphql/hasTxHashBeenIndexed";
 
 const checkTxHashBeenIndexed = async (txHash: string) => {
   try {

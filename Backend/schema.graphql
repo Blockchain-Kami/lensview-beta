@@ -1,3 +1,0 @@
-type Query {
-    url (id: ID!): String
-}
