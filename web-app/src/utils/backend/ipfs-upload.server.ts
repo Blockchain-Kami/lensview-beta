@@ -35,7 +35,7 @@ function makeFileObjects(urlObj) {
 
     const metaData = {
         version: '2.0.0',
-        content:`LensView post: ${urlObj['url']}`,
+        content:urlObj['url'],
         description: urlObj['url'],
         name: `Posting on test-net through lensView`,
         external_url: urlObj['url'],
