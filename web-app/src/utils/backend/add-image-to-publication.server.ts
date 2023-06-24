@@ -12,7 +12,7 @@ export const addImageToPublication = async (job) => {
 
     const res = await getParentPost(hashedURL);
     const parentPostID = res['parent_post_ID'];
-    const sourceURL = res['source_url'].substring(15,);
+    const sourceURL = res['source_url'];
 
     urlObj['image'] = await uploadImage(sourceURL);
 
