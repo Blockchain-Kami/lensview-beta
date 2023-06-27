@@ -16,18 +16,34 @@ export const getParentPost = async (hashedURL) => {
                     lensId: APP_LENS_ID
                 },
             }),
-        })
-        const response = await posts.json()
-        const parentPostID = response.data.publications.items[0].id;
-        const sourceURL = response.data.publications.items[0].metadata.content;
+        });
+        const response = await posts.json();
 
-        return {
-            "status_code": 200,
-            "parent_post_ID": parentPostID,
-            "source_url": sourceURL
-        };
+        try {
+            const parentPostID = response.data.publications.items[0].id;
+            const sourceURL = response.data.publications.items[0].metadata.content;
+
+            return {
+                status_code: 200,
+                parent_post_ID: parentPostID,
+                source_url: sourceURL,
+                message: "Successfully fetched parent publication ID"
+            };
+        } catch (err) {
+            return {
+                status_code: 404,
+                parent_post_ID: null,
+                source_url: null,
+                message: "Error: Could not extract publication ID from response"
+            };
+        }
 
     } catch (err) {
-        console.log('ERROR: failed to fetch details about parent Publication ID');
+        return {
+            status_code: 404,
+            parent_post_ID: null,
+            source_url: null,
+            message: "ERROR: failed to fetch details about parent Publication ID"
+        };
     }
 }
