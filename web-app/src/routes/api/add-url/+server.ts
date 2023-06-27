@@ -12,22 +12,22 @@ export async function POST(requestEvent) {
     // You'll get a 5xx error in case the server is not available at all.)
     try {
         const {request} = requestEvent;
-        const url = await request.json();
+        const urlRequest = await request.json();
 
-
-        const [origin, path] = preprocessURL(url);
+        const [url, origin, path, query] = preprocessURL(urlRequest);
         const hashedURL = createHash(url);
         const hashedOrigin = createHash(origin);
         const hashedPath = createHash(path);
 
 
         const urlObj = {
-            "url": url,
-            "hashedURL": hashedURL,
-            "origin": origin,
-            "hashedOrigin": hashedOrigin,
-            "path": path,
-            "hashedPath": hashedPath,
+            url,
+            hashedURL,
+            origin,
+            hashedOrigin,
+            path,
+            hashedPath,
+            query,
             "image": ''
         };
 
