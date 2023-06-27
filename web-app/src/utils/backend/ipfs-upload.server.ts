@@ -4,6 +4,7 @@
 import { PUBLIC_WEB3STORAGE_TOKEN } from "$env/static/public";
 import { File, Web3Storage } from "web3.storage";
 import { v4 as uuidv4 } from "uuid";
+import {createTags} from "./create-tags.server";
 
 
 function getAccessToken() {
@@ -33,16 +34,9 @@ function makeFileObjects(urlObj) {
     // //Getting profile of the connected user and saving it to "profile" variable
     // getUserProfile(address);
 
-    const tags = [urlObj['hashedURL'], urlObj['origin'], urlObj['hashedOrigin'], urlObj['hashedPath']]
+    const URLtags = [urlObj['hashedURL'], urlObj['origin'], urlObj['hashedOrigin'], urlObj['hashedPath']];
 
-    const query = urlObj['query'];
-    const keys = Array.from(query.keys());
-
-    for(let i = 0; i < keys.length; i++ ){
-        if( query.get(keys[i]).length < 20 ) {
-            tags.push(keys[i] + '=' + query.get(keys[i]));
-        }
-    }
+    const tags = createTags(URLtags, urlObj['query']);
 
     const metaData = {
         version: '2.0.0',
