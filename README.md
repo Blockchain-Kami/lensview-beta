@@ -14,5 +14,5 @@ We love contributors! Feel free to contribute to this project.
   <img src="https://contrib.rocks/image?repo=BlockchainKami/lensview-beta" />
 </a>
 
-## 🌿 Figma Design File
+## 🎨 Figma Design File
 https://www.figma.com/community/file/1256181509109634212/Lensview-Draft
