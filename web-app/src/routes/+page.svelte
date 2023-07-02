@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { PageData } from "./$types";
+  import type {PageData} from "./$types";
   import Feeds from "../components/main-page/Feeds.svelte";
   import HowItWorks from "../components/main-page/HowItWorks.svelte";
 
@@ -30,14 +30,14 @@
     .feeds{
       width: 45%;
       height: 100vh;
-      background-color: aliceblue;
+      //background-color: aliceblue;
       padding-top: 3rem;
     }
 
     .how-it-works {
       width: 55%;
       height: 100vh;
-      background: azure;
+      //background: azure;
     }
 
     @media only screen and (max-width: 700px) {

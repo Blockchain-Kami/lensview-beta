@@ -1,19 +1,21 @@
 <script lang="ts">
-  import "../global.scss";
-  import { userAddress } from "../services/userAddress";
-  import { userAuthentication } from "../utils/frontend/authenticate";
-  import { goto } from "$app/navigation";
-  import createHash from "../utils/frontend/createURLHash";
-  import { isSignedIn } from "../services/signInStatus";
-  import { userEnteredURL } from "../services/userEnteredURL";
-  import getDefaultUserProfile from "../utils/frontend/getDefaultUserProfile";
-  import CreateLensHandle from "../components/main-page/CreateLensHandle.svelte";
-  import { userProfile } from "../services/profile";
-  import getUserProfiles from "../utils/frontend/getUserProfiles";
-  import { onMount } from "svelte";
-  import { PUBLIC_IS_PROD } from "$env/static/public";
+    import "../global.scss";
+    import {userAddress} from "../services/userAddress";
+    import {userAuthentication} from "../utils/frontend/authenticate";
+    import {goto} from "$app/navigation";
+    import createHash from "../utils/frontend/createURLHash";
+    import {isSignedIn} from "../services/signInStatus";
+    import {userEnteredURL} from "../services/userEnteredURL";
+    import getDefaultUserProfile from "../utils/frontend/getDefaultUserProfile";
+    import CreateLensHandle from "../components/main-page/CreateLensHandle.svelte";
+    import {userProfile} from "../services/profile";
+    import getUserProfiles from "../utils/frontend/getUserProfiles";
+    import {onMount} from "svelte";
+    import {PUBLIC_IS_PROD} from "$env/static/public";
+    import {search} from "../utils/frontend/appIcon";
+    import Icon from "$lib/Icon.svelte";
 
-  let isConnected = false;
+    let isConnected = false;
   let signingIn = false;
   let userEnteredLink = "";
   let showCreateLensHandleModal = false;
@@ -187,191 +189,271 @@
 </script>
 
 
-<!---------------------------------- HTML --------------------------->
+<!----------------------------- HTML ----------------------------->
 <main>
-  <div class="menu">
-    <div class="menu__logo">
-      <a href="/"><img alt="Untitled-presentation-3"
-                       src="https://i.postimg.cc/3JG1b9Cv/Lensview-Logo.png"
-      />
-      </a>
+    <div class="CenterRowFlex nav">
+        <div class="nav__logo">
+            <a href="/"><img alt="Untitled-presentation-3"
+                             src="https://i.postimg.cc/3JG1b9Cv/Lensview-Logo.png"
+            />
+            </a>
+        </div>
+        <div class="nav__search">
+            <input bind:value={userEnteredLink}
+                   type="text"
+                   placeholder="Paste a URL to search"
+                   class="nav__search__input"
+            />
+            <button class="btn" on:click={redirectToPostsPage}>
+                <Icon d={search}/>
+            </button>
+        </div>
+        <div class="nav__user-action">
+            <button class="btn">
+                Connect Wallet
+            </button>
+        </div>
     </div>
-    <div class="CenterColumnFlex menu__items">
-      <a href="/" class="menu__items__item menu__items__item--home">
-        Home
-      </a>
-      <a href="https://getwaitlist.com/waitlist/8129"
-         target="_blank"
-         class="menu__items__item menu__items__item--email"
-      >
-        Get Lensview
-        <br>
-        Updates
-      </a>
-    </div>
-    <div class="menu__user">
-      {#if !isConnected}
-        <button on:click="{connect}" class="btn">Connect Wallet</button>
-      {:else}
-        {#if !$isSignedIn}
-          {#if !signingIn }
-            {#if isHandleCreated}
-              <button on:click="{signInWithLens}" class="btn">Sign-In With Lens</button>
-            {:else}
-              <button on:click="{() => showCreateLensHandleModal = true}" class="btn">Create Lens Handle</button>
-            {/if}
-          {:else}
-            Signing In ...
-          {/if}
-        {:else}
-          <div class="menu__user__profile">
-            {$userProfile.handle}
-            <!--{$userAddress.slice(0, 5)} ... {$userAddress.slice(-5)}-->
-          </div>
-        {/if}
-      {/if}
-    </div>
-  </div>
-  <div class="CenterRowFlex search-box">
-    <input bind:value={userEnteredLink} type="text" class="search-box__input" placeholder="Search for a link">
-    <button on:click={redirectToPostsPage} disabled={userEnteredLink.length === 0} class="btn">
-      Search
-    </button>
-  </div>
-  <slot />
-
+    <slot/>
 </main>
 
 <CreateLensHandle bind:showCreateLensHandleModal>
 </CreateLensHandle>
+<!---------------------------------------------------------------->
 
 
-<!------------------------------------------------------------------->
-
-<!---------------------------------- Style --------------------------->
+<!----------------------------- STYLE ----------------------------->
 <style lang="scss">
-  main {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-  }
-
-  .menu {
-    display: flex;
-    flex-direction: column;
-    width: 15%;
-    height: 100vh;
-    padding: 2rem 1rem;
-  }
-
-  .menu__logo {
-    background: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 2rem;
-  }
-
-  .menu__logo img {
-    height: 7rem;
-    width: 8rem;
-  }
-
-  .menu__user {
-    display: flex;
-    flex-direction: column;
+  .nav {
+    justify-content: space-between;
+    padding: 0 2rem;
     gap: 1rem;
-    margin-top: auto;
+    background: rgba(0, 0, 0, 0.10);
   }
 
-  .menu__user__profile {
-    padding: 1rem;
-    background: #38b6ff;
-    border-radius: 39px;
+  .nav__logo img {
+    height: 5rem;
+    width: 5rem;
   }
 
-  .menu__items {
+  .nav__search {
+    display: flex;
+    border-radius: 0.75rem;
+    background: linear-gradient(172deg, rgba(50, 249, 255, 0.15) 33.55%, rgba(236, 254, 255, 0.15) 100%);
+    width: 40%;
+  }
+
+  .nav__search input {
     width: 100%;
-    gap: 1rem;
+    height: 2.7rem;
+    padding: 0 1rem;
+    border-radius: 0.75rem 0 0 0.75rem;
+    background: linear-gradient(172deg, rgba(50, 249, 255, 0.15) 33.55%, rgba(236, 254, 255, 0.15) 100%);
   }
 
-  .menu__items__item {
-    width: 100%;
-    background: #38b6ff;
-    padding: 0.75rem;
-    border-radius: 8px;
+  .nav__search input::placeholder {
+    color: var(--text);
+    opacity: var(--text-opacity);
   }
 
-  .menu__items__item--email {
-    background: deeppink;
-    font-weight: bold;
-  }
-
-  .search-box {
-    position: absolute;
-    width: 35%;
-    justify-content: space-around;
-    top: 2rem;
-    left: 15%;
-  }
-
-  .search-box__input {
-    width: 68%;
-    padding: 0.65rem;
-    border-radius: 8px;
-    border: 1px solid lightgray;
-    outline: 0;
-  }
-
-  @media only screen and (max-width: 700px) {
-    main {
-      flex-direction: column;
-      background-color: aliceblue;
-    }
-
-    .menu {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      height: 10vh;
-      width: 100%;
-    }
-
-    .menu__logo img {
-      height: 4.5rem;
-      width: 5rem;
-    }
-
-    .menu__logo {
-      margin-bottom: 0;
-    }
-
-    .menu__items {
-      display: none;
-      //flex-direction: row;
-      //justify-content: flex-end;
-      //margin: 0 1rem;
-    }
-
-    //.menu__items__item--home{
-    //  display: none;
-    //}
-    //
-    //.menu__items__item--email {
-    //  width: auto;
-    //}
-
-    .menu__user {
-      margin-top: 0;
-      margin-left: auto;
-    }
-
-    .search-box {
-      width: 100%;
-      top: 6rem;
-      left: 0;
-    }
+  .nav__search button {
+    all: unset;
+    height: 2.7rem;
+    width: 2.7rem;
+    border-radius: 0 0.75rem 0.75rem 0;
+    padding: 0 1.2em;
+    background: linear-gradient(172deg, rgba(50, 249, 255, 0.15) 33.55%, rgba(236, 254, 255, 0.15) 100%);
   }
 
 </style>
-<!-------------------------------------------------------------------->
+<!----------------------------------------------------------------->
+
+
+<!--&lt;!&ndash;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; HTML -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
+<!--<main>-->
+<!--  <div class="menu">-->
+<!--    <div class="menu__logo">-->
+<!--      <a href="/"><img alt="Untitled-presentation-3"-->
+<!--                       src="https://i.postimg.cc/3JG1b9Cv/Lensview-Logo.png"-->
+<!--      />-->
+<!--      </a>-->
+<!--    </div>-->
+<!--    <div class="CenterColumnFlex menu__items">-->
+<!--      <a href="/" class="menu__items__item menu__items__item&#45;&#45;home">-->
+<!--        Home-->
+<!--      </a>-->
+<!--      <a href="https://getwaitlist.com/waitlist/8129"-->
+<!--         target="_blank"-->
+<!--         class="menu__items__item menu__items__item&#45;&#45;email"-->
+<!--      >-->
+<!--        Get Lensview-->
+<!--        <br>-->
+<!--        Updates-->
+<!--      </a>-->
+<!--    </div>-->
+<!--    <div class="menu__user">-->
+<!--      {#if !isConnected}-->
+<!--        <button on:click="{connect}" class="btn">Connect Wallet</button>-->
+<!--      {:else}-->
+<!--        {#if !$isSignedIn}-->
+<!--          {#if !signingIn }-->
+<!--            {#if isHandleCreated}-->
+<!--              <button on:click="{signInWithLens}" class="btn">Sign-In With Lens</button>-->
+<!--            {:else}-->
+<!--              <button on:click="{() => showCreateLensHandleModal = true}" class="btn">Create Lens Handle</button>-->
+<!--            {/if}-->
+<!--          {:else}-->
+<!--            Signing In ...-->
+<!--          {/if}-->
+<!--        {:else}-->
+<!--          <div class="menu__user__profile">-->
+<!--            {$userProfile.handle}-->
+<!--            &lt;!&ndash;{$userAddress.slice(0, 5)} ... {$userAddress.slice(-5)}&ndash;&gt;-->
+<!--          </div>-->
+<!--        {/if}-->
+<!--      {/if}-->
+<!--    </div>-->
+<!--  </div>-->
+<!--  <div class="CenterRowFlex search-box">-->
+<!--    <input bind:value={userEnteredLink} type="text" class="search-box__input" placeholder="Search for a link">-->
+<!--    <button on:click={redirectToPostsPage} disabled={userEnteredLink.length === 0} class="btn">-->
+<!--      Search-->
+<!--    </button>-->
+<!--  </div>-->
+<!--  <slot />-->
+
+<!--</main>-->
+
+<!--<CreateLensHandle bind:showCreateLensHandleModal>-->
+<!--</CreateLensHandle>-->
+
+
+<!--&lt;!&ndash;-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; Style -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
+<!--<style lang="scss">-->
+<!--  main {-->
+<!--    display: flex;-->
+<!--    align-items: center;-->
+<!--    flex-direction: row;-->
+<!--  }-->
+
+<!--  .menu {-->
+<!--    display: flex;-->
+<!--    flex-direction: column;-->
+<!--    width: 15%;-->
+<!--    height: 100vh;-->
+<!--    padding: 2rem 1rem;-->
+<!--  }-->
+
+<!--  .menu__logo {-->
+<!--    background: none;-->
+<!--    display: flex;-->
+<!--    justify-content: center;-->
+<!--    align-items: center;-->
+<!--    margin-bottom: 2rem;-->
+<!--  }-->
+
+<!--  .menu__logo img {-->
+<!--    height: 7rem;-->
+<!--    width: 8rem;-->
+<!--  }-->
+
+<!--  .menu__user {-->
+<!--    display: flex;-->
+<!--    flex-direction: column;-->
+<!--    gap: 1rem;-->
+<!--    margin-top: auto;-->
+<!--  }-->
+
+<!--  .menu__user__profile {-->
+<!--    padding: 1rem;-->
+<!--    background: #38b6ff;-->
+<!--    border-radius: 39px;-->
+<!--  }-->
+
+<!--  .menu__items {-->
+<!--    width: 100%;-->
+<!--    gap: 1rem;-->
+<!--  }-->
+
+<!--  .menu__items__item {-->
+<!--    width: 100%;-->
+<!--    background: #38b6ff;-->
+<!--    padding: 0.75rem;-->
+<!--    border-radius: 8px;-->
+<!--  }-->
+
+<!--  .menu__items__item&#45;&#45;email {-->
+<!--    background: deeppink;-->
+<!--    font-weight: bold;-->
+<!--  }-->
+
+<!--  .search-box {-->
+<!--    position: absolute;-->
+<!--    width: 35%;-->
+<!--    justify-content: space-around;-->
+<!--    top: 2rem;-->
+<!--    left: 15%;-->
+<!--  }-->
+
+<!--  .search-box__input {-->
+<!--    width: 68%;-->
+<!--    padding: 0.65rem;-->
+<!--    border-radius: 8px;-->
+<!--    border: 1px solid lightgray;-->
+<!--    outline: 0;-->
+<!--  }-->
+
+<!--  @media only screen and (max-width: 700px) {-->
+<!--    main {-->
+<!--      flex-direction: column;-->
+<!--      background-color: aliceblue;-->
+<!--    }-->
+
+<!--    .menu {-->
+<!--      display: flex;-->
+<!--      flex-direction: row;-->
+<!--      align-items: center;-->
+<!--      height: 10vh;-->
+<!--      width: 100%;-->
+<!--    }-->
+
+<!--    .menu__logo img {-->
+<!--      height: 4.5rem;-->
+<!--      width: 5rem;-->
+<!--    }-->
+
+<!--    .menu__logo {-->
+<!--      margin-bottom: 0;-->
+<!--    }-->
+
+<!--    .menu__items {-->
+<!--      display: none;-->
+<!--      //flex-direction: row;-->
+<!--      //justify-content: flex-end;-->
+<!--      //margin: 0 1rem;-->
+<!--    }-->
+
+<!--    //.menu__items__item&#45;&#45;home{-->
+<!--    //  display: none;-->
+<!--    //}-->
+<!--    //-->
+<!--    //.menu__items__item&#45;&#45;email {-->
+<!--    //  width: auto;-->
+<!--    //}-->
+
+<!--    .menu__user {-->
+<!--      margin-top: 0;-->
+<!--      margin-left: auto;-->
+<!--    }-->
+
+<!--    .search-box {-->
+<!--      width: 100%;-->
+<!--      top: 6rem;-->
+<!--      left: 0;-->
+<!--    }-->
+<!--  }-->
+
+<!--</style>-->
+<!--&lt;!&ndash;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->

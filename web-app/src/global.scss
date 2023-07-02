@@ -60,6 +60,11 @@ blockquote, q {
 
 /*****************************************************/
 
+html {
+    background: url("$lib/assets/background.svg") no-repeat center center fixed;
+    background-size: cover;
+}
+
 
 :root {
     box-sizing: border-box;
@@ -68,6 +73,8 @@ blockquote, q {
     --primary: #14FFEC;
     --secondary: #0D7377;
     --special-font: bely-display;
+    --text: #fff;
+    --text-opacity: 0.7099999785423279;
 }
 
 a {
@@ -101,6 +108,7 @@ a {
 /****** Side scrollbar ********/
 body::-webkit-scrollbar {
     width: 0.25rem;
+    height: 0.25rem;
 }
 
 body::-webkit-scrollbar-track {
@@ -108,23 +116,16 @@ body::-webkit-scrollbar-track {
 }
 
 body::-webkit-scrollbar-thumb {
-    background: #6649b8;
+    background: #32F9FF;
 }
 /*******************************/
 
 .btn {
-    display: inline-block;
-    outline: 0;
-    border: 0;
     cursor: pointer;
-    background: #000000;
-    color: #FFFFFF;
-    border-radius: 8px;
-    padding: 11px 22px 13px;
-    font-size: 15px;
+    padding: 0.7em 1.2em;
     font-weight: 700;
-    line-height: 1;
-    transition: transform 200ms, background 200ms;
+    border-radius: 0.675rem;
+    background: linear-gradient(161deg, #23F9FF 0%, #DBF1FF 100%);
 }
 
 .btn[disabled] {
