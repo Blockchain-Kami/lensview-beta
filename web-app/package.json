@@ -12,6 +12,7 @@
     "format": "prettier --plugin-search-dir . --write ."
   },
   "dependencies": {
+    "@thirdweb-dev/storage": "^1.1.5",
     "@urql/svelte": "^3.0.1",
     "axios": "^1.4.0",
     "bull": "^4.10.4",
