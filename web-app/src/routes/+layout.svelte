@@ -12,7 +12,7 @@
     import getUserProfiles from "../utils/frontend/getUserProfiles";
     import {onMount} from "svelte";
     import {PUBLIC_IS_PROD} from "$env/static/public";
-    import {search} from "../utils/frontend/appIcon";
+    import {menu, search} from "../utils/frontend/appIcon";
     import Icon from "$lib/Icon.svelte";
 
     let isConnected = false;
@@ -209,9 +209,7 @@
             </button>
         </div>
         <div class="nav__user-action">
-            <button class="btn">
-                Connect Wallet
-            </button>
+            <Icon d={menu} color="#fff"/>
         </div>
     </div>
     <slot/>

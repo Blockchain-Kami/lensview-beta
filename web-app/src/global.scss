@@ -59,22 +59,30 @@ blockquote, q {
 }
 
 /*****************************************************/
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
 
 html {
-    background: url("$lib/assets/background.svg") no-repeat center center fixed;
-    background-size: cover;
+    background:linear-gradient(139deg, #0D171D 28.31%, #22454B 100%);
 }
 
 
 :root {
     box-sizing: border-box;
-    font-family: Inter, 'Montserrat', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     transition: background 500ms ease-in-out, color 1000ms ease-in-out;
-    --primary: #14FFEC;
+    --primary: #32F9FF;
     --secondary: #0D7377;
     --special-font: bely-display;
     --text: #fff;
+    --text-accent: #a1a1a1;
     --text-opacity: 0.7099999785423279;
+    --large-font-size: 36.75px;
+    --medium-font-size: 14px;
+    --semi-medium-font-size: 19.25px;
+    --small-font-size: 10.5px;
+    --medium-font-weight: 500;
+    --semi-medium-font-weight: 600;
+    font-size: var(--medium-font-size);
 }
 
 a {
