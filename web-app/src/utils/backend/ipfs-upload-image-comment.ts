@@ -35,11 +35,11 @@ function makeFileObjects(urlObj) {
 
     const metaData = {
         version: '2.0.0',
-        content:urlObj['image'],
+        content: urlObj['image'] ? "https://ipfs.io/ipfs/" + urlObj['image'].substring(7) : '',
         description: 'Post Image',
         name: `Posting on test-net through lensView`,
         external_url: urlObj['url'],
-        image: urlObj?.['image'],
+        image: urlObj['image'] ? "https://ipfs.io/ipfs/" + urlObj['image'].substring(7) : '',
         metadata_id: uuidv4(),
         mainContentFocus: 'TEXT_ONLY',
         attributes: [],

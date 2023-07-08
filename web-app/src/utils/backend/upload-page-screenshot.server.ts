@@ -3,7 +3,7 @@
 import { ThirdwebStorage} from "@thirdweb-dev/storage";
 
 import puppeteer from 'puppeteer';
-import {Blob} from "buffer";
+// import {Blob} from "buffer";
 
 // const makeGatewayURLImage = (imgCID, imgName) => {
 //     return `https://${imgCID}.ipfs.w3s.link/${imgName}`;
@@ -96,7 +96,7 @@ const Screenshot = async (url) => {
 
 export const uploadImage = async (url) => {
 
-    const imgName = "image.jpg";
+    // const imgName = "image.jpg";
 
     try {
         // const screenshot = await Screenshot(url);
@@ -109,13 +109,8 @@ export const uploadImage = async (url) => {
         // return makeGatewayURLImage(imgCID, imgName);
 
 
-
         const screenshot = await Screenshot(url);
-        const screenshotBlob = new Blob([screenshot]);
-        const file = new File([screenshotBlob as BlobPart], imgName )
-        //
         const client = new ThirdwebStorage();
-        //
         return await client.upload(screenshot);
     } catch {
         console.log("Failed to save");
