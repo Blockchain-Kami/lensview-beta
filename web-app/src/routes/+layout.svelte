@@ -12,7 +12,7 @@
     import getUserProfiles from "../utils/frontend/getUserProfiles";
     import {onMount} from "svelte";
     import {PUBLIC_IS_PROD} from "$env/static/public";
-    import {menu, search} from "../utils/frontend/appIcon";
+    import {menu, menuOpen, search} from "../utils/frontend/appIcon";
     import Icon from "$lib/Icon.svelte";
 
     let isConnected = false;
@@ -193,9 +193,17 @@
 <!----------------------------- HTML ----------------------------->
 <div class="CenterRowFlex nav">
     <div class="nav__user-action">
-        <button on:click={() => {menuActive = !menuActive}}>
-            <Icon d={menu} color="#fff" size="2em"/>
-        </button>
+        {#if !menuActive}
+            <button on:click={() => {menuActive = true}}>
+                <Icon d={menu} color="#fff" size="2em"/>
+            </button>
+        {:else}
+            <button on:click={() => {menuActive = false}}>
+                <Icon d={menuOpen} color="#fff" size="2em"/>
+            </button>
+        {/if}
+
+
     </div>
     <div class="nav__search">
         <input bind:value={userEnteredLink}
