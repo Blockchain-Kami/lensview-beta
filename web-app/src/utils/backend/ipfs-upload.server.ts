@@ -34,7 +34,7 @@ function makeFileObjects(urlObj) {
     // //Getting profile of the connected user and saving it to "profile" variable
     // getUserProfile(address);
 
-    const URLtags = [urlObj['hashedURL'], urlObj['origin'], urlObj['hashedOrigin'], urlObj['hashedPath']];
+    const URLtags = [urlObj['hashedURL'], urlObj['hostname'], urlObj['hashedHostname'], urlObj['hashedPath']];
 
     const tags = createTags(URLtags, urlObj['query']);
 

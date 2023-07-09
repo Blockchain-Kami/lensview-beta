@@ -1,3 +1,4 @@
+import { error } from '@sveltejs/kit';
 import {PUBLIC_LENS_API_URL} from "$env/static/public";
 import {APP_LENS_ID} from "$env/static/private";
 import getPosts from "../../graphql/getPosts";
@@ -18,20 +19,29 @@ export const getParentPost = async (hashedURL) => {
             }),
         });
         const response = await posts.json();
+        console.log(response);
+
+        if(response.data.publications.items.length < 1) {
+            return {
+                status: 404,
+                parent_post_ID: null,
+                message: "No related publications found"
+            };
+        }
 
         try {
             const parentPostID = response.data.publications.items[0].id;
             const sourceURL = response.data.publications.items[0].metadata.content;
 
             return {
-                status_code: 200,
+                status: 200,
                 parent_post_ID: parentPostID,
                 source_url: sourceURL,
                 message: "Successfully fetched parent publication ID"
             };
         } catch (err) {
             return {
-                status_code: 404,
+                status: 500,
                 parent_post_ID: null,
                 source_url: null,
                 message: "Error: Could not extract publication ID from response"
@@ -39,11 +49,6 @@ export const getParentPost = async (hashedURL) => {
         }
 
     } catch (err) {
-        return {
-            status_code: 404,
-            parent_post_ID: null,
-            source_url: null,
-            message: "ERROR: failed to fetch details about parent Publication ID"
-        };
+        throw error(500, "Could not connect to Lens Protocol");
     }
 }

@@ -51,19 +51,20 @@ export const preprocessURL = (enteredLink) => {
         // extract the relevant pieces of the url
         const cleanURL = processedURL['href'];
         const origin = processedURL['origin'];
+        const hostname = processedURL['hostname'];
         // path is without query parameter
         const path = origin + processedURL['pathname'];
         const query = processedURL['searchParams'];
 
         return [
             cleanURL.toString().trim(),
-            origin.trim(),
+            hostname.trim(),
             path.trim(),
             query
         ];
 
     } catch {
         console.log('Failed to process URL');
-        throw new Error();
+        return null
     }
 };

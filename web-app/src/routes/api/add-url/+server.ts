@@ -14,17 +14,17 @@ export async function POST(requestEvent) {
         const {request} = requestEvent;
         const urlRequest = await request.json();
 
-        const [url, origin, path, query] = preprocessURL(urlRequest);
+        const [url, hostname, path, query] = preprocessURL(urlRequest);
         const hashedURL = createHash(url);
-        const hashedOrigin = createHash(origin);
+        const hashedHostname = createHash(hostname);
         const hashedPath = createHash(path);
 
 
         const urlObj = {
             url,
             hashedURL,
-            origin,
-            hashedOrigin,
+            hostname,
+            hashedHostname,
             path,
             hashedPath,
             query,

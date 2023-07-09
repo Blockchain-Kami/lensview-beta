@@ -45,7 +45,7 @@ function makeFileObjects(urlObj) {
         attributes: [],
         locale: 'en-US',
         appId: 'LensView',
-        tags: [urlObj['hashedURL'], urlObj['origin'], urlObj['hashedOrigin'], urlObj['hashedPath']]
+        tags: [urlObj['hashedURL'], urlObj['hostname'], urlObj['hashedHostname'], urlObj['hashedPath']]
     }
 
     try {
