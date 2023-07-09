@@ -22,6 +22,7 @@
   let isHandleCreated = true;
   let isThisConnectWalletAccountChange = false;
   let chainIDToBeUsed: string;
+    let menuActive = false;
 
 
   onMount(async () => {
@@ -170,49 +171,58 @@
         } else {
           userProfile.setUserProfile(fetchedProfiles[0]);
         }
-        signingIn = false;
-        isSignedIn.setSignInStatus(true);
+          signingIn = false;
+          isSignedIn.setSignInStatus(true);
       }
 
     } catch (error) {
-      console.log("Error authenticating user");
-      isSignedIn.setSignInStatus(false);
-      signingIn = false;
+        console.log("Error authenticating user");
+        isSignedIn.setSignInStatus(false);
+        signingIn = false;
     }
   };
 
-  const redirectToPostsPage = async () => {
-    userEnteredURL.set(userEnteredLink);
-    const hash = await createHash(userEnteredLink);
-    goto(`/posts/${hash}`);
-  };
+    const redirectToPostsPage = async () => {
+        userEnteredURL.set(userEnteredLink);
+        const hash = await createHash(userEnteredLink);
+        goto(`/posts/${hash}`);
+    };
 </script>
 
 
 <!----------------------------- HTML ----------------------------->
-<main>
-    <div class="CenterRowFlex nav">
-        <div class="nav__logo">
-            <a href="/"><img alt="Untitled-presentation-3"
-                             src="https://i.postimg.cc/3JG1b9Cv/Lensview-Logo.png"
-            />
-            </a>
-        </div>
-        <div class="nav__search">
-            <input bind:value={userEnteredLink}
-                   type="text"
-                   placeholder="Paste a URL to search"
-                   class="nav__search__input"
-            />
-            <button class="btn" on:click={redirectToPostsPage}>
-                <Icon d={search}/>
-            </button>
-        </div>
-        <div class="nav__user-action">
-            <Icon d={menu} color="#fff"/>
-        </div>
+<div class="CenterRowFlex nav">
+    <div class="nav__user-action">
+        <button on:click={() => {menuActive = !menuActive}}>
+            <Icon d={menu} color="#fff" size="2em"/>
+        </button>
     </div>
-    <slot/>
+    <div class="nav__search">
+        <input bind:value={userEnteredLink}
+               type="text"
+               placeholder="Paste a URL to search"
+               class="nav__search__input"
+        />
+        <button class="btn" on:click={redirectToPostsPage}>
+            <Icon d={search}/>
+        </button>
+    </div>
+    <div class="nav__logo">
+        <a href="/"><img alt="Untitled-presentation-3"
+                         src="https://i.postimg.cc/3JG1b9Cv/Lensview-Logo.png"
+        />
+        </a>
+    </div>
+</div>
+<main>
+    {#if menuActive}
+        <div class="menu">
+            dfdsfd
+        </div>
+    {/if}
+    <div class="body">
+        <slot/>
+    </div>
 </main>
 
 <CreateLensHandle bind:showCreateLensHandleModal>
@@ -222,16 +232,23 @@
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
+
+
   .nav {
     justify-content: space-between;
     padding: 0 2rem;
     gap: 1rem;
     background: rgba(0, 0, 0, 0.10);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: #0c151a;
+    z-index: 1000;
   }
 
-  .nav__logo img {
-    height: 5rem;
-    width: 5rem;
+  .nav__user-action button {
+    all: unset;
+    cursor: pointer;
   }
 
   .nav__search {
@@ -263,6 +280,25 @@
     background: linear-gradient(172deg, rgba(50, 249, 255, 0.15) 33.55%, rgba(236, 254, 255, 0.15) 100%);
   }
 
+  .nav__logo img {
+    height: 5rem;
+    width: 5rem;
+  }
+
+  main {
+    display: flex;
+    flex-direction: row;
+    margin-top: 5rem;
+  }
+
+  .menu {
+    width: 16%;
+    background: white;
+  }
+
+  .body {
+    flex-grow: 1;
+  }
 </style>
 <!----------------------------------------------------------------->
 
