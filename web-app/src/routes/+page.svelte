@@ -10,972 +10,98 @@
         thumbUpAlt,
         trendingUp
     } from "../utils/frontend/appIcon";
+    import type {PageData} from "./$types";
+    import getFormattedDate from "../utils/frontend/getFormattedDate";
+    import {getCommentOfPublication} from "../utils/frontend/getCommentOfPublication";
+
+
+    export let data: PageData;
+    let isCardsMoreOpen = false;
 </script>
 
 
 <!----------------------------- HTML ----------------------------->
 <section>
-    <div class="card">
-        <div class="card__image" style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/> 2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300" alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
+    {#each data["explorePublicationsForApp"].items as item}
+        <div class="card">
+            <div class="card__image"
+                 style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
+                <div class="CenterRowFlex card__image__layer1">
+                    <div class="CenterRowFlex card__image__layer1__posts-count">
+                        <Icon d={modeComment}/>
+                        {item?.stats?.totalAmountOfComments}
                     </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
+                    <div class="card__image__layer1__more-icon">
+                        <button on:click={() => {isCardsMoreOpen = !isCardsMoreOpen}}>
+                            <Icon d={moreHoriz} size="2.5em"/>
+                        </button>
+                    </div>
+                </div>
+                {#if isCardsMoreOpen}
+                    <div class="CenterColumnFlex card__image__more">
+                        <div class="CenterRowFlex card__image__more__share">
+                            <div class="card__image__more__share__icon">
+                                <Icon d={share} size="1.2em"/>
+                            </div>
+                            Share
                         </div>
                     </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
+                {/if}
+            </div>
+            <div class="CenterRowFlex card__info">
+                <div class="CenterRowFlex card__info__reaction">
+                    <div class="CenterRowFlex card__info__reaction__val">
+                        <Icon d={thumbUpAlt}/> {item?.stats?.totalUpvotes}
+                    </div>
+                    <div class="card__info__reaction__vertical-line"></div>
+                    <div class="CenterRowFlex card__info__reaction__val">
+                        <Icon d={thumbDownAlt}/> {item?.stats?.totalDownvotes}
                     </div>
                 </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image"
-             style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-            <div class="CenterRowFlex card__image__layer1">
-                <div class="CenterRowFlex card__image__layer1__posts-count">
-                    <Icon d={modeComment}/>
-                    4
-                </div>
-                <div class="card__image__layer1__more">
-                    <Icon d={moreHoriz} size="2.5em"/>
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__image__options">
-                <div class="CenterRowFlex card__image__options__share">
-                    <div class="card__image__options__share__icon">
-                        <Icon d={share} size="1.2em"/>
+                <div class="CenterColumnFlex card__info__content">
+                    <div class="CenterRowFlex card__info__content__link">
+                        <Icon d={redirect}/>{item?.metadata?.content.substring(0, 20)}...
                     </div>
-                    Share
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/> 4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/> 2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300" alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
+                    <div class="card__info__content__time">
+                        {getFormattedDate(item?.createdAt)}
                     </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
+                </div>
+            </div>
+
+            <div class="CenterRowFlex card__post">
+                {#if data = getCommentOfPublication(item?.id, 1)}
+                    {JSON.stringify(data)}
+                    <div class="card__post__user-pic">
+                        <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300"
+                             alt="avatar">
+                    </div>
+                    <div class="card__post__info">
+                        <div class="CenterRowFlex card__post__info__head">
+                            <div class="card__post__info__head__username">
+                                {data?.data?.publications?.items}
+                            </div>
+                            <div class="CenterRowFlex card__post__info__head__trend">
+                                <div class="card__post__info__head__trend__icon">
+                                    <Icon d={trendingUp}/>
+                                </div>
+                                <div class="card__post__info__head__trend__count">
+                                    7
+                                </div>
+                            </div>
+                            <div class="card__post__info__head__time">
+                                15 minutes ago
+                            </div>
                         </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
+                        <div class="card__post__info__body">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima
+                            neque nisi omnis pariatur provident, totam ut.
                         </div>
                     </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque nisi omnis pariatur provident, totam ut.
-                </div>
+                {/if}
             </div>
+
         </div>
-    </div>
-    <div class="card">
-        <div class="card__image" style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/> 2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300" alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image" style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/> 2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300" alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image" style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/> 2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300" alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image" style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/> 2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300" alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque
-                    nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image"
-             style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>
-                    4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/>
-                    2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300"
-                     alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque
-                    nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image"
-             style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>
-                    4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/>
-                    2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300"
-                     alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque
-                    nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image"
-             style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>
-                    4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/>
-                    2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300"
-                     alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque
-                    nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image"
-             style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>
-                    4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/>
-                    2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300"
-                     alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque
-                    nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image"
-             style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>
-                    4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/>
-                    2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300"
-                     alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque
-                    nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image"
-             style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>
-                    4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/>
-                    2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300"
-                     alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque
-                    nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image"
-             style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>
-                    4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/>
-                    2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300"
-                     alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque
-                    nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image"
-             style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>
-                    4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/>
-                    2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300"
-                     alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque
-                    nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image"
-             style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>
-                    4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/>
-                    2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300"
-                     alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque
-                    nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image"
-             style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>
-                    4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/>
-                    2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300"
-                     alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque
-                    nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image"
-             style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>
-                    4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/>
-                    2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300"
-                     alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque
-                    nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__image"
-             style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-        </div>
-        <div class="CenterRowFlex card__info">
-            <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbUpAlt}/>
-                    4
-                </div>
-                <div class="card__info__reaction__vertical-line"></div>
-                <div class="CenterRowFlex card__info__reaction__val">
-                    <Icon d={thumbDownAlt}/>
-                    2
-                </div>
-            </div>
-            <div class="CenterColumnFlex card__info__content">
-                <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect}/>{"fireship.io/lessons/"}...
-                </div>
-                <div class="card__info__content__time">
-                    8 hours ago
-                </div>
-            </div>
-        </div>
-        <div class="CenterRowFlex card__post">
-            <div class="card__post__user-pic">
-                <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300"
-                     alt="avatar">
-            </div>
-            <div class="card__post__info">
-                <div class="CenterRowFlex card__post__info__head">
-                    <div class="card__post__info__head__username">
-                        naruto.lens
-                    </div>
-                    <div class="CenterRowFlex card__post__info__head__trend">
-                        <div class="card__post__info__head__trend__icon">
-                            <Icon d={trendingUp}/>
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                            7
-                        </div>
-                    </div>
-                    <div class="card__post__info__head__time">
-                        15 minutes ago
-                    </div>
-                </div>
-                <div class="card__post__info__body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima neque
-                    nisi omnis pariatur provident, totam ut.
-                </div>
-            </div>
-        </div>
-    </div>
+    {/each}
 </section>
 <!---------------------------------------------------------------->
 
@@ -1018,7 +144,12 @@
     opacity: 85%;
   }
 
-  .card__image__options {
+  .card__image__layer1__more-icon button {
+    all: unset;
+    cursor: pointer;
+  }
+
+  .card__image__more {
     align-items: flex-start;
     width: 30%;
     background: #185359;
@@ -1029,11 +160,11 @@
     margin-top: -0.8rem;
   }
 
-  .card__image__options__share {
+  .card__image__more__share {
     gap: 0.5rem;
   }
 
-  .card__image__options__share__icon {
+  .card__image__more__share__icon {
     background: #2c4042;
     padding: 0.5rem;
     border-radius: 50%;
@@ -1077,11 +208,12 @@
       color: var(--text-accent);
     }
 
-    .card__post{
+    .card__post {
       background: #185359;
       border-radius: 0 0 10.8px 10.8px;
       padding: 1.2rem;
       gap: 0.8rem;
+      height: 10.4rem;
     }
 
     .card__post__user-pic{
