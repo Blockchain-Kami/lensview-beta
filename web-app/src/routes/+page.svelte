@@ -13,6 +13,7 @@
     import type {PageData} from "./$types";
     import getFormattedDate from "../utils/frontend/getFormattedDate";
     import {getCommentOfPublication} from "../utils/frontend/getCommentOfPublication";
+    import getImageURLFromURLHash from "../utils/frontend/getImageURLFromURLHash";
 
 
     export let data: PageData;
@@ -25,30 +26,35 @@
 <section>
     {#each data["explorePublicationsForApp"]?.items as item}
         <div class="card">
-            <div class="card__image"
-                 style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
-                <div class="CenterRowFlex card__image__layer1">
-                    <div class="CenterRowFlex card__image__layer1__posts-count">
-                        <Icon d={modeComment}/>
-                        {item?.stats?.totalAmountOfComments}
-                    </div>
-                    <div class="card__image__layer1__more-icon">
-                        <button on:click={() => {isCardsMoreOpen = !isCardsMoreOpen}}>
-                            <Icon d={moreHoriz} size="2.5em"/>
-                        </button>
-                    </div>
+            {#await getImageURLFromURLHash(item?.metadata?.tags[0])}
+                <div class="card__image-loader">
                 </div>
-                {#if isCardsMoreOpen}
-                    <div class="CenterColumnFlex card__image__more">
-                        <div class="CenterRowFlex card__image__more__share">
-                            <div class="card__image__more__share__icon">
-                                <Icon d={share} size="1.2em"/>
-                            </div>
-                            Share
+            {:then fetchedImageUrl}
+                <div class="card__image"
+                     style="background-image: url({fetchedImageUrl})">
+                    <div class="CenterRowFlex card__image__layer1">
+                        <div class="CenterRowFlex card__image__layer1__posts-count">
+                            <Icon d={modeComment}/>
+                            {item?.stats?.totalAmountOfComments}
+                        </div>
+                        <div class="card__image__layer1__more-icon">
+                            <button on:click={() => {isCardsMoreOpen = !isCardsMoreOpen}}>
+                                <Icon d={moreHoriz} size="2.5em"/>
+                            </button>
                         </div>
                     </div>
-                {/if}
-            </div>
+                    {#if isCardsMoreOpen}
+                        <div class="CenterColumnFlex card__image__more">
+                            <div class="CenterRowFlex card__image__more__share">
+                                <div class="card__image__more__share__icon">
+                                    <Icon d={share} size="1.2em"/>
+                                </div>
+                                Share
+                            </div>
+                        </div>
+                    {/if}
+                </div>
+            {/await}
             <div class="CenterRowFlex card__info">
                 <div class="CenterRowFlex card__info__reaction">
                     <div class="CenterRowFlex card__info__reaction__val">
@@ -60,9 +66,11 @@
                     </div>
                 </div>
                 <div class="CenterColumnFlex card__info__content">
-                    <div class="CenterRowFlex card__info__content__link">
-                        <Icon d={redirect}/>{item?.metadata?.content.substring(0, 20)}...
-                    </div>
+                    <a href={item?.metadata?.content} target="_blank">
+                        <div class="CenterRowFlex card__info__content__link">
+                            <Icon d={redirect}/>{item?.metadata?.content.substring(0, 20)}...
+                        </div>
+                    </a>
                     <div class="card__info__content__time">
                         {getFormattedDate(item?.createdAt)}
                     </div>
@@ -135,6 +143,12 @@
     filter: drop-shadow(9.600000381469727px 22.80000114440918px 37.20000076293945px rgba(0, 0, 0, 0.26));
   }
 
+  .card__image-loader {
+    width: 100%;
+    height: 17rem;
+    border-radius: 10.8px;
+  }
+
   .card__image {
     width: 100%;
     height: 17rem;
@@ -143,6 +157,20 @@
     padding-bottom: 50%; /* Adjust this value to control the aspect ratio */
     background-size: cover;
     border-radius: 10.8px;
+    transition: background-position 1s ease;
+  }
+
+  .card__image:hover {
+    animation: scrollBackground 5s linear infinite;
+  }
+
+  @keyframes scrollBackground {
+    0% {
+      background-position: top center;
+    }
+    100% {
+      background-position: bottom center;
+    }
   }
 
   .card__image__layer1 {
@@ -316,7 +344,8 @@
 
   .card__post__user-pic-loader,
   .card__post__info__head-loader,
-  .card__post__info__body-loader {
+  .card__post__info__body-loader,
+  .card__image-loader {
     background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);
     background-size: 200% 100%;
     animation: 1s shine linear infinite;

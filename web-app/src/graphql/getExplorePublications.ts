@@ -27,6 +27,7 @@ fragment MetadataOutputFields on MetadataOutput {
   name
   description
   content
+  tags
 }
 
 fragment PostFields on Post {
