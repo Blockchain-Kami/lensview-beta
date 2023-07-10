@@ -21,8 +21,9 @@
 
 
 <!----------------------------- HTML ----------------------------->
+
 <section>
-    {#each data["explorePublicationsForApp"].items as item}
+    {#each data["explorePublicationsForApp"]?.items as item}
         <div class="card">
             <div class="card__image"
                  style="background-image: url('https://bafybeidu23cshcsrg4vbcdsk47uvqtahyzlbkgnksv5wvpnzetfjpa6bxm.ipfs.w3s.link/image.jpg')">
@@ -67,42 +68,55 @@
                     </div>
                 </div>
             </div>
+            {#await getCommentOfPublication(item?.id, 1)}
+                <div class="CenterRowFlex card__post">
+                    <div class="card__post__user-pic-loader">
 
-            <div class="CenterRowFlex card__post">
-                {#if data = getCommentOfPublication(item?.id, 1)}
-                    {JSON.stringify(data)}
+                    </div>
+                    <div class="card__post__info">
+                        <div class="CenterRowFlex card__post__info__head-loader">
+
+                        </div>
+                        <div class="card__post__info__body-loader">
+
+                        </div>
+                    </div>
+                </div>
+            {:then data}
+                <div class="CenterRowFlex card__post">
                     <div class="card__post__user-pic">
-                        <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300"
+                        <img src={data?.data?.publications?.items[0]?.profile?.picture?.original?.url}
                              alt="avatar">
                     </div>
                     <div class="card__post__info">
                         <div class="CenterRowFlex card__post__info__head">
                             <div class="card__post__info__head__username">
-                                {data?.data?.publications?.items}
+                                {data?.data?.publications?.items[0]?.profile?.handle}
                             </div>
                             <div class="CenterRowFlex card__post__info__head__trend">
                                 <div class="card__post__info__head__trend__icon">
                                     <Icon d={trendingUp}/>
                                 </div>
                                 <div class="card__post__info__head__trend__count">
-                                    7
+                                    {data?.data?.publications?.items[0]?.stats?.totalUpvotes === undefined ? 0 : data?.data?.publications?.items[0]?.stats?.totalUpvotes}
                                 </div>
                             </div>
                             <div class="card__post__info__head__time">
-                                15 minutes ago
+                                {getFormattedDate(data?.data?.publications?.items[0]?.createdAt)}
                             </div>
                         </div>
                         <div class="card__post__info__body">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid commodi laboriosam minima
-                            neque nisi omnis pariatur provident, totam ut.
+                            {data?.data?.publications?.items[0]?.metadata?.content.substring(0, 100)}
                         </div>
                     </div>
-                {/if}
-            </div>
-
+                </div>
+            {:catch error}
+                <p style="color: red">{error.message}</p>
+            {/await}
         </div>
     {/each}
 </section>
+
 <!---------------------------------------------------------------->
 
 
@@ -199,32 +213,51 @@
     gap: 0.3rem;
   }
 
-    .card__info__content__link{
-      gap: 0.3rem;
-    }
+  .card__info__content__link {
+    gap: 0.3rem;
+  }
 
-    .card__info__content__time{
-      font-size: var(--small-font-size);
-      color: var(--text-accent);
-    }
+  .card__info__content__time {
+    font-size: var(--small-font-size);
+    color: var(--text-accent);
+  }
 
-    .card__post {
-      background: #185359;
-      border-radius: 0 0 10.8px 10.8px;
-      padding: 1.2rem;
-      gap: 0.8rem;
-      height: 10.4rem;
-    }
+  .card__post {
+    background: #185359;
+    border-radius: 0 0 10.8px 10.8px;
+    padding: 1.2rem;
+    gap: 0.8rem;
+    height: 10.4rem;
+  }
 
-    .card__post__user-pic{
-      margin-bottom: auto;
-    }
+  .card__post__user-pic-loader {
+    height: 4rem;
+    width: 4.7rem;
+    margin-bottom: auto;
+    border-radius: 50%;
+  }
+
+  .card__post__user-pic {
+    margin-bottom: auto;
+  }
 
   .card__post__user-pic img {
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
     border: 2px solid #32F9FF;
+  }
+
+  .card__post__info {
+    width: 100%;
+  }
+
+  .card__post__info__head-loader {
+    width: 70%;
+    justify-content: flex-start;
+    margin-bottom: 0.8rem;
+    height: 1rem;
+    border-radius: 5px;
   }
 
   .card__post__info__head {
@@ -242,30 +275,52 @@
 
   .card__post__info__head__trend {
     background: #113232;
-      border-radius: 14px;
-      font-size: var(--small-font-size);
-      opacity: 90%;
-    }
+    border-radius: 14px;
+    font-size: var(--small-font-size);
+    opacity: 90%;
+  }
 
-    .card__post__info__head__trend__icon{
-      padding: 0.25rem;
-      border-radius: 50%;
-      background: #0e2828;
-    }
+  .card__post__info__head__trend__icon {
+    padding: 0.25rem;
+    border-radius: 50%;
+    background: #0e2828;
+  }
 
-    .card__post__info__head__trend__count{
-      padding: 0.25rem 0.5rem;
-    }
+  .card__post__info__head__trend__count {
+    padding: 0.25rem 0.5rem;
+  }
 
-    .card__post__info__head__time{
-      font-size: var(--small-font-size);
-      color: var(--text-accent);
-      margin-left: auto;
-    }
+  .card__post__info__head__time {
+    font-size: var(--small-font-size);
+    color: var(--text-accent);
+    margin-left: auto;
+  }
 
-    .card__post__info__body{
-      line-height: 1.3em;
+  .card__post__info__body-loader {
+    height: 5.2rem;
+    border-radius: 5px;
+  }
+
+  .card__post__info__body {
+    line-height: 1.3em;
+    height: 5.2rem;
+    overflow-wrap: break-word;
+    width: 20.5rem;
+  }
+
+  @keyframes shine {
+    to {
+      background-position-x: -200%;
     }
+  }
+
+  .card__post__user-pic-loader,
+  .card__post__info__head-loader,
+  .card__post__info__body-loader {
+    background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);
+    background-size: 200% 100%;
+    animation: 1s shine linear infinite;
+  }
 
 </style>
 <!----------------------------------------------------------------->

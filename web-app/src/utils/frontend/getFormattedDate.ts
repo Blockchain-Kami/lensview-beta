@@ -7,45 +7,47 @@
  * @param date
  */
 const getFormattedDate = (date: string) => {
-    const today = new Date();
-    const commentDate = new Date(date);
+	if (date === undefined || date === null) return '';
 
-    const diffTime = Math.abs(today.getTime() - commentDate.getTime());
-    const oneDay = 24 * 60 * 60 * 1000;
-    const diffDays = Math.floor(diffTime / oneDay);
+	const today = new Date();
+	const commentDate = new Date(date);
 
-    if (diffDays === 0) {
-        const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-        if (diffHours === 0) {
-            const diffMinutes = Math.floor(diffTime / (1000 * 60));
-            if (diffMinutes === 0) {
-                const diffSeconds = Math.floor(diffTime / (1000));
-                return `${diffSeconds} seconds ago`;
-            } else {
-                return `${diffMinutes} minutes ago`;
-            }
-        } else {
-            return `${diffHours} hours ago`;
-        }
-    } else if (diffDays === 1) {
-        return `${diffDays} day ago`;
-    } else if (diffDays < 30) {
-        return `${diffDays} days ago`;
-    } else if (diffDays < 365) {
-        const diffMonths = Math.floor(diffDays / 30);
-        if (diffMonths === 1) {
-            return `${diffMonths} month ago`;
-        } else {
-            return `${diffMonths} months ago`;
-        }
-    } else {
-        const diffYears = Math.floor(diffDays / 365);
-        if (diffYears === 1) {
-            return `${diffYears} year ago`;
-        } else {
-            return `${diffYears} years ago`;
-        }
-    }
+	const diffTime = Math.abs(today.getTime() - commentDate.getTime());
+	const oneDay = 24 * 60 * 60 * 1000;
+	const diffDays = Math.floor(diffTime / oneDay);
+
+	if (diffDays === 0) {
+		const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+		if (diffHours === 0) {
+			const diffMinutes = Math.floor(diffTime / (1000 * 60));
+			if (diffMinutes === 0) {
+				const diffSeconds = Math.floor(diffTime / 1000);
+				return `${diffSeconds} seconds ago`;
+			} else {
+				return `${diffMinutes} minutes ago`;
+			}
+		} else {
+			return `${diffHours} hours ago`;
+		}
+	} else if (diffDays === 1) {
+		return `${diffDays} day ago`;
+	} else if (diffDays < 30) {
+		return `${diffDays} days ago`;
+	} else if (diffDays < 365) {
+		const diffMonths = Math.floor(diffDays / 30);
+		if (diffMonths === 1) {
+			return `${diffMonths} month ago`;
+		} else {
+			return `${diffMonths} months ago`;
+		}
+	} else {
+		const diffYears = Math.floor(diffDays / 365);
+		if (diffYears === 1) {
+			return `${diffYears} year ago`;
+		} else {
+			return `${diffYears} years ago`;
+		}
+	}
 };
 
 export default getFormattedDate;
