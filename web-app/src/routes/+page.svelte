@@ -54,6 +54,10 @@
                         </div>
                     {/if}
                 </div>
+            {:catch error}
+                <div class="card__image"
+                     style="background-image: url('https://media.istockphoto.com/id/1392182937/vector/no-image-available-photo-coming-soon.jpg?s=170667a&w=0&k=20&c=HOCGNLwt3LkB92ZlyHAupxbwHY5X2143KDlbA-978dE=')">
+                </div>
             {/await}
             <div class="CenterRowFlex card__info">
                 <div class="CenterRowFlex card__info__reaction">
@@ -119,7 +123,9 @@
                     </div>
                 </div>
             {:catch error}
-                <p style="color: red">{error.message}</p>
+                <div class="CenterRowFlex card__post">
+                    No Top Post
+                </div>
             {/await}
         </div>
     {/each}
@@ -257,6 +263,14 @@
     gap: 0.8rem;
     height: 10.4rem;
   }
+
+  //.card__post-error{
+  //  background: #185359;
+  //  border-radius: 0 0 10.8px 10.8px;
+  //  padding: 1.2rem;
+  //  gap: 0.8rem;
+  //  height: 10.4rem;
+  //}
 
   .card__post__user-pic-loader {
     height: 4rem;
