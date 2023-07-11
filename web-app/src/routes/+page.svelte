@@ -166,7 +166,8 @@
     transition: background-position 1s ease;
   }
 
-  .card__image:hover {
+  .card__image:hover,
+  .card__image:active {
     animation: scrollBackground 5s linear infinite;
   }
 
@@ -263,14 +264,6 @@
     gap: 0.8rem;
     height: 10.4rem;
   }
-
-  //.card__post-error{
-  //  background: #185359;
-  //  border-radius: 0 0 10.8px 10.8px;
-  //  padding: 1.2rem;
-  //  gap: 0.8rem;
-  //  height: 10.4rem;
-  //}
 
   .card__post__user-pic-loader {
     height: 4rem;

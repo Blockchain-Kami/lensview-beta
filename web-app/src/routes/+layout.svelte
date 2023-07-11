@@ -192,18 +192,10 @@
 
 <!----------------------------- HTML ----------------------------->
 <div class="CenterRowFlex nav">
-    <div class="nav__user-action">
-        {#if !menuActive}
-            <button on:click={() => {menuActive = true}}>
-                <Icon d={menu} color="#fff" size="2em"/>
-            </button>
-        {:else}
-            <button on:click={() => {menuActive = false}}>
-                <Icon d={menuOpen} color="#fff" size="2em"/>
-            </button>
-        {/if}
-
-
+    <div class="nav__hamburger">
+        <button on:click={() => {menuActive = true}}>
+            <Icon d={menu} color="#fff" size="2em"/>
+        </button>
     </div>
     <div class="nav__search">
         <input bind:value={userEnteredLink}
@@ -225,10 +217,14 @@
 <main>
     {#if menuActive}
         <div class="menu">
-            dfdsfd
+            <div class="menu__hamburger">
+                <button on:click={() => {menuActive = false}}>
+                    <Icon d={menuOpen} color="#fff" size="2em"/>
+                </button>
+            </div>
         </div>
     {/if}
-    <div class="body">
+    <div class:body-margin-on-menu-active={menuActive} class="body">
         <slot/>
     </div>
 </main>
@@ -251,10 +247,10 @@
     top: 0;
     width: 100%;
     background: #0c151a;
-    z-index: 1000;
+    z-index: 10;
   }
 
-  .nav__user-action button {
+  .nav__hamburger button {
     all: unset;
     cursor: pointer;
   }
@@ -263,7 +259,8 @@
     display: flex;
     border-radius: 0.75rem;
     background: linear-gradient(172deg, rgba(50, 249, 255, 0.15) 33.55%, rgba(236, 254, 255, 0.15) 100%);
-    width: 40%;
+    width: 65%;
+    max-width: 34rem;
   }
 
   .nav__search input {
@@ -289,23 +286,50 @@
   }
 
   .nav__logo img {
-    height: 5rem;
-    width: 5rem;
+    height: 4rem;
+    width: 4rem;
   }
 
   main {
     display: flex;
     flex-direction: row;
-    margin-top: 5rem;
+    margin-top: 4rem;
   }
 
   .menu {
-    width: 16%;
-    background: white;
+    width: 20rem;
+    background: #0e2b31;
+    position: fixed;
+    height: 100%;
+    z-index: 20;
+    margin-top: -4rem;
+    border-radius: 0 20px 20px 0;
+  }
+
+  .menu__hamburger {
+    display: flex;
+    height: 4rem;
+    margin-left: 2rem;
+  }
+
+  .menu__hamburger button {
+    all: unset;
+    cursor: pointer;
   }
 
   .body {
     flex-grow: 1;
+  }
+
+  .body-margin-on-menu-active {
+    margin-left: 20rem; // width of menu
+  }
+
+
+  @media only screen and (max-width: 1024px) {
+    .body {
+      margin-left: 0;
+    }
   }
 </style>
 <!----------------------------------------------------------------->
