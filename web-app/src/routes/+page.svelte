@@ -193,10 +193,6 @@
     opacity: 85%;
   }
 
-  .card__image__layer1__more-icon button {
-    all: unset;
-    cursor: pointer;
-  }
 
   .card__image__more {
     align-items: flex-start;

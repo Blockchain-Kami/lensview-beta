@@ -12,16 +12,18 @@
     import getUserProfiles from "../utils/frontend/getUserProfiles";
     import {onMount} from "svelte";
     import {PUBLIC_IS_PROD} from "$env/static/public";
-    import {menu, menuOpen, search} from "../utils/frontend/appIcon";
+    import {home, homeDualTone, menu, menuOpen, search} from "../utils/frontend/appIcon";
     import Icon from "$lib/Icon.svelte";
+    import DualToneIcon from "$lib/DualToneIcon.svelte";
+    import Loader from "$lib/Loader.svelte";
 
     let isConnected = false;
-  let signingIn = false;
-  let userEnteredLink = "";
-  let showCreateLensHandleModal = false;
-  let isHandleCreated = true;
-  let isThisConnectWalletAccountChange = false;
-  let chainIDToBeUsed: string;
+    let signingIn = false;
+    let userEnteredLink = "";
+    let showCreateLensHandleModal = false;
+    let isHandleCreated = true;
+    let isThisConnectWalletAccountChange = false;
+    let chainIDToBeUsed: string;
     let menuActive = false;
 
 
@@ -222,6 +224,76 @@
                     <Icon d={menuOpen} color="#fff" size="2em"/>
                 </button>
             </div>
+            {#if !isConnected}
+                <div class="menu__connect-box">
+                    <div class="menu__connect-box__text">
+                        Hello Friend! Welcome to LensView.
+                    </div>
+                    <div class="menu__connect-box__btn">
+                        <button on:click="{connect}"
+                                class="btn">
+                            Connect Wallet
+                        </button>
+                    </div>
+                </div>
+            {:else}
+                {#if !$isSignedIn}
+                    <div class="menu__connect-box">
+                        <div class="menu__connect-box__text">
+                            Hello Friend! Welcome to LensView.
+                        </div>
+                        <div class="menu__connect-box__btn">
+                            {#if !signingIn }
+                                {#if isHandleCreated}
+                                    <button on:click="{signInWithLens}"
+                                            class="btn">Sign-In With Lens
+                                    </button>
+                                {:else}
+                                    <button on:click="{() => showCreateLensHandleModal = true}" class="btn">Create Lens
+                                        Handle
+                                    </button>
+                                {/if}
+                            {:else}
+                                <button class="btn" disabled>
+                                    Signing In &nbsp;
+                                    <Loader/>
+                                </button>
+                            {/if}
+                        </div>
+                    </div>
+                {:else}
+                    <div class="CenterColumnFlex menu__user-box">
+                        <div class="menu__user-box__avatar">
+                            <img src={$userProfile.picture.original.url} alt="">
+                        </div>
+                        <div class="menu__user-box__handle">
+                            {$userProfile.handle}
+                        </div>
+                        <!--{$userAddress.slice(0, 5)} ... {$userAddress.slice(-5)}-->
+                    </div>
+                {/if}
+            {/if}
+            <div class="menu__options">
+                <a href="/" class="CenterRowFlex menu__options__item">
+                    <div class="menu__options__item__icon">
+                        <DualToneIcon d1={home} d2={homeDualTone}/>
+                    </div>
+                    Home
+                </a>
+                <!--                <a href="https-proxy-agent" class="CenterRowFlex menu__options__item">-->
+                <!--                    <div >About</div>-->
+                <!--                </a>-->
+            </div>
+            <div class="menu__join-box">
+                <div class="menu__join-box__text">
+                    Join the LensView family and never miss out on any updates!
+                </div>
+                <div class="menu__join-box__btn">
+                    <button class="btn-alt">
+                        Join For Updates
+                    </button>
+                </div>
+            </div>
         </div>
     {/if}
     <div class:body-margin-on-menu-active={menuActive} class="body">
@@ -237,7 +309,6 @@
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
 
-
   .nav {
     justify-content: space-between;
     padding: 0 2rem;
@@ -248,11 +319,6 @@
     width: 100%;
     background: #0c151a;
     z-index: 10;
-  }
-
-  .nav__hamburger button {
-    all: unset;
-    cursor: pointer;
   }
 
   .nav__search {
@@ -277,7 +343,6 @@
   }
 
   .nav__search button {
-    all: unset;
     height: 2.7rem;
     width: 2.7rem;
     border-radius: 0 0.75rem 0.75rem 0;
@@ -297,6 +362,8 @@
   }
 
   .menu {
+    display: flex;
+    flex-direction: column;
     width: 20rem;
     background: #0e2b31;
     position: fixed;
@@ -304,17 +371,82 @@
     z-index: 20;
     margin-top: -4rem;
     border-radius: 0 20px 20px 0;
+    padding: 0 2rem 2rem 2rem;
+    gap: 1rem;
   }
 
   .menu__hamburger {
     display: flex;
     height: 4rem;
-    margin-left: 2rem;
   }
 
-  .menu__hamburger button {
-    all: unset;
-    cursor: pointer;
+  .menu__connect-box {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border-radius: 10px;
+    gap: 2.5rem;
+    background-image: url("$lib/assets/connect-wallet-bg.jpg");
+    background-repeat: no-repeat;
+    background-position: top;
+  }
+
+  .menu__user-box {
+    gap: 1rem;
+  }
+
+  .menu__user-box__avatar img {
+    width: 7rem;
+    height: 7rem;
+    border-radius: 50%;
+    border: 4px solid #32F9FF;
+  }
+
+  .menu__user-box__handle {
+    padding: 1rem 2rem;
+    background: #034242;
+    border-radius: 20px;
+    color: #32F9FF;
+    font-weight: var(--semi-medium-font-weight);
+  }
+
+  .menu__options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .menu__options__item {
+    padding: 1rem;
+    justify-content: flex-start;
+    gap: 0.5em;
+  }
+
+  .menu__options__item:hover {
+    background: #0b2226;
+    border-radius: 10px;
+  }
+
+  .menu__options__item__icon {
+    padding: 0.35rem;
+    border-radius: 50%;
+    background: #091b1e;
+  }
+
+  .menu__connect-box__text {
+    font-weight: var(--semi-medium-font-weight);
+  }
+
+  .menu__join-box {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .menu__join-box__text {
+    font-weight: var(--semi-medium-font-weight);
   }
 
   .body {
