@@ -23,44 +23,16 @@
 </dialog>
 
 <style>
+
     dialog {
-        max-width: 32em;
-        border-radius: 0.2em;
-        border: none;
-        padding: 0;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+      max-width: 32em;
+      border-radius: 0.2em;
+      border: none;
+      padding: 0;
     }
 
     dialog[open] {
-        animation: fade-in 0.3s ease-in-out;
+      animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    @keyframes fade-in {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-
-    dialog[open]::backdrop {
-        animation: fade-in-backdrop 0.2s ease-out;
-    }
-
-    @keyframes fade-in-backdrop {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-
-    button {
-        display: block;
-    }
 </style>

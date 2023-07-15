@@ -61,7 +61,7 @@
    */
   async function connect() {
     if (typeof window.ethereum === "undefined") {
-      alert("Please install metamask to interact with this application, but you can still view the others posts");
+      // alert("Please install metamask to interact with this application, but you can still view the others posts");
     } else {
       /* this allows the user to connect their wallet */
       try {
@@ -317,8 +317,9 @@
     position: fixed;
     top: 0;
     width: 100%;
-    background: #0c151a;
+    background: #0c151a94;
     z-index: 10;
+    backdrop-filter: blur(10px);
   }
 
   .nav__search {
@@ -330,11 +331,7 @@
   }
 
   .nav__search input {
-    width: 100%;
-    height: 2.7rem;
-    padding: 0 1rem;
     border-radius: 0.75rem 0 0 0.75rem;
-    background: linear-gradient(172deg, rgba(50, 249, 255, 0.15) 33.55%, rgba(236, 254, 255, 0.15) 100%);
   }
 
   .nav__search input::placeholder {

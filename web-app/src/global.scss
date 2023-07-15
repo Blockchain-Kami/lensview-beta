@@ -72,11 +72,13 @@ button[disabled] {
 
 /*****************************************************/
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
-
-html {
-    background: linear-gradient(156deg, #0D171D 39.31%, #22454B 82%) fixed;
+@font-face {
+    font-family: 'Mona Sans';
+    src: url('$lib/assets/Mona-Sans.woff2') format('woff2 supports variations'),
+    url('$lib/assets/Mona-Sans.woff2') format('woff2-variations');
+    font-weight: 200 900;
+    font-stretch: 75% 125%;
 }
-
 
 :root {
     box-sizing: border-box;
@@ -89,13 +91,93 @@ html {
     --text-accent: #a1a1a1;
     --text-opacity: 0.7099999785423279;
     --large-font-size: 36.75px;
-    --semi-medium-font-size: 14px;
+    --semi-large-font-size: 31.5px;
     --medium-font-size: 19.25px;
+    --semi-medium-font-size: 14px;
     --small-font-size: 10.5px;
     --semi-medium-font-weight: 500;
     --medium-font-weight: 600;
     font-size: var(--semi-medium-font-size);
+    --bg: linear-gradient(156deg, #0D171D 39.31%, #22454B 82%);
+    --btn-bg: linear-gradient(121deg, #23F9FF 0%, #DBF1FF 100%);
 }
+
+html {
+    background: var(--bg) fixed;
+    color: var(--text);
+}
+
+/****** Side scrollbar ********/
+body::-webkit-scrollbar {
+    width: 0.25rem;
+    height: 0.25rem;
+}
+
+body::-webkit-scrollbar-track {
+    background: #1e1e24;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: #32F9FF;
+}
+
+/*******************************/
+
+::backdrop {
+    background: #0d171d94;
+    backdrop-filter: blur(10px);
+}
+
+input {
+    width: 100%;
+    height: 2.7rem;
+    padding: 0 1rem;
+    border-radius: 0.75rem;
+    background: linear-gradient(172deg, rgba(50, 249, 255, 0.15) 33.55%, rgba(236, 254, 255, 0.15) 100%);
+    color: var(--text);
+}
+
+input:focus {
+    border: 2px solid var(--primary);
+}
+
+/*********** Dialog ************/
+dialog {
+    max-width: 50em;
+    border-radius: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+dialog[open] {
+    animation: fade-in 1s ease-in-out;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+dialog[open]::backdrop {
+    animation: fade-in-backdrop 0.5s ease-out;
+}
+
+@keyframes fade-in-backdrop {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/*******************************/
+
 
 a {
     color: currentColor;
@@ -125,26 +207,12 @@ a {
     0 100px 80px rgba(0, 0, 0, 0.12)
 }
 
-/****** Side scrollbar ********/
-body::-webkit-scrollbar {
-    width: 0.25rem;
-    height: 0.25rem;
-}
-
-body::-webkit-scrollbar-track {
-    background: #1e1e24;
-}
-
-body::-webkit-scrollbar-thumb {
-    background: #32F9FF;
-}
-/*******************************/
 
 .btn {
     padding: 0.7em 1.2em;
     font-weight: var(--semi-medium-font-weight);
     border-radius: 5px;
-    background: linear-gradient(121deg, #23F9FF 0%, #DBF1FF 100%);
+    background: var(--btn-bg);
     color: black;
 }
 
@@ -155,6 +223,21 @@ body::-webkit-scrollbar-thumb {
     background: linear-gradient(#103035, #103035) padding-box, linear-gradient(244deg, #23F9FF 0%, #DBF1FF 100%);
     border-radius: 9px;
     border: 2px solid transparent;
+}
+
+.h1 {
+    font-family: 'Mona-Sans SemiBold Wide', sans-serif;
+    font-size: var(--large-font-size);
+}
+
+.h2 {
+    font-family: 'Mona-Sans SemiBold Wide', sans-serif;
+    font-size: var(--semi-large-font-size);
+}
+
+.h3 {
+    font-family: 'Mona-Sans SemiBold Wide', sans-serif;
+    font-size: var(--medium-font-size);
 }
 
 @mixin sideScrollbar($className) {

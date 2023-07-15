@@ -1,10 +1,12 @@
 <script>
   import createLensHandle from "../../utils/frontend/createLensHandle.ts";
-  import { isSignedIn } from "../../services/signInStatus.ts";
+  import {isSignedIn} from "../../services/signInStatus.ts";
   import getDefaultUserProfile from "../../utils/frontend/getDefaultUserProfile.ts";
-  import { userProfile } from "../../services/profile.ts";
+  import {userProfile} from "../../services/profile.ts";
   import getUserProfiles from "../../utils/frontend/getUserProfiles.ts";
   import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed.ts";
+  import Icon from "$lib/Icon.svelte";
+  import {close} from "../../utils/frontend/appIcon.ts";
 
   export let showCreateLensHandleModal; // boolean
 
@@ -93,9 +95,15 @@
   on:click|self={() => dialog.close()}
 >
   <main on:click|stopPropagation>
-    <div class="head">
-      <h2>Sign Up</h2>
-      <button on:click={() => dialog.close()}>X</button>
+    <div class="CenterRowFlex head">
+      <div class="h2 head__title">
+        Sign Up
+      </div>
+      <div class="head__close-btn">
+        <button on:click={() => dialog.close()}>
+          <Icon d={close} color="black"/>
+        </button>
+      </div>
     </div>
     <div class="body">
       <div class="body__content">
@@ -118,7 +126,7 @@
     </div>
     <div class="footer">
       {#if !isCreatingLensHandle}
-        <button class="btn" on:click={initiateCreateLensHandle} disabled={isInputInvalid}>Create</button>
+        <button class="btn" on:click={initiateCreateLensHandle} disabled={isInputInvalid}>Create Lens Handle</button>
       {:else}
         <button class="btn" disabled>Creating...</button>
       {/if}
@@ -129,24 +137,22 @@
 <style lang="scss">
   main {
     display: flex;
-    padding: 1rem;
+    padding: 2rem;
     flex-direction: column;
-    gap: 1rem;
+    gap: 2rem;
+    background: var(--bg) fixed;
+    color: var(--text);
+    min-width: 21rem;
   }
 
   .head {
-    display: flex;
-    flex-direction: row;
     justify-content: space-between;
-    font-size: larger;
-    font-weight: 600;
-    align-items: center;
   }
 
-  .head button {
-    background: gainsboro;
-    padding: 0.5rem 0.75rem;
-    border-radius: 50%;
+  .head__close-btn {
+    border-radius: 3px;
+    background: var(--btn-bg) fixed;
+    padding: 0.2rem;
   }
 
   .body {
@@ -156,73 +162,28 @@
   }
 
   .body__input__err-msg {
+    margin-top: 0.7rem;
     color: red;
-    font-size: 0.75rem;
+    font-size: var(--small-font-size);
   }
 
   .body__content {
-    font-weight: 500;
+    font-weight: var(--semi-medium-font-weight);
+  }
+
+  .body__input input {
+    width: 60%;
   }
 
   .body__notes {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    font-size: 0.85rem;
+    font-size: var(--small-font-size);
   }
 
   .footer {
     margin-left: auto;
-  }
-
-  input[type="text"] {
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-
-  input[type="text"]:focus {
-    border-color: #161617;
-    outline: none;
-  }
-
-
-  dialog {
-    max-width: 32em;
-    border-radius: 0.5em;
-    border: none;
-    padding: 0;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  dialog[open] {
-    animation: fade-in 0.3s ease-in-out;
-  }
-
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  dialog[open]::backdrop {
-    animation: fade-in-backdrop 0.2s ease-out;
-  }
-
-  @keyframes fade-in-backdrop {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
   }
 
 </style>
