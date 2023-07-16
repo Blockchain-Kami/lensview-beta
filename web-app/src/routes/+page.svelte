@@ -208,7 +208,6 @@
     border-radius: 5.8px;
     margin-left: auto;
     margin-right: 0.5rem;
-    //margin-top: 0.2rem;
   }
 
   .card__image__more__share {
