@@ -16,11 +16,13 @@
     import Icon from "$lib/Icon.svelte";
     import DualToneIcon from "$lib/DualToneIcon.svelte";
     import Loader from "$lib/Loader.svelte";
+    import JoinForUpdates from "../components/main-page/JoinForUpdates.svelte";
 
     let isConnected = false;
     let signingIn = false;
     let userEnteredLink = "";
     let showCreateLensHandleModal = false;
+    let showJoinForUpdatesModal = false;
     let isHandleCreated = true;
     let isThisConnectWalletAccountChange = false;
     let chainIDToBeUsed: string;
@@ -36,7 +38,7 @@
     }
 
     if (typeof window.ethereum === "undefined") {
-      alert("Please install metamask to interact with this application, but you can still view the others posts");
+        // alert("Please install metamask to interact with this application, but you can still view the others posts");
     }
 
     window.ethereum.on("chainChanged", (chainId) => {
@@ -61,7 +63,7 @@
    */
   async function connect() {
     if (typeof window.ethereum === "undefined") {
-      // alert("Please install metamask to interact with this application, but you can still view the others posts");
+        alert("Please install metamask to interact with this application, but you can still view the others posts");
     } else {
       /* this allows the user to connect their wallet */
       try {
@@ -205,9 +207,21 @@
                placeholder="Paste a URL to search"
                class="nav__search__input"
         />
-        <button class="btn" on:click={redirectToPostsPage}>
-            <Icon d={search}/>
-        </button>
+        {#if userEnteredLink.length === 0}
+            <button on:click={redirectToPostsPage}
+                    class="btn"
+                    style="cursor: initial;"
+            >
+                <Icon d={search} size="1.9em" color="#fff"/>
+            </button>
+        {:else}
+            <button on:click={redirectToPostsPage}
+                    class="btn"
+            >
+                <Icon d={search} size="1.9em"/>
+            </button>
+        {/if}
+
     </div>
     <div class="nav__logo">
         <a href="/"><img alt="Untitled-presentation-3"
@@ -289,7 +303,7 @@
                     Join the LensView family and never miss out on any updates!
                 </div>
                 <div class="menu__join-box__btn">
-                    <button class="btn-alt">
+                    <button on:click="{() => showJoinForUpdatesModal = true}" class="btn-alt">
                         Join For Updates
                     </button>
                 </div>
@@ -301,8 +315,9 @@
     </div>
 </main>
 
-<CreateLensHandle bind:showCreateLensHandleModal>
-</CreateLensHandle>
+<CreateLensHandle bind:showCreateLensHandleModal/>
+
+<JoinForUpdates bind:showJoinForUpdatesModal/>
 <!---------------------------------------------------------------->
 
 
@@ -343,8 +358,8 @@
     height: 2.7rem;
     width: 2.7rem;
     border-radius: 0 0.75rem 0.75rem 0;
-    padding: 0 1.2em;
-    background: linear-gradient(172deg, rgba(50, 249, 255, 0.15) 33.55%, rgba(236, 254, 255, 0.15) 100%);
+    padding: 0 0.9em;
+    background: #1b5a5d;
   }
 
   .nav__logo img {

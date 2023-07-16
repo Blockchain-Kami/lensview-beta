@@ -39,7 +39,7 @@
                         </div>
                         <div class="card__image__layer1__more-icon">
                             <button on:click={() => {isCardsMoreOpen = !isCardsMoreOpen}}>
-                                <Icon d={moreHoriz} size="2.5em"/>
+                                <Icon d={moreHoriz}/>
                             </button>
                         </div>
                     </div>
@@ -193,6 +193,12 @@
     opacity: 85%;
   }
 
+  .card__image__layer1__more-icon {
+    background: #0E3439;
+    padding: 0.2rem 0.5rem;
+    border-radius: 5.8px;
+    opacity: 85%;
+  }
 
   .card__image__more {
     align-items: flex-start;
@@ -202,7 +208,7 @@
     border-radius: 5.8px;
     margin-left: auto;
     margin-right: 0.5rem;
-    margin-top: -0.8rem;
+    //margin-top: 0.2rem;
   }
 
   .card__image__more__share {
@@ -333,7 +339,6 @@
   }
 
   .card__post__info__body {
-    line-height: 1.3em;
     height: 5.2rem;
     overflow-wrap: break-word;
     width: 20.5rem;

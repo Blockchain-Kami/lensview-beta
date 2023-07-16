@@ -29,7 +29,7 @@
 }
 
 body {
-    line-height: 1;
+    line-height: 1.3em;
     color: var(--text);
     background: var(--bg);
 }
@@ -72,10 +72,11 @@ button[disabled] {
 
 /*****************************************************/
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
+//@import url('https://fonts.cdnfonts.com/css/mona-sans');
 @font-face {
     font-family: 'Mona Sans';
-    src: url('$lib/assets/Mona-Sans.woff2') format('woff2 supports variations'),
-    url('$lib/assets/Mona-Sans.woff2') format('woff2-variations');
+    src: url("lib/assets/Mona-Sans.woff2") format('woff2 supports variations'),
+    url("lib/assets/Mona-Sans.woff2") format('woff2-variations');
     font-weight: 200 900;
     font-stretch: 75% 125%;
 }
@@ -145,13 +146,12 @@ input:focus {
 dialog {
     max-width: 50em;
     border-radius: 10px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    inset: 0;
+    margin: auto;
 }
 
 dialog[open] {
-    animation: fade-in 1s ease-in-out;
+    animation: fade-in 0.7s ease-in-out;
 }
 
 @keyframes fade-in {
@@ -164,7 +164,7 @@ dialog[open] {
 }
 
 dialog[open]::backdrop {
-    animation: fade-in-backdrop 0.5s ease-out;
+    animation: fade-in-backdrop 0.3s ease-out;
 }
 
 @keyframes fade-in-backdrop {
