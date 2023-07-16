@@ -1,5 +1,4 @@
-import {json} from '@sveltejs/kit';
-import { error } from '@sveltejs/kit'
+import {json, error} from '@sveltejs/kit';
 import {getParentPost} from "../../../utils/backend/get-parent-url.server";
 import {preprocessURL} from "../../../utils/backend/process-url.server";
 import {createHash} from "../../../utils/backend/sha1.server";
@@ -9,10 +8,10 @@ export async function POST(requestEvent) {
     const {request} = requestEvent;
     const urlRequest = await request.json();
 
-    const isUrl = isInputTypeUrl(urlRequest);
+    const Url = isInputTypeUrl(urlRequest);
 
-    if (isUrl) {
-        const [url, , ,] = preprocessURL(urlRequest);
+    if (Url) {
+        const [url, , ,] = preprocessURL(Url);
 
         if (!url) {
             throw error(400, {
@@ -50,7 +49,7 @@ export async function POST(requestEvent) {
         const response = {
             parentPublicationID: null,
             isURL: false,
-            message: "User entered a tag"
+            message: "Incorrect URL format or user entered a tag"
         };
         return json(response);
     }

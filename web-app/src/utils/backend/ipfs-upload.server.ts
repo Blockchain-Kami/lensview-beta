@@ -84,7 +84,7 @@ const uploadToIPFS = async (urlObj) => {
 
     } catch (e) {
         console.log("Failed to upload file to IPFS");
-        console.log(e)
+        return null;
     }
 
 }

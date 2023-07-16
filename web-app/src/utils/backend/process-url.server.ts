@@ -1,7 +1,4 @@
 import {URL} from 'url';
-import { cleanURL } from "./strip-prefix-from-url.server";
-
-
 /**
  * Preprocess and clean the URL before storing.
  * The URL will be stored according to the following rules:
@@ -20,9 +17,7 @@ import { cleanURL } from "./strip-prefix-from-url.server";
  *      in this case the trailing / will not be removed as this is the standard way of writing the url
  *
  **/
-export const preprocessURL = (enteredLink) => {
-
-    let url = cleanURL(enteredLink);
+export const preprocessURL = (url) => {
 
     try {
         // convert the url to a URL object

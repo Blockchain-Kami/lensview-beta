@@ -19,7 +19,6 @@ export const getParentPost = async (hashedURL) => {
             }),
         });
         const response = await posts.json();
-        console.log(response);
 
         if(response.data.publications.items.length < 1) {
             return {
