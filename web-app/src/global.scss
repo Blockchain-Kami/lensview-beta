@@ -28,12 +28,6 @@
     outline: 0;
 }
 
-body {
-    line-height: 1.3em;
-    color: var(--text);
-    background: var(--bg);
-}
-
 ol, ul {
     list-style: none;
 }
@@ -71,6 +65,22 @@ button[disabled] {
 }
 
 /*****************************************************/
+
+@mixin sideScrollbar($selector) {
+    #{$selector}::-webkit-scrollbar {
+        width: 0.25rem;
+        height: 0.25rem;
+    }
+
+    #{$selector}::-webkit-scrollbar-track {
+        background: white;
+    }
+
+    #{$selector}::-webkit-scrollbar-thumb {
+        background: #32F9FF;
+    }
+}
+
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
 //@import url('https://fonts.cdnfonts.com/css/mona-sans');
 @font-face {
@@ -80,6 +90,8 @@ button[disabled] {
     font-weight: 200 900;
     font-stretch: 75% 125%;
 }
+
+@include sideScrollbar("body");
 
 :root {
     box-sizing: border-box;
@@ -103,26 +115,12 @@ button[disabled] {
     --btn-bg: linear-gradient(121deg, #23F9FF 0%, #DBF1FF 100%);
 }
 
-html {
+
+body {
     background: var(--bg) fixed;
+    line-height: 1.3em;
     color: var(--text);
 }
-
-/****** Side scrollbar ********/
-body::-webkit-scrollbar {
-    width: 0.25rem;
-    height: 0.25rem;
-}
-
-body::-webkit-scrollbar-track {
-    background: #1e1e24;
-}
-
-body::-webkit-scrollbar-thumb {
-    background: #32F9FF;
-}
-
-/*******************************/
 
 ::backdrop {
     background: #0d171d94;
@@ -240,17 +238,4 @@ a {
     font-size: var(--medium-font-size);
 }
 
-@mixin sideScrollbar($className) {
-    .#{$className}::-webkit-scrollbar {
-        width: 0.25rem;
-        height: 0.25rem;
-    }
 
-    .#{$className}::-webkit-scrollbar-track {
-        background: white;
-    }
-
-    .#{$className}::-webkit-scrollbar-thumb {
-        background: deeppink;
-    }
-}

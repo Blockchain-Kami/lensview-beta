@@ -323,6 +323,9 @@
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
+  @import '../global';
+
+  @include sideScrollbar("main");
 
   .nav {
     justify-content: space-between;
@@ -370,7 +373,6 @@
   main {
     display: flex;
     flex-direction: row;
-    margin-top: 4rem;
   }
 
   .menu {

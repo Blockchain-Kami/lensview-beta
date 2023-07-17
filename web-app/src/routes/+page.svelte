@@ -142,6 +142,7 @@
     grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
     padding: 3rem 3rem;
     justify-items: center;
+    margin-top: 4rem;
   }
 
   .card {
