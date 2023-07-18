@@ -132,9 +132,6 @@
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
-  @import '../../global';
-
-  @include sideScrollbar(".comments");
 
   .no-comments {
     display: flex;

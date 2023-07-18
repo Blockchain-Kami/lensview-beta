@@ -66,19 +66,20 @@ button[disabled] {
 
 /*****************************************************/
 
-@mixin sideScrollbar($selector) {
-    #{$selector}::-webkit-scrollbar {
-        width: 0.25rem;
-        height: 0.25rem;
-    }
+::-webkit-scrollbar {
+    width: 0.45rem;
+    height: 0.45rem;
+    background-color: transparent;
 
-    #{$selector}::-webkit-scrollbar-track {
-        background: white;
-    }
+}
 
-    #{$selector}::-webkit-scrollbar-thumb {
-        background: #32F9FF;
-    }
+::-webkit-scrollbar-track {
+    background-color: #14282e;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #32F9FF;
+    border-radius: 100vw;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
@@ -90,8 +91,6 @@ button[disabled] {
     font-weight: 200 900;
     font-stretch: 75% 125%;
 }
-
-@include sideScrollbar("body");
 
 :root {
     box-sizing: border-box;

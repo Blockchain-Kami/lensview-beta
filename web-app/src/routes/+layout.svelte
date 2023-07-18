@@ -323,10 +323,6 @@
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
-  @import '../global';
-
-  @include sideScrollbar("main");
-
   .nav {
     justify-content: space-between;
     padding: 0 2rem;
@@ -338,6 +334,7 @@
     background: #0c151a94;
     z-index: 10;
     backdrop-filter: blur(10px);
+    filter: drop-shadow(2px 4px 12px rgba(0, 0, 0, 0.25));
   }
 
   .nav__search {
@@ -383,7 +380,6 @@
     position: fixed;
     height: 100%;
     z-index: 20;
-    margin-top: -4rem;
     border-radius: 0 20px 20px 0;
     padding: 0 2rem 2rem 2rem;
     gap: 1rem;

@@ -35,9 +35,6 @@
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
-  @import '../../global';
-
-  @include sideScrollbar(".main__search-area__results__result");
 
   .main__search-area {
     padding: 2rem;
