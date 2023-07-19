@@ -349,11 +349,6 @@
     border-radius: 0.75rem 0 0 0.75rem;
   }
 
-  .nav__search input::placeholder {
-    color: var(--text);
-    opacity: var(--text-opacity);
-  }
-
   .nav__search button {
     height: 2.7rem;
     width: 2.7rem;

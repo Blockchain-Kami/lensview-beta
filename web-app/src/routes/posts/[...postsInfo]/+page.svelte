@@ -1,5 +1,6 @@
 <script lang="ts">
   import MainPost from "../../../components/posts-page/MainPost.svelte";
+  import PostAPublication from "../../../components/posts-page/PostAPublication.svelte";
 </script>
 
 
@@ -9,7 +10,8 @@
     <MainPost/>
   </div>
   <div class="right">
-
+    <PostAPublication/>
+    <!--    <CommentsOfAPublication/>-->
   </div>
 </main>
 
@@ -27,13 +29,14 @@
   .left {
     display: flex;
     flex-direction: column;
-    width: 40%;
+    width: 45%;
     height: 100dvh;
   }
 
   .right {
-    width: 60%;
-    background: red;
+    display: flex;
+    flex-direction: column;
+    width: 55%;
     height: 100dvh;
   }
 </style>

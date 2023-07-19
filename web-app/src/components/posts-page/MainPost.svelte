@@ -224,13 +224,12 @@
 
   section {
     overflow: auto;
-    padding-top: 4rem;
+    padding: 6rem 2rem 2rem 2rem;
   }
 
   section img {
     width: 100%;
     border-radius: 10px;
-    padding: 1rem;
   }
 
   .main-post {
@@ -247,7 +246,6 @@
     font-size: 3rem;
     position: sticky;
     top: 12rem;
-    padding: 1rem;
     background: #0D7377;
   }
 </style>
