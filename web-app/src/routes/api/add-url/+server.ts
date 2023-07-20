@@ -5,6 +5,9 @@ import { preprocessURL } from "../../../utils/backend/process-url.server";
 import savePost from "../../../utils/backend/add-url.server";
 import {imageQueue} from "../../../jobs/imageQueue";
 import {isInputTypeUrl} from "../../../utils/backend/check-input-type.server";
+import {checkUntilMainPostAdded} from "../../../utils/backend/check-until-post-added.server";
+import {getParentPost} from "../../../utils/backend/get-parent-url.server";
+import addComment from "../../../utils/backend/add-comment.server";
 
 
 export async function POST(requestEvent) {
@@ -15,7 +18,11 @@ export async function POST(requestEvent) {
     const {request} = requestEvent;
     const urlRequest = await request.json();
 
-    const urlString = isInputTypeUrl(urlRequest);
+    const enteredURL = urlRequest['enteredURL'];
+    const lensHandle = urlRequest['lensHandle'];
+    const postContent = urlRequest['postContent'];
+
+    const urlString = isInputTypeUrl(enteredURL);
 
     if (!urlString) {
         throw error(500, {
@@ -29,7 +36,6 @@ export async function POST(requestEvent) {
     const hashedHostname = createHash(hostname);
     const hashedPath = createHash(path);
 
-
     const urlObj = {
         url,
         hashedURL,
@@ -38,8 +44,21 @@ export async function POST(requestEvent) {
         path,
         hashedPath,
         query,
-        "image": ''
+        postContent,
+        "isScreenshotComment": false
     };
+
+    const imageUrlObj = {
+        url,
+        hashedURL,
+        hostname,
+        hashedHostname,
+        path,
+        hashedPath,
+        query,
+        "image": '',
+        "isScreenshotComment": true
+    }
 
     const authToken = await signInWithLens();
 
@@ -51,6 +70,27 @@ export async function POST(requestEvent) {
 
     const [client, signer, profile] = authToken;
 
+    const publicationExists = await getParentPost(hashedURL);
+
+    if (publicationExists['parent_post_ID']) {
+
+        if (lensHandle) {
+            // front end will do the posting, throw error
+            throw error(500, {
+                parentPubId: publicationExists['parent_post_ID'],
+                message: "Link is already added to LensView."
+            })
+        } else if(postContent) {
+            const commentAdded = await addComment(urlObj, publicationExists['parent_post_ID'], client, signer, profile);
+
+            if (commentAdded) {
+                return json({
+                    message: "Link was already present in LensView. User comment added to the post."
+                })
+            }
+        }
+    }
+
     const txHash = await savePost(urlObj, client, signer, profile);
 
     if (!txHash) {
@@ -58,14 +98,32 @@ export async function POST(requestEvent) {
             message: "Error: Failed to save URL to LensView"
         });
     }
+    const indexed = await checkUntilMainPostAdded(txHash, Date.now());
 
-    await imageQueue.add({ txHash, urlObj });
+    if (indexed) {
+        imageQueue.add({ imageUrlObj });
+        const publicationID = await getParentPost(hashedURL);
 
-    return json({
-        statusCode: 201,
-        message: 'Post saved successfully',
-        url: url,
-        hashedURL: hashedURL,
-        txHash
-    })
+        if (lensHandle) {
+            // front end will post the user comment, return response
+            return json({
+                parentPubId: publicationID['parent_post_ID'],
+                message: 'New URL added to LensView successfully',
+            })
+        } else {
+            // user adds comment anonymously
+            const commentAdded = await addComment(urlObj, publicationID['parent_post_ID'], client, signer, profile);
+            if (commentAdded) {
+                return json({
+                    message: "User comment added to the post"
+                })
+            }
+        }
+
+
+    } else {
+        throw error(500, {
+            message: "Error: Transaction not indexed by Lens API. Time exceeded 60 seconds."
+        })
+    }
 }

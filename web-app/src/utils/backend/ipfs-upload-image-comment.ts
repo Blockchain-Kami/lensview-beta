@@ -32,11 +32,10 @@ function makeFileObjects(urlObj) {
 
     // //Getting profile of the connected user and saving it to "profile" variable
     // getUserProfile(address);
-
     const metaData = {
         version: '2.0.0',
-        content: urlObj['image'] ? "https://ipfs.io/ipfs/" + urlObj['image'].substring(7) : '',
-        description: 'Post Image',
+        content: urlObj['isScreenshotComment'] ? "https://ipfs.io/ipfs/" + urlObj['image'].substring(7) : urlObj['postContent'],
+        description: urlObj['isScreenshotComment'] ? 'Post Image' : 'User Comment',
         name: `Posting on test-net through lensView`,
         external_url: urlObj['url'],
         image: urlObj['image'] ? "https://ipfs.io/ipfs/" + urlObj['image'].substring(7) : '',

@@ -20,7 +20,7 @@ export const getParentPost = async (hashedURL) => {
         });
         const response = await posts.json();
 
-        if(response.data.publications.items.length < 1) {
+        if (response.data.publications.items.length < 1) {
             return {
                 status: 404,
                 parent_post_ID: null,
