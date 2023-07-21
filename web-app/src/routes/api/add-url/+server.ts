@@ -76,8 +76,9 @@ export async function POST(requestEvent) {
 
         if (lensHandle) {
             // front end will do the posting, throw error
-            throw error(500, {
+            return json({
                 parentPubId: publicationExists['parent_post_ID'],
+                successCode: 1,
                 message: "Link is already added to LensView."
             })
         } else if(postContent) {
@@ -85,6 +86,8 @@ export async function POST(requestEvent) {
 
             if (commentAdded) {
                 return json({
+                    parentPubId: publicationExists['parent_post_ID'],
+                    successCode: 2,
                     message: "Link was already present in LensView. User comment added to the post."
                 })
             }
@@ -108,6 +111,7 @@ export async function POST(requestEvent) {
             // front end will post the user comment, return response
             return json({
                 parentPubId: publicationID['parent_post_ID'],
+                successCode: 3,
                 message: 'New URL added to LensView successfully',
             })
         } else {
@@ -115,6 +119,8 @@ export async function POST(requestEvent) {
             const commentAdded = await addComment(urlObj, publicationID['parent_post_ID'], client, signer, profile);
             if (commentAdded) {
                 return json({
+                    parentPubId: publicationID['parent_post_ID'],
+                    successCode: 4,
                     message: "User comment added to the post"
                 })
             }
