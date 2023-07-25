@@ -221,12 +221,6 @@
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
-
-  section {
-    overflow: auto;
-    padding: 6rem 2rem 2rem 2rem;
-  }
-
   section img {
     width: 100%;
     border-radius: 10px;

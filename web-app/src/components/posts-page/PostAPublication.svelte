@@ -1,8 +1,44 @@
 <script lang="ts">
     import Icon from "$lib/Icon.svelte";
     import {addPhoto} from "../../utils/frontend/appIcon";
+    import {onMount} from "svelte";
 
     let userEnteredText = "";
+
+    onMount(() => {
+        const editableDiv = document.getElementById('editableDiv');
+        const wordLimit = 1000
+
+        editableDiv.addEventListener('paste', function (e) {
+            e.preventDefault();
+
+            // Get the pasted text without any formatting
+            let pastedText = (e.originalEvent || e).clipboardData.getData('text/plain');
+
+            // Calculate the current word count in the contenteditable div
+            const currentText = editableDiv.innerText;
+            const words = currentText.trim().split(/\s+/);
+            const currentWordCount = words.length;
+
+            // Calculate the remaining word count allowed
+            const remainingWordCount = wordLimit - currentWordCount;
+
+            // Check if pasted text exceeds the remaining word count and truncate if necessary
+            if (pastedText) {
+                const pastedWords = pastedText.trim().split(/\s+/);
+                if (pastedWords.length > remainingWordCount) {
+                    pastedWords.length = remainingWordCount;
+                    pastedText = pastedWords.join(' ');
+                }
+            }
+
+            // Insert the plain text into the contenteditable div
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+            selection.deleteFromDocument();
+            selection.getRangeAt(0).insertNode(document.createTextNode(pastedText));
+        });
+    })
 
 </script>
 
@@ -15,7 +51,8 @@
         </div>
         <div contenteditable="true"
              placeholder="What do think about this ?"
-             class="body__input">
+             class="body__input"
+             id="editableDiv">
         </div>
     </div>
     <div class="CenterRowFlex footer">
@@ -26,7 +63,7 @@
             </div>
         </div>
         <div class="footer__operations">
-            <button class="btn">Post it</button>
+            <button class="btn">Post</button>
         </div>
     </div>
 </section>
@@ -36,9 +73,8 @@
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
-
   section {
-    padding: 6rem 2rem 2rem 2rem;
+    min-width: 33rem;
   }
 
   .body {

@@ -204,7 +204,7 @@
     <div class="nav__search">
         <input bind:value={userEnteredLink}
                type="text"
-               placeholder="Paste a URL to search"
+               placeholder="Enter a URL or keywords"
                class="nav__search__input"
         />
         {#if userEnteredLink.length === 0}

@@ -64,6 +64,21 @@ button[disabled] {
     cursor: initial;
 }
 
+select {
+    background: #0a1217;
+    color: var(--text);
+    padding-right: 1rem;
+    font-weight: var(--semi-medium-font-weight);
+}
+
+select option {
+    background: #2d4648;
+}
+
+option:hover {
+    background-color: yellow;
+}
+
 /*****************************************************/
 
 ::-webkit-scrollbar {

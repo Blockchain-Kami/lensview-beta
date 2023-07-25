@@ -46,7 +46,7 @@
                     {#if isCardsMoreOpen}
                         <div class="CenterColumnFlex card__image__more">
                             <div class="CenterRowFlex card__image__more__share">
-                                <div class="card__image__more__share__icon">
+                                <div class="CenterRowFlex card__image__more__share__icon">
                                     <Icon d={share} size="1.2em"/>
                                 </div>
                                 Share
@@ -304,7 +304,7 @@
   }
 
   .card__post__info__head__username {
-    padding: 0.5rem;
+    padding: 0.2rem 0.5rem;
     background: #113232;
     border-radius: 5px;
     color: #32F9FF;
@@ -318,13 +318,13 @@
   }
 
   .card__post__info__head__trend__icon {
-    padding: 0.25rem;
+    padding: 0.15rem 0.3rem;
     border-radius: 50%;
     background: #0e2828;
   }
 
   .card__post__info__head__trend__count {
-    padding: 0.25rem 0.5rem;
+    padding: 0.15rem 0.5rem;
   }
 
   .card__post__info__head__time {
