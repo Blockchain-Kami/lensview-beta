@@ -118,7 +118,7 @@ option:hover {
     transition: background 500ms ease-in-out, color 1000ms ease-in-out;
     --primary: #32F9FF;
     --secondary: #0D7377;
-    --special-font: bely-display;
+    --special-font: roboto;
     --text: #fff;
     --text-accent: #a1a1a1;
     --text-opacity: 0.7099999785423279;
@@ -127,6 +127,7 @@ option:hover {
     --medium-font-size: 19.25px;
     --semi-medium-font-size: 14px;
     --small-font-size: 10.5px;
+    --semi-small-font-size: 8px;
     --semi-medium-font-weight: 500;
     --medium-font-weight: 600;
     font-size: var(--semi-medium-font-size);

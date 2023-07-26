@@ -114,7 +114,7 @@
 
   .footer {
     background: #1e4748;
-    padding: 1.3rem;
+    padding: 1rem;
     gap: 1rem;
     justify-content: space-between;
     border-radius: 0 0 10px 10px;

@@ -34,7 +34,7 @@
     width: 45%;
     height: 100dvh;
     overflow: auto;
-    padding: 6rem 2rem 2rem 2rem;
+    padding: 4rem 2rem 0 2rem;
   }
 
   .right {

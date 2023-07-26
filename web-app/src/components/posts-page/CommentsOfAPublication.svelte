@@ -24,7 +24,7 @@
       40 Comments
     </div>
   </div>
-  <div class="body">
+  <div class="CenterColumnFlex body">
     <div class="comment">
       <div class="comment__pic">
         <img src="https://ik.imagekit.io/lens/media-snapshot/tr:w-300,h-300/536c0894df100c301cefdd7f97d4f6e7ab2d6e4019fa99ea933934fe3ffe66c1.webp"
@@ -122,6 +122,10 @@
     min-width: fit-content;
   }
 
+  .body {
+    gap: 1rem;
+  }
+
   .comment {
     display: flex;
     flex-direction: row;
@@ -166,7 +170,7 @@
     padding: 0.2rem 0.5rem;
     background: #18393a;
     border-radius: 5px;
-    color: #32F9FF;
+    color: var(--primary);
   }
 
   .comment__body__top__right {
@@ -213,7 +217,7 @@
     position: absolute;
     right: 0;
     margin-top: 1rem;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
   }
 
   .comment__body__more__share {

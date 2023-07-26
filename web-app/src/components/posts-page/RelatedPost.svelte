@@ -9,22 +9,24 @@
         thumbDownAlt,
         thumbUpAlt,
         trendingUp
-    } from "../utils/frontend/appIcon";
-    import type {PageData} from "./$types";
-    import getFormattedDate from "../utils/frontend/getFormattedDate";
-    import {getCommentOfPublication} from "../utils/frontend/getCommentOfPublication";
-    import getImageURLFromURLHash from "../utils/frontend/getImageURLFromURLHash";
+    } from "../../utils/frontend/appIcon";
+    // import type {PageData} from "./$types";
+    import getFormattedDate from "../../utils/frontend/getFormattedDate";
+    import {getCommentOfPublication} from "../../utils/frontend/getCommentOfPublication";
+    import getImageURLFromURLHash from "../../utils/frontend/getImageURLFromURLHash";
+    import {page} from '$app/stores';
 
 
-    export let data: PageData;
+    // export let data: PageData;
     let isCardsMoreOpen = false;
+    let data = $page.data.explorePublicationsForApp;
 </script>
 
 
 <!----------------------------- HTML ----------------------------->
 
 <section>
-    {#each data["explorePublicationsForApp"]?.items as item}
+    {#each data.items as item}
         <div class="card">
             {#await getImageURLFromURLHash(item?.metadata?.tags[0])}
                 <div class="card__image-loader">
@@ -118,7 +120,7 @@
                             </div>
                         </div>
                         <div class="card__post__info__body">
-                            {data?.data?.publications?.items[0]?.metadata?.content.substring(0, 100)}
+                            {data?.data?.publications?.items[0]?.metadata?.content.substring(0, 70)}
                         </div>
                     </div>
                 </div>
@@ -139,30 +141,27 @@
   section {
     display: grid;
     gap: 3rem;
-    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
-    padding: 3rem 3rem;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    padding: 1rem 0;
     justify-items: center;
-    margin-top: 4rem;
   }
 
   .card {
-    width: 27rem;
+    width: 19rem;
     filter: drop-shadow(9.600000381469727px 22.80000114440918px 37.20000076293945px rgba(0, 0, 0, 0.26));
-  }
-
-  .card:hover {
-    transform: scale(1.05);
+    width: -moz-available;
+    font-size: var(--small-font-size);
   }
 
   .card__image-loader {
     width: 100%;
-    height: 17rem;
+    height: 12.3rem;
     border-radius: 10.8px;
   }
 
   .card__image {
     width: 100%;
-    height: 17rem;
+    height: 12.3rem;
     background-color: #000;
     overflow: hidden;
     padding-bottom: 50%; /* Adjust this value to control the aspect ratio */
@@ -171,7 +170,8 @@
     transition: background-position 1s ease;
   }
 
-  .card__image:hover {
+  .card__image:hover,
+  .card__image:active {
     animation: scrollBackground 5s linear infinite;
   }
 
@@ -186,12 +186,12 @@
 
   .card__image__layer1 {
     justify-content: space-between;
-    padding: 0.5rem 0.5rem 0 0.5rem;
+    padding: 0.36rem 0.36rem 0 0.36rem;
   }
 
   .card__image__layer1__posts-count {
     background: #0E3439;
-    padding: 0.5rem 0.7rem;
+    padding: 0.36rem 0.5rem;
     gap: 0.5rem;
     border-radius: 5.8px;
     opacity: 85%;
@@ -199,7 +199,7 @@
 
   .card__image__layer1__more-icon {
     background: #0E3439;
-    padding: 0.2rem 0.5rem;
+    padding: 0.14rem 0.36rem;
     border-radius: 5.8px;
     opacity: 85%;
   }
@@ -208,7 +208,7 @@
     align-items: flex-start;
     width: 30%;
     background: #185359;
-    padding: 0.45rem;
+    padding: 0.32rem;
     border-radius: 5.8px;
     margin-left: auto;
     margin-right: 0.5rem;
@@ -220,19 +220,19 @@
 
   .card__image__more__share__icon {
     background: #2c4042;
-    padding: 0.5rem;
+    padding: 0.36rem;
     border-radius: 50%;
   }
 
   .card__info {
     width: 100%;
     background: #124045;
-    padding: 1rem;
+    padding: 0.7rem;
     justify-content: space-between;
   }
 
   .card__info__reaction {
-    padding: 0.7rem;
+    padding: 0.5rem;
     background: #0e2829;
     gap: 0.5rem;
     border-radius: 6.8px;
@@ -245,7 +245,7 @@
 
   .card__info__reaction__vertical-line {
     border-left: 2px solid #ffffff45;
-    height: 21px;
+    height: 15px;
   }
 
   .card__info__content {
@@ -258,21 +258,21 @@
   }
 
   .card__info__content__time {
-    font-size: var(--small-font-size);
+    font-size: var(--semi-small-font-size);
     color: var(--text-accent);
   }
 
   .card__post {
     background: #185359;
     border-radius: 0 0 10.8px 10.8px;
-    padding: 1.2rem;
+    padding: 0.87rem;
     gap: 0.8rem;
-    height: 10.4rem;
+    height: 7.5rem;
   }
 
   .card__post__user-pic-loader {
     height: 4rem;
-    width: 4.7rem;
+    width: 3.4rem;
     margin-bottom: auto;
     border-radius: 50%;
   }
@@ -282,8 +282,8 @@
   }
 
   .card__post__user-pic img {
-    width: 3rem;
-    height: 3rem;
+    width: 2.1rem;
+    height: 2.1rem;
     border-radius: 50%;
     border: 2px solid #32F9FF;
   }
@@ -296,7 +296,7 @@
     width: 70%;
     justify-content: flex-start;
     margin-bottom: 0.8rem;
-    height: 1rem;
+    height: 0.7rem;
     border-radius: 5px;
   }
 
@@ -307,7 +307,7 @@
   }
 
   .card__post__info__head__username {
-    padding: 0.2rem 0.5rem;
+    padding: 0.14rem 0.36rem;
     background: #113232;
     border-radius: 5px;
     color: #32F9FF;
@@ -316,35 +316,35 @@
   .card__post__info__head__trend {
     background: #113232;
     border-radius: 14px;
-    font-size: var(--small-font-size);
+    font-size: var(--semi-small-font-size);
     opacity: 90%;
   }
 
   .card__post__info__head__trend__icon {
-    padding: 0.15rem 0.3rem;
+    padding: 0.1rem 0.2rem;
     border-radius: 50%;
     background: #0e2828;
   }
 
   .card__post__info__head__trend__count {
-    padding: 0.15rem 0.5rem;
+    padding: 0.07rem 0.26rem;
   }
 
   .card__post__info__head__time {
-    font-size: var(--small-font-size);
+    font-size: var(--semi-small-font-size);
     color: var(--text-accent);
     margin-left: auto;
   }
 
   .card__post__info__body-loader {
-    height: 5.2rem;
+    height: 3.7rem;
     border-radius: 5px;
   }
 
   .card__post__info__body {
-    height: 5.2rem;
+    height: 3.7rem;
     overflow-wrap: break-word;
-    width: 20.5rem;
+    width: 14.8rem;
   }
 
   @keyframes shine {
