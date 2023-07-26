@@ -25,109 +25,111 @@
 
 <section>
     {#each data["explorePublicationsForApp"]?.items as item}
-        <div class="card">
-            {#await getImageURLFromURLHash(item?.metadata?.tags[0])}
-                <div class="card__image-loader">
-                </div>
-            {:then fetchedImageUrl}
-                <div class="card__image"
-                     style="background-image: url({fetchedImageUrl})">
-                    <div class="CenterRowFlex card__image__layer1">
-                        <div class="CenterRowFlex card__image__layer1__posts-count">
-                            <Icon d={modeComment}/>
-                            {item?.stats?.totalAmountOfComments}
-                        </div>
-                        <div class="card__image__layer1__more-icon">
-                            <button on:click={() => {isCardsMoreOpen = !isCardsMoreOpen}}>
-                                <Icon d={moreHoriz}/>
-                            </button>
-                        </div>
+        <a href={"/posts/" + item?.id}>
+            <div class="card">
+                {#await getImageURLFromURLHash(item?.metadata?.tags[0])}
+                    <div class="card__image-loader">
                     </div>
-                    {#if isCardsMoreOpen}
-                        <div class="CenterColumnFlex card__image__more">
-                            <div class="CenterRowFlex card__image__more__share">
-                                <div class="CenterRowFlex card__image__more__share__icon">
-                                    <Icon d={share} size="1.2em"/>
-                                </div>
-                                Share
+                {:then fetchedImageUrl}
+                    <div class="card__image"
+                         style="background-image: url({fetchedImageUrl})">
+                        <div class="CenterRowFlex card__image__layer1">
+                            <div class="CenterRowFlex card__image__layer1__posts-count">
+                                <Icon d={modeComment}/>
+                                {item?.stats?.totalAmountOfComments}
+                            </div>
+                            <div class="card__image__layer1__more-icon">
+                                <button on:click={() => {isCardsMoreOpen = !isCardsMoreOpen}}>
+                                    <Icon d={moreHoriz}/>
+                                </button>
                             </div>
                         </div>
-                    {/if}
-                </div>
-            {:catch error}
-                <div class="card__image"
-                     style="background-image: url('https://media.istockphoto.com/id/1392182937/vector/no-image-available-photo-coming-soon.jpg?s=170667a&w=0&k=20&c=HOCGNLwt3LkB92ZlyHAupxbwHY5X2143KDlbA-978dE=')">
-                </div>
-            {/await}
-            <div class="CenterRowFlex card__info">
-                <div class="CenterRowFlex card__info__reaction">
-                    <div class="CenterRowFlex card__info__reaction__val">
-                        <Icon d={thumbUpAlt}/> {item?.stats?.totalUpvotes}
+                        {#if isCardsMoreOpen}
+                            <div class="CenterColumnFlex card__image__more">
+                                <div class="CenterRowFlex card__image__more__share">
+                                    <div class="CenterRowFlex card__image__more__share__icon">
+                                        <Icon d={share} size="1.2em"/>
+                                    </div>
+                                    Share
+                                </div>
+                            </div>
+                        {/if}
                     </div>
-                    <div class="card__info__reaction__vertical-line"></div>
-                    <div class="CenterRowFlex card__info__reaction__val">
-                        <Icon d={thumbDownAlt}/> {item?.stats?.totalDownvotes}
+                {:catch error}
+                    <div class="card__image"
+                         style="background-image: url('https://media.istockphoto.com/id/1392182937/vector/no-image-available-photo-coming-soon.jpg?s=170667a&w=0&k=20&c=HOCGNLwt3LkB92ZlyHAupxbwHY5X2143KDlbA-978dE=')">
                     </div>
-                </div>
-                <div class="CenterColumnFlex card__info__content">
-                    <a href={item?.metadata?.content} target="_blank">
-                        <div class="CenterRowFlex card__info__content__link">
-                            <Icon d={redirect}/>{item?.metadata?.content.substring(0, 20)}...
+                {/await}
+                <div class="CenterRowFlex card__info">
+                    <div class="CenterRowFlex card__info__reaction">
+                        <div class="CenterRowFlex card__info__reaction__val">
+                            <Icon d={thumbUpAlt}/> {item?.stats?.totalUpvotes}
                         </div>
-                    </a>
-                    <div class="card__info__content__time">
-                        {getFormattedDate(item?.createdAt)}
+                        <div class="card__info__reaction__vertical-line"></div>
+                        <div class="CenterRowFlex card__info__reaction__val">
+                            <Icon d={thumbDownAlt}/> {item?.stats?.totalDownvotes}
+                        </div>
+                    </div>
+                    <div class="CenterColumnFlex card__info__content">
+                        <a href={item?.metadata?.content} target="_blank">
+                            <div class="CenterRowFlex card__info__content__link">
+                                <Icon d={redirect}/>{item?.metadata?.content.substring(0, 20)}...
+                            </div>
+                        </a>
+                        <div class="card__info__content__time">
+                            {getFormattedDate(item?.createdAt)}
+                        </div>
                     </div>
                 </div>
+                {#await getCommentOfPublication(item?.id, 1)}
+                    <div class="CenterRowFlex card__post">
+                        <div class="card__post__user-pic-loader">
+
+                        </div>
+                        <div class="card__post__info">
+                            <div class="CenterRowFlex card__post__info__head-loader">
+
+                            </div>
+                            <div class="card__post__info__body-loader">
+
+                            </div>
+                        </div>
+                    </div>
+                {:then data}
+                    <div class="CenterRowFlex card__post">
+                        <div class="card__post__user-pic">
+                            <img src={data?.data?.publications?.items[0]?.profile?.picture?.original?.url}
+                                 alt="avatar">
+                        </div>
+                        <div class="card__post__info">
+                            <div class="CenterRowFlex card__post__info__head">
+                                <div class="card__post__info__head__username">
+                                    {data?.data?.publications?.items[0]?.profile?.handle}
+                                </div>
+                                <div class="CenterRowFlex card__post__info__head__trend">
+                                    <div class="card__post__info__head__trend__icon">
+                                        <Icon d={trendingUp}/>
+                                    </div>
+                                    <div class="card__post__info__head__trend__count">
+                                        {data?.data?.publications?.items[0]?.stats?.totalUpvotes === undefined ? 0 : data?.data?.publications?.items[0]?.stats?.totalUpvotes}
+                                    </div>
+                                </div>
+                                <div class="card__post__info__head__time">
+                                    {getFormattedDate(data?.data?.publications?.items[0]?.createdAt)}
+                                </div>
+                            </div>
+                            <div class="card__post__info__body">
+                                {data?.data?.publications?.items[0]?.metadata?.content.substring(0, 100)}
+                            </div>
+                        </div>
+                    </div>
+                {:catch error}
+                    <div class="CenterRowFlex card__post">
+                        No Top Post
+                    </div>
+                {/await}
             </div>
-            {#await getCommentOfPublication(item?.id, 1)}
-                <div class="CenterRowFlex card__post">
-                    <div class="card__post__user-pic-loader">
-
-                    </div>
-                    <div class="card__post__info">
-                        <div class="CenterRowFlex card__post__info__head-loader">
-
-                        </div>
-                        <div class="card__post__info__body-loader">
-
-                        </div>
-                    </div>
-                </div>
-            {:then data}
-                <div class="CenterRowFlex card__post">
-                    <div class="card__post__user-pic">
-                        <img src={data?.data?.publications?.items[0]?.profile?.picture?.original?.url}
-                             alt="avatar">
-                    </div>
-                    <div class="card__post__info">
-                        <div class="CenterRowFlex card__post__info__head">
-                            <div class="card__post__info__head__username">
-                                {data?.data?.publications?.items[0]?.profile?.handle}
-                            </div>
-                            <div class="CenterRowFlex card__post__info__head__trend">
-                                <div class="card__post__info__head__trend__icon">
-                                    <Icon d={trendingUp}/>
-                                </div>
-                                <div class="card__post__info__head__trend__count">
-                                    {data?.data?.publications?.items[0]?.stats?.totalUpvotes === undefined ? 0 : data?.data?.publications?.items[0]?.stats?.totalUpvotes}
-                                </div>
-                            </div>
-                            <div class="card__post__info__head__time">
-                                {getFormattedDate(data?.data?.publications?.items[0]?.createdAt)}
-                            </div>
-                        </div>
-                        <div class="card__post__info__body">
-                            {data?.data?.publications?.items[0]?.metadata?.content.substring(0, 100)}
-                        </div>
-                    </div>
-                </div>
-            {:catch error}
-                <div class="CenterRowFlex card__post">
-                    No Top Post
-                </div>
-            {/await}
-        </div>
+        </a>
     {/each}
 </section>
 

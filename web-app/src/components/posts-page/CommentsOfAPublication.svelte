@@ -1,8 +1,29 @@
 <script lang="ts">
   import {modeComment, moreVert, share, thumbDownAlt, thumbUpAlt} from "../../utils/frontend/appIcon";
   import Icon from "$lib/Icon.svelte";
+  import {page} from "$app/stores";
+  import {getCommentOfPublication} from "../../utils/frontend/getCommentOfPublication";
+  import getFormattedDate from "../../utils/frontend/getFormattedDate";
+  import {totalPosts} from "../../services/totalPosts";
+  import {totalComments} from "../../services/totalComments";
 
+
+  let commentPubId = $page.data.commentPubId;
+  const mainPostPubId = $page.data.mainPostPubId;
   let isCommentMoreOpen = false;
+  let selectedFilterType = "mostLiked";
+
+  let promiseOfGetComment = getCommentOfPublication(commentPubId, 50);
+
+  const updatedPromiseOfGetComment = () => {
+    promiseOfGetComment = getCommentOfPublication(commentPubId, 50, selectedFilterType);
+  }
+
+  $: if (commentPubId !== $page.data.commentPubId) {
+    commentPubId = $page.data.commentPubId;
+    promiseOfGetComment = getCommentOfPublication(commentPubId, 50, selectedFilterType);
+    console.log("Changed commentPubId : ", $page.data.commentPubId)
+  }
 </script>
 
 
@@ -13,76 +34,129 @@
       Sorted By:
     </div>
     <div class="filter__type">
-      <select>
-        <option value="review">Most Liked</option>
-        <option value="feedback">Latest</option>
+      <select bind:value={selectedFilterType} on:change={updatedPromiseOfGetComment}>
+        <option value="mostLiked">Most Liked</option>
+        <option value="latest">Latest</option>
       </select>
     </div>
-    <!--    <div class="filter__line"></div>-->
     <hr class="filter__line">
     <div class="filter__comment-count">
-      40 Comments
+
+      {#if $page.data.postPubId === undefined}
+        {$totalPosts} &nbsp;Posts
+      {:else}
+        {$totalComments} &nbsp;Comments
+      {/if}
     </div>
   </div>
   <div class="CenterColumnFlex body">
-    <div class="comment">
-      <div class="comment__pic">
-        <img src="https://ik.imagekit.io/lens/media-snapshot/tr:w-300,h-300/536c0894df100c301cefdd7f97d4f6e7ab2d6e4019fa99ea933934fe3ffe66c1.webp"
-             alt="avatar">
-      </div>
-      <div class="comment__body">
-        <div class="CenterRowFlex comment__body__top">
-          <div class="CenterRowFlex comment__body__top__left">
-            <div class="comment__body__top__left__name">
-              John Doe
+    {#await promiseOfGetComment}
+      <div class="comment">
+        <div class="comment__pic__loader">
+        </div>
+        <div class="comment__body">
+          <div class="CenterRowFlex comment__body__top">
+            <div class="CenterRowFlex comment__body__top__left__loader">
             </div>
-            <div class="comment__body__top__left__dot"></div>
-            <div class="comment__body__top__left__handle">
-              johndoe.lens
+            <div class="CenterRowFlex comment__body__top__right__loader">
             </div>
           </div>
-          <div class="CenterRowFlex comment__body__top__right">
-            <div class="CenterRowFlex comment__body__top__right__reaction">
-              <div class="CenterRowFlex comment__body__top__right__reaction__val">
-                <Icon d={thumbUpAlt}/>
-                20
-              </div>
-              <div class="comment__body__top__right__reaction__vertical-line"></div>
-              <div class="CenterRowFlex comment__body__top__right__reaction__val">
-                <Icon d={thumbDownAlt}/>
-                5
-              </div>
+          <div class="comment__body__content__loader">
+          </div>
+        </div>
+      </div>
+      <div class="comment">
+        <div class="comment__pic__loader">
+        </div>
+        <div class="comment__body">
+          <div class="CenterRowFlex comment__body__top">
+            <div class="CenterRowFlex comment__body__top__left__loader">
             </div>
-            <div class="CenterRowFlex comment__body__top__right__posts-count">
-              <Icon d={modeComment}/>
-              10
+            <div class="CenterRowFlex comment__body__top__right__loader">
             </div>
-            <div class="comment__body__top__right__more">
-              <button on:click={() => {isCommentMoreOpen = !isCommentMoreOpen}}>
-                <Icon d={moreVert} size="1.65em"/>
-              </button>
-              {#if isCommentMoreOpen}
-                <div class="CenterColumnFlex comment__body__more">
-                  <div class="CenterRowFlex comment__body__more__share">
-                    <div class="CenterRowFlex comment__body__more__share__icon">
-                      <Icon d={share} size="1.2em"/>
-                    </div>
-                    Share
+          </div>
+          <div class="comment__body__content__loader">
+          </div>
+        </div>
+      </div>
+      <div class="comment">
+        <div class="comment__pic__loader">
+        </div>
+        <div class="comment__body">
+          <div class="CenterRowFlex comment__body__top">
+            <div class="CenterRowFlex comment__body__top__left__loader">
+            </div>
+            <div class="CenterRowFlex comment__body__top__right__loader">
+            </div>
+          </div>
+          <div class="comment__body__content__loader">
+          </div>
+        </div>
+      </div>
+    {:then commentsData}
+      {#each commentsData?.data?.publications?.items as comment}
+        <div class="comment">
+          <div class="comment__pic">
+            <img src={comment?.profile?.picture?.original?.url}
+                 alt="avatar">
+          </div>
+          <div class="comment__body">
+            <div class="CenterRowFlex comment__body__top">
+              <div class="CenterRowFlex comment__body__top__left">
+                {#if comment?.profile?.name !== null}
+                  <div class="comment__body__top__left__name">
+                    {comment?.profile?.name}
+                  </div>
+                  <div class="comment__body__top__left__dot"></div>
+                {/if}
+                <div class="comment__body__top__left__handle">
+                  {comment?.profile?.handle}
+                </div>
+              </div>
+              <div class="CenterRowFlex comment__body__top__right">
+                <div class="CenterRowFlex comment__body__top__right__reaction">
+                  <div class="CenterRowFlex comment__body__top__right__reaction__val">
+                    <Icon d={thumbUpAlt}/>
+                    {comment?.stats?.totalUpvotes}
+                  </div>
+                  <div class="comment__body__top__right__reaction__vertical-line"></div>
+                  <div class="CenterRowFlex comment__body__top__right__reaction__val">
+                    <Icon d={thumbDownAlt}/>
+                    {comment?.stats?.totalDownvotes}
                   </div>
                 </div>
-              {/if}
+                <a href={`/posts/${mainPostPubId}/${comment?.id}`}
+                   class="CenterRowFlex comment__body__top__right__posts-count">
+                  <Icon d={modeComment}/>
+                  {comment?.stats?.totalAmountOfComments}
+                </a>
+                <div class="comment__body__top__right__more">
+                  <button on:click={() => {isCommentMoreOpen = !isCommentMoreOpen}}>
+                    <Icon d={moreVert} size="1.65em"/>
+                  </button>
+                  {#if isCommentMoreOpen}
+                    <div class="CenterColumnFlex comment__body__more">
+                      <div class="CenterRowFlex comment__body__more__share">
+                        <div class="CenterRowFlex comment__body__more__share__icon">
+                          <Icon d={share} size="1.2em"/>
+                        </div>
+                        Share
+                      </div>
+                    </div>
+                  {/if}
+                </div>
+              </div>
+            </div>
+            <div class="comment__body__time">
+              {getFormattedDate(comment?.createdAt)}
+            </div>
+            <div class="comment__body__content">
+              {comment?.metadata?.content}
             </div>
           </div>
         </div>
-        <div class="comment__body__time">
-          2 hours ago
-        </div>
-        <div class="comment__body__content">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aperiam asperiores aut ducimus eaque hic id
-          laboriosam libero nam nemo non quam quibusdam quod, saepe similique tenetur veniam vitae voluptatem!
-        </div>
-      </div>
-    </div>
+      {/each}
+    {/await}
   </div>
 </section>
 
@@ -133,10 +207,18 @@
     gap: 1rem;
     background: #1e4748;
     border-radius: 10px;
+    width: 100%;
   }
 
   .comment__pic {
     margin-bottom: auto;
+  }
+
+  .comment__pic__loader {
+    height: 4rem;
+    width: 4.7rem;
+    margin-bottom: auto;
+    border-radius: 50%;
   }
 
   .comment__pic img {
@@ -149,6 +231,7 @@
   .comment__body {
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
 
   .comment__body__top {
@@ -157,6 +240,12 @@
 
   .comment__body__top__left {
     gap: 0.6rem;
+  }
+
+  .comment__body__top__left__loader {
+    width: 9rem;
+    height: 2rem;
+    border-radius: 5px;
   }
 
   .comment__body__top__left__dot {
@@ -175,6 +264,12 @@
 
   .comment__body__top__right {
     gap: 0.5rem;
+  }
+
+  .comment__body__top__right__loader {
+    width: 15rem;
+    height: 2rem;
+    border-radius: 5px;
   }
 
   .comment__body__top__right__reaction {
@@ -237,6 +332,28 @@
 
   .comment__body__content {
     overflow-wrap: break-word;
+  }
+
+  .comment__body__content__loader {
+    width: 100%;
+    height: 5rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+  }
+
+  @keyframes shine {
+    to {
+      background-position-x: -200%;
+    }
+  }
+
+  .comment__body__top__left__loader,
+  .comment__body__top__right__loader,
+  .comment__body__content__loader,
+  .comment__pic__loader {
+    background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);
+    background-size: 200% 100%;
+    animation: 1s shine linear infinite;
   }
 </style>
 <!----------------------------------------------------------------->

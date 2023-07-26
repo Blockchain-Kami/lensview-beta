@@ -112,7 +112,7 @@
                   {
                     chainId: "0x13881",
                     chainName: "Mumbai",
-                    rpcUrls: ["https://matic-mumbai.chainstacklabs.com"],
+                      rpcUrls: ["https://rpc-mumbai.maticvigil.com"],
                     blockExplorerUrls: ["https://mumbai.polygonscan.com"],
                     nativeCurrency: {
                       name: "MATIC",

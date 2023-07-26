@@ -1,58 +1,86 @@
 <script lang="ts">
-
     import Icon from "$lib/Icon.svelte";
     import {modeComment, moreVert, redirect, thumbDownAlt, thumbUpAlt} from "../../utils/frontend/appIcon";
     import RelatedPost from "./RelatedPost.svelte";
+    import {page} from '$app/stores';
+    import {getPublicationByPubId} from "../../utils/frontend/getPublicationByPubId";
+    import getFormattedDate from "../../utils/frontend/getFormattedDate";
+    import getImageURLFromURLHash from "../../utils/frontend/getImageURLFromURLHash";
+    import {totalPosts} from "../../services/totalPosts";
+
+    const mainPostPubId = $page.data.mainPostPubId;
+
+    const getTotalPosts = (fetchedTotalPosts: number) => {
+        totalPosts.setTotalPosts(fetchedTotalPosts);
+        return fetchedTotalPosts;
+    }
+    
 </script>
 
 
 <!----------------------------- HTML ----------------------------->
 
 <section>
-    <img src="https://ipfs.io/ipfs/QmSr4BvCdk4V2Tiogzdtw7FY2HdRDktyHzfb81vfh1tM3f/0" alt="">
-    <div class="CenterColumnFlex main-post">
-        <div class="CenterColumnFlex main-post__content">
-            <div class="CenterRowFlex main-post__content__top">
-                <div class="CenterRowFlex main-post__content__top__redirect">
-                    <Icon d={redirect}/>
-                </div>
-                <div class="main-post__content__top__url">
-                    https://ipfs.io/ipfs/QmSr4Bv
-                </div>
-                <div class="main-post__content__top__time">
-                    2 hours ago
-                </div>
-                <div class="CenterRowFlex main-post__content__top__more">
-                    <Icon d={moreVert}/>
-                </div>
-            </div>
-            <div class="CenterRowFlex main-post__content__bottom">
-                <div class="CenterRowFlex main-post__content__bottom__reaction">
-                    <div class="CenterRowFlex main-post__content__bottom__reaction__val">
-                        <Icon d={thumbUpAlt}/>
-                        20
+    {#await getPublicationByPubId(mainPostPubId)}
+        <div class="main-post">
+            <div class="main-post__content__loader"></div>
+        </div>
+    {:then mainPostPub}
+        {#await getImageURLFromURLHash(mainPostPub?.data?.publications?.items[0]?.metadata?.tags[0])}
+            <div class="image__loader"></div>
+        {:then imageUrl}
+            <img src={imageUrl} alt="">
+        {/await}
+        <div class="CenterColumnFlex main-post">
+            <div class="CenterColumnFlex main-post__content">
+                <div class="CenterRowFlex main-post__content__top">
+                    <a href={mainPostPub?.data?.publications?.items[0]?.metadata.content}
+                       target="_blank"
+                       class="CenterRowFlex"
+                    >
+                        <div class="CenterRowFlex main-post__content__top__redirect">
+                            <Icon d={redirect}/>
+                        </div>
+                        <div class="main-post__content__top__url">
+                            &nbsp;&nbsp;{mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(0, 40)}
+                            ...
+                        </div>
+                    </a>
+                    <div class="main-post__content__top__time">
+                        {getFormattedDate(mainPostPub?.data?.publications?.items[0]?.createdAt)}
                     </div>
-                    <div class="main-post__content__bottom__reaction__vertical-line"></div>
-                    <div class="CenterRowFlex main-post__content__bottom__reaction__val">
-                        <Icon d={thumbDownAlt}/>
-                        5
+                    <div class="CenterRowFlex main-post__content__top__more">
+                        <Icon d={moreVert}/>
                     </div>
                 </div>
-                <div class="CenterRowFlex main-post__content__bottom__posts-count">
-                    <Icon d={modeComment}/>
-                    10 Posts
-                </div>
-                <div class="CenterRowFlex main-post__content__bottom__added-by">
-                    <div class="main-post__content__bottom__added-by__label">
-                        Added by:
+                <div class="CenterRowFlex main-post__content__bottom">
+                    <div class="CenterRowFlex main-post__content__bottom__reaction">
+                        <div class="CenterRowFlex main-post__content__bottom__reaction__val">
+                            <Icon d={thumbUpAlt}/>
+                            {mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes}
+                        </div>
+                        <div class="main-post__content__bottom__reaction__vertical-line"></div>
+                        <div class="CenterRowFlex main-post__content__bottom__reaction__val">
+                            <Icon d={thumbDownAlt}/>
+                            {mainPostPub?.data?.publications?.items[0]?.stats?.totalDownvotes}
+                        </div>
                     </div>
-                    <div class="main-post__content__bottom__added-by__handle">
-                        username.lens
+                    <div class="CenterRowFlex main-post__content__bottom__posts-count">
+                        <Icon d={modeComment}/>
+                        {getTotalPosts(mainPostPub?.data?.publications?.items[0]?.stats?.totalAmountOfComments)} &nbsp;Posts
+                    </div>
+                    <div class="CenterRowFlex main-post__content__bottom__added-by">
+                        <div class="main-post__content__bottom__added-by__label">
+                            Added by:
+                        </div>
+                        <div class="main-post__content__bottom__added-by__handle">
+                            username.lens
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    {/await}
     <div class="related-posts-head">
         Related Posts
     </div>
@@ -75,6 +103,12 @@
     border-radius: 10px;
   }
 
+  .image__loader {
+    width: 100%;
+    border-radius: 10px;
+    height: 40rem;
+  }
+
   .main-post {
     height: 10rem;
     width: 100%;
@@ -88,9 +122,17 @@
     z-index: 10;
   }
 
+
   .main-post__content {
     width: 100%;
     min-width: 31rem;
+  }
+
+  .main-post__content__loader {
+    width: 100%;
+    min-width: 31rem;
+    border-radius: 10.8px;
+    height: 8rem;
   }
 
   .main-post__content__top {
@@ -165,6 +207,19 @@
     background: #0d171d;
     padding: 1.5rem;
     z-index: 10;
+  }
+
+  @keyframes shine {
+    to {
+      background-position-x: -200%;
+    }
+  }
+
+  .image__loader,
+  .main-post__content__loader {
+    background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);
+    background-size: 200% 100%;
+    animation: 1s shine linear infinite;
   }
 </style>
 <!----------------------------------------------------------------->

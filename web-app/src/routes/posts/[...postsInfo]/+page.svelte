@@ -2,6 +2,15 @@
   import MainPost from "../../../components/posts-page/MainPost.svelte";
   import PostAPublication from "../../../components/posts-page/PostAPublication.svelte";
   import CommentsOfAPublication from "../../../components/posts-page/CommentsOfAPublication.svelte";
+  import Publication from "../../../components/posts-page/Publication.svelte";
+  import {page} from "$app/stores";
+
+  let postPubId = $page.data.postPubId;
+
+  $: if (postPubId !== $page.data.postPubId) {
+    postPubId = $page.data.postPubId;
+  }
+
 </script>
 
 
@@ -11,6 +20,9 @@
     <MainPost/>
   </div>
   <div class="right">
+    {#if postPubId !== undefined }
+      <Publication/>
+    {/if}
     <PostAPublication/>
     <CommentsOfAPublication/>
   </div>
