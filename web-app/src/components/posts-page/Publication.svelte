@@ -237,6 +237,8 @@
   .comment__body__time {
     font-size: var(--small-font-size);
     color: var(--text-accent);
+    margin-top: -0.2rem;
+    margin-bottom: 0.5rem;
   }
 
   .comment__body__content {

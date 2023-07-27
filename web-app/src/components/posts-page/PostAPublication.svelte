@@ -1,45 +1,61 @@
 <script lang="ts">
     import Icon from "$lib/Icon.svelte";
     import {addPhoto} from "../../utils/frontend/appIcon";
-    import {onMount} from "svelte";
 
-    let userEnteredText = "";
+    let userEnteredContent = "";
+    let inputInvalidReason = "";
+    const wordLimit = 5;
+    let isInputInValid = true;
 
-    onMount(() => {
-        const editableDiv = document.getElementById('editableDiv');
-        const wordLimit = 1000
+    const checkIfInputIsInvalid = () => {
+        const wordCount = calculateWordCount(userEnteredContent);
 
-        editableDiv.addEventListener('paste', function (e) {
-            e.preventDefault();
+        console.log("wordCount: ", wordCount);
 
-            // Get the pasted text without any formatting
-            let pastedText = (e.originalEvent || e).clipboardData.getData('text/plain');
+        if (userEnteredContent.length === 0) {
+            inputInvalidReason = "";
+            isInputInValid = true;
+        } else if (wordCount > wordLimit) {
+            inputInvalidReason = `Words cannot be more than ${wordLimit}`;
+            isInputInValid = true;
+        } else {
+            inputInvalidReason = "";
+            isInputInValid = false;
+        }
+    }
 
-            // Calculate the current word count in the contenteditable div
-            const currentText = editableDiv.innerText;
-            const words = currentText.trim().split(/\s+/);
-            const currentWordCount = words.length;
+    const calculateWordCount = (content) => {
+        // Remove HTML tags using a regular expression
+        const cleanContent = content.replace(/<\/?[^>]+(>|$)/g, ' ');
 
-            // Calculate the remaining word count allowed
-            const remainingWordCount = wordLimit - currentWordCount;
+        // Remove extra spaces, new lines, and special characters using regex
+        const cleanedText = cleanContent.replace(/\s+/g, ' ').trim();
 
-            // Check if pasted text exceeds the remaining word count and truncate if necessary
-            if (pastedText) {
-                const pastedWords = pastedText.trim().split(/\s+/);
-                if (pastedWords.length > remainingWordCount) {
-                    pastedWords.length = remainingWordCount;
-                    pastedText = pastedWords.join(' ');
-                }
-            }
+        // Split the cleaned text into words and count the number of words
+        const words = cleanedText.split(' ');
 
-            // Insert the plain text into the contenteditable div
-            const selection = window.getSelection();
-            if (!selection.rangeCount) return;
-            selection.deleteFromDocument();
-            selection.getRangeAt(0).insertNode(document.createTextNode(pastedText));
-        });
-    })
+        return words.length;
+    }
 
+    const handlePaste = (event) => {
+        // Prevent the default paste behavior
+        event.preventDefault();
+
+        // Get the pasted text from the clipboard
+        const pastedText = (event.clipboardData || window.clipboardData).getData('text/plain');
+
+        // Insert the plain text into the contenteditable div
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+        selection.deleteFromDocument();
+        selection.getRangeAt(0).insertNode(document.createTextNode(pastedText));
+
+        checkIfInputIsInvalid(event);
+    }
+
+    const postThroughUser = () => {
+        console.log("userEnteredContent: ", userEnteredContent);
+    }
 </script>
 
 
@@ -49,10 +65,19 @@
         <div class="body__user-pic">
             <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300" alt="">
         </div>
-        <div contenteditable="true"
-             placeholder="What do think about this ?"
-             class="body__input"
-             id="editableDiv">
+        <div class="body__input">
+            <div contenteditable="true"
+                 placeholder="What do think about this ?"
+                 class="body__input__box"
+                 id="editableDiv"
+                 bind:innerHTML={userEnteredContent}
+                 on:input={checkIfInputIsInvalid}
+                 on:paste={handlePaste}
+            >
+            </div>
+            {#if isInputInValid}
+                <div class="body__input__err-msg">{inputInvalidReason}</div>
+            {/if}
         </div>
     </div>
     <div class="CenterRowFlex footer">
@@ -63,7 +88,7 @@
             </div>
         </div>
         <div class="footer__operations">
-            <button class="btn">Post</button>
+            <button class="btn" on:click={postThroughUser} disabled={isInputInValid}>Post</button>
         </div>
     </div>
 </section>
@@ -101,11 +126,21 @@
   }
 
   .body__input {
+    width: 100%;
+  }
+
+  .body__input__box {
     content: attr(placeholder);
     width: 100%;
     border-radius: 0.75rem;
     background: linear-gradient(172deg, rgba(50, 249, 255, 0.15) 33.55%, rgba(236, 254, 255, 0.15) 100%);
     padding: 1rem;
+  }
+
+  .body__input__err-msg {
+    margin-top: 0.7rem;
+    color: red;
+    font-size: var(--small-font-size);
   }
 
   .body__input:focus {

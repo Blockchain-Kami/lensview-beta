@@ -1,16 +1,17 @@
-<script>
-  import createLensHandle from "../../utils/frontend/createLensHandle.ts";
-  import {isSignedIn} from "../../services/signInStatus.ts";
-  import getDefaultUserProfile from "../../utils/frontend/getDefaultUserProfile.ts";
-  import {userProfile} from "../../services/profile.ts";
-  import getUserProfiles from "../../utils/frontend/getUserProfiles.ts";
-  import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed.ts";
+<script lang="ts">
+  import createLensHandle from "../../utils/frontend/createLensHandle";
+  import {isSignedIn} from "../../services/signInStatus";
+  import getDefaultUserProfile from "../../utils/frontend/getDefaultUserProfile";
+  import {userProfile} from "../../services/profile";
+  import getUserProfiles from "../../utils/frontend/getUserProfiles";
+  import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
   import Icon from "$lib/Icon.svelte";
-  import {close} from "../../utils/frontend/appIcon.ts";
+  import {close} from "../../utils/frontend/appIcon";
+  import Loader from "$lib/Loader.svelte";
 
-  export let showCreateLensHandleModal; // boolean
+  export let showCreateLensHandleModal: boolean; // boolean
 
-  let dialog;
+  let dialog: HTMLDialogElement;
   let userEnteredHandle = "";
   let isCreatingLensHandle = false;
   let isInputInvalid = true;
@@ -35,7 +36,7 @@
     }
   };
 
-  const checkUntilProfileIsCreated = async (txHash, startTime) => {
+  const checkUntilProfileIsCreated = async (txHash: string, startTime: number) => {
 
     /** If handle is not created within 25 seconds, then stop checking */
     if (Date.now() - startTime > 25000) {
@@ -63,7 +64,6 @@
       dialog.close();
     }
   };
-
 
   const checkInputIsValid = () => {
     if (userEnteredHandle.length === 0) {
@@ -128,7 +128,9 @@
       {#if !isCreatingLensHandle}
         <button class="btn" on:click={initiateCreateLensHandle} disabled={isInputInvalid}>Create Lens Handle</button>
       {:else}
-        <button class="btn" disabled>Creating...</button>
+        <button class="btn" disabled>Creating &nbsp;
+          <Loader/>
+        </button>
       {/if}
     </div>
   </main>

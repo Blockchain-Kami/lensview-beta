@@ -14,7 +14,7 @@
         totalPosts.setTotalPosts(fetchedTotalPosts);
         return fetchedTotalPosts;
     }
-    
+
 </script>
 
 
@@ -29,9 +29,12 @@
         {#await getImageURLFromURLHash(mainPostPub?.data?.publications?.items[0]?.metadata?.tags[0])}
             <div class="image__loader"></div>
         {:then imageUrl}
-            <img src={imageUrl} alt="">
+            <a href={`/posts/${mainPostPubId}`}>
+                <img src={imageUrl} alt="">
+            </a>
         {/await}
-        <div class="CenterColumnFlex main-post">
+        <a href={`/posts/${mainPostPubId}`}
+           class="CenterColumnFlex main-post">
             <div class="CenterColumnFlex main-post__content">
                 <div class="CenterRowFlex main-post__content__top">
                     <a href={mainPostPub?.data?.publications?.items[0]?.metadata.content}
@@ -79,7 +82,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     {/await}
     <div class="related-posts-head">
         Related Posts
@@ -121,7 +124,6 @@
     padding: 1.3rem 2rem;
     z-index: 10;
   }
-
 
   .main-post__content {
     width: 100%;
