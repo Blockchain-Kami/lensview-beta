@@ -6,6 +6,8 @@
   import getFormattedDate from "../../utils/frontend/getFormattedDate";
   import {totalPosts} from "../../services/totalPosts";
   import {totalComments} from "../../services/totalComments";
+  import {reloadCommentOfAPublication} from "../../services/reloadCommentOfAPublication";
+  import {onMount} from "svelte";
 
 
   let commentPubId = $page.data.commentPubId;
@@ -24,6 +26,14 @@
     promiseOfGetComment = getCommentOfPublication(commentPubId, 50, selectedFilterType);
     console.log("Changed commentPubId : ", $page.data.commentPubId)
   }
+
+  onMount(() => {
+    reloadCommentOfAPublication.subscribe((val) => {
+      console.log("Reloaded comment of a publication" + val);
+      promiseOfGetComment = getCommentOfPublication(commentPubId, 50, selectedFilterType);
+    })
+  })
+
 </script>
 
 

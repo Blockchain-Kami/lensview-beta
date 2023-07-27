@@ -7,7 +7,7 @@
     import {isSignedIn} from "../services/signInStatus";
     import {userEnteredURL} from "../services/userEnteredURL";
     import getDefaultUserProfile from "../utils/frontend/getDefaultUserProfile";
-    import CreateLensHandle from "../components/main-page/CreateLensHandle.svelte";
+    import CreateLensHandle from "../components/CreateLensHandle.svelte";
     import {userProfile} from "../services/profile";
     import getUserProfiles from "../utils/frontend/getUserProfiles";
     import {onMount} from "svelte";

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import createLensHandle from "../../utils/frontend/createLensHandle";
-  import {isSignedIn} from "../../services/signInStatus";
-  import getDefaultUserProfile from "../../utils/frontend/getDefaultUserProfile";
-  import {userProfile} from "../../services/profile";
-  import getUserProfiles from "../../utils/frontend/getUserProfiles";
-  import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
+  import createLensHandle from "../utils/frontend/createLensHandle";
+  import {isSignedIn} from "../services/signInStatus";
+  import getDefaultUserProfile from "../utils/frontend/getDefaultUserProfile";
+  import {userProfile} from "../services/profile";
+  import getUserProfiles from "../utils/frontend/getUserProfiles";
+  import checkTxHashBeenIndexed from "../utils/checkTxHashBeenIndexed";
   import Icon from "$lib/Icon.svelte";
-  import {close} from "../../utils/frontend/appIcon";
+  import {close} from "../utils/frontend/appIcon";
   import Loader from "$lib/Loader.svelte";
 
   export let showCreateLensHandleModal: boolean; // boolean

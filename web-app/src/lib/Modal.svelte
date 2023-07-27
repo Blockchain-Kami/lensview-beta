@@ -1,38 +1,73 @@
-<script>
-  export let showModal; // boolean
+<script lang="ts">
+  import Icon from "$lib/Icon.svelte";
+  import {close} from "../utils/frontend/appIcon";
 
-  let dialog; // HTMLDialogElement
+  export let showTestModal: boolean;
 
-  $: if (dialog && showModal) dialog.showModal();
+  let dialog: HTMLDialogElement;
+
+  $: if (dialog && showTestModal) dialog.showModal();
+
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <dialog
-  bind:this={dialog}
-  on:close={() => (showModal = false)}
-  on:click|self={() => dialog.close()}
+        bind:this={dialog}
+        on:close={() => (showTestModal = false)}
+        on:click|self={() => dialog.close()}
 >
-  <div on:click|stopPropagation>
-    <slot name="header" />
-    <hr />
-    <slot />
-    <hr />
-    <!-- svelte-ignore a11y-autofocus -->
-    <button autofocus on:click={() => dialog.close()}>close modal</button>
-  </div>
+  <main on:click|stopPropagation>
+    <div class="CenterRowFlex head">
+      <div class="h3 head__title">
+        Heading
+      </div>
+      <div class="head__close-btn">
+        <button on:click={() => dialog.close()}>
+          <Icon d={close}/>
+        </button>
+      </div>
+    </div>
+    <div class="body">
+      Testing
+    </div>
+    <div class="line"></div>
+    <div class="footer">
+      <button class="btn">Test</button>
+    </div>
+  </main>
 </dialog>
 
-<style>
+<style lang="scss">
+  main {
+    display: flex;
+    flex-direction: column;
+    background: #1e4748 fixed;
+    color: var(--text);
+    min-width: 21rem;
+  }
 
-    dialog {
-      max-width: 32em;
-      border-radius: 0.2em;
-      border: none;
-      padding: 0;
-    }
+  .head {
+    justify-content: space-between;
+    background: #18393a;
+    padding: 1.2rem;
+    color: var(--primary);
+  }
 
-    dialog[open] {
-      animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
+  .body {
+    padding: 1rem;
+    min-width: 25rem;
+  }
+
+  .line {
+    border: 0.5px solid #4b6c6d;
+    width: 90%;
+    margin-top: auto;
+    align-self: center;
+  }
+
+  .footer {
+    margin-left: auto;
+    padding: 1rem;
+  }
 
 </style>

@@ -1,11 +1,25 @@
 <script lang="ts">
     import Icon from "$lib/Icon.svelte";
     import {addPhoto} from "../../utils/frontend/appIcon";
+    import {isSignedIn} from "../../services/signInStatus";
+    import uploadToIPFS from "../../utils/frontend/uploadToIPFS";
+    import signCreateCommentTypedData from "../../utils/frontend/signCreateCommentTypedData";
+    import {ethers, utils} from "ethers";
+    import LENSHUB from "../.././abi/lenshub.json";
+    import {getSigner} from "../../utils/web3";
+    import {PUBLIC_LENS_HUB_CONTRACT_ADDRESS} from "$env/static/public";
+    import {userProfile} from "../../services/profile";
+    import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
+    import {page} from "$app/stores";
+    import Loader from "$lib/Loader.svelte";
+    import {reloadCommentOfAPublication} from "../../services/reloadCommentOfAPublication";
+    import Login from "../Login.svelte";
 
     let userEnteredContent = "";
     let inputInvalidReason = "";
     const wordLimit = 5;
     let isInputInValid = true;
+    let showLoginModal = false;
 
     const checkIfInputIsInvalid = () => {
         const wordCount = calculateWordCount(userEnteredContent);
@@ -24,7 +38,7 @@
         }
     }
 
-    const calculateWordCount = (content) => {
+    const calculateWordCount = (content: string) => {
         // Remove HTML tags using a regular expression
         const cleanContent = content.replace(/<\/?[^>]+(>|$)/g, ' ');
 
@@ -46,6 +60,9 @@
 
         // Insert the plain text into the contenteditable div
         const selection = window.getSelection();
+
+        if (selection === null) return;
+
         if (!selection.rangeCount) return;
         selection.deleteFromDocument();
         selection.getRangeAt(0).insertNode(document.createTextNode(pastedText));
@@ -53,9 +70,112 @@
         checkIfInputIsInvalid(event);
     }
 
-    const postThroughUser = () => {
-        console.log("userEnteredContent: ", userEnteredContent);
+
+    let postPubId = $page.data.postPubId;
+    let isThisComment = postPubId !== undefined;
+    let pubId = isThisComment ? postPubId : $page.data.mainPostPubId;
+    let pubBtnName = isThisComment ? "Comment" : "Post";
+
+    $: if (postPubId !== $page.data.postPubId) {
+        postPubId = $page.data.postPubId;
+        isThisComment = postPubId !== undefined;
+        pubId = isThisComment ? postPubId : $page.data.mainPostPubId;
+        pubBtnName = isThisComment ? "Comment" : "Post";
     }
+
+    let isPublishing = false;
+
+    function splitSignature(signature) {
+        return utils.splitSignature(signature);
+    }
+
+    let postThroughUser = async () => {
+        isPublishing = true;
+        let profile;
+        const unsub = userProfile.subscribe((value) => {
+            profile = value;
+        });
+        unsub();
+
+        console.log("profile: ", profile);
+
+        const contentURI = await uploadToIPFS(profile.id, userEnteredContent);
+        const createCommentRequest = {
+            profileId: profile.id,
+            publicationId: pubId,
+            contentURI,
+            collectModule: {
+                freeCollectModule: {followerOnly: true}
+            },
+            referenceModule: {
+                followerOnlyReferenceModule: false
+            }
+        };
+
+        try {
+            const signedResult = await signCreateCommentTypedData(createCommentRequest);
+            const typedData = signedResult.result.typedData;
+            const {v, r, s} = splitSignature(signedResult.signature);
+            const signer = await getSigner();
+
+            const contract = new ethers.Contract(
+                PUBLIC_LENS_HUB_CONTRACT_ADDRESS,
+                LENSHUB,
+                signer
+            );
+
+            const tx = await contract.commentWithSig({
+                profileId: typedData.value.profileId,
+                contentURI: typedData.value.contentURI,
+                profileIdPointed: typedData.value.profileIdPointed,
+                pubIdPointed: typedData.value.pubIdPointed,
+                collectModule: typedData.value.collectModule,
+                collectModuleInitData: typedData.value.collectModuleInitData,
+                referenceModule: typedData.value.referenceModule,
+                referenceModuleInitData: typedData.value.referenceModuleInitData,
+                referenceModuleData: typedData.value.referenceModuleData,
+                sig: {
+                    v,
+                    r,
+                    s,
+                    deadline: typedData.value.deadline
+                }
+            });
+
+            await tx.wait();
+
+            console.log("successfully created Comment: tx hash", tx.hash);
+            console.log("successfully created Comment: tx hash", JSON.stringify(tx));
+
+            await checkUntilPubAdded(tx.hash, Date.now());
+        } catch (err) {
+            console.log("error: ", err);
+            isPublishing = false;
+        }
+    };
+
+    const checkUntilPubAdded = async (txHash: string, startTime: number) => {
+
+        /** If post is not added to lens within 25 seconds, then stop checking */
+        if (Date.now() - startTime > 25000) {
+            isPublishing = false;
+            userEnteredContent = "";
+            alert("Error adding post");
+            return;
+        }
+
+        const hasIndexedResponse = await checkTxHashBeenIndexed(txHash);
+
+        if (hasIndexedResponse?.data?.hasTxHashBeenIndexed?.indexed === false) {
+            console.log("Waiting for post to be added to graph");
+            setTimeout(() => checkUntilPubAdded(txHash, startTime), 100);
+        } else {
+            isPublishing = false;
+            userEnteredContent = "";
+            reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
+            console.log("Post added to graph" + Date.now());
+        }
+    };
 </script>
 
 
@@ -88,11 +208,20 @@
             </div>
         </div>
         <div class="footer__operations">
-            <button class="btn" on:click={postThroughUser} disabled={isInputInValid}>Post</button>
+            {#if !isPublishing}
+                <button class="btn" on:click={postThroughUser}
+                        disabled={!$isSignedIn || isInputInValid}>{pubBtnName}</button>
+            {:else}
+                <button class="btn"
+                        disabled>
+                    {pubBtnName}ing &nbsp;<Loader/>
+                </button>
+            {/if}
         </div>
     </div>
 </section>
 
+<Login bind:showLoginModal/>
 <!---------------------------------------------------------------->
 
 
@@ -167,167 +296,7 @@
 
 
 <!--<script lang="ts">-->
-<!--  import { isSignedIn } from "../../services/signInStatus";-->
-<!--  import uploadToIPFS from "../../utils/frontend/uploadToIPFS";-->
-<!--  import signCreateCommentTypedData from "../../utils/frontend/signCreateCommentTypedData";-->
-<!--  import { ethers, utils } from "ethers";-->
-<!--  import LENSHUB from "../.././abi/lenshub.json";-->
-<!--  import { getSigner } from "../../utils/web3";-->
-<!--  import { invalidate } from "$app/navigation";-->
-<!--  import { userEnteredURL } from "../../services/userEnteredURL";-->
-<!--  import { PUBLIC_LENS_HUB_CONTRACT_ADDRESS } from "$env/static/public";-->
-<!--  import { userProfile } from "../../services/profile";-->
-<!--  import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";-->
 
-<!--  export let hashedURL;-->
-<!--  export let pubId;-->
-<!--  export let openCommentSection;-->
-
-<!--  let userEnteredContent = "";-->
-<!--  let isPosting = false;-->
-<!--  let addingLink = false;-->
-
-
-<!--  function splitSignature(signature) {-->
-<!--    return utils.splitSignature(signature);-->
-<!--  }-->
-
-<!--  let savePost = async () => {-->
-<!--    isPosting = true;-->
-<!--    let profile;-->
-<!--    const unsub = userProfile.subscribe((value) => {-->
-<!--      profile = value;-->
-<!--    });-->
-<!--    unsub();-->
-
-<!--    console.log("profile: ", profile);-->
-
-<!--    const contentURI = await uploadToIPFS(profile.id, userEnteredContent, hashedURL);-->
-<!--    const createCommentRequest = {-->
-<!--      profileId: profile.id,-->
-<!--      publicationId: pubId,-->
-<!--      contentURI,-->
-<!--      collectModule: {-->
-<!--        freeCollectModule: { followerOnly: true }-->
-<!--      },-->
-<!--      referenceModule: {-->
-<!--        followerOnlyReferenceModule: false-->
-<!--      }-->
-<!--    };-->
-
-<!--    try {-->
-<!--      const signedResult = await signCreateCommentTypedData(createCommentRequest);-->
-<!--      const typedData = signedResult.result.typedData;-->
-<!--      const { v, r, s } = splitSignature(signedResult.signature);-->
-<!--      const signer = await getSigner();-->
-
-<!--      const contract = new ethers.Contract(-->
-<!--        PUBLIC_LENS_HUB_CONTRACT_ADDRESS,-->
-<!--        LENSHUB,-->
-<!--        signer-->
-<!--      );-->
-
-<!--      const tx = await contract.commentWithSig({-->
-<!--        profileId: typedData.value.profileId,-->
-<!--        contentURI: typedData.value.contentURI,-->
-<!--        profileIdPointed: typedData.value.profileIdPointed,-->
-<!--        pubIdPointed: typedData.value.pubIdPointed,-->
-<!--        collectModule: typedData.value.collectModule,-->
-<!--        collectModuleInitData: typedData.value.collectModuleInitData,-->
-<!--        referenceModule: typedData.value.referenceModule,-->
-<!--        referenceModuleInitData: typedData.value.referenceModuleInitData,-->
-<!--        referenceModuleData: typedData.value.referenceModuleData,-->
-<!--        sig: {-->
-<!--          v,-->
-<!--          r,-->
-<!--          s,-->
-<!--          deadline: typedData.value.deadline-->
-<!--        }-->
-<!--      });-->
-
-<!--      await tx.wait();-->
-
-<!--      console.log("successfully created Comment: tx hash", tx.hash);-->
-<!--      console.log("successfully created Comment: tx hash", JSON.stringify(tx));-->
-
-<!--      await checkUntilPostAdded(tx.hash, Date.now());-->
-<!--    } catch (err) {-->
-<!--      console.log("error: ", err);-->
-<!--      isPosting = false;-->
-<!--    }-->
-<!--  };-->
-
-<!--  let addURLToLensview = async () => {-->
-<!--    addingLink = true;-->
-
-<!--    let urlToBeAdded;-->
-<!--    const unsub = userEnteredURL.subscribe((value) => {-->
-<!--      urlToBeAdded = value;-->
-<!--    });-->
-<!--    unsub();-->
-
-<!--    await fetch(`/api/add-url`, {-->
-<!--      method: "POST",-->
-<!--      body: JSON.stringify(urlToBeAdded),-->
-<!--      headers: {-->
-<!--        "Content-Type": "application/json"-->
-<!--      }-->
-<!--    }).then(response => response.json()).then(async (responseData) => {-->
-<!--      if (responseData?.statusCode === 201) {-->
-<!--        console.log("responseData : ", responseData);-->
-<!--        await checkUntilMainPostAdded(responseData?.txHash, Date.now());-->
-<!--      } else {-->
-<!--        addingLink = false;-->
-<!--        throw new Error("Error adding link");-->
-<!--      }-->
-<!--    }).catch(err => {-->
-<!--        console.log("Error : ", err);-->
-<!--      }-->
-<!--    );-->
-<!--  };-->
-
-
-<!--  const checkUntilMainPostAdded = async (txHash, startTime) => {-->
-<!--    /** If link is not added to lensview within 25 seconds, then stop checking */-->
-<!--    if (Date.now() - startTime > 25000) {-->
-<!--      addingLink = false;-->
-<!--      alert("Error adding post");-->
-<!--      return;-->
-<!--    }-->
-
-<!--    const hasIndexedResponse = await checkTxHashBeenIndexed(txHash);-->
-
-<!--    if (hasIndexedResponse?.data?.hasTxHashBeenIndexed?.indexed === false) {-->
-<!--      console.log("Waiting for link to be added to lensview");-->
-<!--      setTimeout(() => checkUntilMainPostAdded(txHash, startTime), 100);-->
-<!--    } else {-->
-<!--      addingLink = false;-->
-<!--      await invalidate("posts: updated-posts");-->
-<!--      alert("Link added to Lensview");-->
-<!--    }-->
-<!--  };-->
-
-<!--  const checkUntilPostAdded = async (txHash, startTime) => {-->
-
-<!--    /** If post is not added to lens within 25 seconds, then stop checking */-->
-<!--    if (Date.now() - startTime > 25000) {-->
-<!--      isPosting = false;-->
-<!--      userEnteredContent = "";-->
-<!--      alert("Error adding post");-->
-<!--      return;-->
-<!--    }-->
-
-<!--    const hasIndexedResponse = await checkTxHashBeenIndexed(txHash);-->
-
-<!--    if (hasIndexedResponse?.data?.hasTxHashBeenIndexed?.indexed === false) {-->
-<!--      console.log("Waiting for post to be added to graph");-->
-<!--      setTimeout(() => checkUntilPostAdded(txHash, startTime), 100);-->
-<!--    } else {-->
-<!--      isPosting = false;-->
-<!--      userEnteredContent = "";-->
-<!--      await invalidate("posts: updated-posts");-->
-<!--    }-->
-<!--  };-->
 <!--</script>-->
 
 
