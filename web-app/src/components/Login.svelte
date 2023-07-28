@@ -244,7 +244,7 @@
 
         {#if !isConnected}
             <div class="body">
-                "Please connect your wallet to continue"
+                Please connect your wallet to continue
             </div>
             <div class="line"></div>
             <div class="footer">
@@ -258,7 +258,7 @@
                     {#if !signingIn}
                         {#if isHandleCreated}
                             <div class="body">
-                                "Please sign-in with Lens"
+                                Please sign-in with Lens
                             </div>
                             <div class="line"></div>
                             <div class="footer">
@@ -282,7 +282,7 @@
                         {/if}
                     {:else}
                         <div class="body">
-                            "Please sign-in with Lens"
+                            Please sign-in with Lens
                         </div>
                         <div class="line"></div>
                         <div class="footer">

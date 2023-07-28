@@ -226,10 +226,16 @@
                 Photo
             </div>
         </div>
-        <div class="footer__operations">
+        <div class="CenterRowFlex footer__operations">
+            <button disabled={isInputInValid}
+                    class="btn-alt"
+                    style="--btn-alt-color: #1e4748;">
+                {pubBtnName} anonymously
+            </button>
             {#if !isPublishing}
                 <button class="btn" on:click={postThroughUser}
-                        disabled={isInputInValid}>{pubBtnName}</button>
+                        disabled={isInputInValid}>{pubBtnName} as you
+                </button>
             {:else}
                 <button class="btn"
                         disabled>
@@ -310,6 +316,11 @@
     align-items: flex-end;
     border-radius: 7px;
   }
+
+  .footer__operations {
+    gap: 1rem;
+  }
+
 </style>
 <!----------------------------------------------------------------->
 

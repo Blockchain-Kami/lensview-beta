@@ -103,7 +103,6 @@ option:hover {
 }
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
-//@import url('https://fonts.cdnfonts.com/css/mona-sans');
 @font-face {
     font-family: 'Mona Sans';
     src: url("lib/assets/Mona-Sans.woff2") format('woff2 supports variations'),
@@ -118,7 +117,7 @@ option:hover {
     transition: background 500ms ease-in-out, color 1000ms ease-in-out;
     --primary: #32F9FF;
     --secondary: #0D7377;
-    --special-font: roboto;
+    --special-font: 'mona-sans';
     --text: #fff;
     --text-accent: #a1a1a1;
     --text-opacity: 0.7099999785423279;
@@ -235,26 +234,27 @@ a {
 }
 
 .btn-alt {
+    --btn-alt-color: #1e4748;
     padding: 0.7em 1.2em;
     font-weight: var(--semi-medium-font-weight);
     color: #fff;
-    background: linear-gradient(#103035, #103035) padding-box, linear-gradient(244deg, #23F9FF 0%, #DBF1FF 100%);
     border-radius: 9px;
     border: 2px solid transparent;
+    background: linear-gradient(var(--btn-alt-color), var(--btn-alt-color)) padding-box, linear-gradient(244deg, #23F9FF 0%, #DBF1FF 100%);
 }
 
 .h1 {
-    font-family: 'Mona-Sans SemiBold Wide', sans-serif;
+    font-family: 'Mona-Sans SemiBold Wide', 'mona-sans', sans-serif;
     font-size: var(--large-font-size);
 }
 
 .h2 {
-    font-family: 'Mona-Sans SemiBold Wide', sans-serif;
+    font-family: 'Mona-Sans SemiBold Wide', 'mona-sans', sans-serif;
     font-size: var(--semi-large-font-size);
 }
 
 .h3 {
-    font-family: 'Mona-Sans SemiBold Wide', sans-serif;
+    font-family: 'Mona-Sans SemiBold Wide', 'mona-sans', sans-serif;
     font-size: var(--medium-font-size);
     font-weight: var(--semi-medium-font-weight);
 }

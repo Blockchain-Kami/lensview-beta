@@ -306,7 +306,9 @@
                     Join the LensView family and never miss out on any updates!
                 </div>
                 <div class="menu__join-box__btn">
-                    <button on:click="{() => showJoinForUpdatesModal = true}" class="btn-alt">
+                    <button on:click="{() => showJoinForUpdatesModal = true}"
+                            class="btn-alt"
+                            style="--btn-alt-color: #1e4748;">
                         Join For Updates
                     </button>
                 </div>

@@ -84,7 +84,7 @@
             </div>
         </a>
     {/await}
-    <div class="related-posts-head">
+    <div class="h2 related-posts-head">
         Related Posts
     </div>
     <div class="related-posts-body">
@@ -202,10 +202,8 @@
   }
 
   .related-posts-head {
-    font-size: var(--semi-large-font-size);
     position: sticky;
     top: 10rem;
-    font-family: var(--special-font);
     background: #0d171d;
     padding: 1.5rem;
     z-index: 10;
