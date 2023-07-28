@@ -187,7 +187,39 @@
 
     const openCreateLensHandleModal = () => {
         showCreateLensHandleModal = true;
-        showLoginModal = false;
+        dialog.close();
+    }
+
+    const checkIsSignedIn = () => {
+        let isSignedInVal;
+        const unsubscribe = isSignedIn.subscribe((val) => {
+                isSignedInVal = val;
+            }
+        );
+        unsubscribe();
+
+        return isSignedInVal;
+    }
+
+    const bodyMessage = () => {
+        if (!isConnected) {
+            return;
+        }
+
+        if (!checkIsSignedIn()) {
+            return
+        }
+
+        if (!isHandleCreated) {
+            return
+        }
+    }
+
+    $: if (isConnected !== isConnected ||
+        checkIsSignedIn() !== checkIsSignedIn() ||
+        isHandleCreated !== isHandleCreated
+    ) {
+        bodyMessage();
     }
 
 </script>
@@ -209,9 +241,10 @@
                 </button>
             </div>
         </div>
+
         {#if !isConnected}
             <div class="body">
-                Please connect your wallet to continue
+                "Please connect your wallet to continue"
             </div>
             <div class="line"></div>
             <div class="footer">
@@ -222,29 +255,43 @@
             </div>
         {:else}
             {#if !$isSignedIn}
-                <div class="body">
-                    Please sign-in with Lens
-                </div>
-                <div class="line"></div>
-                <div class="footer">
                     {#if !signingIn}
                         {#if isHandleCreated}
+                            <div class="body">
+                                "Please sign-in with Lens"
+                            </div>
+                            <div class="line"></div>
+                            <div class="footer">
                             <button on:click="{signInWithLens}"
                                     class="btn">
                                 Sign-In With Lens
                             </button>
+                            </div>
                         {:else}
+                            <div class="body">
+                                No Account found!
+                                <br>
+                                Please create lens handle to sign-up
+                            </div>
+                            <div class="line"></div>
+                            <div class="footer">
                             <button on:click="{openCreateLensHandleModal}" class="btn">
                                 Create Lens Handle
                             </button>
+                            </div>
                         {/if}
                     {:else}
+                        <div class="body">
+                            "Please sign-in with Lens"
+                        </div>
+                        <div class="line"></div>
+                        <div class="footer">
                         <button class="btn" disabled>
                             Signing In &nbsp;
                             <Loader/>
                         </button>
+                        </div>
                     {/if}
-                </div>
             {/if}
         {/if}
 

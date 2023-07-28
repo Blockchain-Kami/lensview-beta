@@ -8,6 +8,7 @@
   import {totalComments} from "../../services/totalComments";
   import {reloadCommentOfAPublication} from "../../services/reloadCommentOfAPublication";
   import {onMount} from "svelte";
+  import DOMPurify from 'dompurify';
 
 
   let commentPubId = $page.data.commentPubId;
@@ -33,7 +34,6 @@
       promiseOfGetComment = getCommentOfPublication(commentPubId, 50, selectedFilterType);
     })
   })
-
 </script>
 
 
@@ -161,7 +161,7 @@
               {getFormattedDate(comment?.createdAt)}
             </div>
             <div class="comment__body__content">
-              {comment?.metadata?.content}
+              {@html DOMPurify.sanitize(comment?.metadata?.content)}
             </div>
           </div>
         </div>

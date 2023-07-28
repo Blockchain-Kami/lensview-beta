@@ -90,67 +90,71 @@
     }
 
     let postThroughUser = async () => {
-        isPublishing = true;
-        let profile;
-        const unsub = userProfile.subscribe((value) => {
-            profile = value;
-        });
-        unsub();
-
-        console.log("profile: ", profile);
-
-        const contentURI = await uploadToIPFS(profile.id, userEnteredContent);
-        const createCommentRequest = {
-            profileId: profile.id,
-            publicationId: pubId,
-            contentURI,
-            collectModule: {
-                freeCollectModule: {followerOnly: true}
-            },
-            referenceModule: {
-                followerOnlyReferenceModule: false
-            }
-        };
-
-        try {
-            const signedResult = await signCreateCommentTypedData(createCommentRequest);
-            const typedData = signedResult.result.typedData;
-            const {v, r, s} = splitSignature(signedResult.signature);
-            const signer = await getSigner();
-
-            const contract = new ethers.Contract(
-                PUBLIC_LENS_HUB_CONTRACT_ADDRESS,
-                LENSHUB,
-                signer
-            );
-
-            const tx = await contract.commentWithSig({
-                profileId: typedData.value.profileId,
-                contentURI: typedData.value.contentURI,
-                profileIdPointed: typedData.value.profileIdPointed,
-                pubIdPointed: typedData.value.pubIdPointed,
-                collectModule: typedData.value.collectModule,
-                collectModuleInitData: typedData.value.collectModuleInitData,
-                referenceModule: typedData.value.referenceModule,
-                referenceModuleInitData: typedData.value.referenceModuleInitData,
-                referenceModuleData: typedData.value.referenceModuleData,
-                sig: {
-                    v,
-                    r,
-                    s,
-                    deadline: typedData.value.deadline
-                }
+        if (!checkIsSignedIn()) {
+            showLoginModal = true;
+        } else {
+            isPublishing = true;
+            let profile;
+            const unsub = userProfile.subscribe((value) => {
+                profile = value;
             });
+            unsub();
 
-            await tx.wait();
+            console.log("profile: ", profile);
 
-            console.log("successfully created Comment: tx hash", tx.hash);
-            console.log("successfully created Comment: tx hash", JSON.stringify(tx));
+            const contentURI = await uploadToIPFS(profile.id, userEnteredContent);
+            const createCommentRequest = {
+                profileId: profile.id,
+                publicationId: pubId,
+                contentURI,
+                collectModule: {
+                    freeCollectModule: {followerOnly: true}
+                },
+                referenceModule: {
+                    followerOnlyReferenceModule: false
+                }
+            };
 
-            await checkUntilPubAdded(tx.hash, Date.now());
-        } catch (err) {
-            console.log("error: ", err);
-            isPublishing = false;
+            try {
+                const signedResult = await signCreateCommentTypedData(createCommentRequest);
+                const typedData = signedResult.result.typedData;
+                const {v, r, s} = splitSignature(signedResult.signature);
+                const signer = await getSigner();
+
+                const contract = new ethers.Contract(
+                    PUBLIC_LENS_HUB_CONTRACT_ADDRESS,
+                    LENSHUB,
+                    signer
+                );
+
+                const tx = await contract.commentWithSig({
+                    profileId: typedData.value.profileId,
+                    contentURI: typedData.value.contentURI,
+                    profileIdPointed: typedData.value.profileIdPointed,
+                    pubIdPointed: typedData.value.pubIdPointed,
+                    collectModule: typedData.value.collectModule,
+                    collectModuleInitData: typedData.value.collectModuleInitData,
+                    referenceModule: typedData.value.referenceModule,
+                    referenceModuleInitData: typedData.value.referenceModuleInitData,
+                    referenceModuleData: typedData.value.referenceModuleData,
+                    sig: {
+                        v,
+                        r,
+                        s,
+                        deadline: typedData.value.deadline
+                    }
+                });
+
+                await tx.wait();
+
+                console.log("successfully created Comment: tx hash", tx.hash);
+                console.log("successfully created Comment: tx hash", JSON.stringify(tx));
+
+                await checkUntilPubAdded(tx.hash, Date.now());
+            } catch (err) {
+                console.log("error: ", err);
+                isPublishing = false;
+            }
         }
     };
 
@@ -176,6 +180,17 @@
             console.log("Post added to graph" + Date.now());
         }
     };
+
+    const checkIsSignedIn = () => {
+        let isSignedInVal;
+        const unsubscribe = isSignedIn.subscribe((val) => {
+                isSignedInVal = val;
+            }
+        );
+        unsubscribe();
+
+        return isSignedInVal;
+    }
 </script>
 
 
@@ -183,7 +198,11 @@
 <section>
     <div class="CenterRowFlex body">
         <div class="body__user-pic">
-            <img src="https://cdn.stamp.fyi/avatar/eth:0xbffce813b6c14d8659057dd3111d3f83cee271b8?s=300" alt="">
+            {#if $isSignedIn}
+                <img src={$userProfile?.picture?.original?.url} alt="">
+            {:else}
+                <img src="https://api.dicebear.com/6.x/bottts-neutral/svg?seed=Buster" alt="">
+            {/if}
         </div>
         <div class="body__input">
             <div contenteditable="true"
@@ -210,7 +229,7 @@
         <div class="footer__operations">
             {#if !isPublishing}
                 <button class="btn" on:click={postThroughUser}
-                        disabled={!$isSignedIn || isInputInValid}>{pubBtnName}</button>
+                        disabled={isInputInValid}>{pubBtnName}</button>
             {:else}
                 <button class="btn"
                         disabled>

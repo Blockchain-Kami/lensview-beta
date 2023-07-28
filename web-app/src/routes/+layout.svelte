@@ -238,53 +238,56 @@
                     <Icon d={menuOpen} color="#fff" size="2em"/>
                 </button>
             </div>
-            {#if !isConnected}
-                <div class="menu__connect-box">
-                    <div class="menu__connect-box__text">
-                        Hello Friend! Welcome to LensView.
+            {#if $isSignedIn}
+                <div class="CenterColumnFlex menu__user-box">
+                    <div class="menu__user-box__avatar">
+                        <img src={$userProfile.picture.original.url} alt="">
                     </div>
-                    <div class="menu__connect-box__btn">
-                        <button on:click="{connect}"
-                                class="btn">
-                            Connect Wallet
-                        </button>
+                    <div class="menu__user-box__handle">
+                        {$userProfile.handle}
                     </div>
+                    <!--{$userAddress.slice(0, 5)} ... {$userAddress.slice(-5)}-->
                 </div>
             {:else}
-                {#if !$isSignedIn}
+                {#if !isConnected}
                     <div class="menu__connect-box">
                         <div class="menu__connect-box__text">
                             Hello Friend! Welcome to LensView.
                         </div>
                         <div class="menu__connect-box__btn">
-                            {#if !signingIn }
-                                {#if isHandleCreated}
-                                    <button on:click="{signInWithLens}"
-                                            class="btn">Sign-In With Lens
-                                    </button>
-                                {:else}
-                                    <button on:click="{() => showCreateLensHandleModal = true}" class="btn">Create Lens
-                                        Handle
-                                    </button>
-                                {/if}
-                            {:else}
-                                <button class="btn" disabled>
-                                    Signing In &nbsp;
-                                    <Loader/>
-                                </button>
-                            {/if}
+                            <button on:click="{connect}"
+                                    class="btn">
+                                Connect Wallet
+                            </button>
                         </div>
                     </div>
                 {:else}
-                    <div class="CenterColumnFlex menu__user-box">
-                        <div class="menu__user-box__avatar">
-                            <img src={$userProfile.picture.original.url} alt="">
+                    {#if !$isSignedIn}
+                        <div class="menu__connect-box">
+                            <div class="menu__connect-box__text">
+                                Hello Friend! Welcome to LensView.
+                            </div>
+                            <div class="menu__connect-box__btn">
+                                {#if !signingIn }
+                                    {#if isHandleCreated}
+                                        <button on:click="{signInWithLens}"
+                                                class="btn">Sign-In With Lens
+                                        </button>
+                                    {:else}
+                                        <button on:click="{() => showCreateLensHandleModal = true}" class="btn">Create
+                                            Lens
+                                            Handle
+                                        </button>
+                                    {/if}
+                                {:else}
+                                    <button class="btn" disabled>
+                                        Signing In &nbsp;
+                                        <Loader/>
+                                    </button>
+                                {/if}
+                            </div>
                         </div>
-                        <div class="menu__user-box__handle">
-                            {$userProfile.handle}
-                        </div>
-                        <!--{$userAddress.slice(0, 5)} ... {$userAddress.slice(-5)}-->
-                    </div>
+                    {/if}
                 {/if}
             {/if}
             <div class="menu__options">
