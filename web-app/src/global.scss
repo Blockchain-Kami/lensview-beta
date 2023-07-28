@@ -155,10 +155,6 @@ input {
     color: var(--text);
 }
 
-input:focus {
-    border: 2px solid var(--primary);
-}
-
 /*********** Dialog ************/
 dialog {
     max-width: 50em;

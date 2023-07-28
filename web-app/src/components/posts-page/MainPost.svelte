@@ -33,9 +33,9 @@
                 <img src={imageUrl} alt="">
             </a>
         {/await}
-        <a href={`/posts/${mainPostPubId}`}
-           class="CenterColumnFlex main-post">
-            <div class="CenterColumnFlex main-post__content">
+        <div class="CenterColumnFlex main-post">
+            <a href={`/posts/${mainPostPubId}`}
+               class="CenterColumnFlex main-post__content">
                 <div class="CenterRowFlex main-post__content__top">
                     <a href={mainPostPub?.data?.publications?.items[0]?.metadata.content}
                        target="_blank"
@@ -81,8 +81,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </a>
+            </a>
+        </div>
     {/await}
     <div class="h2 related-posts-head">
         Related Posts

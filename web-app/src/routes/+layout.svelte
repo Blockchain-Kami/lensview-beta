@@ -354,6 +354,10 @@
     border-radius: 0.75rem 0 0 0.75rem;
   }
 
+  .nav__search input:focus {
+    border: 2px solid var(--primary);
+  }
+
   .nav__search button {
     height: 2.7rem;
     width: 2.7rem;

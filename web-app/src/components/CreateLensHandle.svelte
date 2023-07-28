@@ -370,6 +370,10 @@
     width: 60%;
   }
 
+  .body__input input:focus {
+    border: 2px solid var(--primary);
+  }
+
   .body__notes {
     display: flex;
     flex-direction: column;

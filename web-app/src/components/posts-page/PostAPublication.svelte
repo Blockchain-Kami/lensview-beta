@@ -2,24 +2,32 @@
     import Icon from "$lib/Icon.svelte";
     import {addPhoto} from "../../utils/frontend/appIcon";
     import {isSignedIn} from "../../services/signInStatus";
-    import uploadToIPFS from "../../utils/frontend/uploadToIPFS";
-    import signCreateCommentTypedData from "../../utils/frontend/signCreateCommentTypedData";
-    import {ethers, utils} from "ethers";
-    import LENSHUB from "../.././abi/lenshub.json";
-    import {getSigner} from "../../utils/web3";
-    import {PUBLIC_LENS_HUB_CONTRACT_ADDRESS} from "$env/static/public";
     import {userProfile} from "../../services/profile";
     import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
     import {page} from "$app/stores";
     import Loader from "$lib/Loader.svelte";
     import {reloadCommentOfAPublication} from "../../services/reloadCommentOfAPublication";
     import Login from "../Login.svelte";
+    import postAPublication from "../../utils/frontend/postAPublication";
 
     let userEnteredContent = "";
     let inputInvalidReason = "";
     const wordLimit = 5;
-    let isInputInValid = true;
+    let isInputInvalid = true;
     let showLoginModal = false;
+    let postPubId = $page.data.postPubId;
+    let isThisComment = postPubId !== undefined;
+    let pubId = isThisComment ? postPubId : $page.data.mainPostPubId;
+    let pubBtnName = isThisComment ? "Comment" : "Post";
+
+    $: if (postPubId !== $page.data.postPubId) {
+        postPubId = $page.data.postPubId;
+        isThisComment = postPubId !== undefined;
+        pubId = isThisComment ? postPubId : $page.data.mainPostPubId;
+        pubBtnName = isThisComment ? "Comment" : "Post";
+    }
+
+    let isPublishing = false;
 
     const checkIfInputIsInvalid = () => {
         const wordCount = calculateWordCount(userEnteredContent);
@@ -28,13 +36,13 @@
 
         if (userEnteredContent.length === 0) {
             inputInvalidReason = "";
-            isInputInValid = true;
+            isInputInvalid = true;
         } else if (wordCount > wordLimit) {
             inputInvalidReason = `Words cannot be more than ${wordLimit}`;
-            isInputInValid = true;
+            isInputInvalid = true;
         } else {
             inputInvalidReason = "";
-            isInputInValid = false;
+            isInputInvalid = false;
         }
     }
 
@@ -70,87 +78,16 @@
         checkIfInputIsInvalid(event);
     }
 
-
-    let postPubId = $page.data.postPubId;
-    let isThisComment = postPubId !== undefined;
-    let pubId = isThisComment ? postPubId : $page.data.mainPostPubId;
-    let pubBtnName = isThisComment ? "Comment" : "Post";
-
-    $: if (postPubId !== $page.data.postPubId) {
-        postPubId = $page.data.postPubId;
-        isThisComment = postPubId !== undefined;
-        pubId = isThisComment ? postPubId : $page.data.mainPostPubId;
-        pubBtnName = isThisComment ? "Comment" : "Post";
-    }
-
-    let isPublishing = false;
-
-    function splitSignature(signature) {
-        return utils.splitSignature(signature);
-    }
-
     let postThroughUser = async () => {
         if (!checkIsSignedIn()) {
             showLoginModal = true;
         } else {
             isPublishing = true;
-            let profile;
-            const unsub = userProfile.subscribe((value) => {
-                profile = value;
-            });
-            unsub();
-
-            console.log("profile: ", profile);
-
-            const contentURI = await uploadToIPFS(profile.id, userEnteredContent);
-            const createCommentRequest = {
-                profileId: profile.id,
-                publicationId: pubId,
-                contentURI,
-                collectModule: {
-                    freeCollectModule: {followerOnly: true}
-                },
-                referenceModule: {
-                    followerOnlyReferenceModule: false
-                }
-            };
-
             try {
-                const signedResult = await signCreateCommentTypedData(createCommentRequest);
-                const typedData = signedResult.result.typedData;
-                const {v, r, s} = splitSignature(signedResult.signature);
-                const signer = await getSigner();
-
-                const contract = new ethers.Contract(
-                    PUBLIC_LENS_HUB_CONTRACT_ADDRESS,
-                    LENSHUB,
-                    signer
-                );
-
-                const tx = await contract.commentWithSig({
-                    profileId: typedData.value.profileId,
-                    contentURI: typedData.value.contentURI,
-                    profileIdPointed: typedData.value.profileIdPointed,
-                    pubIdPointed: typedData.value.pubIdPointed,
-                    collectModule: typedData.value.collectModule,
-                    collectModuleInitData: typedData.value.collectModuleInitData,
-                    referenceModule: typedData.value.referenceModule,
-                    referenceModuleInitData: typedData.value.referenceModuleInitData,
-                    referenceModuleData: typedData.value.referenceModuleData,
-                    sig: {
-                        v,
-                        r,
-                        s,
-                        deadline: typedData.value.deadline
-                    }
+                const txPromise = postAPublication(userEnteredContent, pubId);
+                txPromise.then((tx) => {
+                    checkUntilPubAdded(tx?.hash, Date.now());
                 });
-
-                await tx.wait();
-
-                console.log("successfully created Comment: tx hash", tx.hash);
-                console.log("successfully created Comment: tx hash", JSON.stringify(tx));
-
-                await checkUntilPubAdded(tx.hash, Date.now());
             } catch (err) {
                 console.log("error: ", err);
                 isPublishing = false;
@@ -163,7 +100,6 @@
         /** If post is not added to lens within 25 seconds, then stop checking */
         if (Date.now() - startTime > 25000) {
             isPublishing = false;
-            userEnteredContent = "";
             alert("Error adding post");
             return;
         }
@@ -214,7 +150,7 @@
                  on:paste={handlePaste}
             >
             </div>
-            {#if isInputInValid}
+            {#if isInputInvalid}
                 <div class="body__input__err-msg">{inputInvalidReason}</div>
             {/if}
         </div>
@@ -227,14 +163,14 @@
             </div>
         </div>
         <div class="CenterRowFlex footer__operations">
-            <button disabled={isInputInValid}
+            <button disabled={isInputInvalid}
                     class="btn-alt"
                     style="--btn-alt-color: #1e4748;">
                 {pubBtnName} anonymously
             </button>
             {#if !isPublishing}
                 <button class="btn" on:click={postThroughUser}
-                        disabled={isInputInValid}>{pubBtnName} as you
+                        disabled={!isInputInvalid}>{pubBtnName} as you
                 </button>
             {:else}
                 <button class="btn"
@@ -297,7 +233,7 @@
     font-size: var(--small-font-size);
   }
 
-  .body__input:focus {
+  .body__input__box:focus {
     border: 2px solid var(--primary);
   }
 

@@ -4,20 +4,23 @@
     import {
         modeComment,
         moreHoriz,
+        plus,
         redirect,
         share,
         thumbDownAlt,
         thumbUpAlt,
-        trendingUp
+        trendingUp,
     } from "../utils/frontend/appIcon";
     import type {PageData} from "./$types";
     import getFormattedDate from "../utils/frontend/getFormattedDate";
     import {getCommentOfPublication} from "../utils/frontend/getCommentOfPublication";
     import getImageURLFromURLHash from "../utils/frontend/getImageURLFromURLHash";
+    import AddNewPost from "../components/main-page/AddNewPost.svelte";
 
 
     export let data: PageData;
     let isCardsMoreOpen = false;
+    let showAddNewPostModal = false;
 </script>
 
 
@@ -131,7 +134,13 @@
             </div>
         </a>
     {/each}
+    <button on:click={() => showAddNewPostModal = true}
+            class="CenterRowFlex add__post">
+        <Icon d={plus} color="#000" strokeWidth={0.8}/>
+    </button>
 </section>
+
+<AddNewPost bind:showAddNewPostModal/>
 
 <!---------------------------------------------------------------->
 
@@ -364,5 +373,15 @@
     animation: 1s shine linear infinite;
   }
 
+
+  .add__post {
+    position: fixed;
+    bottom: 5rem;
+    right: 3.5rem;
+    background: var(--btn-bg);
+    padding: 1.5rem;
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.25) 0 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  }
 </style>
 <!----------------------------------------------------------------->
