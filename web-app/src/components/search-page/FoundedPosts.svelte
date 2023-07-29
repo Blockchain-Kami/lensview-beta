@@ -1,7 +1,14 @@
 <script lang="ts">
 
     import Icon from "$lib/Icon.svelte";
-    import {redirect, thumbUpAlt, trendingUp} from "../../utils/frontend/appIcon";
+    import {modeComment, moreVert, redirect, thumbUpAlt, trendingUp} from "../../utils/frontend/appIcon";
+    import {page} from "$app/stores";
+    import {getPublicationByPubId} from "../../utils/frontend/getPublicationByPubId";
+    import getImageURLFromURLHash from "../../utils/frontend/getImageURLFromURLHash";
+    import getFormattedDate from "../../utils/frontend/getFormattedDate";
+    import {getCommentOfPublication} from "../../utils/frontend/getCommentOfPublication";
+
+    const foundedMainPostPubId = $page.data.foundedMainPostPubId;
 </script>
 
 
@@ -11,440 +18,107 @@
         This is what we found
     </div>
     <div class="body">
-        <div class="card">
-            <div class="card__img-box">
-                <div class="card__img-box__image"
-                     style="background-image: url('https://ipfs.io/ipfs/QmY1fHGmxAu6VeY4kFwEDA1HTzEGBgF9PzEfDm3rxoUqnt/0')">
-
-                </div>
-            </div>
-            <div class="card__body">
-                <div class="card__body__info">
-                    <a href="https://lensdump.com/i/0WY5Qs" target="_blank"
-                       class="CenterRowFlex card__body__info__url">
-                        <span class="CenterRowFlex card__body__info__url__icon">
-                            <Icon d={redirect}/>&nbsp;
-                        </span>
-                        <span class="card__body__info__url__val">
-                            https://lensdump.com/i/0WY5Qs
-                        </span>
-                    </a>
-                    <div class="CenterRowFlex card__body__info__details">
-                        <div class="CenterRowFlex card__body__info__details__likes">
-                            <Icon d={thumbUpAlt}/>&nbsp;
-                            40 Likes
-                        </div>
-                        <div class="dot"></div>
-                        <div class="CenterRowFlex card__body__info__details__added-by">
-                            <div class="card__body__info__details__added-by__label">
-                                Added by:
-                            </div>
-                            <div class="card__body__info__details__added-by__handle">
-                                naruto.lens
-                            </div>
-                        </div>
-                        <div class="dot"></div>
-                        <div class="card__body__info__details__time">
-                            2 hours ago
-                        </div>
+        {#each foundedMainPostPubId as mainPostPubId}
+            <div class="card">
+                {#await getPublicationByPubId(mainPostPubId)}
+                    <div class="card__img-box__loader">
                     </div>
-                </div>
-                <div class="CenterRowFlex card__body__post">
-                    <div class="card__body__post__pic">
-                        <img src="https://api.dicebear.com/6.x/bottts-neutral/svg?seed=Buster"
-                             alt="avatar">
+                    <div class="card__body">
+                        <div class="card__body__info__loader"></div>
+                        <div class="card__body__post__loader"></div>
                     </div>
-                    <div class="card__body__post__info">
-                        <div class="CenterRowFlex card__body__post__info__head">
-                            <div class="card__body__post__info__head__handle">
-                                naruto.lens
-                            </div>
-                            <div class="CenterRowFlex card__body__post__info__head__trend">
-                                <div class="CenterRowFlex card__body__post__info__head__trend__icon">
-                                    <Icon d={trendingUp}/>
-                                </div>
-                                <div class="card__body__post__info__head__trend__count">
-                                    4
+                {:then mainPostPub}
+                    {#await getImageURLFromURLHash(mainPostPub?.data?.publications?.items[0]?.metadata?.tags[0])}
+                        <div class="card__img-box__loader">
+                        </div>
+                    {:then imageUrl}
+                        <div class="card__img-box">
+                            <div class="card__img-box__image"
+                                 style="background-image: url({imageUrl})">
+                                <div class="CenterRowFlex card__img-box__image__posts-count">
+                                    <Icon d={modeComment}/>
+                                    {mainPostPub?.data?.publications?.items[0]?.stats?.totalAmountOfComments}
                                 </div>
                             </div>
-                            <div class="dot"></div>
-                            <div class="card__body__post__info__head__time">
-                                2 hours ago
-                            </div>
                         </div>
-                        <div class="card__body__post__info__content">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. A, ab delectus deserunt
-                            dignissimos eius, illo incidunt laboriosam maxime nemo quaerat quam reiciendis similique
-                            vitae, voluptatem voluptatum? Consequuntur nam repudiandae voluptas.
-                            ncidunt laboriosam maxime nemo quaerat quam reiciendis similique vitae, voluptatem
-                            voluptatum? Consequuntur nam repudiandae voluptas.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card__img-box">
-                <div class="card__img-box__image"
-                     style="background-image: url('https://ipfs.io/ipfs/QmY1fHGmxAu6VeY4kFwEDA1HTzEGBgF9PzEfDm3rxoUqnt/0')">
-
-                </div>
-            </div>
-            <div class="card__body">
-                <div class="card__body__info">
-                    <a href="https://lensdump.com/i/0WY5Qs" target="_blank"
-                       class="CenterRowFlex card__body__info__url">
-                        <span class="CenterRowFlex card__body__info__url__icon">
-                            <Icon d={redirect}/>&nbsp;
-                        </span>
-                        <span class="card__body__info__url__val">
-                            https://lensdump.com/i/0WY5Qs
-                        </span>
-                    </a>
-                    <div class="CenterRowFlex card__body__info__details">
-                        <div class="CenterRowFlex card__body__info__details__likes">
-                            <Icon d={thumbUpAlt}/>&nbsp;
-                            40 Likes
-                        </div>
-                        <div class="dot"></div>
-                        <div class="CenterRowFlex card__body__info__details__added-by">
-                            <div class="card__body__info__details__added-by__label">
-                                Added by:
-                            </div>
-                            <div class="card__body__info__details__added-by__handle">
-                                naruto.lens
-                            </div>
-                        </div>
-                        <div class="dot"></div>
-                        <div class="card__body__info__details__time">
-                            2 hours ago
-                        </div>
-                    </div>
-                </div>
-                <div class="CenterRowFlex card__body__post">
-                    <div class="card__body__post__pic">
-                        <img src="https://api.dicebear.com/6.x/bottts-neutral/svg?seed=Buster"
-                             alt="avatar">
-                    </div>
-                    <div class="card__body__post__info">
-                        <div class="CenterRowFlex card__body__post__info__head">
-                            <div class="card__body__post__info__head__handle">
-                                naruto.lens
-                            </div>
-                            <div class="CenterRowFlex card__body__post__info__head__trend">
-                                <div class="CenterRowFlex card__body__post__info__head__trend__icon">
-                                    <Icon d={trendingUp}/>
+                    {/await}
+                    <div class="card__body">
+                        <div class="card__body__info">
+                            <div class="CenterRowFlex card__body__info__head">
+                                <div class="CenterRowFlex card__body__info__head__url-icon">
+                                    <Icon d={redirect}/>&nbsp;
                                 </div>
-                                <div class="card__body__post__info__head__trend__count">
-                                    4
+                                <a href={mainPostPub?.data?.publications?.items[0]?.metadata.content} target="_blank"
+                                   class="card__body__info__head__url-val">
+                                    {mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(0, 60)}...
+                                </a>
+                                <button class="card__body__info__head__more">
+                                    <Icon d={moreVert}/>
+                                </button>
+                            </div>
+                            <div class="CenterRowFlex card__body__info__details">
+                                <div class="CenterRowFlex card__body__info__details__likes">
+                                    <Icon d={thumbUpAlt}/>&nbsp;
+                                    {mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes} Likes
+                                </div>
+                                <div class="dot"></div>
+                                <div class="CenterRowFlex card__body__info__details__added-by">
+                                    <div class="card__body__info__details__added-by__label">
+                                        Added by:
+                                    </div>
+                                    <div class="card__body__info__details__added-by__handle">
+                                        naruto.lens
+                                    </div>
+                                </div>
+                                <div class="dot"></div>
+                                <div class="card__body__info__details__time">
+                                    {getFormattedDate(mainPostPub?.data?.publications?.items[0]?.createdAt)}
                                 </div>
                             </div>
-                            <div class="dot"></div>
-                            <div class="card__body__post__info__head__time">
-                                2 hours ago
-                            </div>
                         </div>
-                        <div class="card__body__post__info__content">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. A, ab delectus deserunt
-                            dignissimos eius, illo incidunt laboriosam maxime nemo quaerat quam reiciendis similique
-                            vitae, voluptatem voluptatum? Consequuntur nam repudiandae voluptas.
-                            ncidunt laboriosam maxime nemo quaerat quam reiciendis similique vitae, voluptatem
-                            voluptatum? Consequuntur nam repudiandae voluptas.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card__img-box">
-                <div class="card__img-box__image"
-                     style="background-image: url('https://ipfs.io/ipfs/QmY1fHGmxAu6VeY4kFwEDA1HTzEGBgF9PzEfDm3rxoUqnt/0')">
-
-                </div>
-            </div>
-            <div class="card__body">
-                <div class="card__body__info">
-                    <a href="https://lensdump.com/i/0WY5Qs" target="_blank"
-                       class="CenterRowFlex card__body__info__url">
-                        <span class="CenterRowFlex card__body__info__url__icon">
-                            <Icon d={redirect}/>&nbsp;
-                        </span>
-                        <span class="card__body__info__url__val">
-                            https://lensdump.com/i/0WY5Qs
-                        </span>
-                    </a>
-                    <div class="CenterRowFlex card__body__info__details">
-                        <div class="CenterRowFlex card__body__info__details__likes">
-                            <Icon d={thumbUpAlt}/>&nbsp;
-                            40 Likes
-                        </div>
-                        <div class="dot"></div>
-                        <div class="CenterRowFlex card__body__info__details__added-by">
-                            <div class="card__body__info__details__added-by__label">
-                                Added by:
-                            </div>
-                            <div class="card__body__info__details__added-by__handle">
-                                naruto.lens
-                            </div>
-                        </div>
-                        <div class="dot"></div>
-                        <div class="card__body__info__details__time">
-                            2 hours ago
-                        </div>
-                    </div>
-                </div>
-                <div class="CenterRowFlex card__body__post">
-                    <div class="card__body__post__pic">
-                        <img src="https://api.dicebear.com/6.x/bottts-neutral/svg?seed=Buster"
-                             alt="avatar">
-                    </div>
-                    <div class="card__body__post__info">
-                        <div class="CenterRowFlex card__body__post__info__head">
-                            <div class="card__body__post__info__head__handle">
-                                naruto.lens
-                            </div>
-                            <div class="CenterRowFlex card__body__post__info__head__trend">
-                                <div class="CenterRowFlex card__body__post__info__head__trend__icon">
-                                    <Icon d={trendingUp}/>
+                        {#await getCommentOfPublication(mainPostPubId, 1)}
+                            <div class="CenterRowFlex card__body__post__loader"></div>
+                        {:then comment}
+                            <div class="CenterRowFlex card__body__post">
+                                <div class="card__body__post__pic">
+                                    <img src={comment?.data?.publications?.items[0]?.profile?.picture?.original?.url}
+                                         alt="avatar">
                                 </div>
-                                <div class="card__body__post__info__head__trend__count">
-                                    4
+                                <div class="card__body__post__info">
+                                    <div class="CenterRowFlex card__body__post__info__head">
+                                        <div class="card__body__post__info__head__handle">
+                                            {comment?.data?.publications?.items[0]?.profile?.handle}
+                                        </div>
+                                        <div class="CenterRowFlex card__body__post__info__head__trend">
+                                            <div class="CenterRowFlex card__body__post__info__head__trend__icon">
+                                                <Icon d={trendingUp}/>
+                                            </div>
+                                            <div class="card__body__post__info__head__trend__count">
+                                                {comment?.data?.publications?.items[0]?.stats?.totalUpvotes === undefined ? 0 : comment?.data?.publications?.items[0]?.stats?.totalUpvotes}
+                                            </div>
+                                        </div>
+                                        <div class="dot"></div>
+                                        <div class="card__body__post__info__head__time">
+                                            {getFormattedDate(comment?.data?.publications?.items[0]?.createdAt)}
+                                        </div>
+                                    </div>
+                                    <div class="card__body__post__info__content">
+                                        {comment?.data?.publications?.items[0]?.metadata?.content.substring(0, 310)}
+                                    </div>
                                 </div>
                             </div>
-                            <div class="dot"></div>
-                            <div class="card__body__post__info__head__time">
-                                2 hours ago
-                            </div>
-                        </div>
-                        <div class="card__body__post__info__content">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. A, ab delectus deserunt
-                            dignissimos eius, illo incidunt laboriosam maxime nemo quaerat quam reiciendis similique
-                            vitae, voluptatem voluptatum? Consequuntur nam repudiandae voluptas.
-                            ncidunt laboriosam maxime nemo quaerat quam reiciendis similique vitae, voluptatem
-                            voluptatum? Consequuntur nam repudiandae voluptas.
-                        </div>
+                        {/await}
                     </div>
-                </div>
+                {/await}
             </div>
-        </div>
-        <div class="card">
-            <div class="card__img-box">
-                <div class="card__img-box__image"
-                     style="background-image: url('https://ipfs.io/ipfs/QmY1fHGmxAu6VeY4kFwEDA1HTzEGBgF9PzEfDm3rxoUqnt/0')">
-
-                </div>
-            </div>
-            <div class="card__body">
-                <div class="card__body__info">
-                    <a href="https://lensdump.com/i/0WY5Qs" target="_blank"
-                       class="CenterRowFlex card__body__info__url">
-                        <span class="CenterRowFlex card__body__info__url__icon">
-                            <Icon d={redirect}/>&nbsp;
-                        </span>
-                        <span class="card__body__info__url__val">
-                            https://lensdump.com/i/0WY5Qs
-                        </span>
-                    </a>
-                    <div class="CenterRowFlex card__body__info__details">
-                        <div class="CenterRowFlex card__body__info__details__likes">
-                            <Icon d={thumbUpAlt}/>&nbsp;
-                            40 Likes
-                        </div>
-                        <div class="dot"></div>
-                        <div class="CenterRowFlex card__body__info__details__added-by">
-                            <div class="card__body__info__details__added-by__label">
-                                Added by:
-                            </div>
-                            <div class="card__body__info__details__added-by__handle">
-                                naruto.lens
-                            </div>
-                        </div>
-                        <div class="dot"></div>
-                        <div class="card__body__info__details__time">
-                            2 hours ago
-                        </div>
-                    </div>
-                </div>
-                <div class="CenterRowFlex card__body__post">
-                    <div class="card__body__post__pic">
-                        <img src="https://api.dicebear.com/6.x/bottts-neutral/svg?seed=Buster"
-                             alt="avatar">
-                    </div>
-                    <div class="card__body__post__info">
-                        <div class="CenterRowFlex card__body__post__info__head">
-                            <div class="card__body__post__info__head__handle">
-                                naruto.lens
-                            </div>
-                            <div class="CenterRowFlex card__body__post__info__head__trend">
-                                <div class="CenterRowFlex card__body__post__info__head__trend__icon">
-                                    <Icon d={trendingUp}/>
-                                </div>
-                                <div class="card__body__post__info__head__trend__count">
-                                    4
-                                </div>
-                            </div>
-                            <div class="dot"></div>
-                            <div class="card__body__post__info__head__time">
-                                2 hours ago
-                            </div>
-                        </div>
-                        <div class="card__body__post__info__content">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. A, ab delectus deserunt
-                            dignissimos eius, illo incidunt laboriosam maxime nemo quaerat quam reiciendis similique
-                            vitae, voluptatem voluptatum? Consequuntur nam repudiandae voluptas.
-                            ncidunt laboriosam maxime nemo quaerat quam reiciendis similique vitae, voluptatem
-                            voluptatum? Consequuntur nam repudiandae voluptas.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card__img-box">
-                <div class="card__img-box__image"
-                     style="background-image: url('https://ipfs.io/ipfs/QmY1fHGmxAu6VeY4kFwEDA1HTzEGBgF9PzEfDm3rxoUqnt/0')">
-
-                </div>
-            </div>
-            <div class="card__body">
-                <div class="card__body__info">
-                    <a href="https://lensdump.com/i/0WY5Qs" target="_blank"
-                       class="CenterRowFlex card__body__info__url">
-                        <span class="CenterRowFlex card__body__info__url__icon">
-                            <Icon d={redirect}/>&nbsp;
-                        </span>
-                        <span class="card__body__info__url__val">
-                            https://lensdump.com/i/0WY5Qs
-                        </span>
-                    </a>
-                    <div class="CenterRowFlex card__body__info__details">
-                        <div class="CenterRowFlex card__body__info__details__likes">
-                            <Icon d={thumbUpAlt}/>&nbsp;
-                            40 Likes
-                        </div>
-                        <div class="dot"></div>
-                        <div class="CenterRowFlex card__body__info__details__added-by">
-                            <div class="card__body__info__details__added-by__label">
-                                Added by:
-                            </div>
-                            <div class="card__body__info__details__added-by__handle">
-                                naruto.lens
-                            </div>
-                        </div>
-                        <div class="dot"></div>
-                        <div class="card__body__info__details__time">
-                            2 hours ago
-                        </div>
-                    </div>
-                </div>
-                <div class="CenterRowFlex card__body__post">
-                    <div class="card__body__post__pic">
-                        <img src="https://api.dicebear.com/6.x/bottts-neutral/svg?seed=Buster"
-                             alt="avatar">
-                    </div>
-                    <div class="card__body__post__info">
-                        <div class="CenterRowFlex card__body__post__info__head">
-                            <div class="card__body__post__info__head__handle">
-                                naruto.lens
-                            </div>
-                            <div class="CenterRowFlex card__body__post__info__head__trend">
-                                <div class="CenterRowFlex card__body__post__info__head__trend__icon">
-                                    <Icon d={trendingUp}/>
-                                </div>
-                                <div class="card__body__post__info__head__trend__count">
-                                    4
-                                </div>
-                            </div>
-                            <div class="dot"></div>
-                            <div class="card__body__post__info__head__time">
-                                2 hours ago
-                            </div>
-                        </div>
-                        <div class="card__body__post__info__content">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. A, ab delectus deserunt
-                            dignissimos eius, illo incidunt laboriosam maxime nemo quaerat quam reiciendis similique
-                            vitae, voluptatem voluptatum? Consequuntur nam repudiandae voluptas.
-                            ncidunt laboriosam maxime nemo quaerat quam reiciendis similique vitae, voluptatem
-                            voluptatum? Consequuntur nam repudiandae voluptas.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card__img-box">
-                <div class="card__img-box__image"
-                     style="background-image: url('https://ipfs.io/ipfs/QmY1fHGmxAu6VeY4kFwEDA1HTzEGBgF9PzEfDm3rxoUqnt/0')">
-
-                </div>
-            </div>
-            <div class="card__body">
-                <div class="card__body__info">
-                    <a href="https://lensdump.com/i/0WY5Qs" target="_blank"
-                       class="CenterRowFlex card__body__info__url">
-                        <span class="CenterRowFlex card__body__info__url__icon">
-                            <Icon d={redirect}/>&nbsp;
-                        </span>
-                        <span class="card__body__info__url__val">
-                            https://lensdump.com/i/0WY5Qs
-                        </span>
-                    </a>
-                    <div class="CenterRowFlex card__body__info__details">
-                        <div class="CenterRowFlex card__body__info__details__likes">
-                            <Icon d={thumbUpAlt}/>&nbsp;
-                            40 Likes
-                        </div>
-                        <div class="dot"></div>
-                        <div class="CenterRowFlex card__body__info__details__added-by">
-                            <div class="card__body__info__details__added-by__label">
-                                Added by:
-                            </div>
-                            <div class="card__body__info__details__added-by__handle">
-                                naruto.lens
-                            </div>
-                        </div>
-                        <div class="dot"></div>
-                        <div class="card__body__info__details__time">
-                            2 hours ago
-                        </div>
-                    </div>
-                </div>
-                <div class="CenterRowFlex card__body__post">
-                    <div class="card__body__post__pic">
-                        <img src="https://api.dicebear.com/6.x/bottts-neutral/svg?seed=Buster"
-                             alt="avatar">
-                    </div>
-                    <div class="card__body__post__info">
-                        <div class="CenterRowFlex card__body__post__info__head">
-                            <div class="card__body__post__info__head__handle">
-                                naruto.lens
-                            </div>
-                            <div class="CenterRowFlex card__body__post__info__head__trend">
-                                <div class="CenterRowFlex card__body__post__info__head__trend__icon">
-                                    <Icon d={trendingUp}/>
-                                </div>
-                                <div class="card__body__post__info__head__trend__count">
-                                    4
-                                </div>
-                            </div>
-                            <div class="dot"></div>
-                            <div class="card__body__post__info__head__time">
-                                2 hours ago
-                            </div>
-                        </div>
-                        <div class="card__body__post__info__content">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. A, ab delectus deserunt
-                            dignissimos eius, illo incidunt laboriosam maxime nemo quaerat quam reiciendis similique
-                            vitae, voluptatem voluptatum? Consequuntur nam repudiandae voluptas.
-                            ncidunt laboriosam maxime nemo quaerat quam reiciendis similique vitae, voluptatem
-                            voluptatum? Consequuntur nam repudiandae voluptas.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {/each}
+    </div>
+    <div class="footer">
+        Couldn’t find what you were looking for? Maybe you can try a different keyword?
     </div>
 </section>
+
+<!---------------------------------------------------------------->
 
 <!---------------------------------------------------------------->
 
@@ -474,12 +148,18 @@
   }
 
   .card__img-box {
-    width: 55rem;
+    width: 33rem;
+  }
+
+  .card__img-box__loader {
+    width: 33rem;
+    height: 15rem;
+    border-radius: 10px;
   }
 
   .card__img-box__image {
     width: 100%;
-    height: 15rem;
+    height: 15.5rem;
     background-color: #000;
     overflow: hidden;
     padding-bottom: 50%; /* Adjust this value to control the aspect ratio */
@@ -501,28 +181,50 @@
     }
   }
 
+  .card__img-box__image__posts-count {
+    background: #0E3439;
+    padding: 0.5rem 0.7rem;
+    gap: 0.5rem;
+    border-radius: 5.8px;
+    opacity: 85%;
+    width: 4.5rem;
+    margin: 0.5rem;
+  }
+
   .card__body {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    height: 15rem;
+    height: 15.5rem;
     padding: 1rem;
+    width: 100%;
+    min-width: 33rem;
+    max-width: 85rem;
   }
 
   .card__body__info {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.8rem;
   }
 
-  .card__body__info__url {
+  .card__body__info__loader {
+    width: 100%;
+    height: 5rem;
+    border-radius: 10px;
+  }
+
+  .card__body__info__head {
     justify-content: flex-start;
-
   }
 
-  .card__body__info__url__val {
+  .card__body__info__head__url-val {
     font-weight: var(--medium-font-weight);
     font-size: 17px;
+  }
+
+  .card__body__info__head__more {
+    margin-left: auto;
   }
 
   .card__body__info__details {
@@ -550,6 +252,13 @@
 
   .card__body__post {
     gap: 1rem;
+    justify-content: flex-start;
+  }
+
+  .card__body__post__loader {
+    width: 100%;
+    height: 10rem;
+    border-radius: 10px;
   }
 
   .card__body__post__pic {
@@ -610,6 +319,20 @@
   .card__body__post__info__head__time {
     font-size: var(--small-font-size);
     color: var(--text-accent);
+  }
+
+  @keyframes shine {
+    to {
+      background-position-x: -200%;
+    }
+  }
+
+  .card__img-box__loader,
+  .card__body__info__loader,
+  .card__body__post__loader {
+    background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);
+    background-size: 200% 100%;
+    animation: 1s shine linear infinite;
   }
 </style>
 <!----------------------------------------------------------------->
