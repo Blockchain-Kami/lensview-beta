@@ -14,30 +14,30 @@
     $: if (dialog && showAddNewPostModal) dialog.showModal();
 
     let userEnteredContent = "";
-    let inputInvalidReason = "";
+    let contentInvalidReason = "";
     const wordLimit = 5;
     let isContentInvalid = true;
     let showLoginModal = false;
     let pubId = "0x8c68-0x0c";
     let userEnteredUrl = "";
     let isUrlInvalid = false;
-
+    let urlInvalidReason = "";
 
     let isPublishing = false;
 
-    const checkIfInputIsInvalid = () => {
+    const checkIfContentIsInvalid = () => {
         const wordCount = calculateWordCount(userEnteredContent);
 
         console.log("wordCount: ", wordCount);
 
         if (userEnteredContent.length === 0) {
-            inputInvalidReason = "";
+            contentInvalidReason = "";
             isContentInvalid = true;
         } else if (wordCount > wordLimit) {
-            inputInvalidReason = `Words cannot be more than ${wordLimit}`;
+            contentInvalidReason = `Words cannot be more than ${wordLimit}`;
             isContentInvalid = true;
         } else {
-            inputInvalidReason = "";
+            contentInvalidReason = "";
             isContentInvalid = false;
         }
     }
@@ -72,7 +72,7 @@
         selection.deleteFromDocument();
         selection.getRangeAt(0).insertNode(document.createTextNode(pastedText));
 
-        checkIfInputIsInvalid();
+        checkIfContentIsInvalid();
     }
 
     let postThroughUser = async () => {
@@ -127,13 +127,14 @@
     const checkUrlIsValid = () => {
         if (userEnteredUrl.length === 0) {
             isUrlInvalid = true;
+            // urlInvalidReason = "URL cannot be empty";
             return;
         }
 
-        const hasSpaces = / /g;
-        const containsSpaces = hasSpaces.test(userEnteredUrl);
-        if (containsSpaces) {
+        const indexOfSpace = userEnteredUrl.indexOf(' ');
+        if (indexOfSpace !== -1) {
             isUrlInvalid = true;
+            urlInvalidReason = "URL cannot contain spaces";
             return;
         }
 
@@ -168,6 +169,11 @@
                     <input bind:value={userEnteredUrl} on:input={checkUrlIsValid}
                            type="text">
                 </div>
+                {#if isUrlInvalid}
+                    <div class="body__url__input__err-msg">
+                        {urlInvalidReason}
+                    </div>
+                {/if}
             </div>
             <div class="input-box body__content">
                 <div class="input-box__label body__content__label">
@@ -179,12 +185,12 @@
                          class="body__content__input__box"
                          id="editableDiv"
                          bind:innerHTML={userEnteredContent}
-                         on:input={checkIfInputIsInvalid}
+                         on:input={checkIfContentIsInvalid}
                          on:paste={handlePaste}
                     >
                     </div>
                     {#if isContentInvalid}
-                        <div class="body__content__input__err-msg">{inputInvalidReason}</div>
+                        <div class="body__content__input__err-msg">{contentInvalidReason}</div>
                     {/if}
                 </div>
             </div>
@@ -251,6 +257,11 @@
 
   .body__url__input input:focus {
     border: 2px solid var(--primary);
+  }
+
+  .body__url__input__err-msg {
+    color: red;
+    font-size: var(--small-font-size);
   }
 
   .body__content__input {
