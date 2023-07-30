@@ -1,35 +1,32 @@
 <script lang="ts">
     import AddNewPost from "../main-page/AddNewPost.svelte";
+    import JoinForUpdates from "./JoinForUpdates.svelte";
 
     let showAddNewPostModal = false;
+    let showJoinForUpdatesModal = false;
 </script>
 
 
 <!----------------------------- HTML ----------------------------->
 <section>
-    <div class="content">
-        <div class="h3 content__err-msg">
-            Oops, we might not have what you are looking for right now.
-        </div>
-        <div class="h2 content__next-step-msg">
-            <div class="content__next-step-msg__1">
-                But you can always start a new discussion by
-            </div>
-            <div class="content__next-step-msg__2">
-                creating one!
-            </div>
-        </div>
+    <div class="h2 content">
+        The <span style="color: var(--primary)">omnipresent comment section</span> to discuss, fact-check, and share
+        your views about the web page
     </div>
-    <div class="create-btn">
+    <div class="btn-box">
         <button on:click={() => showAddNewPostModal = true}
                 class="btn">
             Create a thread
         </button>
+        <button on:click={() => showJoinForUpdatesModal = true}
+                class="btn-alt">
+            Join for updates
+        </button>
     </div>
-
 </section>
 
 <AddNewPost title="Create a new thread" bind:showAddNewPostModal/>
+<JoinForUpdates bind:showJoinForUpdatesModal/>
 
 <!---------------------------------------------------------------->
 
@@ -48,24 +45,17 @@
   }
 
   .content {
+    line-height: 1.5;
+    max-width: 72rem;
+  }
+
+  .btn-box {
     display: flex;
-    flex-direction: column;
-    gap: 3rem;
-  }
-
-  .content__next-step-msg {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-
-  .content__next-step-msg__2 {
-    color: var(--primary);
-  }
-
-  .create-btn {
-    margin-top: auto;
     margin-left: auto;
+    flex-direction: column;
+    justify-content: space-evenly;
+    min-width: fit-content;
+    gap: 1.5rem;
   }
 </style>
 <!----------------------------------------------------------------->
