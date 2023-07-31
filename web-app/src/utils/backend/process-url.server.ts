@@ -50,10 +50,12 @@ export const preprocessURL = (url) => {
         // path is without query parameter
         const path = origin + processedURL['pathname'];
         const query = processedURL['searchParams'];
+        const domain = hostname.substring(0, hostname.indexOf('.'));
 
         return [
             cleanURL.toString().trim(),
             hostname.trim(),
+            domain.trim(),
             path.trim(),
             query
         ];

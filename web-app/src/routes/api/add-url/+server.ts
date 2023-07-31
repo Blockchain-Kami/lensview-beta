@@ -31,16 +31,18 @@ export async function POST(requestEvent) {
         });
     }
 
-    const [url, hostname, path, query] = preprocessURL(urlString);
+    const [url, hostname, domain, path, query] = preprocessURL(urlString);
     const hashedURL = createHash(url);
     const hashedHostname = createHash(hostname);
     const hashedPath = createHash(path);
+
 
     const urlObj = {
         url,
         hashedURL,
         hostname,
         hashedHostname,
+        domain,
         path,
         hashedPath,
         query,
@@ -48,11 +50,14 @@ export async function POST(requestEvent) {
         "isScreenshotComment": false
     };
 
+    console.log("URL Object", urlObj);
+
     const imageUrlObj = {
         url,
         hashedURL,
         hostname,
         hashedHostname,
+        domain,
         path,
         hashedPath,
         query,

@@ -2,7 +2,7 @@ import checkTxHashBeenIndexed from "../checkTxHashBeenIndexed";
 
 export const checkUntilMainPostAdded = async (txHash, startTime) => {
     /** If link is not added to lensview within 60 seconds, then stop checking */
-    if (Date.now() - startTime > 200000) {
+    if (Date.now() - startTime > 2000000) {
         console.log("Error indexing main post, time exceeded 25 seconds");
         return false
     }

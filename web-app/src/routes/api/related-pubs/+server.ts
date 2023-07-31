@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import {PUBLIC_LENS_API_URL} from "$env/static/public";
-import getPosts from "../../../graphql/getPosts";
+import relatedPubs from "../../../graphql/relatedPubs";
 import {createHash} from "../../../utils/backend/sha1.server";
 import {APP_LENS_ID} from "$env/static/private";
 import {preprocessURL} from "../../../utils/backend/process-url.server";
@@ -27,7 +27,7 @@ export async function POST(requestEvent) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            query: getPosts,
+            query: relatedPubs,
             variables: {
                 hashedURL: tag,
                 lensId: APP_LENS_ID
@@ -43,5 +43,11 @@ export async function POST(requestEvent) {
             message: "No related publications found",
         })
     }
-    return json(relatedPosts);
+    const relatedPubArray = [];
+
+    for (let i = 0; i < relatedPosts.items.length; i++) {
+        relatedPubArray.push(relatedPosts.items[i]['id']);
+    }
+
+    return json(relatedPubArray);
 }
