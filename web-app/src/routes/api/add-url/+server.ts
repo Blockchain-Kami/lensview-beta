@@ -1,12 +1,12 @@
-import {error, json} from "@sveltejs/kit";
+import { error, json } from "@sveltejs/kit";
 import { createHash } from "../../../utils/backend/sha1.server";
 import { signInWithLens } from "../../../utils/backend/lens-sign-in.server";
 import { preprocessURL } from "../../../utils/backend/process-url.server";
 import savePost from "../../../utils/backend/add-url.server";
-import {imageQueue} from "../../../jobs/imageQueue";
-import {isInputTypeUrl} from "../../../utils/backend/check-input-type.server";
-import {checkUntilMainPostAdded} from "../../../utils/backend/check-until-post-added.server";
-import {getParentPost} from "../../../utils/backend/get-parent-url.server";
+import { imageQueue } from "../../../jobs/imageQueue";
+import { isInputTypeUrl } from "../../../utils/backend/check-input-type.server";
+import { checkUntilMainPostAdded } from "../../../utils/backend/check-until-post-added.server";
+import { getParentPost } from "../../../utils/backend/get-parent-url.server";
 import addComment from "../../../utils/backend/add-comment.server";
 
 
@@ -21,6 +21,7 @@ export async function POST(requestEvent) {
     const enteredURL = urlRequest['enteredURL'];
     const lensHandle = urlRequest['lensHandle'];
     const postContent = urlRequest['postContent'];
+    // user entered tags
 
     const urlString = isInputTypeUrl(enteredURL);
 
@@ -81,7 +82,7 @@ export async function POST(requestEvent) {
                 successCode: 1,
                 message: "Link is already added to LensView."
             })
-        } else if(postContent) {
+        } else if (postContent) {
             const commentAdded = await addComment(urlObj, publicationExists['parent_post_ID'], client, signer, profile);
 
             if (commentAdded) {
