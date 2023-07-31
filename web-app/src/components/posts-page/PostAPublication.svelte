@@ -170,7 +170,7 @@
             </button>
             {#if !isPublishing}
                 <button class="btn" on:click={postThroughUser}
-                        disabled={!isInputInvalid}>{pubBtnName} as you
+                        disabled={isInputInvalid}>{pubBtnName} as you
                 </button>
             {:else}
                 <button class="btn"
