@@ -1,47 +1,56 @@
-import {PUBLIC_LENS_API_URL} from "$env/static/public";
-import {json} from '@sveltejs/kit';
-import getComments from "../../../graphql/getComments";
+import {json, error} from '@sveltejs/kit';
 import {getParentPost} from "../../../utils/backend/get-parent-url.server";
+import {preprocessURL} from "../../../utils/backend/process-url.server";
+import {createHash} from "../../../utils/backend/sha1.server";
+import {isInputTypeUrl} from "../../../utils/backend/check-input-type.server";
 
-export async function GET(request) {
+export async function POST(requestEvent) {
+    const {request} = requestEvent;
+    const urlRequest = await request.json();
 
-    try {
-        const hashedURL = request.url.searchParams.get('hashedURL')
+    const Url = isInputTypeUrl(urlRequest);
+
+    if (Url) {
+        const [url, , ,] = preprocessURL(Url);
+
+        if (!url) {
+            throw error(400, {
+                message: "Error processing the URL"
+            });
+        }
+        const hashedURL = createHash(url);
         const res = await getParentPost(hashedURL);
-        const parentPostID = res['parent_post_ID'];
-        const sourceURL = res['source_url'];
 
-        const comments = await fetch(PUBLIC_LENS_API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                query: getComments,
-                variables: {
-                    publicationId: parentPostID
-                },
-            }),
-        });
+        if (res['parent_post_ID']) {
+            const parentPostID = res['parent_post_ID'];
 
-        const commentsJSON = await comments.json();
-        const commentItems = commentsJSON.data.publications.items;
+            const response = {
+                parentPublicationID: parentPostID,
+                isURL: true,
+                message: "Parent publication ID was fetched successfully"
+            };
+            return json(response);
+        } else if (res['status'] == 404) {
+            const response = {
+                parentPublicationID: null,
+                isURL: true,
+                message: "Could not find any publications on Lens Protocol"
+            };
+            return json(response);
 
-        const responseComments = {
-            status_code: 200,
-            URL: sourceURL,
-            parentPublicationID: parentPostID,
-            items: commentItems
+        } else {
+            throw error(500, {
+                parentPublicationID: null,
+                isURL: true,
+                message: "Could not connect to Lens Protocol."
+            });
+        }
+    } else {
+        const response = {
+            parentPublicationID: null,
+            isURL: false,
+            message: "Incorrect URL format or user entered a tag"
         };
-
-
-        return json(responseComments)
-
-    } catch (err) {
-        console.log(err);
-        return json({
-            status_code: 404,
-            error: `Could not fetch comments for Publication ID, hashed URl: ${request.url.searchParams.get('hashedURL')}`
-        });
+        return json(response);
     }
 }

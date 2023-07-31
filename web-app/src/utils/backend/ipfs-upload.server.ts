@@ -4,6 +4,7 @@
 import { PUBLIC_WEB3STORAGE_TOKEN } from "$env/static/public";
 import { File, Web3Storage } from "web3.storage";
 import { v4 as uuidv4 } from "uuid";
+import {createTags} from "./create-tags.server";
 
 
 function getAccessToken() {
@@ -33,9 +34,13 @@ function makeFileObjects(urlObj) {
     // //Getting profile of the connected user and saving it to "profile" variable
     // getUserProfile(address);
 
+    const URLtags = [urlObj['hashedURL'], urlObj['hostname'], urlObj['hashedHostname'], urlObj['hashedPath']];
+
+    const tags = createTags(URLtags, urlObj['query']);
+
     const metaData = {
         version: '2.0.0',
-        content:`LensView post: ${urlObj['url']}`,
+        content:urlObj['url'],
         description: urlObj['url'],
         name: `Posting on test-net through lensView`,
         external_url: urlObj['url'],
@@ -45,7 +50,7 @@ function makeFileObjects(urlObj) {
         attributes: [],
         locale: 'en-US',
         appId: 'LensView',
-        tags: [urlObj['hashedURL'], urlObj['origin'], urlObj['hashedOrigin'], urlObj['hashedPath']]
+        tags: tags
     }
 
     try {
@@ -79,7 +84,7 @@ const uploadToIPFS = async (urlObj) => {
 
     } catch (e) {
         console.log("Failed to upload file to IPFS");
-        console.log(e)
+        return null;
     }
 
 }
