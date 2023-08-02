@@ -6,6 +6,7 @@
     import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
     import Login from "../Login.svelte";
     import postAPublication from "../../utils/frontend/postAPublication";
+    import {userProfile} from "../../services/profile";
 
     export let showAddNewPostModal: boolean;
 
@@ -19,7 +20,6 @@
     const wordLimit = 5;
     let isContentInvalid = true;
     let showLoginModal = false;
-    let pubId = "0x8c68-0x0c";
     let userEnteredUrl = "";
     let isUrlInvalid = false;
     let urlInvalidReason = "";
@@ -82,6 +82,7 @@
         } else {
             isPublishing = true;
             try {
+                const pubId = await addUrlAndGetPubId();
                 const txPromise = postAPublication(userEnteredContent, pubId);
                 txPromise.then((tx) => {
                     checkUntilPubAdded(tx?.hash, Date.now());
@@ -142,6 +143,68 @@
         isUrlInvalid = false;
         return;
     }
+
+    const addUrlAndGetPubId = async () => {
+
+        let handle;
+        const unsub = userProfile.subscribe((val) => {
+            handle = val?.handle;
+        });
+        unsub();
+        try {
+            const response = await fetch('/api/add-url-or-post-comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "enteredURL": userEnteredUrl,
+                    "lensHandle": handle,
+                    "postContent": ""
+                })
+            }).then((res) => {
+                if (res.ok)
+                    return res.json();
+                else
+                    throw new Error(res.statusText);
+            });
+
+            return response?.parentPubId;
+        } catch (error) {
+            console.log('error', error);
+            throw error;
+        }
+    }
+
+    const postAnonymously = async () => {
+        //TODO: Add notification to user that post will be posted
+        console.log("successfully requested");
+        try {
+            await fetch('/api/add-url-or-post-comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "enteredURL": userEnteredUrl,
+                    "lensHandle": null,
+                    "postContent": userEnteredContent
+                })
+            }).then((res) => {
+                if (res.ok)
+                    return res.json();
+                else
+                    throw new Error(res.statusText);
+            });
+
+            console.log("successfully posted anonymously");
+            dialog.close();
+
+        } catch (error) {
+            console.log('error', error);
+            throw error;
+        }
+    }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -199,7 +262,8 @@
         </div>
         <div class="line"></div>
         <div class="CenterRowFlex footer">
-            <button disabled={isContentInvalid}
+            <button on:click={postAnonymously}
+                    disabled={isContentInvalid}
                     class="btn-alt"
                     style="--btn-alt-color: #1e4748;">
                 Post anonymously
