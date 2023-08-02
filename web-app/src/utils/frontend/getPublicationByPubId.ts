@@ -3,7 +3,6 @@ import baseClient from './baseClient';
 
 export const getPublicationByPubId = async (publicationId: string) => {
 	try {
-		console.log('publicationId' + publicationId);
 		const client = baseClient;
 		return await client
 			.query(getPublication, {

@@ -2,21 +2,46 @@
 
     import Icon from "$lib/Icon.svelte";
     import {modeComment, moreVert, redirect, thumbUpAlt, trendingUp} from "../../utils/frontend/appIcon";
-    import {page} from "$app/stores";
     import {getPublicationByPubId} from "../../utils/frontend/getPublicationByPubId";
     import getImageURLFromURLHash from "../../utils/frontend/getImageURLFromURLHash";
     import getFormattedDate from "../../utils/frontend/getFormattedDate";
     import {getCommentOfPublication} from "../../utils/frontend/getCommentOfPublication";
+    import {searchInputDetails} from "../../services/searchInputDetails";
+    import type {SearchInputDetailsModel} from "../../models/searchInputDetails.model";
 
-    const foundedMainPostPubId = $page.data.foundedMainPostPubId;
+    let foundedMainPostPubId: string[] = [];
+
+    searchInputDetails.subscribe(async (details: SearchInputDetailsModel) => {
+        const userEnteredUrlOrKeywords = details.userEnteredUrlOrKeywords;
+
+        try {
+            foundedMainPostPubId = await fetch('/api/related-pubs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userEnteredUrlOrKeywords)
+            }).then((res) => {
+                if (res.ok)
+                    return res.json();
+                else
+                    throw new Error(res.statusText);
+            });
+        } catch (error) {
+            console.log('error', error);
+            foundedMainPostPubId = [];
+        }
+    });
 </script>
 
 
 <!----------------------------- HTML ----------------------------->
 <section>
-    <div class="h2 heading">
-        This is what we found
-    </div>
+    {#if foundedMainPostPubId.length !== 0}
+        <div class="h2 heading">
+            This is what we found
+        </div>
+    {/if}
     <div class="body">
         {#each foundedMainPostPubId as mainPostPubId}
             <div class="card">

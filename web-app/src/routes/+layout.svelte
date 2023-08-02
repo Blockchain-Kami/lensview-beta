@@ -3,9 +3,8 @@
     import {userAddress} from "../services/userAddress";
     import {userAuthentication} from "../utils/frontend/authenticate";
     import {goto} from "$app/navigation";
-    import createHash from "../utils/frontend/createURLHash";
     import {isSignedIn} from "../services/signInStatus";
-    import {userEnteredURL} from "../services/userEnteredURL";
+    import {searchInputDetails} from "../services/searchInputDetails";
     import getDefaultUserProfile from "../utils/frontend/getDefaultUserProfile";
     import CreateLensHandle from "../components/CreateLensHandle.svelte";
     import {userProfile} from "../services/profile";
@@ -17,16 +16,18 @@
     import DualToneIcon from "$lib/DualToneIcon.svelte";
     import Loader from "$lib/Loader.svelte";
     import JoinForUpdates from "../components/main-page/JoinForUpdates.svelte";
+    import type {FetchedInfoForSearchedInputModel} from "../models/fetchedInfoForSearchedInput.model";
 
     let isConnected = false;
     let signingIn = false;
-    let userEnteredLink = "";
+    let userEnteredUrlOrKeywords = "";
     let showCreateLensHandleModal = false;
     let showJoinForUpdatesModal = false;
     let isHandleCreated = true;
     let isThisConnectWalletAccountChange = false;
     let chainIDToBeUsed: string;
     let menuActive = false;
+    let isSearching = false;
 
 
   onMount(async () => {
@@ -186,10 +187,37 @@
     }
   };
 
-    const redirectToPostsPage = async () => {
-        userEnteredURL.set(userEnteredLink);
-        const hash = await createHash(userEnteredLink);
-        goto(`/posts/${hash}`);
+    const redirectToPostsOrSearchPage = async () => {
+        console.log("Redirecting to posts or search page");
+        isSearching = true;
+
+        try {
+            const fetchedInfoForSearchedInput: FetchedInfoForSearchedInputModel = await fetch('api/is-url-valid-get-parent-pubId', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userEnteredUrlOrKeywords)
+            }).then(res => res.json());
+
+            isSearching = false;
+
+            if (fetchedInfoForSearchedInput.parentPublicationID === null) {
+                console.log("No parent publication found for searched input");
+
+                searchInputDetails.setSearchInputDetails({
+                    "userEnteredUrlOrKeywords": userEnteredUrlOrKeywords,
+                    "isInputUrl": fetchedInfoForSearchedInput.isURL
+                })
+                await goto(`/search`);
+            } else {
+                await goto(`/posts/${fetchedInfoForSearchedInput.parentPublicationID}`);
+            }
+        } catch (error) {
+            console.log("Error fetching info for searched input");
+            isSearching = false;
+            //TODO: Ask user to try again or visit the website after sometime
+        }
     };
 </script>
 
@@ -201,28 +229,36 @@
             <Icon d={menu} color="#fff" size="2em"/>
         </button>
     </div>
-    <div class="nav__search">
-        <input bind:value={userEnteredLink}
+    <form on:submit|preventDefault={() => redirectToPostsOrSearchPage()}
+          class="nav__search">
+        <input bind:value={userEnteredUrlOrKeywords}
                type="text"
                placeholder="Enter a URL or keywords"
                class="nav__search__input"
         />
-        {#if userEnteredLink.length === 0}
-            <button on:click={redirectToPostsPage}
-                    class="btn"
+        {#if userEnteredUrlOrKeywords.length === 0}
+            <button class="btn"
                     style="cursor: initial;"
+                    disabled
             >
                 <Icon d={search} size="1.9em" color="#fff"/>
             </button>
         {:else}
-            <button on:click={redirectToPostsPage}
-                    class="btn"
-            >
-                <Icon d={search} size="1.9em"/>
-            </button>
+            {#if !isSearching}
+                <button on:click={() => redirectToPostsOrSearchPage()}
+                        class="btn"
+                >
+                    <Icon d={search} size="1.9em"/>
+                </button>
+            {:else}
+                <button disabled
+                        class="btn"
+                >
+                    <Loader/>
+                </button>
+            {/if}
         {/if}
-
-    </div>
+    </form>
     <div class="nav__logo">
         <a href="/"><img alt="Untitled-presentation-3"
                          src="https://i.postimg.cc/3JG1b9Cv/Lensview-Logo.png"

@@ -12,12 +12,8 @@
             Oops, we might not have what you are looking for right now.
         </div>
         <div class="h2 content__next-step-msg">
-            <div class="content__next-step-msg__1">
-                But you can always start a new discussion by
-            </div>
-            <div class="content__next-step-msg__2">
-                creating one!
-            </div>
+            But you can always start a new discussion or share your views by
+            <span style="color: var(--primary);">creating one!</span>
         </div>
     </div>
     <div class="create-btn">
@@ -54,13 +50,8 @@
   }
 
   .content__next-step-msg {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-
-  .content__next-step-msg__2 {
-    color: var(--primary);
+    line-height: 1.3;
+    max-width: 72rem;
   }
 
   .create-btn {

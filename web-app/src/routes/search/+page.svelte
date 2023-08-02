@@ -1,12 +1,15 @@
 <script lang="ts">
     import FoundedPosts from "../../components/search-page/FoundedPosts.svelte";
     import CreateANewThread from "../../components/search-page/CreateANewThread.svelte";
+    import {searchInputDetails} from "../../services/searchInputDetails";
 </script>
 
 
 <!----------------------------- HTML ----------------------------->
 <section>
-    <CreateANewThread/>
+    {#if $searchInputDetails.isInputUrl}
+        <CreateANewThread/>
+    {/if}
     <FoundedPosts/>
 </section>
 

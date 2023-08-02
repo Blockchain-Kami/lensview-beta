@@ -7,7 +7,6 @@ export const getCommentOfPublication = async (
 	filterBy = 'mostLiked'
 ) => {
 	try {
-		console.log('publicationId' + publicationId);
 		let request;
 		if (filterBy === 'mostLiked') {
 			request = {

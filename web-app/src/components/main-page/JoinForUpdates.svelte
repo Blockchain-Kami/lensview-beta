@@ -54,12 +54,6 @@
     justify-content: center;
   }
 
-  .head__close-btn {
-    border-radius: 3px;
-    background: var(--btn-bg) fixed;
-    padding: 0.2rem;
-  }
-
   .body {
     gap: 2rem;
   }
