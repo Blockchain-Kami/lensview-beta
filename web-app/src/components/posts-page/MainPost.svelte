@@ -8,22 +8,33 @@
     import getImageURLFromURLHash from "../../utils/frontend/getImageURLFromURLHash";
     import {totalPosts} from "../../services/totalPosts";
 
-    const mainPostPubId = $page.data.mainPostPubId;
+    let mainPostPubId = $page.data.mainPostPubId;
+    let promiseOfGetMainPost = getPublicationByPubId(mainPostPubId);
+
+    $: if (mainPostPubId !== $page.data.mainPostPubId) {
+        mainPostPubId = $page.data.mainPostPubId;
+        promiseOfGetMainPost = getPublicationByPubId(mainPostPubId);
+    }
 
     const getTotalPosts = (fetchedTotalPosts: number) => {
         totalPosts.setTotalPosts(fetchedTotalPosts);
         return fetchedTotalPosts;
     }
-
 </script>
 
 
 <!----------------------------- HTML ----------------------------->
 
 <section>
-    {#await getPublicationByPubId(mainPostPubId)}
+    {#await promiseOfGetMainPost}
         <div class="main-post">
             <div class="main-post__content__loader"></div>
+        </div>
+        <div class="h2 related-posts-head">
+            Related Posts
+        </div>
+        <div class="related-posts-body">
+            <RelatedPost userEnteredUrl={""}/>
         </div>
     {:then mainPostPub}
         {#await getImageURLFromURLHash(mainPostPub?.data?.publications?.items[0]?.metadata?.tags[0])}
@@ -83,13 +94,13 @@
                 </div>
             </a>
         </div>
+        <div class="h2 related-posts-head">
+            Related Posts
+        </div>
+        <div class="related-posts-body">
+            <RelatedPost userEnteredUrl={mainPostPub?.data?.publications?.items[0]?.metadata.content}/>
+        </div>
     {/await}
-    <div class="h2 related-posts-head">
-        Related Posts
-    </div>
-    <div class="related-posts-body">
-        <RelatedPost/>
-    </div>
 </section>
 
 <!---------------------------------------------------------------->

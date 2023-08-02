@@ -12,7 +12,6 @@
 
 
   let commentPubId = $page.data.commentPubId;
-  const mainPostPubId = $page.data.mainPostPubId;
   let isCommentMoreOpen = false;
   let selectedFilterType = "mostLiked";
 
@@ -135,7 +134,7 @@
                     {comment?.stats?.totalDownvotes}
                   </div>
                 </div>
-                <a href={`/posts/${mainPostPubId}/${comment?.id}`}
+                <a href={`/posts/${$page.data.mainPostPubId}/${comment?.id}`}
                    class="CenterRowFlex comment__body__top__right__posts-count">
                   <Icon d={modeComment}/>
                   {comment?.stats?.totalAmountOfComments}
