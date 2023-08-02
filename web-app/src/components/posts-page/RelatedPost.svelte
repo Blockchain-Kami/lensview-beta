@@ -49,8 +49,8 @@
 
 <!----------------------------- HTML ----------------------------->
 
-<section>
-    {#if foundedMainPostPubId.length > 1}
+{#if foundedMainPostPubId.length > 1}
+    <section>
         {#each foundedMainPostPubId as mainPostPubId}
             {#if mainPostPubId !== $page.data.mainPostPubId}
                 <a href={`/posts/${mainPostPubId}`}
@@ -155,7 +155,7 @@
                                             {comment?.data?.publications?.items[0]?.profile?.handle}
                                         </div>
                                         <div class="CenterRowFlex card__post__info__head__trend">
-                                            <div class="card__post__info__head__trend__icon">
+                                            <div class="CenterRowFlex card__post__info__head__trend__icon">
                                                 <Icon d={trendingUp}/>
                                             </div>
                                             <div class="card__post__info__head__trend__count">
@@ -180,13 +180,13 @@
                 </a>
             {/if}
         {/each}
-    {:else}
-        <div class="CenterRowFlex">
-            No related posts found
-        </div>
-    {/if}
+    </section>
+{:else}
+    <div class="CenterRowFlex" style="margin: 1rem 0">
+        No related posts found
+    </div>
+{/if}
 
-</section>
 
 <!---------------------------------------------------------------->
 

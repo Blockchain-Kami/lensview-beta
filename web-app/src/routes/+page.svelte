@@ -114,7 +114,7 @@
                                         {data?.data?.publications?.items[0]?.profile?.handle}
                                     </div>
                                     <div class="CenterRowFlex card__post__info__head__trend">
-                                        <div class="card__post__info__head__trend__icon">
+                                        <div class="CenterRowFlex card__post__info__head__trend__icon">
                                             <Icon d={trendingUp}/>
                                         </div>
                                         <div class="card__post__info__head__trend__count">
