@@ -1,12 +1,16 @@
 <script lang="ts">
     import Icon from "$lib/Icon.svelte";
-    import {close} from "../../utils/frontend/appIcon";
+    import {close, cross, flightTakeoff, tick} from "../../utils/frontend/appIcon";
     import Loader from "$lib/Loader.svelte";
     import {isSignedIn} from "../../services/signInStatus";
     import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
     import Login from "../Login.svelte";
     import postAPublication from "../../utils/frontend/postAPublication";
     import {userProfile} from "../../services/profile";
+    import {getNotificationsContext} from 'svelte-notifications';
+    import {goto} from "$app/navigation";
+
+    const {addNotification} = getNotificationsContext();
 
     export let showAddNewPostModal: boolean;
 
@@ -177,10 +181,18 @@
     }
 
     const postAnonymously = async () => {
-        //TODO: Add notification to user that post will be posted
         console.log("successfully requested");
+        addNotification({
+            position: 'top-right',
+            heading: 'Successfully Requested',
+            description: 'Your post will be posted anonymously',
+            type: flightTakeoff,
+            removeAfter: 7000,
+        });
+        dialog.close();
+
         try {
-            await fetch('/api/add-url-or-post-comment', {
+            const addedPostDetails = await fetch('/api/add-url-or-post-comment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -198,10 +210,29 @@
             });
 
             console.log("successfully posted anonymously");
-            dialog.close();
+            userEnteredContent = "";
+            userEnteredUrl = "";
 
+            addNotification({
+                position: 'top-right',
+                heading: 'Successfully Posted',
+                description: 'Your post was successfully posted anonymously. Click on "View Post" to see your post',
+                type: tick,
+                removeAfter: 12000,
+                ctaBtnName: "View Post",
+                ctaFunction: () => {
+                    goto(`/posts/${addedPostDetails?.parentPubId}`);
+                }
+            });
         } catch (error) {
             console.log('error', error);
+            addNotification({
+                position: 'top-right',
+                heading: 'Failed To Post',
+                description: 'Your post was not posted anonymously. Please try again',
+                type: cross,
+                removeAfter: 20000
+            });
             throw error;
         }
     }

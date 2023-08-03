@@ -200,7 +200,13 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(userEnteredUrlOrKeywords)
-            }).then(res => res.json());
+            }).then(res => {
+                if (res.ok) {
+                    return res.json();
+                } else {
+                    throw new Error("Error fetching info for searched input");
+                }
+            });
 
             isSearching = false;
 
