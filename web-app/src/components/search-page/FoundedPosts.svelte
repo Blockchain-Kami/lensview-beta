@@ -44,7 +44,8 @@
     {/if}
     <div class="body">
         {#each foundedMainPostPubId as mainPostPubId}
-            <div class="card">
+            <a href={"/posts/" + mainPostPubId}
+               class="card">
                 {#await getPublicationByPubId(mainPostPubId)}
                     <div class="card__img-box__loader">
                     </div>
@@ -135,7 +136,7 @@
                         {/await}
                     </div>
                 {/await}
-            </div>
+            </a>
         {/each}
     </div>
     <div class="footer">
