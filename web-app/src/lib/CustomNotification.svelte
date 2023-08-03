@@ -75,7 +75,7 @@
   .body__icon {
     border-radius: 50%;
     background: #18393a;
-    padding: 0.6rem;
+    padding: 0.7rem;
   }
 
   .footer button {

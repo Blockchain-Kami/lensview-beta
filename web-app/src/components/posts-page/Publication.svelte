@@ -1,12 +1,14 @@
 <script lang="ts">
-  import {modeComment, moreVert, share, thumbDownAlt, thumbUpAlt} from "../../utils/frontend/appIcon";
+  import {copy, modeComment, moreVert, share, thumbDownAlt, thumbUpAlt} from "../../utils/frontend/appIcon";
   import Icon from "$lib/Icon.svelte";
   import {page} from "$app/stores";
   import getFormattedDate from "../../utils/frontend/getFormattedDate";
   import {getCommentOfPublication} from "../../utils/frontend/getCommentOfPublication";
   import {totalComments} from "../../services/totalComments";
+  import {getNotificationsContext} from 'svelte-notifications';
 
 
+  const {addNotification} = getNotificationsContext();
   let postPubId = $page.data.postPubId;
   let isPostMoreOpen = false;
   let promiseOfGetPost = getCommentOfPublication(postPubId, 1, "post");
@@ -19,6 +21,20 @@
   const getTotalComments = (fetchedTotalComments: number) => {
     totalComments.setTotalComments(fetchedTotalComments);
     return fetchedTotalComments;
+  }
+
+  const sharePost = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    navigator.clipboard.writeText(window.location.origin +
+            "/posts/" + $page.data.mainPostPubId + "/" + $page.data.postPubId);
+    addNotification({
+      position: 'top-right',
+      heading: 'Copied to clipboard',
+      description: 'The link to this post has been copied to your clipboard.',
+      type: copy,
+      removeAfter: 5000,
+    });
   }
 </script>
 
@@ -60,6 +76,10 @@
             </div>
           </div>
           <div class="CenterRowFlex comment__body__top__right">
+            <button on:click={() => sharePost(event)}
+                    class="CenterRowFlex comment__body__top__right__share">
+              <Icon d={share}/>
+            </button>
             <div class="CenterRowFlex comment__body__top__right__reaction">
               <div class="CenterRowFlex comment__body__top__right__reaction__val">
                 <Icon d={thumbUpAlt}/>
@@ -76,7 +96,7 @@
               {getTotalComments(postPub?.data?.publications?.items[0]?.stats?.totalAmountOfComments)}
             </div>
             <div class="comment__body__top__right__more">
-              <button on:click={() => {isPostMoreOpen = !isPostMoreOpen}}>
+              <button>
                 <Icon d={moreVert} size="1.65em"/>
               </button>
               {#if isPostMoreOpen}
@@ -179,6 +199,12 @@
     width: 15rem;
     height: 2rem;
     border-radius: 5px;
+  }
+
+  .comment__body__top__right__share {
+    border-radius: 50%;
+    background: #18393a;
+    padding: 0.5rem;
   }
 
   .comment__body__top__right__reaction {

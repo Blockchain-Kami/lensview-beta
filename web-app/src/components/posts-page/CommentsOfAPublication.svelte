@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {modeComment, moreVert, share, thumbDownAlt, thumbUpAlt} from "../../utils/frontend/appIcon";
+  import {copy, modeComment, moreVert, share, thumbDownAlt, thumbUpAlt} from "../../utils/frontend/appIcon";
   import Icon from "$lib/Icon.svelte";
   import {page} from "$app/stores";
   import {getCommentOfPublication} from "../../utils/frontend/getCommentOfPublication";
@@ -9,10 +9,16 @@
   import {reloadCommentOfAPublication} from "../../services/reloadCommentOfAPublication";
   import {onMount} from "svelte";
   import DOMPurify from 'dompurify';
+  import {getNotificationsContext} from 'svelte-notifications';
 
 
+  type CommentMoreStatus = {
+    [key: string]: boolean;
+  };
+
+  const {addNotification} = getNotificationsContext();
   let commentPubId = $page.data.commentPubId;
-  let isCommentMoreOpen = false;
+  let isCommentMoreOpen: CommentMoreStatus = {};
   let selectedFilterType = "mostLiked";
 
   let promiseOfGetComment = getCommentOfPublication(commentPubId, 50);
@@ -33,6 +39,25 @@
       promiseOfGetComment = getCommentOfPublication(commentPubId, 50, selectedFilterType);
     })
   })
+
+  const openCloseCommentMore = (event: Event, id: string) => {
+    event.preventDefault();
+    event.stopPropagation();
+    isCommentMoreOpen[id] = !isCommentMoreOpen[id];
+  }
+
+  const sharePost = (event: Event, id: string) => {
+    event.preventDefault();
+    event.stopPropagation();
+    navigator.clipboard.writeText(window.location.origin + "/posts/" + $page.data.mainPostPubId + "/" + id);
+    addNotification({
+      position: 'top-right',
+      heading: 'Copied to clipboard',
+      description: 'The link to this post has been copied to your clipboard.',
+      type: copy,
+      removeAfter: 5000,
+    });
+  }
 </script>
 
 
@@ -104,7 +129,8 @@
       </div>
     {:then commentsData}
       {#each commentsData?.data?.publications?.items as comment}
-        <div class="comment">
+        <a href={`/posts/${$page.data.mainPostPubId}/${comment?.id}`}
+           class="comment">
           <div class="comment__pic">
             <img src={comment?.profile?.picture?.original?.url}
                  alt="avatar">
@@ -134,23 +160,23 @@
                     {comment?.stats?.totalDownvotes}
                   </div>
                 </div>
-                <a href={`/posts/${$page.data.mainPostPubId}/${comment?.id}`}
-                   class="CenterRowFlex comment__body__top__right__posts-count">
+                <div class="CenterRowFlex comment__body__top__right__posts-count">
                   <Icon d={modeComment}/>
                   {comment?.stats?.totalAmountOfComments}
-                </a>
+                </div>
                 <div class="comment__body__top__right__more">
-                  <button on:click={() => {isCommentMoreOpen = !isCommentMoreOpen}}>
+                  <button on:click={() => openCloseCommentMore(event, comment?.id)}>
                     <Icon d={moreVert} size="1.65em"/>
                   </button>
-                  {#if isCommentMoreOpen}
+                  {#if isCommentMoreOpen[comment?.id]}
                     <div class="CenterColumnFlex comment__body__more">
-                      <div class="CenterRowFlex comment__body__more__share">
+                      <button on:click={() => sharePost(event, comment?.id)}
+                              class="CenterRowFlex comment__body__more__share">
                         <div class="CenterRowFlex comment__body__more__share__icon">
                           <Icon d={share} size="1.2em"/>
                         </div>
                         Share
-                      </div>
+                      </button>
                     </div>
                   {/if}
                 </div>
@@ -163,7 +189,7 @@
               {@html DOMPurify.sanitize(comment?.metadata?.content)}
             </div>
           </div>
-        </div>
+        </a>
       {/each}
     {/await}
   </div>

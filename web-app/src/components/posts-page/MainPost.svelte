@@ -1,13 +1,16 @@
 <script lang="ts">
     import Icon from "$lib/Icon.svelte";
-    import {modeComment, moreVert, redirect, thumbDownAlt, thumbUpAlt} from "../../utils/frontend/appIcon";
+    import {copy, modeComment, moreVert, redirect, share, thumbDownAlt, thumbUpAlt} from "../../utils/frontend/appIcon";
     import RelatedPost from "./RelatedPost.svelte";
     import {page} from '$app/stores';
     import {getPublicationByPubId} from "../../utils/frontend/getPublicationByPubId";
     import getFormattedDate from "../../utils/frontend/getFormattedDate";
     import getImageURLFromURLHash from "../../utils/frontend/getImageURLFromURLHash";
     import {totalPosts} from "../../services/totalPosts";
+    import {getNotificationsContext} from 'svelte-notifications';
 
+
+    const {addNotification} = getNotificationsContext();
     let mainPostPubId = $page.data.mainPostPubId;
     let promiseOfGetMainPost = getPublicationByPubId(mainPostPubId);
 
@@ -19,6 +22,19 @@
     const getTotalPosts = (fetchedTotalPosts: number) => {
         totalPosts.setTotalPosts(fetchedTotalPosts);
         return fetchedTotalPosts;
+    }
+
+    const sharePost = (event, id) => {
+        event.preventDefault();
+        event.stopPropagation();
+        navigator.clipboard.writeText(window.location.origin + "/posts/" + id);
+        addNotification({
+            position: 'top-right',
+            heading: 'Copied to clipboard',
+            description: 'The link to this post has been copied to your clipboard.',
+            type: copy,
+            removeAfter: 5000,
+        });
     }
 </script>
 
@@ -83,6 +99,10 @@
                         <Icon d={modeComment}/>
                         {getTotalPosts(mainPostPub?.data?.publications?.items[0]?.stats?.totalAmountOfComments)} &nbsp;Posts
                     </div>
+                    <button on:click={() => sharePost(event,$page.data.mainPostPubId)}
+                            class="CenterRowFlex main-post__content__bottom__share">
+                        <Icon d={share}/>
+                    </button>
                     <div class="CenterRowFlex main-post__content__bottom__added-by">
                         <div class="main-post__content__bottom__added-by__label">
                             Added by:
@@ -194,6 +214,12 @@
     gap: 0.5rem;
     border-radius: 5.8px;
     opacity: 85%;
+  }
+
+  .main-post__content__bottom__share {
+    border-radius: 50%;
+    background: #18393a;
+    padding: 0.5rem;
   }
 
   .main-post__content__bottom__added-by {

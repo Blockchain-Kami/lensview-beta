@@ -2,6 +2,7 @@
 
     import Icon from "$lib/Icon.svelte";
     import {
+        copy,
         modeComment,
         moreHoriz,
         plus,
@@ -9,7 +10,7 @@
         share,
         thumbDownAlt,
         thumbUpAlt,
-        trendingUp,
+        trendingUp
     } from "../utils/frontend/appIcon";
     import type {PageData} from "./$types";
     import getFormattedDate from "../utils/frontend/getFormattedDate";
@@ -17,11 +18,36 @@
     import getImageURLFromURLHash from "../utils/frontend/getImageURLFromURLHash";
     import AddNewPost from "../components/main-page/AddNewPost.svelte";
     import IntroPrompt from "../components/main-page/IntroPrompt.svelte";
+    import {getNotificationsContext} from 'svelte-notifications';
+
+    type CardsMoreStatus = {
+        [key: string]: boolean;
+    };
 
 
+    const {addNotification} = getNotificationsContext();
     export let data: PageData;
-    let isCardsMoreOpen = false;
+    let isCardsMoreOpen: CardsMoreStatus = {};
     let showAddNewPostModal = false;
+
+    const openCloseCardsMore = (event: Event, id: string) => {
+        event.preventDefault();
+        event.stopPropagation();
+        isCardsMoreOpen[id] = !isCardsMoreOpen[id];
+    }
+
+    const sharePost = (event: Event, id: string) => {
+        event.preventDefault();
+        event.stopPropagation();
+        navigator.clipboard.writeText(window.location.origin + "/posts/" + id);
+        addNotification({
+            position: 'top-right',
+            heading: 'Copied to clipboard',
+            description: 'The link to this post has been copied to your clipboard.',
+            type: copy,
+            removeAfter: 5000,
+        });
+    }
 </script>
 
 
@@ -45,20 +71,20 @@
                                     <Icon d={modeComment}/>
                                     {item?.stats?.totalAmountOfComments}
                                 </div>
-                                <div class="card__image__layer1__more-icon">
-                                    <button on:click={() => {isCardsMoreOpen = !isCardsMoreOpen}}>
+                                <button class="card__image__layer1__more-icon"
+                                        on:click={() => openCloseCardsMore(event, item?.id)}>
                                         <Icon d={moreHoriz}/>
-                                    </button>
-                                </div>
+                                </button>
                             </div>
-                            {#if isCardsMoreOpen}
+                            {#if isCardsMoreOpen[item?.id]}
                                 <div class="CenterColumnFlex card__image__more">
-                                    <div class="CenterRowFlex card__image__more__share">
+                                    <button on:click={() => sharePost(event, item?.id)}
+                                            class="CenterRowFlex card__image__more__share">
                                         <div class="CenterRowFlex card__image__more__share__icon">
                                             <Icon d={share} size="1.2em"/>
                                         </div>
                                         Share
-                                    </div>
+                                    </button>
                                 </div>
                             {/if}
                         </div>
