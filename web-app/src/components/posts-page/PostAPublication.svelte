@@ -1,6 +1,6 @@
 <script lang="ts">
     import Icon from "$lib/Icon.svelte";
-    import {addPhoto} from "../../utils/frontend/appIcon";
+    import {addPhoto, cross, flightTakeoff, tick} from "../../utils/frontend/appIcon";
     import {isSignedIn} from "../../services/signInStatus";
     import {userProfile} from "../../services/profile";
     import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
@@ -9,7 +9,10 @@
     import {reloadCommentOfAPublication} from "../../services/reloadCommentOfAPublication";
     import Login from "../Login.svelte";
     import postAPublication from "../../utils/frontend/postAPublication";
+    import {goto} from "$app/navigation";
+    import {getNotificationsContext} from 'svelte-notifications';
 
+    const {addNotification} = getNotificationsContext();
     let userEnteredContent = "";
     let inputInvalidReason = "";
     const wordLimit = 5;
@@ -127,6 +130,72 @@
 
         return isSignedInVal;
     }
+
+    const postAnonymously = async () => {
+        const mainPostPubId = $page.data.mainPostPubId;
+        const postPubId = $page.data.postPubId;
+
+        console.log("successfully requested");
+        addNotification({
+            position: 'top-right',
+            heading: 'Successfully Requested',
+            description: `Your ${pubBtnName.toLowerCase()} will be ${pubBtnName.toLowerCase()}ed anonymously`,
+            type: flightTakeoff,
+            removeAfter: 7000,
+        });
+
+        try {
+            await fetch('/api/comment-anonymously', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "pubId": $page.data.postPubId !== undefined ? $page.data.postPubId : $page.data.mainPostPubId,
+                    "commentContent": userEnteredContent
+                })
+            }).then((res) => {
+                if (res.ok)
+                    return res.json();
+                else
+                    throw new Error(res.statusText);
+            });
+
+            console.log("successfully posted anonymously");
+            userEnteredContent = "";
+
+            addNotification({
+                position: 'top-right',
+                heading: `Successfully ${pubBtnName}ed`,
+                description: `Your ${pubBtnName.toLowerCase()} was successfully ${pubBtnName.toLowerCase()}ed anonymously. Click on "View ${pubBtnName}" to see your ${pubBtnName.toLowerCase()}`,
+                type: tick,
+                removeAfter: 12000,
+                ctaBtnName: `View ${pubBtnName}`,
+                ctaFunction: () => {
+                    if (mainPostPubId === $page.data.mainPostPubId &&
+                        postPubId === $page.data.postPubId) {
+                        //TODO: Make this better
+                        window.location.reload();
+                    } else {
+                        if (postPubId === undefined)
+                            goto(`/posts/${mainPostPubId}`);
+                        else
+                            goto(`/posts/${mainPostPubId}/${postPubId}`);
+                    }
+                }
+            });
+        } catch (error) {
+            console.log('error', error);
+            addNotification({
+                position: 'top-right',
+                heading: `Failed To ${pubBtnName}`,
+                description: `Your ${pubBtnName.toLowerCase()} was not ${pubBtnName.toLowerCase()}ed anonymously. Please try again`,
+                type: cross,
+                removeAfter: 20000
+            });
+            throw error;
+        }
+    }
 </script>
 
 
@@ -163,7 +232,8 @@
             </div>
         </div>
         <div class="CenterRowFlex footer__operations">
-            <button disabled={isInputInvalid}
+            <button on:click={postAnonymously}
+                    disabled={isInputInvalid}
                     class="btn-alt"
                     style="--btn-alt-color: #1e4748;">
                 {pubBtnName} anonymously

@@ -8,6 +8,7 @@
     import {getCommentOfPublication} from "../../utils/frontend/getCommentOfPublication";
     import {searchInputDetails} from "../../services/searchInputDetails";
     import type {SearchInputDetailsModel} from "../../models/searchInputDetails.model";
+    import DOMPurify from "dompurify";
 
     let foundedMainPostPubId: string[] = [];
 
@@ -129,7 +130,7 @@
                                         </div>
                                     </div>
                                     <div class="card__body__post__info__content">
-                                        {comment?.data?.publications?.items[0]?.metadata?.content.substring(0, 310)}
+                                        {@html DOMPurify.sanitize(comment?.data?.publications?.items[0]?.metadata?.content).substring(0, 310)}
                                     </div>
                                 </div>
                             </div>

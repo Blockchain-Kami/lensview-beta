@@ -16,6 +16,7 @@
     import {onMount} from "svelte";
     import {getPublicationByPubId} from "../../utils/frontend/getPublicationByPubId";
     import {page} from "$app/stores";
+    import DOMPurify from "dompurify";
 
     let isCardsMoreOpen = false;
     export let userEnteredUrl: string;
@@ -169,7 +170,7 @@
                                         </div>
                                     </div>
                                     <div class="card__post__info__body">
-                                        {comment?.data?.publications?.items[0]?.metadata?.content.substring(0, 70)}
+                                        {@html DOMPurify.sanitize(comment?.data?.publications?.items[0]?.metadata?.content).substring(0, 70)}
                                     </div>
                                 </div>
                             </div>

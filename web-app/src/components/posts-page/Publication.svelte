@@ -6,6 +6,7 @@
   import {getCommentOfPublication} from "../../utils/frontend/getCommentOfPublication";
   import {totalComments} from "../../services/totalComments";
   import {getNotificationsContext} from 'svelte-notifications';
+  import DOMPurify from "dompurify";
 
 
   const {addNotification} = getNotificationsContext();
@@ -116,7 +117,7 @@
           {getFormattedDate(postPub?.data?.publications?.items[0]?.createdAt)}
         </div>
         <div class="comment__body__content">
-          {postPub?.data?.publications?.items[0]?.metadata?.content}
+          {@html DOMPurify.sanitize(postPub?.data?.publications?.items[0]?.metadata?.content)}
         </div>
       </div>
     </div>

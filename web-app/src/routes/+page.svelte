@@ -19,6 +19,7 @@
     import AddNewPost from "../components/main-page/AddNewPost.svelte";
     import IntroPrompt from "../components/main-page/IntroPrompt.svelte";
     import {getNotificationsContext} from 'svelte-notifications';
+    import DOMPurify from "dompurify";
 
     type CardsMoreStatus = {
         [key: string]: boolean;
@@ -152,7 +153,7 @@
                                     </div>
                                 </div>
                                 <div class="card__post__info__body">
-                                    {data?.data?.publications?.items[0]?.metadata?.content.substring(0, 100)}
+                                    {@html DOMPurify.sanitize(data?.data?.publications?.items[0]?.metadata?.content).substring(0, 100)}
                                 </div>
                             </div>
                         </div>
