@@ -17,6 +17,8 @@
     import Loader from "$lib/Loader.svelte";
     import JoinForUpdates from "../components/main-page/JoinForUpdates.svelte";
     import type {FetchedInfoForSearchedInputModel} from "../models/fetchedInfoForSearchedInput.model";
+    import Notifications from 'svelte-notifications';
+    import CustomNotification from "$lib/CustomNotification.svelte";
 
     let isConnected = false;
     let signingIn = false;
@@ -219,10 +221,12 @@
             //TODO: Ask user to try again or visit the website after sometime
         }
     };
+
 </script>
 
 
 <!----------------------------- HTML ----------------------------->
+<Notifications item={CustomNotification} zIndex="20">
 <div class="CenterRowFlex nav">
     <div class="nav__hamburger">
         <button on:click={() => {menuActive = true}}>
@@ -359,6 +363,7 @@
 <CreateLensHandle bind:showCreateLensHandleModal/>
 
 <JoinForUpdates bind:showJoinForUpdatesModal/>
+</Notifications>
 <!---------------------------------------------------------------->
 
 
