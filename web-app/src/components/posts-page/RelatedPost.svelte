@@ -23,24 +23,26 @@
     let foundedMainPostPubId: string[] = [];
     onMount(async () => {
         console.log('userEnteredUrl', userEnteredUrl);
-        try {
-            foundedMainPostPubId = await fetch('/api/related-pubs', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(userEnteredUrl)
-            }).then((res) => {
-                if (res.ok)
-                    return res.json();
-                else
-                    throw new Error(res.statusText);
-            });
+        if (userEnteredUrl !== "") {
+            try {
+                foundedMainPostPubId = await fetch('/api/related-pubs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userEnteredUrl)
+                }).then((res) => {
+                    if (res.ok)
+                        return res.json();
+                    else
+                        throw new Error(res.statusText);
+                });
 
-            console.log('foundedMainPostPubId', foundedMainPostPubId)
-        } catch (error) {
-            console.log('error', error);
-            foundedMainPostPubId = [];
+                console.log('foundedMainPostPubId', foundedMainPostPubId)
+            } catch (error) {
+                console.log('error', error);
+                foundedMainPostPubId = [];
+            }
         }
     })
 

@@ -6,6 +6,10 @@
     export let notification: CustomNotificationModel;
     export let onRemove;
 
+    const callCtaFunctionAndRemove = () => {
+        notification.ctaFunction();
+        onRemove();
+    }
 </script>
 
 
@@ -29,7 +33,7 @@
     </div>
     {#if notification.ctaBtnName !== undefined}
         <div class="footer">
-            <button on:click={notification.ctaFunction}>{notification.ctaBtnName}</button>
+            <button on:click={callCtaFunctionAndRemove}>{notification.ctaBtnName}</button>
         </div>
     {/if}
 </section>
