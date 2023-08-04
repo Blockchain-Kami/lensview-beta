@@ -194,7 +194,7 @@
         isSearching = true;
 
         try {
-            const fetchedInfoForSearchedInput: FetchedInfoForSearchedInputModel = await fetch('api/is-url-valid-get-parent-pubId', {
+            const fetchedInfoForSearchedInput: FetchedInfoForSearchedInputModel = await fetch('/api/is-url-valid-get-parent-pubId', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

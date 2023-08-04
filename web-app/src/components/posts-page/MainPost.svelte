@@ -158,7 +158,7 @@
 
   .main-post__content {
     width: 100%;
-    min-width: 31rem;
+    min-width: 34rem;
   }
 
   .main-post__content__loader {
