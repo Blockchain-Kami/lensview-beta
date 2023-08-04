@@ -2,6 +2,7 @@
     import Icon from "$lib/Icon.svelte";
     import {close} from "../utils/frontend/appIcon";
     import type {CustomNotificationModel} from "../models/customNotification.model";
+    import {fly} from 'svelte/transition'
 
     export let notification: CustomNotificationModel;
     export let onRemove;
@@ -14,7 +15,7 @@
 
 
 <!----------------------------- HTML ----------------------------->
-<section>
+<section transition:fly={{ x: 50 }} on:introstart on:outroend>
     <div class="CenterRowFlex head">
         <div class="head__title">
             {notification.heading}
