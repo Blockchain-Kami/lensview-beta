@@ -9,6 +9,8 @@
     import {userProfile} from "../../services/profile";
     import {getNotificationsContext} from 'svelte-notifications';
     import {goto} from "$app/navigation";
+    import {fly} from 'svelte/transition'
+    import {backInOut} from "svelte/easing";
 
     const {addNotification} = getNotificationsContext();
 
@@ -239,79 +241,84 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
+
 <dialog
         bind:this={dialog}
         on:close={() => (showAddNewPostModal = false)}
         on:click|self={() => dialog.close()}
 >
-    <main on:click|stopPropagation>
-        <div class="CenterRowFlex head">
-            <div class="h3 head__title">
-                {title}
-            </div>
-            <div class="head__close-btn">
-                <button on:click={() => dialog.close()}>
-                    <Icon d={close}/>
-                </button>
-            </div>
-        </div>
-        <div class="body">
-            <div class="input-box body__url">
-                <div class="input-box__label body__url__label">
-                    Paste a URL
+    {#if showAddNewPostModal}
+        <main on:click|stopPropagation transition:fly={{ y: 40, easing: backInOut, duration: 700 }}>
+            <div class="CenterRowFlex head">
+                <div class="h3 head__title">
+                    {title}
                 </div>
-                <div class="input-box__input body__url__input">
-                    <input bind:value={userEnteredUrl} on:input={checkUrlIsValid}
-                           type="text">
+                <div class="head__close-btn">
+                    <button on:click={() => dialog.close()}>
+                        <Icon d={close}/>
+                    </button>
                 </div>
-                {#if isUrlInvalid}
-                    <div class="body__url__input__err-msg">
-                        {urlInvalidReason}
+            </div>
+            <div class="body">
+                <div class="input-box body__url">
+                    <div class="input-box__label body__url__label">
+                        Paste a URL
                     </div>
-                {/if}
-            </div>
-            <div class="input-box body__content">
-                <div class="input-box__label body__content__label">
-                    Share your thoughts about this
-                </div>
-                <div class="input-box__input body__content__input">
-                    <div contenteditable="true"
-                         placeholder="What do think about this ?"
-                         class="body__content__input__box"
-                         id="editableDiv"
-                         bind:innerHTML={userEnteredContent}
-                         on:input={checkIfContentIsInvalid}
-                         on:paste={handlePaste}
-                    >
+                    <div class="input-box__input body__url__input">
+                        <input bind:value={userEnteredUrl} on:input={checkUrlIsValid}
+                               type="text">
                     </div>
-                    {#if isContentInvalid}
-                        <div class="body__content__input__err-msg">{contentInvalidReason}</div>
+                    {#if isUrlInvalid}
+                        <div class="body__url__input__err-msg">
+                            {urlInvalidReason}
+                        </div>
                     {/if}
                 </div>
-            </div>
+                <div class="input-box body__content">
+                    <div class="input-box__label body__content__label">
+                        Share your thoughts about this
+                    </div>
+                    <div class="input-box__input body__content__input">
+                        <div contenteditable="true"
+                             placeholder="What do think about this ?"
+                             class="body__content__input__box"
+                             id="editableDiv"
+                             bind:innerHTML={userEnteredContent}
+                             on:input={checkIfContentIsInvalid}
+                             on:paste={handlePaste}
+                        >
+                        </div>
+                        {#if isContentInvalid}
+                            <div class="body__content__input__err-msg">{contentInvalidReason}</div>
+                        {/if}
+                    </div>
+                </div>
 
-        </div>
-        <div class="line"></div>
-        <div class="CenterRowFlex footer">
-            <button on:click={postAnonymously}
-                    disabled={isContentInvalid}
-                    class="btn-alt"
-                    style="--btn-alt-color: #1e4748;">
-                Post anonymously
-            </button>
-            {#if !isPublishing}
-                <button class="btn" on:click={postThroughUser}
-                        disabled={isContentInvalid || isUrlInvalid}>Post as you
+            </div>
+            <div class="line"></div>
+            <div class="CenterRowFlex footer">
+                <button on:click={postAnonymously}
+                        disabled={isContentInvalid}
+                        class="btn-alt"
+                        style="--btn-alt-color: #1e4748;">
+                    Post anonymously
                 </button>
-            {:else}
-                <button class="btn"
-                        disabled>
-                    Posting &nbsp;<Loader/>
-                </button>
-            {/if}
-        </div>
-    </main>
+                {#if !isPublishing}
+                    <button class="btn" on:click={postThroughUser}
+                            disabled={isContentInvalid || isUrlInvalid}>Post as you
+                    </button>
+                {:else}
+                    <button class="btn"
+                            disabled>
+                        Posting &nbsp;<Loader/>
+                    </button>
+                {/if}
+            </div>
+        </main>
+    {/if}
 </dialog>
+
+
 
 <Login bind:showLoginModal/>
 
@@ -323,6 +330,7 @@
     background: #1e4748 fixed;
     color: var(--text);
     min-width: 21rem;
+    border-radius: 10px;
   }
 
   .head {
@@ -330,6 +338,7 @@
     background: #18393a;
     padding: 1.2rem;
     color: var(--primary);
+    border-radius: 10px 10px 0 0;
   }
 
   .body {

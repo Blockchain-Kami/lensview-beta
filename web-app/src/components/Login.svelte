@@ -11,6 +11,8 @@
     import {userAddress} from "../services/userAddress";
     import {PUBLIC_IS_PROD} from "$env/static/public";
     import {onMount} from "svelte";
+    import {fly} from 'svelte/transition'
+    import {backInOut} from "svelte/easing";
 
     export let showLoginModal: boolean;
     let dialog: HTMLDialogElement;
@@ -230,31 +232,32 @@
         on:close={() => (showLoginModal = false)}
         on:click|self={() => dialog.close()}
 >
-    <main on:click|stopPropagation>
-        <div class="CenterRowFlex head">
-            <div class="h3">
-                Login
+    {#if showLoginModal}
+        <main on:click|stopPropagation transition:fly={{ y: 40, easing: backInOut, duration: 700 }}>
+            <div class="CenterRowFlex head">
+                <div class="h3">
+                    Login
+                </div>
+                <div class="head__close-btn">
+                    <button on:click={() => dialog.close()}>
+                        <Icon d={close}/>
+                    </button>
+                </div>
             </div>
-            <div class="head__close-btn">
-                <button on:click={() => dialog.close()}>
-                    <Icon d={close}/>
-                </button>
-            </div>
-        </div>
 
-        {#if !isConnected}
-            <div class="body">
-                Please connect your wallet to continue
-            </div>
-            <div class="line"></div>
-            <div class="footer">
-                <button on:click="{connect}"
-                        class="btn">
-                    Connect Wallet
-                </button>
-            </div>
-        {:else}
-            {#if !$isSignedIn}
+            {#if !isConnected}
+                <div class="body">
+                    Please connect your wallet to continue
+                </div>
+                <div class="line"></div>
+                <div class="footer">
+                    <button on:click="{connect}"
+                            class="btn">
+                        Connect Wallet
+                    </button>
+                </div>
+            {:else}
+                {#if !$isSignedIn}
                     {#if !signingIn}
                         {#if isHandleCreated}
                             <div class="body">
@@ -262,10 +265,10 @@
                             </div>
                             <div class="line"></div>
                             <div class="footer">
-                            <button on:click="{signInWithLens}"
-                                    class="btn">
-                                Sign-In With Lens
-                            </button>
+                                <button on:click="{signInWithLens}"
+                                        class="btn">
+                                    Sign-In With Lens
+                                </button>
                             </div>
                         {:else}
                             <div class="body">
@@ -275,9 +278,9 @@
                             </div>
                             <div class="line"></div>
                             <div class="footer">
-                            <button on:click="{openCreateLensHandleModal}" class="btn">
-                                Create Lens Handle
-                            </button>
+                                <button on:click="{openCreateLensHandleModal}" class="btn">
+                                    Create Lens Handle
+                                </button>
                             </div>
                         {/if}
                     {:else}
@@ -286,16 +289,18 @@
                         </div>
                         <div class="line"></div>
                         <div class="footer">
-                        <button class="btn" disabled>
-                            Signing In &nbsp;
-                            <Loader/>
-                        </button>
+                            <button class="btn" disabled>
+                                Signing In &nbsp;
+                                <Loader/>
+                            </button>
                         </div>
                     {/if}
+                {/if}
             {/if}
-        {/if}
 
-    </main>
+        </main>
+    {/if}
+
 </dialog>
 
 <CreateLensHandle bind:showCreateLensHandleModal/>
@@ -308,6 +313,7 @@
     background: #1e4748 fixed;
     color: var(--text);
     min-width: 21rem;
+    border-radius: 10px;
   }
 
   .head {
@@ -315,6 +321,7 @@
     background: #18393a;
     padding: 1.2rem;
     color: var(--primary);
+    border-radius: 10px 10px 0 0;
   }
 
   .body {

@@ -202,6 +202,8 @@
   import getUserProfiles from "../utils/frontend/getUserProfiles";
   import checkTxHashBeenIndexed from "../utils/checkTxHashBeenIndexed";
   import Loader from "$lib/Loader.svelte";
+  import {fly} from 'svelte/transition'
+  import {backInOut} from "svelte/easing";
 
 
   export let showCreateLensHandleModal: boolean;
@@ -289,47 +291,49 @@
         on:close={() => (showCreateLensHandleModal = false)}
         on:click|self={() => dialog.close()}
 >
-  <main on:click|stopPropagation>
-    <div class="CenterRowFlex head">
-      <div class="h3 head__title">
-        Sign Up
+  {#if showCreateLensHandleModal}
+    <main on:click|stopPropagation transition:fly={{ y: 40, easing: backInOut, duration: 700 }}>
+      <div class="CenterRowFlex head">
+        <div class="h3 head__title">
+          Sign Up
+        </div>
+        <div class="head__close-btn">
+          <button on:click={() => dialog.close()}>
+            <Icon d={close}/>
+          </button>
+        </div>
       </div>
-      <div class="head__close-btn">
-        <button on:click={() => dialog.close()}>
-          <Icon d={close}/>
-        </button>
+      <div class="body">
+        <div class="body__content">
+          Create Your Lens Handle
+        </div>
+        <div class="body__input">
+          <input type="text" placeholder="vitalik" bind:value={userEnteredHandle} on:input={checkInputIsValid}>
+          {#if isInputInvalid}
+            <div class="body__input__err-msg">{inputInvalidReason}</div>
+          {/if}
+        </div>
+        <div class="body__notes">
+          <div class="body__notes__note">
+            Your Lens Handle is a unique identifier that will be used to identify you on the Lens Network.
+          </div>
+          <div class="body__notes__note">
+            Your handle will receive the `.test` extension on lens testnet.
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="body">
-      <div class="body__content">
-        Create Your Lens Handle
-      </div>
-      <div class="body__input">
-        <input type="text" placeholder="vitalik" bind:value={userEnteredHandle} on:input={checkInputIsValid}>
-        {#if isInputInvalid}
-          <div class="body__input__err-msg">{inputInvalidReason}</div>
+      <div class="line"></div>
+      <div class="footer">
+        {#if !isCreatingLensHandle}
+          <button class="btn" on:click={initiateCreateLensHandle} disabled={isInputInvalid}>Create Lens Handle</button>
+        {:else}
+          <button class="btn" disabled>Creating &nbsp;
+            <Loader/>
+          </button>
         {/if}
       </div>
-      <div class="body__notes">
-        <div class="body__notes__note">
-          Your Lens Handle is a unique identifier that will be used to identify you on the Lens Network.
-        </div>
-        <div class="body__notes__note">
-          Your handle will receive the `.test` extension on lens testnet.
-        </div>
-      </div>
-    </div>
-    <div class="line"></div>
-    <div class="footer">
-      {#if !isCreatingLensHandle}
-        <button class="btn" on:click={initiateCreateLensHandle} disabled={isInputInvalid}>Create Lens Handle</button>
-      {:else}
-        <button class="btn" disabled>Creating &nbsp;
-          <Loader/>
-        </button>
-      {/if}
-    </div>
-  </main>
+    </main>
+  {/if}
 </dialog>
 
 <style lang="scss">
@@ -339,6 +343,7 @@
     background: #1e4748 fixed;
     color: var(--text);
     min-width: 21rem;
+    border-radius: 10px;
   }
 
   .head {
@@ -346,6 +351,7 @@
     background: #18393a;
     padding: 1.2rem;
     color: var(--primary);
+    border-radius: 10px 10px 0 0;
   }
 
   .body {

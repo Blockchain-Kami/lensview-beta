@@ -157,14 +157,15 @@ input {
 
 /*********** Dialog ************/
 dialog {
-    max-width: 50em;
-    border-radius: 10px;
+    max-width: 50rem;
+    min-height: 30rem;
     inset: 0;
     margin: auto;
+    background: transparent;
 }
 
 dialog[open] {
-    animation: fade-in 0.7s ease-in-out;
+    animation: fade-in 0.4s ease-in-out;
 }
 
 @keyframes fade-in {
@@ -177,7 +178,7 @@ dialog[open] {
 }
 
 dialog[open]::backdrop {
-    animation: fade-in-backdrop 0.3s ease-out;
+    animation: fade-in-backdrop 0.15s ease-out;
 }
 
 @keyframes fade-in-backdrop {

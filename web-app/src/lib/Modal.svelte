@@ -1,6 +1,8 @@
 <script lang="ts">
   import Icon from "$lib/Icon.svelte";
   import {close} from "../utils/frontend/appIcon";
+  import {backInOut} from "svelte/easing";
+  import {fly} from 'svelte/transition'
 
   export let showTestModal: boolean;
 
@@ -16,25 +18,27 @@
         on:close={() => (showTestModal = false)}
         on:click|self={() => dialog.close()}
 >
-  <main on:click|stopPropagation>
-    <div class="CenterRowFlex head">
-      <div class="h3 head__title">
-        Heading
+  {#if showTestModal}
+    <main on:click|stopPropagation transition:fly={{ y: 40, easing: backInOut, duration: 700 }}>
+      <div class="CenterRowFlex head">
+        <div class="h3 head__title">
+          Heading
+        </div>
+        <div class="head__close-btn">
+          <button on:click={() => dialog.close()}>
+            <Icon d={close}/>
+          </button>
+        </div>
       </div>
-      <div class="head__close-btn">
-        <button on:click={() => dialog.close()}>
-          <Icon d={close}/>
-        </button>
+      <div class="body">
+        Testing
       </div>
-    </div>
-    <div class="body">
-      Testing
-    </div>
-    <div class="line"></div>
-    <div class="footer">
-      <button class="btn">Test</button>
-    </div>
-  </main>
+      <div class="line"></div>
+      <div class="footer">
+        <button class="btn">Test</button>
+      </div>
+    </main>
+  {/if}
 </dialog>
 
 <style lang="scss">
@@ -44,6 +48,7 @@
     background: #1e4748 fixed;
     color: var(--text);
     min-width: 21rem;
+    border-radius: 10px;
   }
 
   .head {
@@ -51,6 +56,7 @@
     background: #18393a;
     padding: 1.2rem;
     color: var(--primary);
+    border-radius: 10px 10px 0 0;
   }
 
   .body {
