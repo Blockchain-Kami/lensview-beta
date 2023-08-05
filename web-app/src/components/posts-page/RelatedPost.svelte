@@ -209,6 +209,11 @@
     filter: drop-shadow(9.600000381469727px 22.80000114440918px 37.20000076293945px rgba(0, 0, 0, 0.26));
     width: -moz-available;
     font-size: var(--small-font-size);
+    transition: all .4s ease-in-out;
+  }
+
+  .card:hover {
+    transform: scale(1.04);
   }
 
   .card__image-loader {
