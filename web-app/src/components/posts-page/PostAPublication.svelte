@@ -15,7 +15,7 @@
     const {addNotification} = getNotificationsContext();
     let userEnteredContent = "";
     let inputInvalidReason = "";
-    const wordLimit = 5;
+    const wordLimit = 1000;
     let isInputInvalid = true;
     let showLoginModal = false;
     let postPubId = $page.data.postPubId;

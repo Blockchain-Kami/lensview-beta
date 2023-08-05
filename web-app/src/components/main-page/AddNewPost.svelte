@@ -23,7 +23,7 @@
 
     let userEnteredContent = "";
     let contentInvalidReason = "";
-    const wordLimit = 5;
+    const wordLimit = 1000;
     let isContentInvalid = true;
     let showLoginModal = false;
     let userEnteredUrl = "";
