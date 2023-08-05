@@ -37,7 +37,7 @@ const signCreateCommentTypedData = async (request, client, signer) => {
 
 
 
-const addComment = async (urlObj, pubId, client, signer, profile) => {
+const addImageComment = async (urlObj, pubId, client, signer, profile) => {
     isPosting = true;
 
     const contentURI = await uploadImageCommentToIPFS(urlObj)
@@ -107,4 +107,4 @@ const addComment = async (urlObj, pubId, client, signer, profile) => {
     return isPosting;
 }
 
-export default addComment;
+export default addImageComment;

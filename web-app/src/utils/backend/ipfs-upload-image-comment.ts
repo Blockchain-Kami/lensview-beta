@@ -34,11 +34,11 @@ function makeFileObjects(urlObj) {
     // getUserProfile(address);
     const metaData = {
         version: '2.0.0',
-        content: urlObj['isScreenshotComment'] ? "https://ipfs.io/ipfs/" + urlObj['image'].substring(7) : urlObj['postContent'],
-        description: urlObj['isScreenshotComment'] ? 'Post Image' : 'User Comment',
+        content: urlObj['image'],
+        description: 'Post Image',
         name: `Posting on test-net through lensView`,
         external_url: urlObj['url'],
-        image: urlObj['image'] ? "https://ipfs.io/ipfs/" + urlObj['image'].substring(7) : '',
+        image: urlObj['image'] ? urlObj['image'] : '' , // TODO: add default image,
         metadata_id: uuidv4(),
         mainContentFocus: 'TEXT_ONLY',
         attributes: [],
