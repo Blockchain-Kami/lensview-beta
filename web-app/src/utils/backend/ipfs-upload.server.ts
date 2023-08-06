@@ -1,7 +1,7 @@
 /**
  * Web3 Storage Code
  */
-import { PUBLIC_WEB3STORAGE_TOKEN } from '$env/static/public';
+import { PUBLIC_SOURCE_APP_ID, PUBLIC_WEB3STORAGE_TOKEN } from '$env/static/public';
 import { File, Web3Storage } from 'web3.storage';
 import { v4 as uuidv4 } from 'uuid';
 import { createTags } from './create-tags.server';
@@ -38,19 +38,19 @@ function makeFileObjects(urlObj) {
     const tags = createTags(URLtags, urlObj['query']);
 
     const metaData = {
-        version: '2.0.0',
-        content:urlObj['url'],
-        description: urlObj['url'],
-        name: `Posting on test-net through lensView`,
-        external_url: urlObj['url'],
-        image: urlObj['image'],
-        metadata_id: uuidv4(),
-        mainContentFocus: 'TEXT_ONLY',
-        attributes: [],
-        locale: 'en-US',
-        appId: 'LensView',
-        tags: tags
-    }
+			version: '2.0.0',
+			content: urlObj['url'],
+			description: urlObj['url'],
+			name: `Posting on test-net through lensView`,
+			external_url: urlObj['url'],
+			image: urlObj['image'],
+			metadata_id: uuidv4(),
+			mainContentFocus: 'TEXT_ONLY',
+			attributes: [],
+			locale: 'en-US',
+			appId: PUBLIC_SOURCE_APP_ID,
+			tags: tags
+		};
 
     try {
         return [

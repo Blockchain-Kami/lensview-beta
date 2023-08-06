@@ -1,5 +1,6 @@
 import baseClient from './baseClient';
 import getExplorePublications from '../../graphql/getExplorePublications';
+import { PUBLIC_SOURCE_APP_ID } from '$env/static/public';
 
 export const getExplorePublicationsForApp = async () => {
 	try {
@@ -8,7 +9,7 @@ export const getExplorePublicationsForApp = async () => {
 			sortCriteria: 'LATEST',
 			publicationTypes: ['POST'],
 			limit: 50,
-			sources: ['lensview']
+			sources: [PUBLIC_SOURCE_APP_ID]
 		};
 		return await client
 			.query(getExplorePublications, {
