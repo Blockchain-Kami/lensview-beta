@@ -66,7 +66,7 @@ export const signInWithLens = async () => {
         return [client, signer, profile];
 
     } catch (err) {
-        console.log('Error signing in: ', err)
+        return null;
     }
 }
 

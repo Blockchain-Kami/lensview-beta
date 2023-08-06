@@ -118,9 +118,6 @@
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
-  @import '../../global';
-
-  @include sideScrollbar("main-post__img");
 
   .main-post {
     padding: 1rem;

@@ -32,20 +32,19 @@ function makeFileObjects(urlObj) {
 
     // //Getting profile of the connected user and saving it to "profile" variable
     // getUserProfile(address);
-
     const metaData = {
         version: '2.0.0',
-        content:`LensView comment: ${urlObj['image']}`,
+        content: urlObj['image'],
         description: 'Post Image',
         name: `Posting on test-net through lensView`,
         external_url: urlObj['url'],
-        image: urlObj?.['image'],
+        image: urlObj['image'] ? urlObj['image'] : '' , // TODO: add default image,
         metadata_id: uuidv4(),
         mainContentFocus: 'TEXT_ONLY',
         attributes: [],
         locale: 'en-US',
         appId: 'LensView',
-        tags: [urlObj['hashedURL'], urlObj['origin'], urlObj['hashedOrigin'], urlObj['hashedPath']]
+        tags: [urlObj['hashedURL'], urlObj['hostname'], urlObj['hashedHostname'], urlObj['hashedPath']]
     }
 
     try {

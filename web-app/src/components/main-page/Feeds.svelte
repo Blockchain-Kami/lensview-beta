@@ -35,9 +35,6 @@
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
-  @import '../../global';
-
-  @include sideScrollbar("main__search-area__results__result");
 
   .main__search-area {
     padding: 2rem;
@@ -62,7 +59,7 @@
   .main__search-area__results__result {
     display: flex;
     align-items: center;
-    background: lightsteelblue;
+    //background: lightsteelblue;
     padding: 0.8rem 1rem;
     border-radius: 10px;
     margin-right: 0.75rem;

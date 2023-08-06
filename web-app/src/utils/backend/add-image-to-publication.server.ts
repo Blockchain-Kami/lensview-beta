@@ -1,5 +1,5 @@
 import {uploadImage} from "./upload-page-screenshot.server";
-import postImageComment from "./add-image-comment.server";
+import addImageComment from "./add-comment.server";
 import {signInWithLens} from "./lens-sign-in.server";
 import {getParentPost} from "./get-parent-url.server";
 
@@ -12,11 +12,11 @@ export const addImageToPublication = async (job) => {
 
     const res = await getParentPost(hashedURL);
     const parentPostID = res['parent_post_ID'];
-    const sourceURL = res['source_url'].substring(15,);
+    const sourceURL = res['source_url'];
 
     urlObj['image'] = await uploadImage(sourceURL);
 
-    await postImageComment(urlObj, parentPostID , client, signer, profile);
+    await addImageComment(urlObj, parentPostID , client, signer, profile);
     return
 
 

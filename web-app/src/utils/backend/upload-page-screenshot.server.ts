@@ -1,5 +1,6 @@
 import {PUBLIC_WEB3STORAGE_TOKEN} from "$env/static/public";
 import {Web3Storage} from "web3.storage";
+// import { ThirdwebStorage} from "@thirdweb-dev/storage";
 
 import puppeteer from 'puppeteer';
 import {Blob} from "buffer";
@@ -107,6 +108,10 @@ export const uploadImage = async (url) => {
         const imgCID = await client.put([file], {name: imgName});
         return makeGatewayURLImage(imgCID, imgName);
 
+
+        // const screenshot = await Screenshot(url);
+        // const client = new ThirdwebStorage();
+        // return await client.upload(screenshot);
     } catch {
         console.log("Failed to save");
         return;
