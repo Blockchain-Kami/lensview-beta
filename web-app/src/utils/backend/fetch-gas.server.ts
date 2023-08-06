@@ -1,17 +1,13 @@
 import {ethers} from 'ethers';
 import axios from 'axios';
 
-
-import {PUBLIC_IS_PROD} from '$env/static/public';
-
-
 // get max fees from gas station
 
 
 const fetchGas = async () => {
 
-    let maxFeePerGas = ethers.BigNumber.from(40000000000); // fallback to 40 gwei
-    let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000);// fallback to 40 gwei
+    let maxFeePerGas = ethers.BigNumber.from(50000000000); // fallback to 50 gwei
+    let maxPriorityFeePerGas = ethers.BigNumber.from(50000000000);// fallback to 50 gwei
     try {
         console.log("FetchGas called");
         console.log("Estimating gas for the transaction");
@@ -30,7 +26,8 @@ const fetchGas = async () => {
         return [Number(maxFeePerGas._hex),Number(maxPriorityFeePerGas._hex)];
     } catch (error) {
         // ignore
-        console.log(error);
+        console.log("Failed to fetch gas estimates, fallback to 50 gwei");
+        return [Number(maxFeePerGas._hex),Number(maxPriorityFeePerGas._hex)];
     }
 }
 
