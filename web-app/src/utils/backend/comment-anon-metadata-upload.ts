@@ -1,7 +1,7 @@
 /**
  * Web3 Storage Code
  */
-import { PUBLIC_WEB3STORAGE_TOKEN } from '$env/static/public';
+import { PUBLIC_SOURCE_APP_ID, PUBLIC_WEB3STORAGE_TOKEN } from '$env/static/public';
 import { File, Web3Storage } from 'web3.storage';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -42,7 +42,7 @@ function makeFileObjects(content) {
 			mainContentFocus: 'TEXT_ONLY',
 			attributes: [],
 			locale: 'en-US',
-			appId: 'LensView',
+			appId: PUBLIC_SOURCE_APP_ID,
 			tags: ['userPost']
 		};
 

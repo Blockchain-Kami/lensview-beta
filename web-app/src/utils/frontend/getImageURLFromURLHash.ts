@@ -1,11 +1,13 @@
 import baseClient from './baseClient';
 import getImageFromComment from '../../graphql/getImageFromComment';
+import { PUBLIC_APP_LENS_ID } from '$env/static/public';
 
 const getImageURLFromURLHash = async (urlHash: string) => {
+	console.log('');
 	try {
 		const client = baseClient;
 		const request = {
-			profileId: '0x7e11',
+			profileId: PUBLIC_APP_LENS_ID,
 			publicationTypes: ['COMMENT'],
 			metadata: {
 				locale: 'en-us',

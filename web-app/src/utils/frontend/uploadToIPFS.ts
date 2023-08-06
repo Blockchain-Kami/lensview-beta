@@ -1,4 +1,4 @@
-import { PUBLIC_WEB3STORAGE_TOKEN } from '$env/static/public';
+import { PUBLIC_SOURCE_APP_ID, PUBLIC_WEB3STORAGE_TOKEN } from '$env/static/public';
 import { Web3Storage } from 'web3.storage';
 import { v4 as uuid } from 'uuid';
 
@@ -22,7 +22,7 @@ function makeFileObjects(profileHandle: string, userEnteredContent: string) {
 		mainContentFocus: 'TEXT_ONLY',
 		attributes: [],
 		locale: 'en-US',
-		appId: 'lensview-beta'
+		appId: PUBLIC_SOURCE_APP_ID
 	};
 	const blob = new Blob([JSON.stringify(metaData)], { type: 'application/json' });
 
