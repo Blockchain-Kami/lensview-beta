@@ -22,7 +22,8 @@ function makeFileObjects(profileHandle: string, userEnteredContent: string) {
 		mainContentFocus: 'TEXT_ONLY',
 		attributes: [],
 		locale: 'en-US',
-		appId: PUBLIC_SOURCE_APP_ID
+		appId: PUBLIC_SOURCE_APP_ID,
+		tags: ['userPost']
 	};
 	const blob = new Blob([JSON.stringify(metaData)], { type: 'application/json' });
 
