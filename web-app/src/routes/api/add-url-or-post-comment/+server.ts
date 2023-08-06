@@ -102,7 +102,7 @@ export async function POST(requestEvent) {
 			});
 		} else {
 			// user adds comment anonymously
-			const commentAdded = commentAnonymously(pubId, postContent, client, signer, profile);
+			const commentAdded = await commentAnonymously(pubId, postContent, client, signer, profile);
 
 			if (commentAdded) {
 				return json({
