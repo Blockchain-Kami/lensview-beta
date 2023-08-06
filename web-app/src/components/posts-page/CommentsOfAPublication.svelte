@@ -351,6 +351,8 @@
   }
 
   .comment__body__more__share {
+    width: 100%;
+    justify-content: flex-start;
     gap: 0.5rem;
   }
 

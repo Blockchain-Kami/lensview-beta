@@ -228,6 +228,8 @@ a {
     border-radius: 5px;
     background: var(--btn-bg);
     color: black;
+    display: flex;
+    justify-content: center;
 }
 
 .btn-alt {

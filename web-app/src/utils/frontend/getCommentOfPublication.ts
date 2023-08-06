@@ -13,13 +13,23 @@ export const getCommentOfPublication = async (
 				commentsOf: publicationId,
 				commentsOfOrdering: 'RANKING',
 				commentsRankingFilter: 'RELEVANT',
-				limit: limit
+				limit: limit,
+				metadata: {
+					tags: {
+						oneOf: ['userPost']
+					}
+				}
 			};
 		} else if (filterBy === 'latest') {
 			request = {
 				commentsOf: publicationId,
 				commentsOfOrdering: 'DESC',
-				limit: limit
+				limit: limit,
+				metadata: {
+					tags: {
+						oneOf: ['userPost']
+					}
+				}
 			};
 		} else if (filterBy === 'post') {
 			request = {

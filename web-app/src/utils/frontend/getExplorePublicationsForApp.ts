@@ -7,7 +7,7 @@ export const getExplorePublicationsForApp = async () => {
 		const request = {
 			sortCriteria: 'LATEST',
 			publicationTypes: ['POST'],
-			limit: 35,
+			limit: 50,
 			sources: ['lensview']
 		};
 		return await client

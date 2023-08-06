@@ -16,7 +16,7 @@
     <div class="btn-box">
         <button on:click={() => showAddNewPostModal = true}
                 class="btn">
-            Create a thread
+            Create a Post
         </button>
         <button on:click={() => showJoinForUpdatesModal = true}
                 class="btn-alt">
@@ -25,7 +25,7 @@
     </div>
 </section>
 
-<AddNewPost title="Create a new thread" bind:showAddNewPostModal/>
+<AddNewPost bind:showAddNewPostModal/>
 <JoinForUpdates bind:showJoinForUpdatesModal/>
 
 <!---------------------------------------------------------------->

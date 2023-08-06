@@ -19,13 +19,13 @@
     <div class="create-btn">
         <button on:click={() => showAddNewPostModal = true}
                 class="btn">
-            Create a thread
+            Create a Post
         </button>
     </div>
 
 </section>
 
-<AddNewPost title="Create a new thread" bind:showAddNewPostModal/>
+<AddNewPost bind:showAddNewPostModal/>
 
 <!---------------------------------------------------------------->
 

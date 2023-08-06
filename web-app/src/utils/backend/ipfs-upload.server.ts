@@ -1,24 +1,23 @@
 /**
  * Web3 Storage Code
  */
-import { PUBLIC_WEB3STORAGE_TOKEN } from "$env/static/public";
-import { File, Web3Storage } from "web3.storage";
-import { v4 as uuidv4 } from "uuid";
-import {createTags} from "./create-tags.server";
-
+import { PUBLIC_WEB3STORAGE_TOKEN } from '$env/static/public';
+import { File, Web3Storage } from 'web3.storage';
+import { v4 as uuidv4 } from 'uuid';
+import { createTags } from './create-tags.server';
 
 function getAccessToken() {
-    // If you're just testing, you can paste in a token
-    // and uncomment the following line:
-    // return 'paste-your-token-here'
+	// If you're just testing, you can paste in a token
+	// and uncomment the following line:
+	// return 'paste-your-token-here'
 
-    // In a real app, it's better to read an access token from an
-    // environment variable or other configuration that's kept outside of
-    // your code base. For this to work, you need to set the
-    // WEB3STORAGE_TOKEN environment variable before you run your code.
-    // Get the web3.storage access token from the API token section
+	// In a real app, it's better to read an access token from an
+	// environment variable or other configuration that's kept outside of
+	// your code base. For this to work, you need to set the
+	// WEB3STORAGE_TOKEN environment variable before you run your code.
+	// Get the web3.storage access token from the API token section
 
-    return PUBLIC_WEB3STORAGE_TOKEN;
+	return PUBLIC_WEB3STORAGE_TOKEN;
 }
 
 function makeStorageClient() {
@@ -83,7 +82,7 @@ const uploadToIPFS = async (urlObj) => {
         return uri
 
     } catch (e) {
-        console.log("Failed to upload file to IPFS");
+        console.log('Failed to upload file to IPFS : ' + e);
         return null;
     }
 

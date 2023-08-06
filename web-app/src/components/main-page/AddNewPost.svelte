@@ -19,7 +19,6 @@
     let dialog: HTMLDialogElement;
 
     $: if (dialog && showAddNewPostModal) dialog.showModal();
-    export let title = "Add a new post";
 
     let userEnteredContent = "";
     let contentInvalidReason = "";
@@ -251,7 +250,7 @@
         <main on:click|stopPropagation transition:fly={{ y: 40, easing: backInOut, duration: 700 }}>
             <div class="CenterRowFlex head">
                 <div class="h3 head__title">
-                    {title}
+                    Create a New Post
                 </div>
                 <div class="head__close-btn">
                     <button on:click={() => dialog.close()}>

@@ -145,6 +145,7 @@
         });
 
         try {
+            const localPubBtnName = pubBtnName
             await fetch('/api/comment-anonymously', {
                 method: 'POST',
                 headers: {
@@ -166,11 +167,11 @@
 
             addNotification({
                 position: 'top-right',
-                heading: `Successfully ${pubBtnName}ed`,
-                description: `Your ${pubBtnName.toLowerCase()} was successfully ${pubBtnName.toLowerCase()}ed anonymously. Click on "View ${pubBtnName}" to see your ${pubBtnName.toLowerCase()}`,
+                heading: `Successfully ${localPubBtnName}ed`,
+                description: `Your ${localPubBtnName.toLowerCase()} was successfully ${localPubBtnName.toLowerCase()}ed anonymously. Click on "View ${localPubBtnName}" to see your ${localPubBtnName.toLowerCase()}`,
                 type: tick,
                 removeAfter: 12000,
-                ctaBtnName: `View ${pubBtnName}`,
+                ctaBtnName: `View ${localPubBtnName}`,
                 ctaFunction: () => {
                     if (mainPostPubId === $page.data.mainPostPubId &&
                         postPubId === $page.data.postPubId) {
