@@ -7,19 +7,16 @@ import { imageQueue } from '../../../jobs/imageQueue';
 import { isInputTypeUrl } from '../../../utils/backend/check-input-type.server';
 import { checkUntilMainPostAdded } from '../../../utils/backend/check-until-post-added.server';
 import { getParentPost } from '../../../utils/backend/get-parent-url.server';
-import addComment from '../../../utils/backend/add-comment.server';
+import commentAnonymously from "../../../utils/backend/comment-anonymously.server";
 
 export async function POST(requestEvent) {
-	//TODO: Get status code from graphQL server. (NOTE:A GraphQL API
-	// will always return a 200 OK Status Code, even in case of error.
-	// You'll get a 5xx error in case the server is not available at all.)
-
 	const { request } = requestEvent;
 	const urlRequest = await request.json();
 
 	const enteredURL = urlRequest['enteredURL'];
 	const lensHandle = urlRequest['lensHandle'];
 	const postContent = urlRequest['postContent'];
+	let pubId;
 
 	const urlString = isInputTypeUrl(enteredURL);
 
@@ -45,22 +42,7 @@ export async function POST(requestEvent) {
 		hashedPath,
 		query,
 		postContent,
-		isScreenshotComment: false
-	};
-
-	console.log('URL Object', urlObj);
-
-	const imageUrlObj = {
-		url,
-		hashedURL,
-		hostname,
-		hashedHostname,
-		domain,
-		path,
-		hashedPath,
-		query,
-		image: '',
-		isScreenshotComment: true
+		image : ''
 	};
 
 	const authToken = await signInWithLens();
@@ -74,27 +56,22 @@ export async function POST(requestEvent) {
 	const [client, signer, profile] = authToken;
 
 	const publicationExists = await getParentPost(hashedURL);
+	pubId = publicationExists['parent_post_ID']
 
-	if (publicationExists['parent_post_ID']) {
+	if (pubId) {
 		if (lensHandle) {
 			// front end will do the posting, throw error
 			return json({
-				parentPubId: publicationExists['parent_post_ID'],
+				parentPubId: pubId,
 				successCode: 1,
 				message: 'Link is already added to LensView.'
 			});
 		} else if (postContent) {
-			const commentAdded = await addComment(
-				urlObj,
-				publicationExists['parent_post_ID'],
-				client,
-				signer,
-				profile
-			);
+			const commentAdded = await commentAnonymously(pubId, postContent, client, signer, profile);
 
 			if (commentAdded) {
 				return json({
-					parentPubId: publicationExists['parent_post_ID'],
+					parentPubId: pubId,
 					successCode: 2,
 					message: 'Link was already present in LensView. User comment added to the post.'
 				});
@@ -112,28 +89,24 @@ export async function POST(requestEvent) {
 	const indexed = await checkUntilMainPostAdded(txHash, Date.now());
 
 	if (indexed) {
-		imageQueue.add({ imageUrlObj });
+		imageQueue.add({ urlObj });
 		const publicationID = await getParentPost(hashedURL);
+		pubId = publicationID['parent_post_ID'];
 
 		if (lensHandle) {
 			// front end will post the user comment, return response
 			return json({
-				parentPubId: publicationID['parent_post_ID'],
+				parentPubId: pubId,
 				successCode: 3,
 				message: 'New URL added to LensView successfully'
 			});
 		} else {
 			// user adds comment anonymously
-			const commentAdded = await addComment(
-				urlObj,
-				publicationID['parent_post_ID'],
-				client,
-				signer,
-				profile
-			);
+			const commentAdded = commentAnonymously(pubId, postContent, client, signer, profile);
+
 			if (commentAdded) {
 				return json({
-					parentPubId: publicationID['parent_post_ID'],
+					parentPubId: pubId,
 					successCode: 4,
 					message: 'User comment added to the post'
 				});

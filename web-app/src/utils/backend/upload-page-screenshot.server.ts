@@ -1,13 +1,13 @@
-// import {PUBLIC_WEB3STORAGE_TOKEN} from "$env/static/public";
-// import {Web3Storage} from "web3.storage";
-import { ThirdwebStorage} from "@thirdweb-dev/storage";
+import {PUBLIC_WEB3STORAGE_TOKEN} from "$env/static/public";
+import {Web3Storage} from "web3.storage";
+// import { ThirdwebStorage} from "@thirdweb-dev/storage";
 
 import puppeteer from 'puppeteer';
-// import {Blob} from "buffer";
+import {Blob} from "buffer";
 
-// const makeGatewayURLImage = (imgCID, imgName) => {
-//     return `https://${imgCID}.ipfs.w3s.link/${imgName}`;
-// }
+const makeGatewayURLImage = (imgCID, imgName) => {
+    return `https://${imgCID}.ipfs.w3s.link/${imgName}`;
+}
 
 const Screenshot = async (url) => {
 
@@ -96,22 +96,22 @@ const Screenshot = async (url) => {
 
 export const uploadImage = async (url) => {
 
-    // const imgName = "image.jpg";
+    const imgName = "image.jpg";
 
     try {
-        // const screenshot = await Screenshot(url);
-        // const screenshotBlob = new Blob([screenshot]);
-        // const file = new File([screenshotBlob as BlobPart], imgName )
-        //
-        // const client = new Web3Storage({token: PUBLIC_WEB3STORAGE_TOKEN});
-        //
-        // const imgCID = await client.put([file], {name: imgName});
-        // return makeGatewayURLImage(imgCID, imgName);
-
-
         const screenshot = await Screenshot(url);
-        const client = new ThirdwebStorage();
-        return await client.upload(screenshot);
+        const screenshotBlob = new Blob([screenshot]);
+        const file = new File([screenshotBlob as BlobPart], imgName )
+
+        const client = new Web3Storage({token: PUBLIC_WEB3STORAGE_TOKEN});
+
+        const imgCID = await client.put([file], {name: imgName});
+        return makeGatewayURLImage(imgCID, imgName);
+
+
+        // const screenshot = await Screenshot(url);
+        // const client = new ThirdwebStorage();
+        // return await client.upload(screenshot);
     } catch {
         console.log("Failed to save");
         return;
