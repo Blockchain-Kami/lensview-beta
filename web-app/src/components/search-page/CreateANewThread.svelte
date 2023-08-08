@@ -8,7 +8,7 @@
 <!----------------------------- HTML ----------------------------->
 <section>
     <div class="content">
-        <div class="h3 content__sub-title">
+        <div class="content__sub-title">
             Oops, we might not have what you are looking for right now.
         </div>
         <div class="h2 content__title">
