@@ -6,8 +6,8 @@
         moreHoriz,
         redirect,
         share,
-        thumbDownAlt,
-        thumbUpAlt,
+        thumbDown,
+        thumbUp,
         trendingUp
     } from "../../utils/frontend/appIcon";
     import getFormattedDate from "../../utils/frontend/getFormattedDate";
@@ -111,12 +111,12 @@
                         <div class="CenterRowFlex card__info">
                             <div class="CenterRowFlex card__info__reaction">
                                 <div class="CenterRowFlex card__info__reaction__val">
-                                    <Icon d={thumbUpAlt}/>
+                                    <Icon d={thumbUp}/>
                                     {mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes}
                                 </div>
                                 <div class="card__info__reaction__vertical-line"></div>
                                 <div class="CenterRowFlex card__info__reaction__val">
-                                    <Icon d={thumbDownAlt}/>
+                                    <Icon d={thumbDown}/>
                                     {mainPostPub?.data?.publications?.items[0]?.stats?.totalDownvotes}
                                 </div>
                             </div>

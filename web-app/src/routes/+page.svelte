@@ -8,8 +8,8 @@
         plus,
         redirect,
         share,
-        thumbDownAlt,
-        thumbUpAlt,
+        thumbDown,
+        thumbUp,
         trendingUp
     } from "../utils/frontend/appIcon";
     import type {PageData} from "./$types";
@@ -97,11 +97,11 @@
                     <div class="CenterRowFlex card__info">
                         <div class="CenterRowFlex card__info__reaction">
                             <div class="CenterRowFlex card__info__reaction__val">
-                                <Icon d={thumbUpAlt}/> {item?.stats?.totalUpvotes}
+                                <Icon d={thumbUp}/> {item?.stats?.totalUpvotes}
                             </div>
                             <div class="card__info__reaction__vertical-line"></div>
                             <div class="CenterRowFlex card__info__reaction__val">
-                                <Icon d={thumbDownAlt}/> {item?.stats?.totalDownvotes}
+                                <Icon d={thumbDown}/> {item?.stats?.totalDownvotes}
                             </div>
                         </div>
                         <div class="CenterColumnFlex card__info__content">

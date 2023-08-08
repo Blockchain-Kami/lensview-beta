@@ -1,7 +1,7 @@
 <script lang="ts">
 
     import Icon from "$lib/Icon.svelte";
-    import {modeComment, moreVert, redirect, thumbUpAlt, trendingUp} from "../../utils/frontend/appIcon";
+    import {modeComment, moreVert, redirect, thumbUp, trendingUp} from "../../utils/frontend/appIcon";
     import {getPublicationByPubId} from "../../utils/frontend/getPublicationByPubId";
     import getImageURLFromURLHash from "../../utils/frontend/getImageURLFromURLHash";
     import getFormattedDate from "../../utils/frontend/getFormattedDate";
@@ -85,7 +85,7 @@
                             </div>
                             <div class="CenterRowFlex card__body__info__details">
                                 <div class="CenterRowFlex card__body__info__details__likes">
-                                    <Icon d={thumbUpAlt}/>&nbsp;
+                                    <Icon d={thumbUp}/>&nbsp;
                                     {mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes} Likes
                                 </div>
                                 <div class="dot"></div>
