@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {copy, modeComment, moreVert, share, thumbDownAlt, thumbUpAlt} from "../../utils/frontend/appIcon";
+  import {copy, modeComment, moreVert, person, share, thumbDownAlt, thumbUpAlt} from "../../utils/frontend/appIcon";
   import Icon from "$lib/Icon.svelte";
   import {page} from "$app/stores";
   import {getCommentOfPublication} from "../../utils/frontend/getCommentOfPublication";
@@ -10,6 +10,8 @@
   import {onMount} from "svelte";
   import DOMPurify from 'dompurify';
   import {getNotificationsContext} from 'svelte-notifications';
+  import {PUBLIC_APP_LENS_ID} from "$env/static/public";
+  import {Tooltip} from "@svelte-plugins/tooltips";
 
 
   type CommentMoreStatus = {
@@ -147,6 +149,20 @@
                 <div class="comment__body__top__left__handle">
                   {comment?.profile?.handle}
                 </div>
+                {#if comment?.profile?.id === PUBLIC_APP_LENS_ID}
+                  <Tooltip
+                          content="This post was made by an anonymous user!"
+                          position="right"
+                          autoPosition
+                          align="left"
+                          theme="custom-tooltip"
+                          maxWidth="150"
+                          animation="slide">
+                    <span class="CenterRowFlex comment__body__top__left__anon-comment">
+                      <Icon d={person} size="1.05em"/>
+                    </span>
+                  </Tooltip>
+                {/if}
               </div>
               <div class="CenterRowFlex comment__body__top__right">
                 <div class="CenterRowFlex comment__body__top__right__reaction">
@@ -295,6 +311,12 @@
     background: #18393a;
     border-radius: 5px;
     color: var(--primary);
+  }
+
+  .comment__body__top__left__anon-comment {
+    background: #132e2e;
+    border-radius: 50%;
+    padding: 0.25rem;
   }
 
   .comment__body__top__right {

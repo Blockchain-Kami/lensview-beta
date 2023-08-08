@@ -83,13 +83,13 @@
       flex-direction: column;
     }
 
-    .content__sub-title {
-      font-size: var(--small-font-size);
-    }
-
-    .content__title {
-      font-size: var(--medium-font-size);
-    }
+    //.content__sub-title {
+    //  font-size: var(--small-font-size);
+    //}
+    //
+    //.content__title {
+    //  font-size: var(--medium-font-size);
+    //}
 
     .btn-box {
       flex-direction: row;

@@ -257,4 +257,18 @@ a {
     font-weight: var(--semi-medium-font-weight);
 }
 
+.tooltip.custom-tooltip {
+    --tooltip-background-color: #18242c;
+    --tooltip-border-radius: 5px;
+    --tooltip-box-shadow: 0 1px 20px rgba(0, 0, 0, 0.25);
+    --tooltip-font-family: 'DM Sans', sans-serif;
+    --tooltip-font-size: var(--small-font-size);
+    --tooltip-color: var(--primary);
+    --tooltip-offset-x: 12px;
+    --tooltip-offset-y: 12px;
+    --tooltip-padding: 0.5rem;
+    --tooltip-z-index: 100;
+    --tooltip-arrow-size: 10px;
+}
+
 

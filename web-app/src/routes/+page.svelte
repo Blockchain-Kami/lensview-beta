@@ -5,6 +5,7 @@
         copy,
         modeComment,
         moreHoriz,
+        person,
         plus,
         redirect,
         share,
@@ -20,6 +21,8 @@
     import IntroPrompt from "../components/main-page/IntroPrompt.svelte";
     import {getNotificationsContext} from 'svelte-notifications';
     import DOMPurify from "dompurify";
+    import {Tooltip} from "@svelte-plugins/tooltips";
+    import {PUBLIC_APP_LENS_ID} from "$env/static/public";
 
     type CardsMoreStatus = {
         [key: string]: boolean;
@@ -140,6 +143,20 @@
                                     <div class="card__post__info__head__username">
                                         {data?.data?.publications?.items[0]?.profile?.handle}
                                     </div>
+                                    {#if data?.data?.publications?.items[0]?.profile?.id === PUBLIC_APP_LENS_ID}
+                                        <Tooltip
+                                                content="This post was made by an anonymous user!"
+                                                position="top"
+                                                autoPosition
+                                                align="left"
+                                                theme="custom-tooltip"
+                                                maxWidth="150"
+                                                animation="slide">
+                                            <span class="CenterRowFlex card__post__info__head__anon-comment">
+                                              <Icon d={person} size="1.05em"/>
+                                            </span>
+                                        </Tooltip>
+                                    {/if}
                                     <div class="CenterRowFlex card__post__info__head__trend">
                                         <div class="CenterRowFlex card__post__info__head__trend__icon">
                                             <Icon d={trendingUp}/>
@@ -361,6 +378,12 @@
     background: #113232;
     border-radius: 5px;
     color: #32F9FF;
+  }
+
+  .card__post__info__head__anon-comment {
+    background: #132e2e;
+    border-radius: 50%;
+    padding: 0.25rem;
   }
 
   .card__post__info__head__trend {
