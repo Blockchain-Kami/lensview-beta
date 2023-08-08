@@ -19,6 +19,8 @@
     import type {FetchedInfoForSearchedInputModel} from "../models/fetchedInfoForSearchedInput.model";
     import Notifications from 'svelte-notifications';
     import CustomNotification from "$lib/CustomNotification.svelte";
+    import {fly} from 'svelte/transition'
+    import {quintOut} from "svelte/easing";
 
     let isConnected = false;
     let signingIn = false;
@@ -278,7 +280,8 @@
 </div>
 <main>
     {#if menuActive}
-        <div class="menu">
+        <div transition:fly={{delay: 250, duration: 300, x: -50, easing: quintOut  }} on:introstart on:outroend
+             class="menu">
             <div class="menu__hamburger">
                 <button on:click={() => {menuActive = false}}>
                     <Icon d={menuOpen} color="#fff" size="2em"/>
@@ -361,7 +364,8 @@
             </div>
         </div>
     {/if}
-    <div class:body-margin-on-menu-active={menuActive} class="body">
+    <div class:body-margin-on-menu-active={menuActive}
+         class="body">
         <slot/>
     </div>
 </main>
@@ -512,6 +516,7 @@
 
   .body {
     flex-grow: 1;
+    transition: margin-left 300ms ease-in-out;
   }
 
   .body-margin-on-menu-active {

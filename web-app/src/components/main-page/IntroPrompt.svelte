@@ -9,14 +9,19 @@
 
 <!----------------------------- HTML ----------------------------->
 <section>
-    <div class="h2 content">
-        The <span style="color: var(--primary)">omnipresent comment section</span> to discuss, fact-check, and share
-        your views about the web page
+    <div class="content">
+        <div class="content__sub-title">
+            Experience the <span style="color: var(--primary)"> omnipresent comment section </span> of the web
+        </div>
+        <div class="h2 content__title">
+            <span style="color: var(--primary)">Discuss, fact-check & share
+            your views</span> about any web page
+        </div>
     </div>
     <div class="btn-box">
         <button on:click={() => showAddNewPostModal = true}
                 class="btn">
-            Create a Post
+            Create a post
         </button>
         <button on:click={() => showJoinForUpdatesModal = true}
                 class="btn-alt">
@@ -45,8 +50,19 @@
   }
 
   .content {
-    line-height: 1.5;
-    max-width: 72rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .content__sub-title {
+    font-size: var(--medium-font-size);
+    font-weight: var(--semi-medium-font-weight);
+  }
+
+  .content__title {
+    line-height: 1.2;
+    max-width: 54rem;
   }
 
   .btn-box {
@@ -56,6 +72,30 @@
     justify-content: space-evenly;
     min-width: fit-content;
     gap: 1.5rem;
+  }
+
+  .btn-box button {
+    min-width: fit-content;
+  }
+
+  @media only screen and (max-width: 1024px) {
+    section {
+      flex-direction: column;
+    }
+
+    .content__sub-title {
+      font-size: var(--small-font-size);
+    }
+
+    .content__title {
+      font-size: var(--medium-font-size);
+    }
+
+    .btn-box {
+      flex-direction: row;
+      margin-left: unset;
+      justify-content: flex-start;
+    }
   }
 </style>
 <!----------------------------------------------------------------->
