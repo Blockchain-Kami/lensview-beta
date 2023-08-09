@@ -64,6 +64,7 @@ export async function POST(requestEvent) {
 			return json({
 				parentPubId: pubId,
 				successCode: 1,
+				isUrlAlreadyAdded: true,
 				message: 'Link is already added to LensView.'
 			});
 		} else if (postContent) {
@@ -73,6 +74,7 @@ export async function POST(requestEvent) {
 				return json({
 					parentPubId: pubId,
 					successCode: 2,
+					isUrlAlreadyAdded: true,
 					message: 'Link was already present in LensView. User comment added to the post.'
 				});
 			}
@@ -98,6 +100,7 @@ export async function POST(requestEvent) {
 			return json({
 				parentPubId: pubId,
 				successCode: 3,
+				isUrlAlreadyAdded: false,
 				message: 'New URL added to LensView successfully'
 			});
 		} else {
@@ -108,7 +111,8 @@ export async function POST(requestEvent) {
 				return json({
 					parentPubId: pubId,
 					successCode: 4,
-					message: 'User comment added to the post'
+					isUrlAlreadyAdded: false,
+					message: 'New URL added to LensView and user comment added to the post'
 				});
 			}
 		}
