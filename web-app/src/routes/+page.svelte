@@ -443,7 +443,12 @@
     background: var(--btn-bg);
     padding: 1.5rem;
     border-radius: 50%;
+    transition: all .4s ease-in-out;
     box-shadow: rgba(0, 0, 0, 0.25) 0 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  }
+
+  .add__post:hover {
+    transform: scale(1.3);
   }
 </style>
 <!----------------------------------------------------------------->
