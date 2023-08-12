@@ -1,7 +1,12 @@
 /**
  * Web3 Storage Code
  */
-import { PUBLIC_SOURCE_APP_ID, PUBLIC_WEB3STORAGE_TOKEN } from '$env/static/public';
+import {
+	PUBLIC_APP_LENS_HANDLE,
+	PUBLIC_DOMAIN_NAME,
+	PUBLIC_SOURCE_APP_ID,
+	PUBLIC_WEB3STORAGE_TOKEN
+} from '$env/static/public';
 import { File, Web3Storage } from 'web3.storage';
 import { v4 as uuidv4 } from 'uuid';
 import { createTags } from './create-tags.server';
@@ -21,45 +26,75 @@ function getAccessToken() {
 }
 
 function makeStorageClient() {
-    return new Web3Storage({token: getAccessToken()})
+	return new Web3Storage({ token: getAccessToken() });
 }
 
 function makeFileObjects(urlObj) {
-    // You can create File objects from a Blob of binary data
-    // see: https://developer.mozilla.org/en-US/docs/Web/API/Blob
-    // Here we're just storing a JSON object, but you can store images,
-    // audio, or whatever you want!
+	// You can create File objects from a Blob of binary data
+	// see: https://developer.mozilla.org/en-US/docs/Web/API/Blob
+	// Here we're just storing a JSON object, but you can store images,
+	// audio, or whatever you want!
 
-    // //Getting profile of the connected user and saving it to "profile" variable
-    // getUserProfile(address);
+	// //Getting profile of the connected user and saving it to "profile" variable
+	// getUserProfile(address);
 
-    const URLtags = [urlObj['hashedURL'], urlObj['hostname'], urlObj['hashedHostname'], urlObj['hashedPath'], urlObj['domain']];
+	const userTags = urlObj['tags'];
+	const URLtags = [
+		urlObj['hashedURL'],
+		urlObj['hostname'],
+		urlObj['hashedHostname'],
+		urlObj['hashedPath'],
+		urlObj['domain']
+	];
+	const allTags = userTags.concat(URLtags);
 
-    const tags = createTags(URLtags, urlObj['query']);
+	const tags = createTags(allTags, urlObj['query']);
 
-    const metaData = {
-			version: '2.0.0',
-			content: urlObj['url'],
-			description: urlObj['url'],
-			name: `Posting on test-net through lensView`,
-			external_url: urlObj['url'],
-			image: urlObj['image'],
-			metadata_id: uuidv4(),
-			mainContentFocus: 'TEXT_ONLY',
-			attributes: [],
-			locale: 'en-US',
-			appId: PUBLIC_SOURCE_APP_ID,
-			tags: tags
-		};
+	const lensHandle = urlObj['lensHandle'] ? `${urlObj['lensHandle']}` : PUBLIC_APP_LENS_HANDLE;
+	urlObj['lensHandle']
+		? tags.push('0f89daeb0a63c7b73224315c5514c21ba0453985')
+		: tags.push('418f361f5cdc602c856956bf752c06a29c52e54a');
 
-    try {
-        return [
-            new File(['contents-of-file-1'], 'plain-utf8.txt'),
-            new File([JSON.stringify(metaData)], 'metaData.json')];
-    } catch {
-        console.log("failed to create metadata file")
-        return
-    }
+	const metaData = {
+		version: '2.0.0',
+		content: urlObj['url'],
+		description: urlObj['url'],
+		name: `Post by ${lensHandle}`,
+		attributes: [
+			{
+				traitType: 'creator',
+				displayType: 'string',
+				value: lensHandle
+			},
+			{
+				traitType: 'app',
+				displayType: 'string',
+				value: PUBLIC_SOURCE_APP_ID
+			},
+			{
+				traitType: 'addedOn',
+				displayType: 'string',
+				value: `${new Date().toJSON().slice(0, 10)}`
+			}
+		],
+		external_url: `https://${PUBLIC_DOMAIN_NAME}/profile/${lensHandle}`,
+		image: urlObj['image'],
+		metadata_id: uuidv4(),
+		mainContentFocus: 'LINK',
+		locale: 'en-US',
+		appId: PUBLIC_SOURCE_APP_ID,
+		tags: tags
+	};
+
+	try {
+		return [
+			new File(['contents-of-file-1'], 'plain-utf8.txt'),
+			new File([JSON.stringify(metaData)], 'metaData.json')
+		];
+	} catch {
+		console.log('failed to create metadata file');
+		return;
+	}
 }
 
 /*********************************/
@@ -68,24 +103,21 @@ function makeFileObjects(urlObj) {
  * 4. Upload to IPFS
  */
 const uploadToIPFS = async (urlObj) => {
+	try {
+		/*** Web3.storage ***/
+		const client = makeStorageClient();
+		const files = makeFileObjects(urlObj);
+		const cid = await client.put(files);
+		console.log('stored files with cid:', cid);
+		const uri = `https://${cid}.ipfs.w3s.link/metaData.json`;
 
-    try {
-        /*** Web3.storage ***/
-        const client = makeStorageClient()
-        const files = makeFileObjects(urlObj);
-        const cid = await client.put(files);
-        console.log('stored files with cid:', cid)
-        const uri = `https://${cid}.ipfs.w3s.link/metaData.json`;
+		console.log('URI : ' + uri);
 
-        console.log("URI : " + uri);
-
-        return uri
-
-    } catch (e) {
-        console.log('Failed to upload file to IPFS : ' + e);
-        return null;
-    }
-
-}
+		return uri;
+	} catch (e) {
+		console.log('Failed to upload file to IPFS : ' + e);
+		return null;
+	}
+};
 
 export default uploadToIPFS;

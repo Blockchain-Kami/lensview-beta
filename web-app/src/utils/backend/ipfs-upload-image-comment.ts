@@ -1,7 +1,12 @@
 /**
  * Web3 Storage Code
  */
-import { PUBLIC_SOURCE_APP_ID, PUBLIC_WEB3STORAGE_TOKEN } from '$env/static/public';
+import {
+	PUBLIC_APP_LENS_HANDLE,
+	PUBLIC_DOMAIN_NAME,
+	PUBLIC_SOURCE_APP_ID,
+	PUBLIC_WEB3STORAGE_TOKEN
+} from '$env/static/public';
 import { File, Web3Storage } from 'web3.storage';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -20,45 +25,66 @@ function getAccessToken() {
 }
 
 function makeStorageClient() {
-    return new Web3Storage({token: getAccessToken()})
+	return new Web3Storage({ token: getAccessToken() });
 }
 
 function makeFileObjects(urlObj) {
-    // You can create File objects from a Blob of binary data
-    // see: https://developer.mozilla.org/en-US/docs/Web/API/Blob
-    // Here we're just storing a JSON object, but you can store images,
-    // audio, or whatever you want!
+	// You can create File objects from a Blob of binary data
+	// see: https://developer.mozilla.org/en-US/docs/Web/API/Blob
+	// Here we're just storing a JSON object, but you can store images,
+	// audio, or whatever you want!
 
-    // //Getting profile of the connected user and saving it to "profile" variable
-    // getUserProfile(address);
-    const metaData = {
-			version: '2.0.0',
-			content: urlObj['image'],
-			description: 'Post Image',
-			name: `Posting on test-net through lensView`,
-			external_url: urlObj['url'],
-			image: urlObj['image'] ? urlObj['image'] : '', // TODO: add default image,
-			metadata_id: uuidv4(),
-			mainContentFocus: 'TEXT_ONLY',
-			attributes: [],
-			locale: 'en-US',
-			appId: PUBLIC_SOURCE_APP_ID,
-			tags: [
-				urlObj['hashedURL'],
-				urlObj['hostname'],
-				urlObj['hashedHostname'],
-				urlObj['hashedPath']
-			]
-		};
+	// //Getting profile of the connected user and saving it to "profile" variable
+	// getUserProfile(address);
+	const lensHandle = urlObj['lensHandle'] ? `${urlObj['lensHandle']}` : PUBLIC_APP_LENS_HANDLE;
 
-    try {
-        return [
-            new File(['contents-of-file-1'], 'plain-utf8.txt'),
-            new File([JSON.stringify(metaData)], 'metaData.json')];
-    } catch {
-        console.log("failed to create metadata file")
-        return
-    }
+	const metaData = {
+		version: '2.0.0',
+		content: `The image link for the url is ${urlObj['image']}`,
+		description: `The image link for the url is ${urlObj['image']}`,
+		name: `Post by ${lensHandle}`,
+		attributes: [
+			{
+				traitType: 'creator',
+				displayType: 'string',
+				value: lensHandle
+			},
+			{
+				traitType: 'app',
+				displayType: 'string',
+				value: PUBLIC_SOURCE_APP_ID
+			},
+			{
+				traitType: 'addedOn',
+				displayType: 'string',
+				value: `${new Date().toJSON().slice(0, 10)}`
+			}
+		],
+		external_url: `https://${PUBLIC_DOMAIN_NAME}/profile/${lensHandle}`,
+		image: urlObj['image'],
+		media: [
+			{
+				item: urlObj['image'],
+				type: 'image/jpeg',
+				cover: null
+			}
+		],
+		metadata_id: uuidv4(),
+		mainContentFocus: 'IMAGE',
+		locale: 'en-US',
+		appId: PUBLIC_SOURCE_APP_ID,
+		tags: ['dd472d3370b389eb8399ea7c795ca9e76ff0d4d7']
+	};
+
+	try {
+		return [
+			new File(['contents-of-file-1'], 'plain-utf8.txt'),
+			new File([JSON.stringify(metaData)], 'metaData.json')
+		];
+	} catch {
+		console.log('failed to create metadata file');
+		return;
+	}
 }
 
 /*********************************/
@@ -67,24 +93,21 @@ function makeFileObjects(urlObj) {
  * 4. Upload to IPFS
  */
 const uploadImageCommentToIPFS = async (urlObj) => {
+	try {
+		/*** Web3.storage ***/
+		const client = makeStorageClient();
+		const files = makeFileObjects(urlObj);
+		const cid = await client.put(files);
+		console.log('stored files with cid:', cid);
+		const uri = `https://${cid}.ipfs.w3s.link/metaData.json`;
 
-    try {
-        /*** Web3.storage ***/
-        const client = makeStorageClient()
-        const files = makeFileObjects(urlObj);
-        const cid = await client.put(files);
-        console.log('stored files with cid:', cid)
-        const uri = `https://${cid}.ipfs.w3s.link/metaData.json`;
+		console.log('URI : ' + uri);
 
-        console.log("URI : " + uri);
-
-        return uri
-
-    } catch (e) {
-        console.log("Failed to upload file to IPFS");
-        console.log(e)
-    }
-
-}
+		return uri;
+	} catch (e) {
+		console.log('Failed to upload file to IPFS');
+		console.log(e);
+	}
+};
 
 export default uploadImageCommentToIPFS;

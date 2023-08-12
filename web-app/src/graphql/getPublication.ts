@@ -43,6 +43,11 @@ fragment MetadataOutputFields on MetadataOutput {
   description
   content
   tags
+  attributes{
+    traitType
+    displayType
+    value
+  }
 }
 
 fragment PostFields on Post {

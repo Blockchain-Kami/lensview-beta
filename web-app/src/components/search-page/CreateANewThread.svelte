@@ -8,10 +8,10 @@
 <!----------------------------- HTML ----------------------------->
 <section>
     <div class="content">
-        <div class="h3 content__err-msg">
+        <div class="content__sub-title">
             Oops, we might not have what you are looking for right now.
         </div>
-        <div class="h2 content__next-step-msg">
+        <div class="h2 content__title">
             But you can always start a new discussion or share your views by
             <span style="color: var(--primary);">creating one!</span>
         </div>
@@ -46,17 +46,43 @@
   .content {
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: 1.5rem;
   }
 
-  .content__next-step-msg {
-    line-height: 1.3;
+  .content__sub-title {
+    font-size: var(--medium-font-size);
+    font-weight: var(--semi-medium-font-weight);
+  }
+
+  .content__title {
+    line-height: 1.2;
     max-width: 72rem;
   }
 
   .create-btn {
     margin-top: auto;
     margin-left: auto;
+    min-width: fit-content;
+  }
+
+  @media only screen and (max-width: 1024px) {
+    section {
+      flex-direction: column;
+    }
+
+    .content__sub-title {
+      font-size: var(--small-font-size);
+    }
+
+    .content__title {
+      font-size: var(--medium-font-size);
+    }
+
+    .create-btn {
+      flex-direction: row;
+      margin-left: unset;
+      justify-content: flex-start;
+    }
   }
 </style>
 <!----------------------------------------------------------------->

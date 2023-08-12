@@ -35,8 +35,6 @@
     const checkIfInputIsInvalid = () => {
         const wordCount = calculateWordCount(userEnteredContent);
 
-        console.log("wordCount: ", wordCount);
-
         if (userEnteredContent.length === 0) {
             inputInvalidReason = "";
             isInputInvalid = true;
@@ -135,11 +133,11 @@
         const mainPostPubId = $page.data.mainPostPubId;
         const postPubId = $page.data.postPubId;
 
-        console.log("successfully requested");
+        console.log("Post on its way!");
         addNotification({
             position: 'top-right',
-            heading: 'Successfully Requested',
-            description: `Your ${pubBtnName.toLowerCase()} will be ${pubBtnName.toLowerCase()}ed anonymously`,
+            heading: 'Post on its way!',
+            description: `Your anonymous ${pubBtnName.toLowerCase()} is getting ready to shine! Hang tight for a brief moment - your patience is golden!`,
             type: flightTakeoff,
             removeAfter: 7000,
         });

@@ -5,21 +5,24 @@
         copy,
         modeComment,
         moreHoriz,
+        person,
         plus,
         redirect,
         share,
-        thumbDownAlt,
-        thumbUpAlt,
+        thumbDown,
+        thumbUp,
         trendingUp
     } from "../utils/frontend/appIcon";
     import type {PageData} from "./$types";
     import getFormattedDate from "../utils/frontend/getFormattedDate";
     import {getCommentOfPublication} from "../utils/frontend/getCommentOfPublication";
-    import getImageURLFromURLHash from "../utils/frontend/getImageURLFromURLHash";
+    import getImageURLUsingParentPubId from "../utils/frontend/getImageURLUsingParentPubId";
     import AddNewPost from "../components/main-page/AddNewPost.svelte";
     import IntroPrompt from "../components/main-page/IntroPrompt.svelte";
     import {getNotificationsContext} from 'svelte-notifications';
     import DOMPurify from "dompurify";
+    import {Tooltip} from "@svelte-plugins/tooltips";
+    import {PUBLIC_APP_LENS_ID} from "$env/static/public";
 
     type CardsMoreStatus = {
         [key: string]: boolean;
@@ -61,7 +64,7 @@
         {#each data["explorePublicationsForApp"]?.items as item}
             <a href={"/posts/" + item?.id}>
                 <div class="card">
-                    {#await getImageURLFromURLHash(item?.metadata?.tags[0])}
+                    {#await getImageURLUsingParentPubId(item?.id)}
                         <div class="card__image-loader">
                         </div>
                     {:then fetchedImageUrl}
@@ -97,11 +100,11 @@
                     <div class="CenterRowFlex card__info">
                         <div class="CenterRowFlex card__info__reaction">
                             <div class="CenterRowFlex card__info__reaction__val">
-                                <Icon d={thumbUpAlt}/> {item?.stats?.totalUpvotes}
+                                <Icon d={thumbUp}/> {item?.stats?.totalUpvotes}
                             </div>
                             <div class="card__info__reaction__vertical-line"></div>
                             <div class="CenterRowFlex card__info__reaction__val">
-                                <Icon d={thumbDownAlt}/> {item?.stats?.totalDownvotes}
+                                <Icon d={thumbDown}/> {item?.stats?.totalDownvotes}
                             </div>
                         </div>
                         <div class="CenterColumnFlex card__info__content">
@@ -115,7 +118,7 @@
                             </div>
                         </div>
                     </div>
-                    {#await getCommentOfPublication(item?.id, 1)}
+                    {#await getCommentOfPublication(item?.id, 1, 'imagePub')}
                         <div class="CenterRowFlex card__post">
                             <div class="card__post__user-pic-loader">
 
@@ -140,6 +143,20 @@
                                     <div class="card__post__info__head__username">
                                         {data?.data?.publications?.items[0]?.profile?.handle}
                                     </div>
+                                    {#if data?.data?.publications?.items[0]?.profile?.id === PUBLIC_APP_LENS_ID}
+                                        <Tooltip
+                                                content="This post was made by an anonymous user!"
+                                                position="top"
+                                                autoPosition
+                                                align="left"
+                                                theme="custom-tooltip"
+                                                maxWidth="150"
+                                                animation="slide">
+                                            <span class="CenterRowFlex card__post__info__head__anon-comment">
+                                              <Icon d={person} size="1.05em"/>
+                                            </span>
+                                        </Tooltip>
+                                    {/if}
                                     <div class="CenterRowFlex card__post__info__head__trend">
                                         <div class="CenterRowFlex card__post__info__head__trend__icon">
                                             <Icon d={trendingUp}/>
@@ -363,6 +380,12 @@
     color: #32F9FF;
   }
 
+  .card__post__info__head__anon-comment {
+    background: #132e2e;
+    border-radius: 50%;
+    padding: 0.25rem;
+  }
+
   .card__post__info__head__trend {
     background: #113232;
     border-radius: 14px;
@@ -420,7 +443,12 @@
     background: var(--btn-bg);
     padding: 1.5rem;
     border-radius: 50%;
+    transition: all .4s ease-in-out;
     box-shadow: rgba(0, 0, 0, 0.25) 0 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  }
+
+  .add__post:hover {
+    transform: scale(1.3);
   }
 </style>
 <!----------------------------------------------------------------->

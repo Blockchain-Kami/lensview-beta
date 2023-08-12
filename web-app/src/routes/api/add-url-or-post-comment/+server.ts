@@ -16,6 +16,7 @@ export async function POST(requestEvent) {
 	const enteredURL = urlRequest['enteredURL'];
 	const lensHandle = urlRequest['lensHandle'];
 	const postContent = urlRequest['postContent'];
+	const tags = urlRequest['userTags'];
 	let pubId;
 
 	const urlString = isInputTypeUrl(enteredURL);
@@ -41,7 +42,9 @@ export async function POST(requestEvent) {
 		path,
 		hashedPath,
 		query,
+		lensHandle,
 		postContent,
+		tags,
 		image : ''
 	};
 

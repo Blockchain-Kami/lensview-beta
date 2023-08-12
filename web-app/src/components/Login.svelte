@@ -1,6 +1,6 @@
 <script lang="ts">
     import Icon from "$lib/Icon.svelte";
-    import {close} from "../utils/frontend/appIcon";
+    import {close, cross, tick, wallet} from "../utils/frontend/appIcon";
     import Loader from "$lib/Loader.svelte";
     import {userAuthentication} from "../utils/frontend/authenticate";
     import getUserProfiles from "../utils/frontend/getUserProfiles";
@@ -13,7 +13,10 @@
     import {onMount} from "svelte";
     import {fly} from 'svelte/transition'
     import {backInOut} from "svelte/easing";
+    import {getNotificationsContext} from 'svelte-notifications';
 
+
+    const {addNotification} = getNotificationsContext();
     export let showLoginModal: boolean;
     let dialog: HTMLDialogElement;
     $: if (dialog && showLoginModal) dialog.showModal();
@@ -60,7 +63,18 @@
      */
     async function connect() {
         if (typeof window.ethereum === "undefined") {
-            alert("Please install metamask to interact with this application, but you can still view the others posts");
+            dialog.close();
+            addNotification({
+                position: 'top-right',
+                heading: 'Please install Metamask',
+                description: 'Please install metamask to post as yourself, you can still view others posts and post anonymously',
+                type: wallet,
+                removeAfter: 15000,
+                ctaBtnName: "Install Metamask",
+                ctaFunction: () => {
+                    window.open("https://metamask.io/", "_blank");
+                }
+            });
         } else {
             /* this allows the user to connect their wallet */
             try {
@@ -83,6 +97,14 @@
             } catch (error) {
                 isThisConnectWalletAccountChange = false;
                 console.log(error);
+                dialog.close();
+                addNotification({
+                    position: 'top-right',
+                    heading: 'Error while connecting wallet',
+                    description: 'Please try again to connect',
+                    type: cross,
+                    removeAfter: 3000
+                });
             }
         }
     }
@@ -164,7 +186,7 @@
                 showCreateLensHandleModal = true;
                 signingIn = false;
                 isHandleCreated = false;
-                dialog.close();
+                successfullySignInNotification();
             } else {
                 isHandleCreated = true;
                 showCreateLensHandleModal = false;
@@ -177,15 +199,34 @@
                 }
                 signingIn = false;
                 isSignedIn.setSignInStatus(true);
-                dialog.close();
+                successfullySignInNotification();
             }
 
         } catch (error) {
             console.log("Error authenticating user");
             isSignedIn.setSignInStatus(false);
             signingIn = false;
+            dialog.close();
+            addNotification({
+                position: 'top-right',
+                heading: 'Error while signing-in',
+                description: 'Please try again to sign-in',
+                type: cross,
+                removeAfter: 3000
+            });
         }
     };
+
+    const successfullySignInNotification = () => {
+        dialog.close();
+        addNotification({
+            position: 'top-right',
+            heading: 'Successfully signed-in',
+            description: 'You have successfully signed-in to Lens Views',
+            type: tick,
+            removeAfter: 3000
+        });
+    }
 
     const openCreateLensHandleModal = () => {
         showCreateLensHandleModal = true;

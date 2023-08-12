@@ -10,7 +10,7 @@
         border-radius: 50%;
         width: 1em;
         height: 1em;
-        animation: s-H3a_KHJ3hqK--spin 1s linear infinite;
+        animation: spin 1s linear infinite;
     }
 
     @keyframes spin {

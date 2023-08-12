@@ -103,10 +103,10 @@ option:hover {
 }
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
+
 @font-face {
-    font-family: 'Mona Sans';
-    src: url("lib/assets/Mona-Sans.woff2") format('woff2 supports variations'),
-    url("lib/assets/Mona-Sans.woff2") format('woff2-variations');
+    font-family: "mona-sans";
+    src: url("$lib/assets/Mona-Sans-SemiBoldWide.woff2") format('woff2');
     font-weight: 200 900;
     font-stretch: 75% 125%;
 }
@@ -117,7 +117,7 @@ option:hover {
     transition: background 500ms ease-in-out, color 1000ms ease-in-out;
     --primary: #32F9FF;
     --secondary: #0D7377;
-    --special-font: 'mona-sans';
+    --special-font: 'mona-sans', 'DM Sans', sans-serif;
     --text: #fff;
     --text-accent: #a1a1a1;
     --text-opacity: 0.7099999785423279;
@@ -221,7 +221,6 @@ a {
     0 100px 80px rgba(0, 0, 0, 0.12)
 }
 
-
 .btn {
     padding: 0.7em 1.2em;
     font-weight: var(--semi-medium-font-weight);
@@ -243,19 +242,33 @@ a {
 }
 
 .h1 {
-    font-family: 'Mona-Sans SemiBold Wide', 'mona-sans', sans-serif;
+    font-family: 'mona-sans', 'DM Sans', sans-serif;
     font-size: var(--large-font-size);
 }
 
 .h2 {
-    font-family: 'Mona-Sans SemiBold Wide', 'mona-sans', sans-serif;
+    font-family: 'mona-sans', 'DM Sans', sans-serif;
     font-size: var(--semi-large-font-size);
 }
 
 .h3 {
-    font-family: 'Mona-Sans SemiBold Wide', 'mona-sans', sans-serif;
+    font-family: 'mona-sans', 'DM Sans', sans-serif;
     font-size: var(--medium-font-size);
     font-weight: var(--semi-medium-font-weight);
+}
+
+.tooltip.custom-tooltip {
+    --tooltip-background-color: #18242c;
+    --tooltip-border-radius: 5px;
+    --tooltip-box-shadow: 0 1px 20px rgba(0, 0, 0, 0.25);
+    --tooltip-font-family: 'DM Sans', sans-serif;
+    --tooltip-font-size: var(--small-font-size);
+    --tooltip-color: var(--primary);
+    --tooltip-offset-x: 12px;
+    --tooltip-offset-y: 12px;
+    --tooltip-padding: 0.5rem;
+    --tooltip-z-index: 100;
+    --tooltip-arrow-size: 10px;
 }
 
 

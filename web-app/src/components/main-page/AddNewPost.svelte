@@ -1,7 +1,6 @@
 <script lang="ts">
     import Icon from "$lib/Icon.svelte";
-    import {close, cross, flightTakeoff, tick} from "../../utils/frontend/appIcon";
-    import Loader from "$lib/Loader.svelte";
+    import {awesome, close, cross, flightTakeoff, signature, tick} from "../../utils/frontend/appIcon";
     import {isSignedIn} from "../../services/signInStatus";
     import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
     import Login from "../Login.svelte";
@@ -13,7 +12,6 @@
     import {backInOut} from "svelte/easing";
 
     const {addNotification} = getNotificationsContext();
-
     export let showAddNewPostModal: boolean;
 
     let dialog: HTMLDialogElement;
@@ -29,12 +27,8 @@
     let isUrlInvalid = false;
     let urlInvalidReason = "";
 
-    let isPublishing = false;
-
     const checkIfContentIsInvalid = () => {
         const wordCount = calculateWordCount(userEnteredContent);
-
-        console.log("wordCount: ", wordCount);
 
         if (userEnteredContent.length === 0) {
             contentInvalidReason = "";
@@ -85,16 +79,43 @@
         if (!checkIsSignedIn()) {
             showLoginModal = true;
         } else {
-            isPublishing = true;
+            dialog.close();
+            addNotification({
+                position: 'top-right',
+                heading: 'Post on its way!',
+                description: 'Your post is getting polished and will shine on the feed in just a moment! Thanks for your patience.',
+                type: flightTakeoff,
+                removeAfter: 7000,
+            });
+
             try {
                 const pubId = await addUrlAndGetPubId();
+
+                addNotification({
+                    position: 'top-right',
+                    heading: 'Metamask approval needed',
+                    description: 'Kindly fulfill upcoming Metamask dialog request to seamlessly publish your post on LensView.',
+                    type: signature,
+                    removeAfter: 10000,
+                });
+
                 const txPromise = postAPublication(userEnteredContent, pubId);
-                txPromise.then((tx) => {
-                    checkUntilPubAdded(tx?.hash, Date.now());
+                txPromise.then(async (tx) => {
+                    await checkUntilPubAdded(tx?.hash, Date.now());
+                    addNotification({
+                        position: 'top-right',
+                        heading: 'Successfully Posted',
+                        description: 'Your post was successfully posted anonymously. Click on "View Post" to see your post',
+                        type: tick,
+                        removeAfter: 12000,
+                        ctaBtnName: "View Post",
+                        ctaFunction: () => {
+                            goto(`/posts/${pubId}`);
+                        }
+                    });
                 });
             } catch (err) {
                 console.log("error: ", err);
-                isPublishing = false;
             }
         }
     };
@@ -103,7 +124,6 @@
 
         /** If post is not added to lens within 25 seconds, then stop checking */
         if (Date.now() - startTime > 25000) {
-            isPublishing = false;
             alert("Error adding post");
             return;
         }
@@ -114,9 +134,7 @@
             console.log("Waiting for post to be added to graph");
             setTimeout(() => checkUntilPubAdded(txHash, startTime), 100);
         } else {
-            isPublishing = false;
             userEnteredContent = "";
-            dialog.close();
         }
     };
 
@@ -165,7 +183,8 @@
                 body: JSON.stringify({
                     "enteredURL": userEnteredUrl,
                     "lensHandle": handle,
-                    "postContent": ""
+                    "postContent": "",
+                    "userTags": []
                 })
             }).then((res) => {
                 if (res.ok)
@@ -173,6 +192,16 @@
                 else
                     throw new Error(res.statusText);
             });
+
+            if (!response?.isUrlAlreadyAdded) {
+                addNotification({
+                    position: 'top-right',
+                    heading: 'New URL added to LensView',
+                    description: 'Congratulations! Your new URL has been added to LensView',
+                    type: awesome,
+                    removeAfter: 10000,
+                });
+            }
 
             return response?.parentPubId;
         } catch (error) {
@@ -182,11 +211,11 @@
     }
 
     const postAnonymously = async () => {
-        console.log("successfully requested");
+        console.log("Post on its way!");
         addNotification({
             position: 'top-right',
-            heading: 'Successfully Requested',
-            description: 'Your post will be posted anonymously',
+            heading: 'Post on its way!',
+            description: 'Your anonymous  post is getting ready to shine! Hang tight for a brief moment - your patience is golden!',
             type: flightTakeoff,
             removeAfter: 7000,
         });
@@ -201,7 +230,8 @@
                 body: JSON.stringify({
                     "enteredURL": userEnteredUrl,
                     "lensHandle": null,
-                    "postContent": userEnteredContent
+                    "postContent": userEnteredContent,
+                    "userTags": []
                 })
             }).then((res) => {
                 if (res.ok)
@@ -214,10 +244,18 @@
             userEnteredContent = "";
             userEnteredUrl = "";
 
+            let notificationHeading = 'Successfully Posted';
+            let notificationDescription = 'Your post was successfully posted anonymously. Click on "View Post" to see your post';
+
+            if (!addedPostDetails?.isUrlAlreadyAdded) {
+                notificationHeading = 'New URL added, post successful';
+                notificationDescription = "New URL added to LensView! Your anonymous post is live. Click 'View Post' to check it out.";
+            }
+
             addNotification({
                 position: 'top-right',
-                heading: 'Successfully Posted',
-                description: 'Your post was successfully posted anonymously. Click on "View Post" to see your post',
+                heading: notificationHeading,
+                description: notificationDescription,
                 type: tick,
                 removeAfter: 12000,
                 ctaBtnName: "View Post",
@@ -302,16 +340,9 @@
                         style="--btn-alt-color: #1e4748;">
                     Post anonymously
                 </button>
-                {#if !isPublishing}
                     <button class="btn" on:click={postThroughUser}
                             disabled={isContentInvalid || isUrlInvalid}>Post as you
                     </button>
-                {:else}
-                    <button class="btn"
-                            disabled>
-                        Posting &nbsp;<Loader/>
-                    </button>
-                {/if}
             </div>
         </main>
     {/if}
