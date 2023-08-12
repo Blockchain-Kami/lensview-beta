@@ -31,25 +31,45 @@ function makeFileObjects(urlObj) {
 
     // //Getting profile of the connected user and saving it to "profile" variable
     // getUserProfile(address);
+    const date = new Date(Date.now());
+
+    const lensHandle = urlObj['lensHandle'] ? `${urlObj['lensHandle']}`: 'lensviewanon';
     const metaData = {
-			version: '2.0.0',
-			content: urlObj['image'],
-			description: 'Post Image',
-			name: `Posting on test-net through lensView`,
-			external_url: urlObj['url'],
-			image: urlObj['image'] ? urlObj['image'] : '', // TODO: add default image,
-			metadata_id: uuidv4(),
-			mainContentFocus: 'TEXT_ONLY',
-			attributes: [],
-			locale: 'en-US',
-			appId: PUBLIC_SOURCE_APP_ID,
-			tags: [
-				urlObj['hashedURL'],
-				urlObj['hostname'],
-				urlObj['hashedHostname'],
-				urlObj['hashedPath']
-			]
-		};
+        version: '2.0.0',
+        content: `The image link for the url is ${urlObj['image']}`,
+        description: `The image link for the url is ${urlObj['image']}`,
+        name: `Post by ${lensHandle}`, // TODO: Add lensviewanon to .env
+        attributes: [
+            {
+                "traitType": "creator",
+                "displayType": "string",
+                "value": lensHandle
+            },
+            {
+                "traitType": "app",
+                "displayType": "string",
+                "value": "lensview"
+            },
+            {
+                "traitType": "addedOn",
+                "displayType": "string",
+                "value": `${date.getMonth()}/${date.getUTCDate()}/${date.getFullYear()}`
+            }
+        ],
+        external_url: `https://testnet.lensview.io/profile/${lensHandle}`,
+        image: urlObj['image'],
+        media: [
+            {
+                "item": urlObj['image'],
+                "type": "image/jpeg",
+                "cover": null
+            }],
+        metadata_id: uuidv4(),
+        mainContentFocus: 'IMAGE',
+        locale: 'en-US',
+        appId: PUBLIC_SOURCE_APP_ID,
+        tags: ["yjDxCx3+3b_eWV"]
+    };
 
     try {
         return [

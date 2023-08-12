@@ -31,20 +31,37 @@ function makeFileObjects(content) {
 
     // //Getting profile of the connected user and saving it to "profile" variable
     // getUserProfile(address);
+    const date = new Date(Date.now());
     const metaData = {
-			version: '2.0.0',
-			content: content,
-			// description: LensView Comment,
-			name: `Posting on test-net through lensView`,
-			// external_url: ,
-			image: null,
-			metadata_id: uuidv4(),
-			mainContentFocus: 'TEXT_ONLY',
-			attributes: [],
-			locale: 'en-US',
-			appId: PUBLIC_SOURCE_APP_ID,
-			tags: ['userPost']
-		};
+        version: '2.0.0',
+        content: content,
+        description: content,
+        name: `Post by lensviewanon`, // TODO: Add lensviewanon to .env
+        attributes: [
+            {
+                "traitType": "creator",
+                "displayType": "string",
+                "value": "lensviewanon"
+            },
+            {
+                "traitType": "app",
+                "displayType": "string",
+                "value": "lensview"
+            },
+            {
+                "traitType": "addedOn",
+                "displayType": "string",
+                "value": `${date.getMonth()}/${date.getUTCDate()}/${date.getFullYear()}`
+            }
+        ],
+        external_url: `https://testnet.lensview.io/profile/lensviewanon`,
+        // image: urlObj['image'],
+        metadata_id: uuidv4(),
+        mainContentFocus: 'TEXT_ONLY',
+        locale: 'en-US',
+        appId: PUBLIC_SOURCE_APP_ID,
+        tags: ['userPost']
+    };
 
     try {
         return [

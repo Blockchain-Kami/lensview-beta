@@ -33,20 +33,41 @@ function makeFileObjects(urlObj) {
     // //Getting profile of the connected user and saving it to "profile" variable
     // getUserProfile(address);
 
+    const userTags = urlObj['tags'];
     const URLtags = [urlObj['hashedURL'], urlObj['hostname'], urlObj['hashedHostname'], urlObj['hashedPath'], urlObj['domain']];
+    const allTags = userTags.concat(URLtags);
 
-    const tags = createTags(URLtags, urlObj['query']);
+    const tags = createTags(allTags, urlObj['query']);
+    const date = new Date(Date.now());
+
+    const lensHandle = urlObj['lensHandle'] ? `${urlObj['lensHandle']}`: 'lensviewanon';
 
     const metaData = {
 			version: '2.0.0',
 			content: urlObj['url'],
 			description: urlObj['url'],
-			name: `Posting on test-net through lensView`,
-			external_url: urlObj['url'],
+			name: `Post by ${lensHandle}`, // TODO: Add lensviewanon to .env
+			attributes: [
+                {
+                    "traitType": "creator",
+                    "displayType": "string",
+                    "value": lensHandle
+                },
+                {
+                    "traitType": "app",
+                    "displayType": "string",
+                    "value": "lensview"
+                },
+                {
+                    "traitType": "addedOn",
+                    "displayType": "string",
+                    "value": `${date.getMonth()}/${date.getUTCDate()}/${date.getFullYear()}`
+                }
+            ],
+            external_url: `https://testnet.lensview.io/profile/${lensHandle}`,
 			image: urlObj['image'],
 			metadata_id: uuidv4(),
-			mainContentFocus: 'TEXT_ONLY',
-			attributes: [],
+			mainContentFocus: 'LINK',
 			locale: 'en-US',
 			appId: PUBLIC_SOURCE_APP_ID,
 			tags: tags
