@@ -183,7 +183,8 @@
                 body: JSON.stringify({
                     "enteredURL": userEnteredUrl,
                     "lensHandle": handle,
-                    "postContent": ""
+                    "postContent": "",
+                    "userTags": []
                 })
             }).then((res) => {
                 if (res.ok)
@@ -229,7 +230,8 @@
                 body: JSON.stringify({
                     "enteredURL": userEnteredUrl,
                     "lensHandle": null,
-                    "postContent": userEnteredContent
+                    "postContent": userEnteredContent,
+                    "userTags": []
                 })
             }).then((res) => {
                 if (res.ok)

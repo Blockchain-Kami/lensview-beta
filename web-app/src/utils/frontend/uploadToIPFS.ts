@@ -1,4 +1,8 @@
-import { PUBLIC_SOURCE_APP_ID, PUBLIC_WEB3STORAGE_TOKEN } from '$env/static/public';
+import {
+	PUBLIC_DOMAIN_NAME,
+	PUBLIC_SOURCE_APP_ID,
+	PUBLIC_WEB3STORAGE_TOKEN
+} from '$env/static/public';
 import { Web3Storage } from 'web3.storage';
 import { v4 as uuid } from 'uuid';
 
@@ -14,16 +18,32 @@ function makeFileObjects(profileHandle: string, userEnteredContent: string) {
 
 	const metaData = {
 		version: '2.0.0',
+		name: `Post by ${profileHandle}`,
 		content: userEnteredContent,
 		description: userEnteredContent,
-		name: `Post by @${profileHandle}`,
-		external_url: 'https://lensView.xyz',
-		metadata_id: uuid(),
+		attributes: [
+			{
+				display_type: 'string',
+				trait_type: 'creator',
+				value: profileHandle
+			},
+			{
+				display_type: 'string',
+				trait_type: 'app',
+				value: PUBLIC_SOURCE_APP_ID
+			},
+			{
+				display_type: 'string',
+				trait_type: 'created on',
+				value: `${new Date().toJSON().slice(0, 10)}`
+			}
+		],
 		mainContentFocus: 'TEXT_ONLY',
-		attributes: [],
 		locale: 'en-US',
+		tags: ['0f89daeb0a63c7b73224315c5514c21ba0453985'],
+		metadata_id: uuid(),
 		appId: PUBLIC_SOURCE_APP_ID,
-		tags: ['userPost']
+		external_url: `https://${PUBLIC_DOMAIN_NAME}/profile/${profileHandle}`
 	};
 	const blob = new Blob([JSON.stringify(metaData)], { type: 'application/json' });
 

@@ -3,7 +3,7 @@
     import Icon from "$lib/Icon.svelte";
     import {modeComment, moreVert, person, redirect, thumbUp, trendingUp} from "../../utils/frontend/appIcon";
     import {getPublicationByPubId} from "../../utils/frontend/getPublicationByPubId";
-    import getImageURLFromURLHash from "../../utils/frontend/getImageURLFromURLHash";
+    import getImageURLUsingParentPubId from "../../utils/frontend/getImageURLUsingParentPubId";
     import getFormattedDate from "../../utils/frontend/getFormattedDate";
     import {getCommentOfPublication} from "../../utils/frontend/getCommentOfPublication";
     import {searchInputDetails} from "../../services/searchInputDetails";
@@ -57,7 +57,7 @@
                         <div class="card__body__post__loader"></div>
                     </div>
                 {:then mainPostPub}
-                    {#await getImageURLFromURLHash(mainPostPub?.data?.publications?.items[0]?.metadata?.tags[0])}
+                    {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
                         <div class="card__img-box__loader">
                         </div>
                     {:then imageUrl}

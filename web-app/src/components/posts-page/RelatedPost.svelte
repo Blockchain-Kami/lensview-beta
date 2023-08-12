@@ -13,7 +13,7 @@
     } from "../../utils/frontend/appIcon";
     import getFormattedDate from "../../utils/frontend/getFormattedDate";
     import {getCommentOfPublication} from "../../utils/frontend/getCommentOfPublication";
-    import getImageURLFromURLHash from "../../utils/frontend/getImageURLFromURLHash";
+    import getImageURLUsingParentPubId from "../../utils/frontend/getImageURLUsingParentPubId";
     import {onMount} from "svelte";
     import {getPublicationByPubId} from "../../utils/frontend/getPublicationByPubId";
     import {page} from "$app/stores";
@@ -78,7 +78,7 @@
                             </div>
                         </div>
                     {:then mainPostPub}
-                        {#await getImageURLFromURLHash(mainPostPub?.data?.publications?.items[0]?.metadata?.tags[0])}
+                        {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
                             <div class="card__image-loader">
                             </div>
                         {:then imageUrl}
@@ -135,7 +135,7 @@
                                 </div>
                             </div>
                         </div>
-                        {#await getCommentOfPublication(mainPostPubId, 1)}
+                        {#await getCommentOfPublication(mainPostPubId, 1, 'imagePub')}
                             <div class="CenterRowFlex card__post">
                                 <div class="card__post__user-pic-loader">
 

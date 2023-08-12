@@ -1,18 +1,18 @@
 import baseClient from './baseClient';
 import getImageFromComment from '../../graphql/getImageFromComment';
-import { PUBLIC_APP_LENS_ID } from '$env/static/public';
 
-const getImageURLFromURLHash = async (urlHash: string) => {
+const getImageURLUsingParentPubId = async (parentPubId: string) => {
 	console.log('');
 	try {
 		const client = baseClient;
 		const request = {
-			profileId: PUBLIC_APP_LENS_ID,
-			publicationTypes: ['COMMENT'],
+			commentsOf: parentPubId,
+			commentsOfOrdering: 'DESC',
+			limit: 1,
 			metadata: {
 				locale: 'en-us',
 				tags: {
-					all: [urlHash]
+					oneOf: ['dd472d3370b389eb8399ea7c795ca9e76ff0d4d7']
 				}
 			}
 		};
@@ -22,11 +22,11 @@ const getImageURLFromURLHash = async (urlHash: string) => {
 			})
 			.toPromise();
 
-		return response?.data?.publications?.items[0]?.metadata?.image;
+		return response?.data?.publications?.items[0]?.metadata?.media[0]?.original?.url;
 	} catch (err) {
 		console.log(err);
 		throw err;
 	}
 };
 
-export default getImageURLFromURLHash;
+export default getImageURLUsingParentPubId;

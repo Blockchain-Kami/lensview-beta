@@ -13,27 +13,31 @@ export const getCommentOfPublication = async (
 				commentsOf: publicationId,
 				commentsOfOrdering: 'RANKING',
 				commentsRankingFilter: 'RELEVANT',
-				limit: limit,
-				metadata: {
-					tags: {
-						oneOf: ['userPost']
-					}
-				}
+				limit: limit
 			};
 		} else if (filterBy === 'latest') {
+			request = {
+				commentsOf: publicationId,
+				commentsOfOrdering: 'DESC',
+				limit: limit
+			};
+		} else if (filterBy === 'post') {
+			request = {
+				publicationIds: [publicationId]
+			};
+		} else if (filterBy === 'imagePub') {
 			request = {
 				commentsOf: publicationId,
 				commentsOfOrdering: 'DESC',
 				limit: limit,
 				metadata: {
 					tags: {
-						oneOf: ['userPost']
+						oneOf: [
+							'0f89daeb0a63c7b73224315c5514c21ba0453985',
+							'418f361f5cdc602c856956bf752c06a29c52e54a'
+						]
 					}
 				}
-			};
-		} else if (filterBy === 'post') {
-			request = {
-				publicationIds: [publicationId]
 			};
 		}
 

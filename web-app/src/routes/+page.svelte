@@ -16,7 +16,7 @@
     import type {PageData} from "./$types";
     import getFormattedDate from "../utils/frontend/getFormattedDate";
     import {getCommentOfPublication} from "../utils/frontend/getCommentOfPublication";
-    import getImageURLFromURLHash from "../utils/frontend/getImageURLFromURLHash";
+    import getImageURLUsingParentPubId from "../utils/frontend/getImageURLUsingParentPubId";
     import AddNewPost from "../components/main-page/AddNewPost.svelte";
     import IntroPrompt from "../components/main-page/IntroPrompt.svelte";
     import {getNotificationsContext} from 'svelte-notifications';
@@ -64,7 +64,7 @@
         {#each data["explorePublicationsForApp"]?.items as item}
             <a href={"/posts/" + item?.id}>
                 <div class="card">
-                    {#await getImageURLFromURLHash(item?.metadata?.tags[0])}
+                    {#await getImageURLUsingParentPubId(item?.id)}
                         <div class="card__image-loader">
                         </div>
                     {:then fetchedImageUrl}
@@ -118,7 +118,7 @@
                             </div>
                         </div>
                     </div>
-                    {#await getCommentOfPublication(item?.id, 1)}
+                    {#await getCommentOfPublication(item?.id, 1, 'imagePub')}
                         <div class="CenterRowFlex card__post">
                             <div class="card__post__user-pic-loader">
 

@@ -5,7 +5,7 @@
     import {page} from '$app/stores';
     import {getPublicationByPubId} from "../../utils/frontend/getPublicationByPubId";
     import getFormattedDate from "../../utils/frontend/getFormattedDate";
-    import getImageURLFromURLHash from "../../utils/frontend/getImageURLFromURLHash";
+    import getImageURLUsingParentPubId from "../../utils/frontend/getImageURLUsingParentPubId";
     import {totalPosts} from "../../services/totalPosts";
     import {getNotificationsContext} from 'svelte-notifications';
 
@@ -53,7 +53,7 @@
             <RelatedPost userEnteredUrl={""}/>
         </div>
     {:then mainPostPub}
-        {#await getImageURLFromURLHash(mainPostPub?.data?.publications?.items[0]?.metadata?.tags[0])}
+        {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
             <div class="image__loader"></div>
         {:then imageUrl}
             <a href={`/posts/${mainPostPubId}`}>
@@ -108,7 +108,7 @@
                             Added by:
                         </div>
                         <div class="main-post__content__bottom__added-by__handle">
-                            username.lens
+                            {mainPostPub?.data?.publications?.items[0]?.metadata?.attributes[0]?.value}
                         </div>
                     </div>
                 </div>
@@ -118,7 +118,7 @@
             Related Posts
         </div>
         <div class="related-posts-body">
-            <RelatedPost userEnteredUrl={mainPostPub?.data?.publications?.items[0]?.metadata.content}/>
+            <RelatedPost userEnteredUrl={mainPostPub?.data?.publications?.items[0]?.metadata?.content}/>
         </div>
     {/await}
 </section>

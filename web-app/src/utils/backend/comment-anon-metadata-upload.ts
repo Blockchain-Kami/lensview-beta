@@ -1,9 +1,12 @@
 /**
  * Web3 Storage Code
  */
-import { PUBLIC_SOURCE_APP_ID, PUBLIC_WEB3STORAGE_TOKEN} from '$env/static/public';
-import PUBLIC_APP_LENS_HANDLE from "$env/static/public";
-import PUBLIC_DOMAIN_NAME from "$env/static/public";
+import {
+	PUBLIC_APP_LENS_HANDLE,
+	PUBLIC_DOMAIN_NAME,
+	PUBLIC_SOURCE_APP_ID,
+	PUBLIC_WEB3STORAGE_TOKEN
+} from '$env/static/public';
 import { File, Web3Storage } from 'web3.storage';
 import { v4 as uuidv4 } from 'uuid';
 

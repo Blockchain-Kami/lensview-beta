@@ -11,7 +11,11 @@ query Publications($request: PublicationsQueryRequest!) {
 
 
 fragment MetadataOutputFields on MetadataOutput {
-  image
+    media{
+    original{
+      url
+    }
+  }
 }
 
 
