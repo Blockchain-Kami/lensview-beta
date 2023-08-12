@@ -1,7 +1,9 @@
 /**
  * Web3 Storage Code
  */
-import { PUBLIC_SOURCE_APP_ID, PUBLIC_WEB3STORAGE_TOKEN } from '$env/static/public';
+import { PUBLIC_SOURCE_APP_ID, PUBLIC_WEB3STORAGE_TOKEN} from '$env/static/public';
+import PUBLIC_APP_LENS_HANDLE from "$env/static/public";
+import PUBLIC_DOMAIN_NAME from "$env/static/public";
 import { File, Web3Storage } from 'web3.storage';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -31,36 +33,35 @@ function makeFileObjects(content) {
 
     // //Getting profile of the connected user and saving it to "profile" variable
     // getUserProfile(address);
-    const date = new Date(Date.now());
     const metaData = {
         version: '2.0.0',
         content: content,
         description: content,
-        name: `Post by lensviewanon`, // TODO: Add lensviewanon to .env
+        name: `Post by ${PUBLIC_APP_LENS_HANDLE}`,
         attributes: [
             {
                 "traitType": "creator",
                 "displayType": "string",
-                "value": "lensviewanon"
+                "value":PUBLIC_APP_LENS_HANDLE
             },
             {
                 "traitType": "app",
                 "displayType": "string",
-                "value": "lensview"
+                "value": PUBLIC_SOURCE_APP_ID
             },
             {
                 "traitType": "addedOn",
                 "displayType": "string",
-                "value": `${date.getMonth()}/${date.getUTCDate()}/${date.getFullYear()}`
+                "value": `${new Date().toJSON().slice(0, 10)}`
             }
         ],
-        external_url: `https://testnet.lensview.io/profile/lensviewanon`,
+        external_url: `https://${PUBLIC_DOMAIN_NAME}/profile/${PUBLIC_APP_LENS_HANDLE}`,
         // image: urlObj['image'],
         metadata_id: uuidv4(),
         mainContentFocus: 'TEXT_ONLY',
         locale: 'en-US',
         appId: PUBLIC_SOURCE_APP_ID,
-        tags: ['userPost']
+        tags: ['418f361f5cdc602c856956bf752c06a29c52e54a']
     };
 
     try {

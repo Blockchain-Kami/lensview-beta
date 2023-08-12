@@ -2,6 +2,8 @@
  * Web3 Storage Code
  */
 import { PUBLIC_SOURCE_APP_ID, PUBLIC_WEB3STORAGE_TOKEN } from '$env/static/public';
+import PUBLIC_APP_LENS_HANDLE from "$env/static/public";
+import PUBLIC_DOMAIN_NAME from "$env/static/public";
 import { File, Web3Storage } from 'web3.storage';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -31,14 +33,15 @@ function makeFileObjects(urlObj) {
 
     // //Getting profile of the connected user and saving it to "profile" variable
     // getUserProfile(address);
-    const date = new Date(Date.now());
+    const lensHandle = urlObj['lensHandle'] ? `${urlObj['lensHandle']}`: PUBLIC_APP_LENS_HANDLE;
+    const tags = urlObj['lensHandle'] ? ['0f89daeb0a63c7b73224315c5514c21ba0453985'] : ['418f361f5cdc602c856956bf752c06a29c52e54a'];
+    tags.push('dd472d3370b389eb8399ea7c795ca9e76ff0d4d7');
 
-    const lensHandle = urlObj['lensHandle'] ? `${urlObj['lensHandle']}`: 'lensviewanon';
     const metaData = {
         version: '2.0.0',
         content: `The image link for the url is ${urlObj['image']}`,
         description: `The image link for the url is ${urlObj['image']}`,
-        name: `Post by ${lensHandle}`, // TODO: Add lensviewanon to .env
+        name: `Post by ${lensHandle}`,
         attributes: [
             {
                 "traitType": "creator",
@@ -48,15 +51,15 @@ function makeFileObjects(urlObj) {
             {
                 "traitType": "app",
                 "displayType": "string",
-                "value": "lensview"
+                "value": PUBLIC_SOURCE_APP_ID
             },
             {
                 "traitType": "addedOn",
                 "displayType": "string",
-                "value": `${date.getMonth()}/${date.getUTCDate()}/${date.getFullYear()}`
+                "value": `${new Date().toJSON().slice(0, 10)}`
             }
         ],
-        external_url: `https://testnet.lensview.io/profile/${lensHandle}`,
+        external_url: `https://${PUBLIC_DOMAIN_NAME}/profile/${lensHandle}`,
         image: urlObj['image'],
         media: [
             {
@@ -68,7 +71,7 @@ function makeFileObjects(urlObj) {
         mainContentFocus: 'IMAGE',
         locale: 'en-US',
         appId: PUBLIC_SOURCE_APP_ID,
-        tags: ["yjDxCx3+3b_eWV"]
+        tags: tags
     };
 
     try {
