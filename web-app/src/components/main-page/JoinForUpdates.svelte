@@ -1,6 +1,11 @@
 <script lang="ts">
     import {fly} from 'svelte/transition'
     import {backInOut} from "svelte/easing";
+    import Twitter from "$lib/assets/Twitter.svg"
+    import Linkedin from "$lib/assets/Linkedin.svg"
+    import Mail from "$lib/assets/Mail.svg"
+    import Discord from "$lib/assets/Discord.svg"
+    import Instagram from "$lib/assets/Instagram.svg"
 
     export let showJoinForUpdatesModal: boolean; // boolean
 
@@ -24,19 +29,19 @@
             </div>
             <div class="CenterRowFlex body">
                 <a href="https://twitter.com/lensview_" target="_blank">
-                    <img src={'/src/lib/assets/Twitter.svg'} alt="">
+                    <img src={Twitter} alt="">
                 </a>
                 <a href="https://www.linkedin.com/company/lensviewio" target="_blank">
-                    <img src={'/src/lib/assets/Linkedin.svg'} alt="">
+                    <img src={Linkedin} alt="">
                 </a>
                 <a href="https://getwaitlist.com/waitlist/8129" target="_blank">
-                    <img src={'/src/lib/assets/Mail.svg'} alt="">
+                    <img src={Mail} alt="">
                 </a>
                 <a href="https://twitter.com/lensview_" target="_blank">
-                    <img src={'/src/lib/assets/Discord.svg'} alt="">
+                    <img src={Discord} alt="">
                 </a>
                 <a href="https://twitter.com/lensview_" target="_blank">
-                    <img src={'/src/lib/assets/Instagram.svg'} alt="">
+                    <img src={Instagram} alt="">
                 </a>
             </div>
         </main>
