@@ -34,8 +34,6 @@ function makeFileObjects(urlObj) {
     // //Getting profile of the connected user and saving it to "profile" variable
     // getUserProfile(address);
     const lensHandle = urlObj['lensHandle'] ? `${urlObj['lensHandle']}`: PUBLIC_APP_LENS_HANDLE;
-    const tags = urlObj['lensHandle'] ? ['0f89daeb0a63c7b73224315c5514c21ba0453985'] : ['418f361f5cdc602c856956bf752c06a29c52e54a'];
-    tags.push('dd472d3370b389eb8399ea7c795ca9e76ff0d4d7');
 
     const metaData = {
         version: '2.0.0',
@@ -71,7 +69,7 @@ function makeFileObjects(urlObj) {
         mainContentFocus: 'IMAGE',
         locale: 'en-US',
         appId: PUBLIC_SOURCE_APP_ID,
-        tags: tags
+        tags: ['dd472d3370b389eb8399ea7c795ca9e76ff0d4d7']
     };
 
     try {
