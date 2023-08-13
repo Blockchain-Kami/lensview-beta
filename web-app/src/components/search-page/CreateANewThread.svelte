@@ -1,5 +1,6 @@
 <script lang="ts">
     import AddNewPost from "../main-page/AddNewPost.svelte";
+    import {searchInputDetails} from "../../services/searchInputDetails";
 
     let showAddNewPostModal = false;
 </script>
@@ -25,7 +26,7 @@
 
 </section>
 
-<AddNewPost bind:showAddNewPostModal/>
+<AddNewPost userEnteredUrl={$searchInputDetails.userEnteredUrlOrKeywords} bind:showAddNewPostModal/>
 
 <!---------------------------------------------------------------->
 
@@ -68,6 +69,12 @@
   @media only screen and (max-width: 1024px) {
     section {
       flex-direction: column;
+      min-width: 27rem;
+      padding: 2rem;
+    }
+
+    .content {
+      gap: 1rem;
     }
 
     .content__sub-title {

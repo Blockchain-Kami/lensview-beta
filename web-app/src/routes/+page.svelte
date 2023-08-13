@@ -133,47 +133,54 @@
                             </div>
                         </div>
                     {:then data}
-                        <div class="CenterRowFlex card__post">
-                            <div class="card__post__user-pic">
-                                <img src={data?.data?.publications?.items[0]?.profile?.picture?.original?.url}
-                                     alt="avatar">
+                        {#if data?.data?.publications?.items[0]?.profile?.handle === undefined}
+                            <div class="CenterRowFlex card__post">
+                                No Top Post
                             </div>
-                            <div class="card__post__info">
-                                <div class="CenterRowFlex card__post__info__head">
-                                    <div class="card__post__info__head__username">
-                                        {data?.data?.publications?.items[0]?.profile?.handle}
-                                    </div>
-                                    {#if data?.data?.publications?.items[0]?.profile?.id === PUBLIC_APP_LENS_ID}
-                                        <Tooltip
-                                                content="This post was made by an anonymous user!"
-                                                position="top"
-                                                autoPosition
-                                                align="left"
-                                                theme="custom-tooltip"
-                                                maxWidth="150"
-                                                animation="slide">
+                        {:else}
+                            <div class="CenterRowFlex card__post">
+                                <div class="card__post__user-pic">
+                                    <img src={data?.data?.publications?.items[0]?.profile?.picture?.original?.url}
+                                         alt="avatar">
+                                </div>
+                                <div class="card__post__info">
+                                    <div class="CenterRowFlex card__post__info__head">
+                                        <div class="card__post__info__head__username">
+                                            {data?.data?.publications?.items[0]?.profile?.handle.substring(0, 12)}
+                                            {data?.data?.publications?.items[0]?.profile?.handle.length > 12 ? '...' : ''}
+                                        </div>
+                                        {#if data?.data?.publications?.items[0]?.profile?.id === PUBLIC_APP_LENS_ID}
+                                            <Tooltip
+                                                    content="This post was made by an anonymous user!"
+                                                    position="top"
+                                                    autoPosition
+                                                    align="left"
+                                                    theme="custom-tooltip"
+                                                    maxWidth="150"
+                                                    animation="slide">
                                             <span class="CenterRowFlex card__post__info__head__anon-comment">
                                               <Icon d={person} size="1.05em"/>
                                             </span>
-                                        </Tooltip>
-                                    {/if}
-                                    <div class="CenterRowFlex card__post__info__head__trend">
-                                        <div class="CenterRowFlex card__post__info__head__trend__icon">
-                                            <Icon d={trendingUp}/>
+                                            </Tooltip>
+                                        {/if}
+                                        <div class="CenterRowFlex card__post__info__head__trend">
+                                            <div class="CenterRowFlex card__post__info__head__trend__icon">
+                                                <Icon d={trendingUp}/>
+                                            </div>
+                                            <div class="card__post__info__head__trend__count">
+                                                {data?.data?.publications?.items[0]?.stats?.totalUpvotes === undefined ? 0 : data?.data?.publications?.items[0]?.stats?.totalUpvotes}
+                                            </div>
                                         </div>
-                                        <div class="card__post__info__head__trend__count">
-                                            {data?.data?.publications?.items[0]?.stats?.totalUpvotes === undefined ? 0 : data?.data?.publications?.items[0]?.stats?.totalUpvotes}
+                                        <div class="card__post__info__head__time">
+                                            {getFormattedDate(data?.data?.publications?.items[0]?.createdAt)}
                                         </div>
                                     </div>
-                                    <div class="card__post__info__head__time">
-                                        {getFormattedDate(data?.data?.publications?.items[0]?.createdAt)}
+                                    <div class="card__post__info__body">
+                                        {@html DOMPurify.sanitize(data?.data?.publications?.items[0]?.metadata?.content).substring(0, 100)}
                                     </div>
-                                </div>
-                                <div class="card__post__info__body">
-                                    {@html DOMPurify.sanitize(data?.data?.publications?.items[0]?.metadata?.content).substring(0, 100)}
                                 </div>
                             </div>
-                        </div>
+                        {/if}
                     {:catch error}
                         <div class="CenterRowFlex card__post">
                             No Top Post

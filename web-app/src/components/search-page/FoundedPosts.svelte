@@ -13,10 +13,11 @@
     import {PUBLIC_APP_LENS_ID} from "$env/static/public";
 
     let foundedMainPostPubId: string[] = [];
+    let fetchingMainPostPubId = false;
 
     searchInputDetails.subscribe(async (details: SearchInputDetailsModel) => {
         const userEnteredUrlOrKeywords = details.userEnteredUrlOrKeywords;
-
+        fetchingMainPostPubId = true;
         try {
             foundedMainPostPubId = await fetch('/api/related-pubs', {
                 method: 'POST',
@@ -25,6 +26,7 @@
                 },
                 body: JSON.stringify(userEnteredUrlOrKeywords)
             }).then((res) => {
+                fetchingMainPostPubId = false;
                 if (res.ok)
                     return res.json();
                 else
@@ -33,6 +35,7 @@
         } catch (error) {
             console.log('error', error);
             foundedMainPostPubId = [];
+            fetchingMainPostPubId = false;
         }
     });
 </script>
@@ -45,120 +48,145 @@
             This is what we found
         </div>
     {/if}
-    <div class="body">
-        {#each foundedMainPostPubId as mainPostPubId}
-            <a href={"/posts/" + mainPostPubId}
-               class="card">
-                {#await getPublicationByPubId(mainPostPubId)}
-                    <div class="card__img-box__loader">
-                    </div>
-                    <div class="card__body">
-                        <div class="card__body__info__loader"></div>
-                        <div class="card__body__post__loader"></div>
-                    </div>
-                {:then mainPostPub}
-                    {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
+    {#if fetchingMainPostPubId}
+        <div class="body">
+            <div class="card">
+                <div class="card__img-box__loader">
+                </div>
+                <div class="card__body">
+                    <div class="card__body__info__loader"></div>
+                    <div class="card__body__post__loader"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card__img-box__loader">
+                </div>
+                <div class="card__body">
+                    <div class="card__body__info__loader"></div>
+                    <div class="card__body__post__loader"></div>
+                </div>
+            </div>
+        </div>
+    {:else}
+        <div class="body">
+            {#each foundedMainPostPubId as mainPostPubId}
+                <a href={"/posts/" + mainPostPubId}
+                   class="card">
+                    {#await getPublicationByPubId(mainPostPubId)}
                         <div class="card__img-box__loader">
                         </div>
-                    {:then imageUrl}
-                        <div class="card__img-box">
-                            <div class="card__img-box__image"
-                                 style="background-image: url({imageUrl})">
-                                <div class="CenterRowFlex card__img-box__image__posts-count">
-                                    <Icon d={modeComment}/>
-                                    {mainPostPub?.data?.publications?.items[0]?.stats?.totalAmountOfComments}
-                                </div>
-                            </div>
+                        <div class="card__body">
+                            <div class="card__body__info__loader"></div>
+                            <div class="card__body__post__loader"></div>
                         </div>
-                    {/await}
-                    <div class="card__body">
-                        <div class="card__body__info">
-                            <div class="CenterRowFlex card__body__info__head">
-                                <div class="CenterRowFlex card__body__info__head__url-icon">
-                                    <Icon d={redirect}/>&nbsp;
-                                </div>
-                                <a href={mainPostPub?.data?.publications?.items[0]?.metadata.content} target="_blank"
-                                   class="card__body__info__head__url-val">
-                                    {mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(0, 60)}...
-                                </a>
-                                <button class="card__body__info__head__more">
-                                    <Icon d={moreVert}/>
-                                </button>
+                    {:then mainPostPub}
+                        {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
+                            <div class="card__img-box__loader">
                             </div>
-                            <div class="CenterRowFlex card__body__info__details">
-                                <div class="CenterRowFlex card__body__info__details__likes">
-                                    <Icon d={thumbUp}/>&nbsp;
-                                    {mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes} Likes
-                                </div>
-                                <div class="dot"></div>
-                                <div class="CenterRowFlex card__body__info__details__added-by">
-                                    <div class="card__body__info__details__added-by__label">
-                                        Added by:
-                                    </div>
-                                    <div class="card__body__info__details__added-by__handle">
-                                        naruto.lens
-                                    </div>
-                                </div>
-                                <div class="dot"></div>
-                                <div class="card__body__info__details__time">
-                                    {getFormattedDate(mainPostPub?.data?.publications?.items[0]?.createdAt)}
-                                </div>
-                            </div>
-                        </div>
-                        {#await getCommentOfPublication(mainPostPubId, 1)}
-                            <div class="CenterRowFlex card__body__post__loader"></div>
-                        {:then comment}
-                            <div class="CenterRowFlex card__body__post">
-                                <div class="card__body__post__pic">
-                                    <img src={comment?.data?.publications?.items[0]?.profile?.picture?.original?.url}
-                                         alt="avatar">
-                                </div>
-                                <div class="card__body__post__info">
-                                    <div class="CenterRowFlex card__body__post__info__head">
-                                        <div class="card__body__post__info__head__handle">
-                                            {comment?.data?.publications?.items[0]?.profile?.handle}
-                                        </div>
-                                        {#if comment?.data?.publications?.items[0]?.profile?.id === PUBLIC_APP_LENS_ID}
-                                            <Tooltip
-                                                    content="This post was made by an anonymous user!"
-                                                    position="top"
-                                                    autoPosition
-                                                    align="left"
-                                                    theme="custom-tooltip"
-                                                    maxWidth="150"
-                                                    animation="slide">
-                                            <span class="CenterRowFlex card__post__info__head__anon-comment">
-                                              <Icon d={person} size="1.05em"/>
-                                            </span>
-                                            </Tooltip>
-                                        {/if}
-                                        <div class="CenterRowFlex card__body__post__info__head__trend">
-                                            <div class="CenterRowFlex card__body__post__info__head__trend__icon">
-                                                <Icon d={trendingUp}/>
-                                            </div>
-                                            <div class="card__body__post__info__head__trend__count">
-                                                {comment?.data?.publications?.items[0]?.stats?.totalUpvotes === undefined ? 0 : comment?.data?.publications?.items[0]?.stats?.totalUpvotes}
-                                            </div>
-                                        </div>
-                                        <div class="dot"></div>
-                                        <div class="card__body__post__info__head__time">
-                                            {getFormattedDate(comment?.data?.publications?.items[0]?.createdAt)}
-                                        </div>
-                                    </div>
-                                    <div class="card__body__post__info__content">
-                                        {@html DOMPurify.sanitize(comment?.data?.publications?.items[0]?.metadata?.content).substring(0, 310)}
+                        {:then imageUrl}
+                            <div class="card__img-box">
+                                <div class="card__img-box__image"
+                                     style="background-image: url({imageUrl})">
+                                    <div class="CenterRowFlex card__img-box__image__posts-count">
+                                        <Icon d={modeComment}/>
+                                        {mainPostPub?.data?.publications?.items[0]?.stats?.totalAmountOfComments}
                                     </div>
                                 </div>
                             </div>
                         {/await}
-                    </div>
-                {/await}
-            </a>
-        {/each}
-    </div>
-    <div class="footer">
-        Couldn’t find what you were looking for? Maybe you can try a different keyword?
-    </div>
+                        <div class="card__body">
+                            <div class="card__body__info">
+                                <div class="CenterRowFlex card__body__info__head">
+                                    <div class="CenterRowFlex card__body__info__head__url-icon">
+                                        <Icon d={redirect}/>&nbsp;
+                                    </div>
+                                    <a href={mainPostPub?.data?.publications?.items[0]?.metadata.content}
+                                       target="_blank"
+                                       class="card__body__info__head__url-val">
+                                        {mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(0, 60)}
+                                        ...
+                                    </a>
+                                    <button class="card__body__info__head__more">
+                                        <Icon d={moreVert}/>
+                                    </button>
+                                </div>
+                                <div class="CenterRowFlex card__body__info__details">
+                                    <div class="CenterRowFlex card__body__info__details__likes">
+                                        <Icon d={thumbUp}/>&nbsp;
+                                        {mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes} Likes
+                                    </div>
+                                    <div class="dot"></div>
+                                    <div class="CenterRowFlex card__body__info__details__added-by">
+                                        <div class="card__body__info__details__added-by__label">
+                                            Added by:
+                                        </div>
+                                        <div class="card__body__info__details__added-by__handle">
+                                            naruto.lens
+                                        </div>
+                                    </div>
+                                    <div class="dot"></div>
+                                    <div class="card__body__info__details__time">
+                                        {getFormattedDate(mainPostPub?.data?.publications?.items[0]?.createdAt)}
+                                    </div>
+                                </div>
+                            </div>
+                            {#await getCommentOfPublication(mainPostPubId, 1)}
+                                <div class="CenterRowFlex card__body__post__loader"></div>
+                            {:then comment}
+                                <div class="CenterRowFlex card__body__post">
+                                    <div class="card__body__post__pic">
+                                        <img src={comment?.data?.publications?.items[0]?.profile?.picture?.original?.url}
+                                             alt="avatar">
+                                    </div>
+                                    <div class="card__body__post__info">
+                                        <div class="CenterRowFlex card__body__post__info__head">
+                                            <div class="card__body__post__info__head__handle">
+                                                {comment?.data?.publications?.items[0]?.profile?.handle}
+                                            </div>
+                                            {#if comment?.data?.publications?.items[0]?.profile?.id === PUBLIC_APP_LENS_ID}
+                                                <Tooltip
+                                                        content="This post was made by an anonymous user!"
+                                                        position="top"
+                                                        autoPosition
+                                                        align="left"
+                                                        theme="custom-tooltip"
+                                                        maxWidth="150"
+                                                        animation="slide">
+                                            <span class="CenterRowFlex card__post__info__head__anon-comment">
+                                              <Icon d={person} size="1.05em"/>
+                                            </span>
+                                                </Tooltip>
+                                            {/if}
+                                            <div class="CenterRowFlex card__body__post__info__head__trend">
+                                                <div class="CenterRowFlex card__body__post__info__head__trend__icon">
+                                                    <Icon d={trendingUp}/>
+                                                </div>
+                                                <div class="card__body__post__info__head__trend__count">
+                                                    {comment?.data?.publications?.items[0]?.stats?.totalUpvotes === undefined ? 0 : comment?.data?.publications?.items[0]?.stats?.totalUpvotes}
+                                                </div>
+                                            </div>
+                                            <div class="dot"></div>
+                                            <div class="card__body__post__info__head__time">
+                                                {getFormattedDate(comment?.data?.publications?.items[0]?.createdAt)}
+                                            </div>
+                                        </div>
+                                        <div class="card__body__post__info__content">
+                                            {@html DOMPurify.sanitize(comment?.data?.publications?.items[0]?.metadata?.content).substring(0, 310)}
+                                        </div>
+                                    </div>
+                                </div>
+                            {/await}
+                        </div>
+                    {/await}
+                </a>
+            {/each}
+        </div>
+        <div class="footer">
+            Couldn’t find what you were looking for? Maybe you can try a different keyword?
+        </div>
+    {/if}
+
+
 </section>
 
 <!---------------------------------------------------------------->
