@@ -22,9 +22,9 @@ const getFormattedDate = (date: string) => {
 			const diffMinutes = Math.floor(diffTime / (1000 * 60));
 			if (diffMinutes === 0) {
 				const diffSeconds = Math.floor(diffTime / 1000);
-				return `${diffSeconds} seconds ago`;
+				return `${diffSeconds} sec ago`;
 			} else {
-				return `${diffMinutes} minutes ago`;
+				return `${diffMinutes} min ago`;
 			}
 		} else {
 			return `${diffHours} hours ago`;

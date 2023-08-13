@@ -80,16 +80,22 @@
 
   @media only screen and (max-width: 1024px) {
     section {
+      min-width: 27rem;
       flex-direction: column;
+      padding: 2rem;
     }
 
-    //.content__sub-title {
-    //  font-size: var(--small-font-size);
-    //}
-    //
-    //.content__title {
-    //  font-size: var(--medium-font-size);
-    //}
+    .content {
+      gap: 1rem;
+    }
+
+    .content__sub-title {
+      font-size: var(--small-font-size);
+    }
+
+    .content__title {
+      font-size: var(--medium-font-size);
+    }
 
     .btn-box {
       flex-direction: row;

@@ -23,7 +23,7 @@
     const wordLimit = 1000;
     let isContentInvalid = true;
     let showLoginModal = false;
-    let userEnteredUrl = "";
+    export let userEnteredUrl = "";
     let isUrlInvalid = false;
     let urlInvalidReason = "";
 
