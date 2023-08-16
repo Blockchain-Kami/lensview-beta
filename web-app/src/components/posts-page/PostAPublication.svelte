@@ -1,6 +1,5 @@
 <script lang="ts">
-    import Icon from "$lib/Icon.svelte";
-    import {addPhoto, cross, flightTakeoff, tick} from "../../utils/frontend/appIcon";
+    import {cross, flightTakeoff, tick} from "../../utils/frontend/appIcon";
     import {isSignedIn} from "../../services/signInStatus";
     import {userProfile} from "../../services/profile";
     import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
@@ -225,10 +224,10 @@
     </div>
     <div class="CenterRowFlex footer">
         <div class="CenterRowFlex footer__insert">
-            <div class="CenterRowFlex footer__insert__item">
-                <Icon d={addPhoto}/>
-                Photo
-            </div>
+            <!--            <div class="CenterRowFlex footer__insert__item">-->
+            <!--                <Icon d={addPhoto}/>-->
+            <!--                Photo-->
+            <!--            </div>-->
         </div>
         <div class="CenterRowFlex footer__operations">
             <button on:click={postAnonymously}

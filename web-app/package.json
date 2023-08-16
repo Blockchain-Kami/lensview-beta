@@ -23,6 +23,7 @@
     "lodash": "^4.17.21",
     "omit-deep": "^0.3.0",
     "puppeteer": "^20.6.0",
+    "svelte-inview": "^4.0.1",
     "svelte-notifications": "^0.9.98",
     "uuid": "^9.0.0",
     "web3.storage": "^3.1.0"
