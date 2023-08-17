@@ -55,70 +55,105 @@
 <MediaQuery query="(max-width: 1024px)" let:matches>
     {#if matches}
         <section class="tablet">
-            <div class="tablet__main-post">
-                <div class="tablet__main-post__image">
-                    <img src="https://ik.imagekit.io/lens/media-snapshot/5a025de2c29e245cb07f6622724b29e883311696eb1770815fb6d909451afb77.jpg"
-                         alt="">
+            {#await promiseOfGetMainPost}
+                <div class="CenterColumnFlex tablet__main-post__loader">
+                    <div class="tablet__main-post__image__loader"></div>
+                    <div class="CenterRowFlex tablet__main-post__url__loader"></div>
+                    <div class="tablet__main-post__info__loader"></div>
                 </div>
-                <a class="CenterRowFlex tablet__main-post__url"
-                   href="https://dev.to/maciekgrzybek/animate-on-scroll-with-svelte-inview-266f"
-                   target="_blank"
-                >
-                    <Icon d={redirect}/>
-                    https://dev.to/maciekg...
-                </a>
-                <div class="tablet__main-post__info">
-                    <div class="tablet__main-post__info__top">
-                        <div class="CenterRowFlex tablet__main-post__info__top__reaction">
-                            <div class="CenterRowFlex tablet__main-post__info__top__reaction__val">
-                                <Icon d={thumbUpAlt}/>
-                                4
-                            </div>
-                            <div class="tablet__main-post__info__top__reaction__vertical-line"></div>
-                            <div class="CenterRowFlex tablet__main-post__info__top__reaction__val">
-                                <Icon d={thumbDownAlt}/>
-                                5
-                            </div>
+                {#if relatedPostsActive}
+                    <div class="CenterRowFlex h3 tablet__related-posts">
+                        <div class="tablet__related-posts__title">
+                            Related Posts
                         </div>
-                        <div class="CenterRowFlex tablet__main-post__info__top__posts-count">
-                            <Icon d={modeComment}/>
-                            10
-                        </div>
+                        <button on:click={() => relatedPostsActive = false}>
+                            <Icon d={cross}/>
+                        </button>
                     </div>
-                    <div class="tablet__main-post__info__bottom">
-                        <div class="tablet__main-post__info__bottom__label">
-                            Added by:
-                        </div>
-                        <div class="tablet__main-post__info__bottom__added-by__handle">
-                            lensviewanon.test
-                        </div>
-                        <div class="tablet__main-post__info__bottom__time">
-                            8 hours ago
-                        </div>
+                    <div class="related-posts-body">
+                        <RelatedPost
+                                userEnteredUrl={'https://www.youtube.com/watch?app=desktop&v=Fmr0auKkgbk&pp=ygUJdGVjaHdpc2Vy'}/>
                     </div>
-                </div>
-            </div>
-            {#if relatedPostsActive}
-                <div class="h3 tablet__related-posts">
-                    <div class="tablet__related-posts__title">
+                {:else}
+                    <button on:click={() => relatedPostsActive = true}
+                            class="tablet__related-posts-toggle">
                         Related Posts
-                    </div>
-                    <button on:click={() => relatedPostsActive = false}>
-                        <Icon d={cross}/>
+                        <Icon d={unfoldMore} size="2em"/>
                     </button>
-                </div>
-                <div class="related-posts-body">
-                    <RelatedPost
-                            userEnteredUrl={'https://www.youtube.com/watch?app=desktop&v=Fmr0auKkgbk&pp=ygUJdGVjaHdpc2Vy'}/>
-                </div>
-            {:else}
-                <button on:click={() => relatedPostsActive = true}
-                        class="tablet__related-posts-toggle">
-                    Related Posts
-                    <Icon d={unfoldMore} size="2em"/>
-                </button>
-            {/if}
-
+                {/if}
+            {:then mainPostPub}
+                <a href={`/posts/${mainPostPubId}`} class="tablet__main-post">
+                    {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
+                        <div class="tablet__main-post__image__loader"></div>
+                    {:then imageUrl}
+                        <div class="tablet__main-post__image">
+                            <img src={imageUrl} alt="">
+                        </div>
+                    {/await}
+                    <a class="CenterRowFlex tablet__main-post__url"
+                       href={mainPostPub?.data?.publications?.items[0]?.metadata.content}
+                       target="_blank"
+                    >
+                        <Icon d={redirect}/>
+                        {mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(0, 40)}
+                        ...
+                    </a>
+                    <div class="tablet__main-post__info">
+                        <div class="tablet__main-post__info__top">
+                            <div class="CenterRowFlex tablet__main-post__info__top__reaction">
+                                <div class="CenterRowFlex tablet__main-post__info__top__reaction__val">
+                                    <Icon d={thumbUpAlt}/>
+                                    {mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes}
+                                </div>
+                                <div class="tablet__main-post__info__top__reaction__vertical-line"></div>
+                                <div class="CenterRowFlex tablet__main-post__info__top__reaction__val">
+                                    <Icon d={thumbDownAlt}/>
+                                    {mainPostPub?.data?.publications?.items[0]?.stats?.totalDownvotes}
+                                </div>
+                            </div>
+                            <div class="CenterRowFlex tablet__main-post__info__top__posts-count">
+                                <Icon d={modeComment}/>
+                                {getTotalPosts(mainPostPub?.data?.publications?.items[0]?.stats?.totalAmountOfComments)}
+                            </div>
+                            <button on:click={() => sharePost(event,$page.data.mainPostPubId)}
+                                    class="CenterRowFlex main-post__content__bottom__share">
+                                <Icon d={share}/>
+                            </button>
+                        </div>
+                        <div class="tablet__main-post__info__bottom">
+                            <div class="tablet__main-post__info__bottom__label">
+                                Added by:
+                            </div>
+                            <div class="tablet__main-post__info__bottom__added-by__handle">
+                                {mainPostPub?.data?.publications?.items[0]?.metadata?.attributes[0]?.value}
+                            </div>
+                            <div class="tablet__main-post__info__bottom__time">
+                                {getFormattedDate(mainPostPub?.data?.publications?.items[0]?.createdAt)}
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {#if relatedPostsActive}
+                    <div class="CenterRowFlex h3 tablet__related-posts">
+                        <div class="tablet__related-posts__title">
+                            Related Posts
+                        </div>
+                        <button on:click={() => relatedPostsActive = false}>
+                            <Icon d={cross}/>
+                        </button>
+                    </div>
+                    <div class="related-posts-body">
+                        <RelatedPost
+                                userEnteredUrl={mainPostPub?.data?.publications?.items[0]?.metadata?.content}/>
+                    </div>
+                {:else}
+                    <button on:click={() => relatedPostsActive = true}
+                            class="tablet__related-posts-toggle">
+                        Related Posts
+                        <Icon d={unfoldMore} size="2em"/>
+                    </button>
+                {/if}
+            {/await}
         </section>
     {:else}
         <section>
@@ -207,7 +242,6 @@
 </MediaQuery>
 
 
-
 <!---------------------------------------------------------------->
 
 
@@ -217,7 +251,7 @@
     display: flex;
     flex-direction: column;
     padding-top: 0;
-    gap: 1rem;
+    //gap: 1rem;
     border-bottom: 1.5px solid #3f494e;
     padding-bottom: 1rem;
   }
@@ -227,9 +261,21 @@
     border-radius: 10.8px;
   }
 
+  .tablet__main-post__loader {
+    background: #123439;
+    width: 100%;
+    border-radius: 10.8px;
+  }
+
   .tablet__main-post__image {
     height: 30rem;
     overflow: auto;
+    border-radius: 10.8px;
+  }
+
+  .tablet__main-post__image__loader {
+    height: 30rem;
+    width: 100%;
     border-radius: 10.8px;
   }
 
@@ -240,6 +286,13 @@
     gap: 0.5rem;
   }
 
+  .tablet__main-post__url__loader {
+    height: 2rem;
+    width: 95%;
+    margin: 1rem 1rem 0 1rem;
+    border-radius: 10.8px;
+  }
+
   .tablet__main-post__info {
     display: flex;
     flex-direction: column;
@@ -247,6 +300,13 @@
     padding: 0.75rem;
     background: #164146;
     border-radius: 0 0 10.8px 10.8px;
+  }
+
+  .tablet__main-post__info__loader {
+    width: 95%;
+    height: 4rem;
+    border-radius: 10.8px;
+    margin: 1rem;
   }
 
   .tablet__main-post__info__top {
@@ -311,6 +371,7 @@
     flex-direction: row;
     justify-content: space-between;
     padding: 1rem;
+    margin-top: 1rem;
   }
 
   .tablet__related-posts-toggle {
@@ -321,11 +382,10 @@
     padding: 0.75rem;
     background: #164146;
     border-radius: 10.8px;
+    margin-top: 1rem;
   }
-  
-  
-  
-  
+
+
   section {
     padding-top: 2rem;
   }
@@ -450,6 +510,9 @@
     }
   }
 
+  .tablet__main-post__image__loader,
+  .tablet__main-post__url__loader,
+  .tablet__main-post__info__loader,
   .image__loader,
   .main-post__content__loader {
     background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);

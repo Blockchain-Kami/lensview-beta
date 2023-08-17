@@ -291,7 +291,7 @@
   }
 
   .comment__body__content {
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
   }
 
   .comment__body__content__loader {

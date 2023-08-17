@@ -77,7 +77,7 @@
                                 </div>
                                 <button class="card__image__layer1__more-icon"
                                         on:click={() => openCloseCardsMore(event, item?.id)}>
-                                        <Icon d={moreHoriz}/>
+                                    <Icon d={moreHoriz}/>
                                 </button>
                             </div>
                             {#if isCardsMoreOpen[item?.id]}
@@ -218,8 +218,12 @@
     justify-items: center;
   }
 
+  .body a {
+    width: 100%;
+  }
+
   .card {
-    width: 27rem;
+    width: 100%;
     filter: drop-shadow(9.600000381469727px 22.80000114440918px 37.20000076293945px rgba(0, 0, 0, 0.26));
     transition: all .4s ease-in-out;
   }
@@ -311,6 +315,7 @@
     gap: 0.5rem;
     border-radius: 6.8px;
     opacity: 70%;
+    max-width: fit-content;
   }
 
   .card__info__reaction__val {

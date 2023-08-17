@@ -185,8 +185,6 @@
             Couldn’t find what you were looking for? Maybe you can try a different keyword?
         </div>
     {/if}
-
-
 </section>
 
 <!---------------------------------------------------------------->
