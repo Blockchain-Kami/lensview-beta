@@ -23,16 +23,26 @@
     import DOMPurify from "dompurify";
     import {Tooltip} from "@svelte-plugins/tooltips";
     import {PUBLIC_APP_LENS_ID} from "$env/static/public";
+    import type {ObserverEventDetails, Options} from 'svelte-inview';
+    import {inview} from 'svelte-inview';
+    import MediaQuery from "$lib/MediaQuery.svelte";
 
-    type CardsMoreStatus = {
+    type KeyStringValBoolean = {
         [key: string]: boolean;
     };
 
-
     const {addNotification} = getNotificationsContext();
     export let data: PageData;
-    let isCardsMoreOpen: CardsMoreStatus = {};
+    let isCardsMoreOpen: KeyStringValBoolean = {};
     let showAddNewPostModal = false;
+    const options: Options = {
+        threshold: 1
+    };
+    let isInView: KeyStringValBoolean = {};
+
+    const handleChange = (event: CustomEvent<ObserverEventDetails>, id: string) => {
+        isInView[id] = event.detail.inView;
+    };
 
     const openCloseCardsMore = (event: Event, id: string) => {
         event.preventDefault();
@@ -57,19 +67,23 @@
 
 <!----------------------------- HTML ----------------------------->
 
-
+<MediaQuery query="(max-width: 825px)" let:matches>
 <section>
     <IntroPrompt/>
     <div class="body">
         {#each data["explorePublicationsForApp"]?.items as item}
-            <a href={"/posts/" + item?.id}>
-                <div class="card">
+            <a href={"/posts/" + item?.id}
+               use:inview={options}
+               on:inview_change={(event) => handleChange(event, item?.id)}
+            >
+                <div class="card" class:card__hover-effect={isInView[item?.id] && matches}>
                     {#await getImageURLUsingParentPubId(item?.id)}
                         <div class="card__image-loader">
                         </div>
                     {:then fetchedImageUrl}
                         <div class="card__image"
-                             style="background-image: url({fetchedImageUrl})">
+                             style="background-image: url({fetchedImageUrl})"
+                             class:card__image__hover-effect={isInView[item?.id] && matches}>
                             <div class="CenterRowFlex card__image__layer1">
                                 <div class="CenterRowFlex card__image__layer1__posts-count">
                                     <Icon d={modeComment}/>
@@ -77,7 +91,7 @@
                                 </div>
                                 <button class="card__image__layer1__more-icon"
                                         on:click={() => openCloseCardsMore(event, item?.id)}>
-                                        <Icon d={moreHoriz}/>
+                                    <Icon d={moreHoriz}/>
                                 </button>
                             </div>
                             {#if isCardsMoreOpen[item?.id]}
@@ -195,6 +209,7 @@
         <Icon d={plus} color="#000" strokeWidth={0.8}/>
     </button>
 </section>
+</MediaQuery>
 
 <AddNewPost bind:showAddNewPostModal/>
 
@@ -218,13 +233,21 @@
     justify-items: center;
   }
 
+  .body a {
+    width: 100%;
+  }
+
   .card {
-    width: 27rem;
+    width: 100%;
     filter: drop-shadow(9.600000381469727px 22.80000114440918px 37.20000076293945px rgba(0, 0, 0, 0.26));
     transition: all .4s ease-in-out;
   }
 
   .card:hover {
+    transform: scale(1.04);
+  }
+
+  .card__hover-effect {
     transform: scale(1.04);
   }
 
@@ -246,7 +269,11 @@
   }
 
   .card__image:hover {
-    animation: scrollBackground 5s linear infinite;
+    animation: scrollBackground 9s linear infinite;
+  }
+
+  .card__image__hover-effect {
+    animation: scrollBackground 9s linear infinite;
   }
 
   @keyframes scrollBackground {
@@ -311,6 +338,7 @@
     gap: 0.5rem;
     border-radius: 6.8px;
     opacity: 70%;
+    max-width: fit-content;
   }
 
   .card__info__reaction__val {
