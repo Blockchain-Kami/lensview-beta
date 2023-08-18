@@ -21,6 +21,7 @@
     import CustomNotification from "$lib/CustomNotification.svelte";
     import {fly} from 'svelte/transition'
     import {quintOut} from "svelte/easing";
+    import LensviewLogo from "$lib/assets/LensviewLogo.svg"
 
     let isConnected = false;
     let signingIn = false;
@@ -271,12 +272,10 @@
             {/if}
         {/if}
     </form>
-    <div class="nav__logo">
-        <a href="/"><img alt="Untitled-presentation-3"
-                         src="https://i.postimg.cc/3JG1b9Cv/Lensview-Logo.png"
+    <a href="/" class="CenterRowFlex nav__logo"><img alt="Untitled-presentation-3"
+                                                     src={LensviewLogo}
         />
         </a>
-    </div>
 </div>
 <main>
     {#if menuActive}
@@ -381,7 +380,7 @@
 <style lang="scss">
   .nav {
     justify-content: space-between;
-    padding: 0 2rem;
+    padding: 0.3rem 2rem;
     gap: 1rem;
     background: rgba(0, 0, 0, 0.10);
     position: fixed;
@@ -418,8 +417,8 @@
   }
 
   .nav__logo img {
-    height: 4rem;
-    width: 4rem;
+    height: 3.5rem;
+    width: 3.5rem;
   }
 
   main {
