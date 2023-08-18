@@ -42,7 +42,6 @@
 
     const handleChange = (event: CustomEvent<ObserverEventDetails>, id: string) => {
         isInView[id] = event.detail.inView;
-        console.log("id : " + id + " isInView[id]: ", isInView[id]);
     };
 
     const openCloseCardsMore = (event: Event, id: string) => {

@@ -20,12 +20,28 @@
     import DOMPurify from "dompurify";
     import {PUBLIC_APP_LENS_ID} from "$env/static/public";
     import {Tooltip} from "@svelte-plugins/tooltips";
+    import type {ObserverEventDetails, Options} from 'svelte-inview';
+    import {inview} from 'svelte-inview';
+    import MediaQuery from "$lib/MediaQuery.svelte";
+
+    type KeyStringValBoolean = {
+        [key: string]: boolean;
+    };
 
     let isCardsMoreOpen = false;
     export let userEnteredUrl: string;
 
     let foundedMainPostPubIds: string[] = [];
     let fetchingFoundedMainPostPubIds = false;
+    const options: Options = {
+        threshold: 1,
+        rootMargin: "-10%"
+    };
+    let isInView: KeyStringValBoolean = {};
+
+    const handleChange = (event: CustomEvent<ObserverEventDetails>, id: string) => {
+        isInView[id] = event.detail.inView;
+    };
     
     onMount(async () => {
         fetchingFoundedMainPostPubIds = true;
@@ -59,7 +75,7 @@
 
 
 <!----------------------------- HTML ----------------------------->
-
+<MediaQuery query="(max-width: 600px)" let:matches>
 {#if fetchingFoundedMainPostPubIds}
     <section>
         <div class="card">
@@ -103,7 +119,11 @@
             {#each foundedMainPostPubIds as mainPostPubId}
                 {#if mainPostPubId !== $page.data.mainPostPubId}
                     <a href={`/posts/${mainPostPubId}`}
-                       class="card">
+                       use:inview={options}
+                       on:inview_change={(event) => handleChange(event, mainPostPubId)}
+                       class="card"
+                       class:card__hover-effect={isInView[mainPostPubId] && matches}
+                    >
                         {#await getPublicationByPubId(mainPostPubId)}
                             <div class="card__image-loader">
                             </div>
@@ -126,7 +146,9 @@
                                 </div>
                             {:then imageUrl}
                                 <div class="card__image"
-                                     style="background-image: url({imageUrl})">
+                                     style="background-image: url({imageUrl})"
+                                     class:card__image__hover-effect={isInView[mainPostPubId] && matches}
+                                >
                                     <div class="CenterRowFlex card__image__layer1">
                                         <div class="CenterRowFlex card__image__layer1__posts-count">
                                             <Icon d={modeComment}/>
@@ -258,6 +280,7 @@
         </div>
     {/if}
 {/if}
+</MediaQuery>
 
 
 
@@ -285,6 +308,10 @@
     transform: scale(1.04);
   }
 
+  .card__hover-effect {
+    transform: scale(1.04);
+  }
+
   .card__image-loader {
     width: 100%;
     height: 12.3rem;
@@ -302,9 +329,12 @@
     transition: background-position 1s ease;
   }
 
-  .card__image:hover,
-  .card__image:active {
-    animation: scrollBackground 5s linear infinite;
+  .card__image:hover {
+    animation: scrollBackground 9s linear infinite;
+  }
+
+  .card__image__hover-effect {
+    animation: scrollBackground 9s linear infinite;
   }
 
   @keyframes scrollBackground {

@@ -20,9 +20,24 @@
     import {Tooltip} from "@svelte-plugins/tooltips";
     import {PUBLIC_APP_LENS_ID} from "$env/static/public";
     import MediaQuery from "$lib/MediaQuery.svelte";
+    import type {ObserverEventDetails, Options} from 'svelte-inview';
+    import {inview} from 'svelte-inview';
+
+    type KeyStringValBoolean = {
+        [key: string]: boolean;
+    };
 
     let foundedMainPostPubId: string[] = [];
     let fetchingMainPostPubId = false;
+    const options: Options = {
+        threshold: 1,
+        rootMargin: "-10%"
+    };
+    let isInView: KeyStringValBoolean = {};
+
+    const handleChange = (event: CustomEvent<ObserverEventDetails>, id: string) => {
+        isInView[id] = event.detail.inView;
+    };
 
     searchInputDetails.subscribe(async (details: SearchInputDetailsModel) => {
         const userEnteredUrlOrKeywords = details.userEnteredUrlOrKeywords;
@@ -100,6 +115,8 @@
                 <div class="mobile__body">
                     {#each foundedMainPostPubId as mainPostPubId}
                         <a href={`/posts/${mainPostPubId}`}
+                           use:inview={options}
+                           on:inview_change={(event) => handleChange(event, mainPostPubId)}
                            class="mobile__card">
                             {#await getPublicationByPubId(mainPostPubId)}
                                 <div class="mobile__card__image-loader">
@@ -124,6 +141,7 @@
                                     </div>
                                 {:then imageUrl}
                                     <div class="mobile__card__image"
+                                         class:mobile__card__image__hover-effect={isInView[mainPostPubId]}
                                          style="background-image: url({imageUrl})">
                                     </div>
                                 {:catch error}
@@ -429,9 +447,8 @@
     transition: background-position 1s ease;
   }
 
-  .mobile__card__image:hover,
-  .mobile__card__image:active {
-    animation: scrollBackground 5s linear infinite;
+  .mobile__card__image__hover-effect {
+    animation: scrollBackground 9s linear infinite;
   }
 
   @keyframes scrollBackground {
@@ -632,7 +649,7 @@
   }
 
   .card__img-box__image:hover {
-    animation: scrollBackground 5s linear infinite;
+    animation: scrollBackground 9s linear infinite;
   }
 
   @keyframes scrollBackground {
