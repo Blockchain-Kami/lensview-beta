@@ -1,6 +1,16 @@
 <script lang="ts">
     import Icon from "$lib/Icon.svelte";
-    import {copy, modeComment, moreVert, redirect, share, thumbDownAlt, thumbUpAlt} from "../../utils/frontend/appIcon";
+    import {
+        copy,
+        cross,
+        modeComment,
+        moreVert,
+        redirect,
+        share,
+        thumbDownAlt,
+        thumbUpAlt,
+        unfoldMore
+    } from "../../utils/frontend/appIcon";
     import RelatedPost from "./RelatedPost.svelte";
     import {page} from '$app/stores';
     import {getPublicationByPubId} from "../../utils/frontend/getPublicationByPubId";
@@ -8,11 +18,13 @@
     import getImageURLUsingParentPubId from "../../utils/frontend/getImageURLUsingParentPubId";
     import {totalPosts} from "../../services/totalPosts";
     import {getNotificationsContext} from 'svelte-notifications';
+    import MediaQuery from "$lib/MediaQuery.svelte";
 
 
     const {addNotification} = getNotificationsContext();
     let mainPostPubId = $page.data.mainPostPubId;
     let promiseOfGetMainPost = getPublicationByPubId(mainPostPubId);
+    let relatedPostsActive = false;
 
     $: if (mainPostPubId !== $page.data.mainPostPubId) {
         mainPostPubId = $page.data.mainPostPubId;
@@ -40,94 +52,340 @@
 
 
 <!----------------------------- HTML ----------------------------->
-
-<section>
-    {#await promiseOfGetMainPost}
-        <div class="main-post">
-            <div class="main-post__content__loader"></div>
-        </div>
-        <div class="h2 related-posts-head">
-            Related Posts
-        </div>
-        <div class="related-posts-body">
-            <RelatedPost userEnteredUrl={""}/>
-        </div>
-    {:then mainPostPub}
-        {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
-            <div class="image__loader"></div>
-        {:then imageUrl}
-            <a href={`/posts/${mainPostPubId}`}>
-                <img src={imageUrl} alt="">
-            </a>
-        {/await}
-        <div class="CenterColumnFlex main-post">
-            <a href={`/posts/${mainPostPubId}`}
-               class="CenterColumnFlex main-post__content">
-                <div class="CenterRowFlex main-post__content__top">
-                    <a href={mainPostPub?.data?.publications?.items[0]?.metadata.content}
-                       target="_blank"
-                       class="CenterRowFlex"
-                    >
-                        <div class="CenterRowFlex main-post__content__top__redirect">
-                            <Icon d={redirect}/>
+<MediaQuery query="(max-width: 1024px)" let:matches>
+    {#if matches}
+        <section class="tablet">
+            {#await promiseOfGetMainPost}
+                <div class="CenterColumnFlex tablet__main-post__loader">
+                    <div class="tablet__main-post__image__loader"></div>
+                    <div class="CenterRowFlex tablet__main-post__url__loader"></div>
+                    <div class="tablet__main-post__info__loader"></div>
+                </div>
+                {#if relatedPostsActive}
+                    <div class="CenterRowFlex h3 tablet__related-posts">
+                        <div class="tablet__related-posts__title">
+                            Related Posts
                         </div>
-                        <div class="main-post__content__top__url">
-                            &nbsp;&nbsp;{mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(0, 40)}
-                            ...
+                        <button on:click={() => relatedPostsActive = false}>
+                            <Icon d={cross}/>
+                        </button>
+                    </div>
+                    <div class="related-posts-body">
+                        <RelatedPost
+                                userEnteredUrl={'https://www.youtube.com/watch?app=desktop&v=Fmr0auKkgbk&pp=ygUJdGVjaHdpc2Vy'}/>
+                    </div>
+                {:else}
+                    <button on:click={() => relatedPostsActive = true}
+                            class="tablet__related-posts-toggle">
+                        Related Posts
+                        <Icon d={unfoldMore} size="2em"/>
+                    </button>
+                {/if}
+            {:then mainPostPub}
+                <a href={`/posts/${mainPostPubId}`} class="tablet__main-post">
+                    {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
+                        <div class="tablet__main-post__image__loader"></div>
+                    {:then imageUrl}
+                        <div class="tablet__main-post__image">
+                            <img src={imageUrl} alt="">
+                        </div>
+                    {/await}
+                    <a class="CenterRowFlex tablet__main-post__url"
+                       href={mainPostPub?.data?.publications?.items[0]?.metadata.content}
+                       target="_blank"
+                    >
+                        <Icon d={redirect}/>
+                        {mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(0, 40)}
+                        ...
+                    </a>
+                    <div class="tablet__main-post__info">
+                        <div class="tablet__main-post__info__top">
+                            <div class="CenterRowFlex tablet__main-post__info__top__reaction">
+                                <div class="CenterRowFlex tablet__main-post__info__top__reaction__val">
+                                    <Icon d={thumbUpAlt}/>
+                                    {mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes}
+                                </div>
+                                <div class="tablet__main-post__info__top__reaction__vertical-line"></div>
+                                <div class="CenterRowFlex tablet__main-post__info__top__reaction__val">
+                                    <Icon d={thumbDownAlt}/>
+                                    {mainPostPub?.data?.publications?.items[0]?.stats?.totalDownvotes}
+                                </div>
+                            </div>
+                            <div class="CenterRowFlex tablet__main-post__info__top__posts-count">
+                                <Icon d={modeComment}/>
+                                {getTotalPosts(mainPostPub?.data?.publications?.items[0]?.stats?.totalAmountOfComments)}
+                            </div>
+                            <button on:click={() => sharePost(event,$page.data.mainPostPubId)}
+                                    class="CenterRowFlex main-post__content__bottom__share">
+                                <Icon d={share}/>
+                            </button>
+                        </div>
+                        <div class="tablet__main-post__info__bottom">
+                            <div class="tablet__main-post__info__bottom__label">
+                                Added by:
+                            </div>
+                            <div class="tablet__main-post__info__bottom__added-by__handle">
+                                {mainPostPub?.data?.publications?.items[0]?.metadata?.attributes[0]?.value}
+                            </div>
+                            <div class="tablet__main-post__info__bottom__time">
+                                {getFormattedDate(mainPostPub?.data?.publications?.items[0]?.createdAt)}
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {#if relatedPostsActive}
+                    <div class="CenterRowFlex h3 tablet__related-posts">
+                        <div class="tablet__related-posts__title">
+                            Related Posts
+                        </div>
+                        <button on:click={() => relatedPostsActive = false}>
+                            <Icon d={cross}/>
+                        </button>
+                    </div>
+                    <div class="related-posts-body">
+                        <RelatedPost
+                                userEnteredUrl={mainPostPub?.data?.publications?.items[0]?.metadata?.content}/>
+                    </div>
+                {:else}
+                    <button on:click={() => relatedPostsActive = true}
+                            class="tablet__related-posts-toggle">
+                        Related Posts
+                        <Icon d={unfoldMore} size="2em"/>
+                    </button>
+                {/if}
+            {/await}
+        </section>
+    {:else}
+        <section>
+            {#await promiseOfGetMainPost}
+                <div class="main-post">
+                    <div class="main-post__content__loader"></div>
+                </div>
+                <div class="h2 related-posts-head">
+                    Related Posts
+                </div>
+                <div class="related-posts-body">
+                    <RelatedPost userEnteredUrl={""}/>
+                </div>
+            {:then mainPostPub}
+                {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
+                    <div class="image__loader"></div>
+                {:then imageUrl}
+                    <a href={`/posts/${mainPostPubId}`}>
+                        <img src={imageUrl} alt="">
+                    </a>
+                {/await}
+                <div class="CenterColumnFlex main-post">
+                    <a href={`/posts/${mainPostPubId}`}
+                       class="CenterColumnFlex main-post__content">
+                        <div class="CenterRowFlex main-post__content__top">
+                            <a href={mainPostPub?.data?.publications?.items[0]?.metadata.content}
+                               target="_blank"
+                               class="CenterRowFlex"
+                            >
+                                <div class="CenterRowFlex main-post__content__top__redirect">
+                                    <Icon d={redirect}/>
+                                </div>
+                                <div class="main-post__content__top__url">
+                                    &nbsp;&nbsp;{mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(0, 40)}
+                                    ...
+                                </div>
+                            </a>
+                            <div class="main-post__content__top__time">
+                                {getFormattedDate(mainPostPub?.data?.publications?.items[0]?.createdAt)}
+                            </div>
+                            <div class="CenterRowFlex main-post__content__top__more">
+                                <Icon d={moreVert}/>
+                            </div>
+                        </div>
+                        <div class="CenterRowFlex main-post__content__bottom">
+                            <div class="CenterRowFlex main-post__content__bottom__reaction">
+                                <div class="CenterRowFlex main-post__content__bottom__reaction__val">
+                                    <Icon d={thumbUpAlt}/>
+                                    {mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes}
+                                </div>
+                                <div class="main-post__content__bottom__reaction__vertical-line"></div>
+                                <div class="CenterRowFlex main-post__content__bottom__reaction__val">
+                                    <Icon d={thumbDownAlt}/>
+                                    {mainPostPub?.data?.publications?.items[0]?.stats?.totalDownvotes}
+                                </div>
+                            </div>
+                            <div class="CenterRowFlex main-post__content__bottom__posts-count">
+                                <Icon d={modeComment}/>
+                                {getTotalPosts(mainPostPub?.data?.publications?.items[0]?.stats?.totalAmountOfComments)}
+                                &nbsp;Posts
+                            </div>
+                            <button on:click={() => sharePost(event,$page.data.mainPostPubId)}
+                                    class="CenterRowFlex main-post__content__bottom__share">
+                                <Icon d={share}/>
+                            </button>
+                            <div class="CenterRowFlex main-post__content__bottom__added-by">
+                                <div class="main-post__content__bottom__added-by__label">
+                                    Added by:
+                                </div>
+                                <div class="main-post__content__bottom__added-by__handle">
+                                    {mainPostPub?.data?.publications?.items[0]?.metadata?.attributes[0]?.value}
+                                </div>
+                            </div>
                         </div>
                     </a>
-                    <div class="main-post__content__top__time">
-                        {getFormattedDate(mainPostPub?.data?.publications?.items[0]?.createdAt)}
-                    </div>
-                    <div class="CenterRowFlex main-post__content__top__more">
-                        <Icon d={moreVert}/>
-                    </div>
                 </div>
-                <div class="CenterRowFlex main-post__content__bottom">
-                    <div class="CenterRowFlex main-post__content__bottom__reaction">
-                        <div class="CenterRowFlex main-post__content__bottom__reaction__val">
-                            <Icon d={thumbUpAlt}/>
-                            {mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes}
-                        </div>
-                        <div class="main-post__content__bottom__reaction__vertical-line"></div>
-                        <div class="CenterRowFlex main-post__content__bottom__reaction__val">
-                            <Icon d={thumbDownAlt}/>
-                            {mainPostPub?.data?.publications?.items[0]?.stats?.totalDownvotes}
-                        </div>
-                    </div>
-                    <div class="CenterRowFlex main-post__content__bottom__posts-count">
-                        <Icon d={modeComment}/>
-                        {getTotalPosts(mainPostPub?.data?.publications?.items[0]?.stats?.totalAmountOfComments)} &nbsp;Posts
-                    </div>
-                    <button on:click={() => sharePost(event,$page.data.mainPostPubId)}
-                            class="CenterRowFlex main-post__content__bottom__share">
-                        <Icon d={share}/>
-                    </button>
-                    <div class="CenterRowFlex main-post__content__bottom__added-by">
-                        <div class="main-post__content__bottom__added-by__label">
-                            Added by:
-                        </div>
-                        <div class="main-post__content__bottom__added-by__handle">
-                            {mainPostPub?.data?.publications?.items[0]?.metadata?.attributes[0]?.value}
-                        </div>
-                    </div>
+                <div class="h2 related-posts-head">
+                    Related Posts
                 </div>
-            </a>
-        </div>
-        <div class="h2 related-posts-head">
-            Related Posts
-        </div>
-        <div class="related-posts-body">
-            <RelatedPost userEnteredUrl={mainPostPub?.data?.publications?.items[0]?.metadata?.content}/>
-        </div>
-    {/await}
-</section>
+                <div class="related-posts-body">
+                    <RelatedPost userEnteredUrl={mainPostPub?.data?.publications?.items[0]?.metadata?.content}/>
+                </div>
+            {/await}
+        </section>
+    {/if}
+</MediaQuery>
+
 
 <!---------------------------------------------------------------->
 
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
+  .tablet {
+    display: flex;
+    flex-direction: column;
+    padding-top: 0;
+    //gap: 1rem;
+    border-bottom: 1.5px solid #3f494e;
+    padding-bottom: 1rem;
+  }
+
+  .tablet__main-post {
+    background: #123439;
+    border-radius: 10.8px;
+  }
+
+  .tablet__main-post__loader {
+    background: #123439;
+    width: 100%;
+    border-radius: 10.8px;
+  }
+
+  .tablet__main-post__image {
+    height: 30rem;
+    overflow: auto;
+    border-radius: 10.8px;
+  }
+
+  .tablet__main-post__image__loader {
+    height: 30rem;
+    width: 100%;
+    border-radius: 10.8px;
+  }
+
+  .tablet__main-post__url {
+    padding: 0.75rem;
+    background: #123439;
+    justify-content: flex-start;
+    gap: 0.5rem;
+  }
+
+  .tablet__main-post__url__loader {
+    height: 2rem;
+    width: 95%;
+    margin: 1rem 1rem 0 1rem;
+    border-radius: 10.8px;
+  }
+
+  .tablet__main-post__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: #164146;
+    border-radius: 0 0 10.8px 10.8px;
+  }
+
+  .tablet__main-post__info__loader {
+    width: 95%;
+    height: 4rem;
+    border-radius: 10.8px;
+    margin: 1rem;
+  }
+
+  .tablet__main-post__info__top {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .tablet__main-post__info__top__reaction {
+    padding: 0.5rem 0.7rem;
+    background: #13353a;
+    gap: 0.5rem;
+    border-radius: 6.8px;
+    opacity: 70%;
+  }
+
+  .tablet__main-post__info__top__reaction__val {
+    gap: 0.4rem;
+  }
+
+  .tablet__main-post__info__top__reaction__vertical-line {
+    border-left: 2px solid #ffffff45;
+    height: 21px;
+  }
+
+  .tablet__main-post__info__top__posts-count {
+    background: #13353a;
+    padding: 0.5rem 0.7rem;
+    gap: 0.5rem;
+    border-radius: 5.8px;
+    opacity: 85%;
+  }
+
+  .tablet__main-post__info__bottom {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    align-items: center;
+  }
+
+  .tablet__main-post__info__bottom__label {
+    font-size: var(--small-font-size);
+    color: var(--text-accent);
+  }
+
+  .tablet__main-post__info__bottom__added-by__handle {
+    padding: 0.2rem 0.5rem;
+    background: #18393a;
+    border-radius: 5px;
+    color: var(--primary);
+  }
+
+  .tablet__main-post__info__bottom__time {
+    margin-left: auto;
+    font-size: var(--small-font-size);
+    color: var(--text-accent);
+  }
+
+  .tablet__related-posts {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+
+  .tablet__related-posts-toggle {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #164146;
+    border-radius: 10.8px;
+    margin-top: 1rem;
+  }
+
+
   section {
     padding-top: 2rem;
   }
@@ -252,6 +510,9 @@
     }
   }
 
+  .tablet__main-post__image__loader,
+  .tablet__main-post__url__loader,
+  .tablet__main-post__info__loader,
   .image__loader,
   .main-post__content__loader {
     background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);

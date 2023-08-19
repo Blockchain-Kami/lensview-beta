@@ -91,5 +91,16 @@
       justify-content: flex-start;
     }
   }
+
+  @media only screen and (max-width: 825px) {
+    .create-btn {
+      display: flex;
+      margin-left: unset;
+    }
+
+    .create-btn button {
+      width: 100%;
+    }
+  }
 </style>
 <!----------------------------------------------------------------->

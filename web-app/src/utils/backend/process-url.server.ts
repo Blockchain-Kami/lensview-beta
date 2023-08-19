@@ -1,4 +1,5 @@
 import {URL} from 'url';
+import {websiteSpecificCleaning} from "./website-cleaning.server";
 /**
  * Preprocess and clean the URL before storing.
  * The URL will be stored according to the following rules:
@@ -41,6 +42,8 @@ export const preprocessURL = (url) => {
         else if (parsedURL['protocol'] === 'data:') {
             url = parsedURL['href'];
         }
+
+        url = websiteSpecificCleaning(url);
 
         const processedURL = new URL(url);
         // extract the relevant pieces of the url
