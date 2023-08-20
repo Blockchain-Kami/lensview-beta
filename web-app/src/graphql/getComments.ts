@@ -1,5 +1,5 @@
 const getComments = `
-query Publications($request: PublicationsQueryRequest!) {
+query Publications($request: PublicationsQueryRequest!, $profileId: ProfileId!) {
   publications(request: $request) {
     items {
     ... on Comment {
@@ -64,6 +64,7 @@ fragment CommentBaseFields on Comment {
   }
   createdAt
   appId
+  reaction(request: { profileId: $profileId })
 }
 
 fragment CommentFields on Comment {

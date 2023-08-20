@@ -1,11 +1,20 @@
 import getComments from '../../graphql/getComments';
 import baseClient from './baseClient';
+import { userProfile } from '../../services/profile';
+import { PUBLIC_APP_LENS_ID } from '$env/static/public';
 
 export const getCommentOfPublication = async (
 	publicationId: string,
 	limit: number,
 	filterBy = 'mostLiked'
 ) => {
+	let profileId;
+	const unsub = userProfile.subscribe((profile: any) => {
+		if (profile === undefined) profileId = PUBLIC_APP_LENS_ID;
+		else profileId = profile.id;
+	});
+	unsub();
+
 	try {
 		let request;
 		if (filterBy === 'mostLiked') {
@@ -44,7 +53,8 @@ export const getCommentOfPublication = async (
 		const client = baseClient;
 		return await client
 			.query(getComments, {
-				request: request
+				request: request,
+				profileId: profileId
 			})
 			.toPromise();
 	} catch (err) {

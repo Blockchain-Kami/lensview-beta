@@ -1,17 +1,32 @@
 <script lang="ts">
-  import {copy, modeComment, moreVert, person, share, thumbDownAlt, thumbUpAlt} from "../../utils/frontend/appIcon";
+  import {
+    copy,
+    cross,
+    login,
+    modeComment,
+    moreVert,
+    person,
+    share,
+    thumbDown,
+    thumbDownAlt,
+    thumbUp,
+    thumbUpAlt
+  } from "../../utils/frontend/appIcon";
   import Icon from "$lib/Icon.svelte";
-  import {page} from "$app/stores";
-  import {getCommentOfPublication} from "../../utils/frontend/getCommentOfPublication";
+  import { page } from "$app/stores";
+  import { getCommentOfPublication } from "../../utils/frontend/getCommentOfPublication";
   import getFormattedDate from "../../utils/frontend/getFormattedDate";
-  import {totalPosts} from "../../services/totalPosts";
-  import {totalComments} from "../../services/totalComments";
-  import {reloadCommentOfAPublication} from "../../services/reloadCommentOfAPublication";
-  import {onMount} from "svelte";
-  import DOMPurify from 'dompurify';
-  import {getNotificationsContext} from 'svelte-notifications';
-  import {PUBLIC_APP_LENS_ID} from "$env/static/public";
-  import {Tooltip} from "@svelte-plugins/tooltips";
+  import { totalPosts } from "../../services/totalPosts";
+  import { totalComments } from "../../services/totalComments";
+  import { reloadCommentOfAPublication } from "../../services/reloadCommentOfAPublication";
+  import { onMount } from "svelte";
+  import DOMPurify from "dompurify";
+  import { getNotificationsContext } from "svelte-notifications";
+  import { PUBLIC_APP_LENS_ID } from "$env/static/public";
+  import { Tooltip } from "@svelte-plugins/tooltips";
+  import { addReactionToAPost, removeReactionFromAPost } from "../../utils/frontend/updateReactionForAPost";
+  import Login from "../Login.svelte";
+  import { isSignedIn } from "../../services/signInStatus";
 
 
   type CommentMoreStatus = {
@@ -22,6 +37,8 @@
   let commentPubId = $page.data.commentPubId;
   let isCommentMoreOpen: CommentMoreStatus = {};
   let selectedFilterType = "mostLiked";
+  let showLoginModal = false;
+  let reactionDetails = {};
 
   let promiseOfGetComment = getCommentOfPublication(commentPubId, 50);
 
@@ -60,6 +77,110 @@
       removeAfter: 5000,
     });
   }
+
+  const callAddReaction = async (event: Event, pubID, reaction) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    let signedStatus;
+    const unsub = isSignedIn.subscribe((value) => {
+      signedStatus = value;
+    });
+    unsub();
+
+    if (!signedStatus) {
+      openLoginNotification();
+    } else {
+      try {
+        if (reactionDetails[pubID]["reaction"] !== null) {
+          await callRemoveReaction(event, pubID, reactionDetails[pubID]["reaction"]);
+        }
+
+        const localUpVoteCount = reaction === "UPVOTE" ? reactionDetails[pubID]["upVoteCount"] + 1 : reactionDetails[pubID]["upVoteCount"];
+        const localDownVoteCount = reaction === "DOWNVOTE" ? reactionDetails[pubID]["downVoteCount"] + 1 : reactionDetails[pubID]["downVoteCount"];
+        reactionDetails[pubID] = {
+          reaction: reaction,
+          upVoteCount: localUpVoteCount,
+          downVoteCount: localDownVoteCount
+        };
+
+        await addReactionToAPost(pubID, reaction);
+
+      } catch (error) {
+        console.log("Error while reacting", error);
+
+        addNotification({
+          position: "top-right",
+          heading: "Error while reacting",
+          description: "Please try again .",
+          type: cross,
+          removeAfter: 4000
+        });
+      }
+    }
+
+  };
+
+  const callRemoveReaction = async (event: Event, pubID, reaction) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    let signedStatus;
+    const unsub = isSignedIn.subscribe((value) => {
+      signedStatus = value;
+    });
+    unsub();
+
+    if (!signedStatus) {
+      openLoginNotification();
+    } else {
+      try {
+        const localUpVoteCount = reaction === "UPVOTE" ? reactionDetails[pubID]["upVoteCount"] - 1 : reactionDetails[pubID]["upVoteCount"];
+        const localDownVoteCount = reaction === "DOWNVOTE" ? reactionDetails[pubID]["downVoteCount"] - 1 : reactionDetails[pubID]["downVoteCount"];
+        reactionDetails[pubID] = {
+          reaction: null,
+          upVoteCount: localUpVoteCount,
+          downVoteCount: localDownVoteCount
+        };
+
+        await removeReactionFromAPost(pubID, reaction);
+      } catch (error) {
+        console.log("Error while reacting", error);
+
+        addNotification({
+          position: "top-right",
+          heading: "Error removing",
+          description: "Error while removing your reaction. Please try again .",
+          type: cross,
+          removeAfter: 4000
+        });
+      }
+    }
+
+  };
+
+  const openLoginNotification = () => {
+    addNotification({
+      position: "top-right",
+      heading: "Please Login",
+      description: "Kindly log-in to react to this post. Simply click on \"Login\" button to proceed with your login.",
+      type: login,
+      removeAfter: 10000,
+      ctaBtnName: "Login",
+      ctaFunction: () => {
+        showLoginModal = true;
+      }
+    });
+  };
+
+  const updateReactionDetails = (pubID: string, reaction: string, upVoteCount: number, downVoteCount: number) => {
+    reactionDetails[pubID] = {
+      "reaction": reaction,
+      "upVoteCount": upVoteCount,
+      "downVoteCount": downVoteCount
+    };
+    return "";
+  };
 </script>
 
 
@@ -165,16 +286,42 @@
                 {/if}
               </div>
               <div class="CenterRowFlex comment__body__top__right">
-                <div class="CenterRowFlex comment__body__top__right__reaction">
-                  <div class="CenterRowFlex comment__body__top__right__reaction__val">
-                    <Icon d={thumbUpAlt}/>
-                    {comment?.stats?.totalUpvotes}
-                  </div>
+                <div class="CenterRowFlex comment__body__top__right__reaction"
+                >
+                  {updateReactionDetails(
+                    comment?.id,
+                    comment?.reaction,
+                    comment?.stats?.totalUpvotes,
+                    comment?.stats?.totalDownvotes
+                  )}
+                  {#if reactionDetails[comment?.id]["reaction"] === "UPVOTE"}
+                    <button on:click={() => callRemoveReaction(event, comment?.id, "UPVOTE")}
+                            class="CenterRowFlex comment__body__top__right__reaction__val">
+                      <Icon d={thumbUp} />
+                      {reactionDetails[comment?.id]["upVoteCount"]}
+                    </button>
+
+                  {:else}
+                    <button on:click={() => callAddReaction(event, comment?.id, "UPVOTE")}
+                            class="CenterRowFlex comment__body__top__right__reaction__val">
+                      <Icon d={thumbUpAlt} />
+                      {reactionDetails[comment?.id]["upVoteCount"]}
+                    </button>
+                  {/if}
                   <div class="comment__body__top__right__reaction__vertical-line"></div>
-                  <div class="CenterRowFlex comment__body__top__right__reaction__val">
-                    <Icon d={thumbDownAlt}/>
-                    {comment?.stats?.totalDownvotes}
-                  </div>
+                  {#if reactionDetails[comment?.id]["reaction"] === "DOWNVOTE"}
+                    <button on:click={() => callRemoveReaction(event, comment?.id, "DOWNVOTE")}
+                            class="CenterRowFlex comment__body__top__right__reaction__val">
+                      <Icon d={thumbDown} />
+                      {reactionDetails[comment?.id]["downVoteCount"]}
+                    </button>
+                  {:else}
+                    <button on:click={() => callAddReaction(event, comment?.id, "DOWNVOTE")}
+                            class="CenterRowFlex comment__body__top__right__reaction__val">
+                      <Icon d={thumbDownAlt} />
+                      {reactionDetails[comment?.id]["downVoteCount"]}
+                    </button>
+                  {/if}
                 </div>
                 <div class="CenterRowFlex comment__body__top__right__posts-count">
                   <Icon d={modeComment}/>
@@ -210,6 +357,8 @@
     {/await}
   </div>
 </section>
+
+<Login bind:showLoginModal />
 
 <!---------------------------------------------------------------->
 
@@ -330,14 +479,13 @@
   }
 
   .comment__body__top__right__reaction {
-    padding: 0.5rem 0.7rem;
     background: #18393a;
-    gap: 0.5rem;
     border-radius: 6.8px;
     opacity: 70%;
   }
 
   .comment__body__top__right__reaction__val {
+    padding: 0.5rem 0.7rem;
     gap: 0.4rem;
   }
 

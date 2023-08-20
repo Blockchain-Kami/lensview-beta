@@ -1,27 +1,28 @@
 <script lang="ts">
     import "../global.scss";
-    import {userAddress} from "../services/userAddress";
-    import {userAuthentication} from "../utils/frontend/authenticate";
-    import {goto} from "$app/navigation";
-    import {isSignedIn} from "../services/signInStatus";
-    import {searchInputDetails} from "../services/searchInputDetails";
+    import { userAddress } from "../services/userAddress";
+    import { userAuthentication } from "../utils/frontend/authenticate";
+    import { goto } from "$app/navigation";
+    import { isSignedIn } from "../services/signInStatus";
+    import { searchInputDetails } from "../services/searchInputDetails";
     import getDefaultUserProfile from "../utils/frontend/getDefaultUserProfile";
     import CreateLensHandle from "../components/CreateLensHandle.svelte";
-    import {userProfile} from "../services/profile";
+    import { userProfile } from "../services/profile";
     import getUserProfiles from "../utils/frontend/getUserProfiles";
-    import {onMount} from "svelte";
-    import {PUBLIC_IS_PROD} from "$env/static/public";
-    import {home, homeDualTone, menu, menuOpen, search} from "../utils/frontend/appIcon";
+    import { onMount } from "svelte";
+    import { PUBLIC_IS_PROD } from "$env/static/public";
+    import { home, homeDualTone, menu, menuOpen, search } from "../utils/frontend/appIcon";
     import Icon from "$lib/Icon.svelte";
     import DualToneIcon from "$lib/DualToneIcon.svelte";
     import Loader from "$lib/Loader.svelte";
     import JoinForUpdates from "../components/main-page/JoinForUpdates.svelte";
-    import type {FetchedInfoForSearchedInputModel} from "../models/fetchedInfoForSearchedInput.model";
-    import Notifications from 'svelte-notifications';
+    import type { FetchedInfoForSearchedInputModel } from "../models/fetchedInfoForSearchedInput.model";
+    import Notifications from "svelte-notifications";
     import CustomNotification from "$lib/CustomNotification.svelte";
-    import {fly} from 'svelte/transition'
-    import {quintOut} from "svelte/easing";
-    import LensviewLogo from "$lib/assets/LensviewLogo.svg"
+    import { fly } from "svelte/transition";
+    import { quintOut } from "svelte/easing";
+    import LensviewLogo from "$lib/assets/LensviewLogo.svg";
+    import { reloadCommentOfAPublication } from "../services/reloadCommentOfAPublication";
 
     let isConnected = false;
     let signingIn = false;
@@ -181,6 +182,7 @@
         } else {
           userProfile.setUserProfile(fetchedProfiles[0]);
         }
+          reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
           signingIn = false;
           isSignedIn.setSignInStatus(true);
       }

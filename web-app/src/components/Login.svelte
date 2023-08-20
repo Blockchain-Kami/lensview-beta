@@ -1,19 +1,20 @@
 <script lang="ts">
     import Icon from "$lib/Icon.svelte";
-    import {close, cross, tick, wallet} from "../utils/frontend/appIcon";
+    import { close, cross, tick, wallet } from "../utils/frontend/appIcon";
     import Loader from "$lib/Loader.svelte";
-    import {userAuthentication} from "../utils/frontend/authenticate";
+    import { userAuthentication } from "../utils/frontend/authenticate";
     import getUserProfiles from "../utils/frontend/getUserProfiles";
     import getDefaultUserProfile from "../utils/frontend/getDefaultUserProfile";
-    import {userProfile} from "../services/profile";
+    import { userProfile } from "../services/profile";
     import CreateLensHandle from "./CreateLensHandle.svelte";
-    import {isSignedIn} from "../services/signInStatus";
-    import {userAddress} from "../services/userAddress";
-    import {PUBLIC_IS_PROD} from "$env/static/public";
-    import {onMount} from "svelte";
-    import {fly} from 'svelte/transition'
-    import {backInOut} from "svelte/easing";
-    import {getNotificationsContext} from 'svelte-notifications';
+    import { isSignedIn } from "../services/signInStatus";
+    import { userAddress } from "../services/userAddress";
+    import { PUBLIC_IS_PROD } from "$env/static/public";
+    import { onMount } from "svelte";
+    import { fly } from "svelte/transition";
+    import { backInOut } from "svelte/easing";
+    import { getNotificationsContext } from "svelte-notifications";
+    import { reloadCommentOfAPublication } from "../services/reloadCommentOfAPublication";
 
 
     const {addNotification} = getNotificationsContext();
@@ -197,6 +198,7 @@
                 } else {
                     userProfile.setUserProfile(fetchedProfiles[0]);
                 }
+                reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
                 signingIn = false;
                 isSignedIn.setSignInStatus(true);
                 successfullySignInNotification();
