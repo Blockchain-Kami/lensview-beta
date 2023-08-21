@@ -53,14 +53,18 @@ export async function POST(requestEvent) {
 		return json(relatedPubArray);
 
 	} else {
-		const keywords = inputString.split(' ');
+		const keywords = inputString.trim().split(' ');
 
 		for (let i = 0; i < keywords.length ; i++) {
-			const { items } = await getRelatedParentPublications(keywords[i]);
+			const keyword = keywords[i].trim();
 
-			items.forEach((tag) => {
-				relatedPubArray.push(tag.id);
-			})
+			if (keyword != '' ) {
+				const { items } = await getRelatedParentPublications(keyword.toLowerCase());
+				items.forEach((tag) => {
+					relatedPubArray.push(tag.id);
+				})
+			}
+
 		}
 		return json(relatedPubArray);
 	}
