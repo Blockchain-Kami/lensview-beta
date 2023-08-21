@@ -3,40 +3,60 @@
     import {
         copy,
         cross,
+        login,
         modeComment,
         moreVert,
         redirect,
         share,
+        thumbDown,
         thumbDownAlt,
+        thumbUp,
         thumbUpAlt,
         unfoldMore
     } from "../../utils/frontend/appIcon";
     import RelatedPost from "./RelatedPost.svelte";
-    import {page} from '$app/stores';
-    import {getPublicationByPubId} from "../../utils/frontend/getPublicationByPubId";
+    import { page } from "$app/stores";
+    import { getPublicationByPubId } from "../../utils/frontend/getPublicationByPubId";
     import getFormattedDate from "../../utils/frontend/getFormattedDate";
     import getImageURLUsingParentPubId from "../../utils/frontend/getImageURLUsingParentPubId";
-    import {totalPosts} from "../../services/totalPosts";
-    import {getNotificationsContext} from 'svelte-notifications';
+    import { totalPosts } from "../../services/totalPosts";
+    import { getNotificationsContext } from "svelte-notifications";
     import MediaQuery from "$lib/MediaQuery.svelte";
+    import { isSignedIn } from "../../services/signInStatus";
+    import { addReactionToAPost, removeReactionFromAPost } from "../../utils/frontend/updateReactionForAPost";
+    import Login from "../Login.svelte";
+    import { onMount } from "svelte";
+    import { reloadMainPost } from "../../services/reloadPublication";
 
 
     const {addNotification} = getNotificationsContext();
     let mainPostPubId = $page.data.mainPostPubId;
-    let promiseOfGetMainPost = getPublicationByPubId(mainPostPubId);
     let relatedPostsActive = false;
+    let showLoginModal = false;
+    let reaction: string | null = null;
+    let upVoteCount = 0;
+    let downVoteCount = 0;
+
+    let promiseOfGetMainPost = getPublicationByPubId(mainPostPubId);
 
     $: if (mainPostPubId !== $page.data.mainPostPubId) {
         mainPostPubId = $page.data.mainPostPubId;
         promiseOfGetMainPost = getPublicationByPubId(mainPostPubId);
     }
 
+    onMount(() => {
+        reloadMainPost.subscribe((val) => {
+            console.log("Reloaded main post" + val);
+            promiseOfGetMainPost = getPublicationByPubId(mainPostPubId);
+        });
+    });
+
     const getTotalPosts = (fetchedTotalPosts: number) => {
         totalPosts.setTotalPosts(fetchedTotalPosts);
         return fetchedTotalPosts;
     }
 
-    const sharePost = (event, id) => {
+    const sharePost = (event: Event, id) => {
         event.preventDefault();
         event.stopPropagation();
         navigator.clipboard.writeText(window.location.origin + "/posts/" + id);
@@ -48,6 +68,103 @@
             removeAfter: 5000,
         });
     }
+
+    const callAddReaction = async (event: Event, passedReaction: string) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        let signedStatus;
+        const unsub = isSignedIn.subscribe((value) => {
+            signedStatus = value;
+        });
+        unsub();
+
+        if (!signedStatus) {
+            openLoginNotification();
+        } else {
+            try {
+                if (reaction !== null) {
+                    await callRemoveReaction(event, reaction);
+                }
+
+                reaction = passedReaction;
+                upVoteCount = passedReaction === "UPVOTE" ? upVoteCount + 1 : upVoteCount;
+                downVoteCount = passedReaction === "DOWNVOTE" ? downVoteCount + 1 : downVoteCount;
+
+                await addReactionToAPost(mainPostPubId, passedReaction);
+
+            } catch (error) {
+                console.log("Error while reacting", error);
+
+                addNotification({
+                    position: "top-right",
+                    heading: "Error while reacting",
+                    description: "Please try again .",
+                    type: cross,
+                    removeAfter: 4000
+                });
+            }
+        }
+
+    };
+
+    const callRemoveReaction = async (event: Event, passedReaction: string) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        let signedStatus;
+        const unsub = isSignedIn.subscribe((value) => {
+            signedStatus = value;
+        });
+        unsub();
+
+        if (!signedStatus) {
+            openLoginNotification();
+        } else {
+            try {
+                reaction = null;
+                upVoteCount = passedReaction === "UPVOTE" ? upVoteCount - 1 : upVoteCount;
+                downVoteCount = passedReaction === "DOWNVOTE" ? downVoteCount - 1 : downVoteCount;
+
+                await removeReactionFromAPost(mainPostPubId, passedReaction);
+            } catch (error) {
+                console.log("Error while reacting", error);
+
+                addNotification({
+                    position: "top-right",
+                    heading: "Error removing",
+                    description: "Error while removing your reaction. Please try again .",
+                    type: cross,
+                    removeAfter: 4000
+                });
+            }
+        }
+
+    };
+
+    const openLoginNotification = () => {
+        addNotification({
+            position: "top-right",
+            heading: "Please Login",
+            description: "Kindly log-in to react to this post. Simply click on \"Login\" button to proceed with your login.",
+            type: login,
+            removeAfter: 10000,
+            ctaBtnName: "Login",
+            ctaFunction: () => {
+                showLoginModal = true;
+            }
+        });
+    };
+
+    const updateReactionDetails = (
+      passedReaction: string,
+      passedUpVoteCount: number,
+      passedDownVoteCount: number) => {
+        reaction = passedReaction;
+        upVoteCount = passedUpVoteCount;
+        downVoteCount = passedDownVoteCount;
+        return "";
+    };
 </script>
 
 
@@ -101,21 +218,44 @@
                     <div class="tablet__main-post__info">
                         <div class="tablet__main-post__info__top">
                             <div class="CenterRowFlex tablet__main-post__info__top__reaction">
-                                <div class="CenterRowFlex tablet__main-post__info__top__reaction__val">
-                                    <Icon d={thumbUpAlt}/>
-                                    {mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes}
-                                </div>
+                                {updateReactionDetails(
+                                  mainPostPub?.data?.publications?.items[0]?.reaction,
+                                  mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes,
+                                  mainPostPub?.data?.publications?.items[0]?.stats?.totalDownvotes
+                                )}
+                                {#if reaction === "UPVOTE"}
+                                    <button on:click={() => callRemoveReaction(event, "UPVOTE")}
+                                            class="CenterRowFlex tablet__main-post__info__top__reaction__val">
+                                        <Icon d={thumbUp} />
+                                        {upVoteCount}
+                                    </button>
+                                {:else}
+                                    <button on:click={() => callAddReaction(event, "UPVOTE")}
+                                            class="CenterRowFlex tablet__main-post__info__top__reaction__val">
+                                        <Icon d={thumbUpAlt} />
+                                        {upVoteCount}
+                                    </button>
+                                {/if}
                                 <div class="tablet__main-post__info__top__reaction__vertical-line"></div>
-                                <div class="CenterRowFlex tablet__main-post__info__top__reaction__val">
-                                    <Icon d={thumbDownAlt}/>
-                                    {mainPostPub?.data?.publications?.items[0]?.stats?.totalDownvotes}
-                                </div>
+                                {#if reaction === "DOWNVOTE"}
+                                    <button on:click={() => callRemoveReaction(event, "DOWNVOTE")}
+                                            class="CenterRowFlex tablet__main-post__info__top__reaction__val">
+                                        <Icon d={thumbDown} />
+                                        {downVoteCount}
+                                    </button>
+                                {:else}
+                                    <button on:click={() => callAddReaction(event, "DOWNVOTE")}
+                                            class="CenterRowFlex tablet__main-post__info__top__reaction__val">
+                                        <Icon d={thumbDownAlt} />
+                                        {downVoteCount}
+                                    </button>
+                                {/if}
                             </div>
                             <div class="CenterRowFlex tablet__main-post__info__top__posts-count">
                                 <Icon d={modeComment}/>
                                 {getTotalPosts(mainPostPub?.data?.publications?.items[0]?.stats?.totalAmountOfComments)}
                             </div>
-                            <button on:click={() => sharePost(event,$page.data.mainPostPubId)}
+                            <button on:click={() => sharePost(event, $page.data.mainPostPubId)}
                                     class="CenterRowFlex main-post__content__bottom__share">
                                 <Icon d={share}/>
                             </button>
@@ -200,15 +340,38 @@
                         </div>
                         <div class="CenterRowFlex main-post__content__bottom">
                             <div class="CenterRowFlex main-post__content__bottom__reaction">
-                                <div class="CenterRowFlex main-post__content__bottom__reaction__val">
-                                    <Icon d={thumbUpAlt}/>
-                                    {mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes}
-                                </div>
+                                {updateReactionDetails(
+                                  mainPostPub?.data?.publications?.items[0]?.reaction,
+                                  mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes,
+                                  mainPostPub?.data?.publications?.items[0]?.stats?.totalDownvotes
+                                )}
+                                {#if reaction === "UPVOTE"}
+                                    <button on:click={() => callRemoveReaction(event, "UPVOTE")}
+                                            class="CenterRowFlex main-post__content__bottom__reaction__val">
+                                        <Icon d={thumbUp} />
+                                        {upVoteCount}
+                                    </button>
+                                {:else}
+                                    <button on:click={() => callAddReaction(event, "UPVOTE")}
+                                            class="CenterRowFlex main-post__content__bottom__reaction__val">
+                                        <Icon d={thumbUpAlt} />
+                                        {upVoteCount}
+                                    </button>
+                                {/if}
                                 <div class="main-post__content__bottom__reaction__vertical-line"></div>
-                                <div class="CenterRowFlex main-post__content__bottom__reaction__val">
-                                    <Icon d={thumbDownAlt}/>
-                                    {mainPostPub?.data?.publications?.items[0]?.stats?.totalDownvotes}
-                                </div>
+                                {#if reaction === "DOWNVOTE"}
+                                    <button on:click={() => callRemoveReaction(event, "DOWNVOTE")}
+                                            class="CenterRowFlex main-post__content__bottom__reaction__val">
+                                        <Icon d={thumbDown} />
+                                        {downVoteCount}
+                                    </button>
+                                {:else}
+                                    <button on:click={() => callAddReaction(event, "DOWNVOTE")}
+                                            class="CenterRowFlex main-post__content__bottom__reaction__val">
+                                        <Icon d={thumbDownAlt} />
+                                        {downVoteCount}
+                                    </button>
+                                {/if}
                             </div>
                             <div class="CenterRowFlex main-post__content__bottom__posts-count">
                                 <Icon d={modeComment}/>
@@ -241,7 +404,7 @@
     {/if}
 </MediaQuery>
 
-
+<Login bind:showLoginModal />
 <!---------------------------------------------------------------->
 
 
@@ -316,14 +479,13 @@
   }
 
   .tablet__main-post__info__top__reaction {
-    padding: 0.5rem 0.7rem;
     background: #13353a;
-    gap: 0.5rem;
     border-radius: 6.8px;
     opacity: 70%;
   }
 
   .tablet__main-post__info__top__reaction__val {
+      padding: 0.5rem 0.7rem;
     gap: 0.4rem;
   }
 
@@ -450,14 +612,13 @@
   }
 
   .main-post__content__bottom__reaction {
-    padding: 0.5rem 0.7rem;
     background: #18393a;
-    gap: 0.5rem;
     border-radius: 6.8px;
     opacity: 70%;
   }
 
   .main-post__content__bottom__reaction__val {
+      padding: 0.5rem 0.7rem;
     gap: 0.4rem;
   }
 

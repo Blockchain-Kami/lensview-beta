@@ -22,7 +22,7 @@
     import { fly } from "svelte/transition";
     import { quintOut } from "svelte/easing";
     import LensviewLogo from "$lib/assets/LensviewLogo.svg";
-    import { reloadCommentOfAPublication } from "../services/reloadCommentOfAPublication";
+    import { reloadAPublication, reloadCommentOfAPublication, reloadMainPost } from "../services/reloadPublication";
 
     let isConnected = false;
     let signingIn = false;
@@ -182,7 +182,9 @@
         } else {
           userProfile.setUserProfile(fetchedProfiles[0]);
         }
+          reloadMainPost.setReloadMainPost(Date.now());
           reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
+          reloadAPublication.setReloadAPublication(Date.now());
           signingIn = false;
           isSignedIn.setSignInStatus(true);
       }
@@ -419,8 +421,8 @@
   }
 
   .nav__logo img {
-    height: 3.5rem;
-    width: 3.5rem;
+      height: 3rem;
+      width: 3rem;
   }
 
   main {

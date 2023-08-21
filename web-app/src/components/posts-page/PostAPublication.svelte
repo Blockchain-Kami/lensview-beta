@@ -1,15 +1,15 @@
 <script lang="ts">
-    import {cross, flightTakeoff, tick} from "../../utils/frontend/appIcon";
-    import {isSignedIn} from "../../services/signInStatus";
-    import {userProfile} from "../../services/profile";
+    import { cross, flightTakeoff, tick } from "../../utils/frontend/appIcon";
+    import { isSignedIn } from "../../services/signInStatus";
+    import { userProfile } from "../../services/profile";
     import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
-    import {page} from "$app/stores";
+    import { page } from "$app/stores";
     import Loader from "$lib/Loader.svelte";
-    import {reloadCommentOfAPublication} from "../../services/reloadCommentOfAPublication";
+    import { reloadCommentOfAPublication } from "../../services/reloadPublication";
     import Login from "../Login.svelte";
     import postAPublication from "../../utils/frontend/postAPublication";
-    import {goto} from "$app/navigation";
-    import {getNotificationsContext} from 'svelte-notifications';
+    import { goto } from "$app/navigation";
+    import { getNotificationsContext } from "svelte-notifications";
 
     const {addNotification} = getNotificationsContext();
     let userEnteredContent = "";
@@ -327,122 +327,3 @@
 
 </style>
 <!----------------------------------------------------------------->
-
-
-<!--<script lang="ts">-->
-
-<!--</script>-->
-
-
-<!--&lt;!&ndash;-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; HTML -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
-<!--<div class="CenterColumnFlex user-post">-->
-<!--  {#if pubId === ""}-->
-<!--    <div class="user-post__link">-->
-<!--      <input bind:value={$userEnteredURL} type="text" class="user-post__link__input"-->
-<!--             placeholder="Please insert link over here">-->
-<!--      {#if !addingLink}-->
-<!--        <button on:click={addURLToLensview} class="btn" disabled="{$userEnteredURL === ''}">Add Link On LensView-->
-<!--        </button>-->
-<!--      {:else}-->
-<!--        Adding Link....-->
-<!--      {/if}-->
-<!--    </div>-->
-<!--  {/if}-->
-<!--  <div class="user-post__info">Connect your wallet for-->
-<!--    {#if openCommentSection}-->
-<!--      commenting-->
-<!--    {:else}-->
-<!--      posting-->
-<!--    {/if}-->
-<!--  </div>-->
-<!--  <div class="user-post__text">-->
-<!--    <input bind:value={userEnteredContent} type="text" class="user-post__text__input"-->
-<!--           placeholder="What's on your mind?">-->
-<!--  </div>-->
-<!--  <div class="CenterRowFlex user-post__option-bar">-->
-<!--    <div class="CenterRowFlex user-post__option-bar__options">-->
-<!--      <div class="user-post__option-bar__options__option">Media</div>-->
-<!--      <div class="user-post__option-bar__options__option">@Mention</div>-->
-<!--    </div>-->
-<!--    <div class="user-post__option-bar__post-btn">-->
-<!--      {#if !isPosting}-->
-<!--        <button on:click={savePost} disabled='{userEnteredContent === "" || !$isSignedIn || pubId === ""}'-->
-<!--                class="btn">-->
-<!--          {#if openCommentSection}-->
-<!--            Comment-->
-<!--          {:else}-->
-<!--            Post-->
-<!--          {/if}-->
-<!--        </button>-->
-<!--      {:else}-->
-<!--        {#if openCommentSection}-->
-<!--          commenting...-->
-<!--        {:else}-->
-<!--          posting...-->
-<!--        {/if}-->
-<!--      {/if}-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
-<!--&lt;!&ndash;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
-
-
-<!--&lt;!&ndash;-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; STYLE -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
-<!--<style lang="scss">-->
-<!--  .user-post {-->
-<!--    width: 100%;-->
-<!--    justify-content: space-between;-->
-<!--    gap: 1rem;-->
-<!--    background: white;-->
-<!--    padding: 1rem;-->
-<!--    border-radius: 12px;-->
-<!--    box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0;-->
-<!--    margin-top: 4rem;-->
-<!--  }-->
-
-<!--  .user-post__info {-->
-<!--    font-weight: bold;-->
-<!--  }-->
-
-<!--  .user-post__text {-->
-<!--    width: 100%;-->
-<!--  }-->
-
-<!--  .user-post__text__input {-->
-<!--    width: 100%;-->
-<!--    padding: 0.65rem;-->
-<!--    border-radius: 8px;-->
-<!--    border: 1px solid lightgray;-->
-<!--    outline: 0;-->
-<!--  }-->
-
-<!--  .user-post__link {-->
-<!--    width: 100%;-->
-<!--    display: flex;-->
-<!--    gap: 1rem;-->
-<!--  }-->
-
-<!--  .user-post__link__input {-->
-<!--    width: 100%;-->
-<!--    padding: 0.65rem;-->
-<!--    border-radius: 8px;-->
-<!--    border: 1px solid lightgray;-->
-<!--    outline: 0;-->
-<!--  }-->
-
-<!--  .user-post__option-bar {-->
-<!--    width: 100%;-->
-<!--    justify-content: space-between;-->
-<!--  }-->
-
-<!--  .user-post__option-bar__options {-->
-<!--    gap: 0.5rem;-->
-<!--  }-->
-
-<!--  .user-post__option-bar__options__option {-->
-<!--    padding: 0.5rem;-->
-<!--    font-size: medium;-->
-<!--    font-weight: 500;-->
-<!--  }-->
-<!--</style>-->
-<!--&lt;!&ndash;-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->

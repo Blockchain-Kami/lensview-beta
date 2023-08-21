@@ -1,5 +1,5 @@
 const getPublication = `
-query Publications($request: PublicationsQueryRequest!) {
+query Publications($request: PublicationsQueryRequest!, $profileId: ProfileId!) {
   publications(request: $request) {
     items {
       __typename 
@@ -63,6 +63,7 @@ fragment PostFields on Post {
   }
   createdAt
   appId
+  reaction(request: { profileId: $profileId })
 }
 `;
 

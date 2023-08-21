@@ -14,7 +14,7 @@
     import { fly } from "svelte/transition";
     import { backInOut } from "svelte/easing";
     import { getNotificationsContext } from "svelte-notifications";
-    import { reloadCommentOfAPublication } from "../services/reloadCommentOfAPublication";
+    import { reloadAPublication, reloadCommentOfAPublication, reloadMainPost } from "../services/reloadPublication";
 
 
     const {addNotification} = getNotificationsContext();
@@ -198,7 +198,10 @@
                 } else {
                     userProfile.setUserProfile(fetchedProfiles[0]);
                 }
+
+                reloadMainPost.setReloadMainPost(Date.now());
                 reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
+                reloadAPublication.setReloadAPublication(Date.now());
                 signingIn = false;
                 isSignedIn.setSignInStatus(true);
                 successfullySignInNotification();
