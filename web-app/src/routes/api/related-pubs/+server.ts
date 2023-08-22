@@ -54,11 +54,12 @@ export async function POST(requestEvent) {
 
 	} else {
 		const keywords = inputString.trim().split(' ');
+		const charactersToIgnore = ['.', ',', '/', '?', ':', ';', '', ' '];
 
 		for (let i = 0; i < keywords.length ; i++) {
 			const keyword = keywords[i].trim();
 
-			if (keyword != '' ) {
+			if (charactersToIgnore.indexOf(keyword) < 0) {
 				const { items } = await getRelatedParentPublications(keyword.toLowerCase());
 				items.forEach((tag) => {
 					relatedPubArray.push(tag.id);
