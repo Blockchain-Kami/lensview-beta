@@ -1,13 +1,15 @@
 <script lang="ts">
-    import {fly} from 'svelte/transition'
-    import {backInOut} from "svelte/easing";
-    import Twitter from "$lib/assets/Twitter.svg"
-    import Linkedin from "$lib/assets/Linkedin.svg"
-    import Mail from "$lib/assets/Mail.svg"
-    import Discord from "$lib/assets/Discord.svg"
-    import Instagram from "$lib/assets/Instagram.svg"
+  import { fly } from "svelte/transition";
+  import { backInOut } from "svelte/easing";
+  import Twitter from "$lib/assets/Twitter.svg";
+  import Linkedin from "$lib/assets/Linkedin.svg";
+  import Mail from "$lib/assets/Mail.svg";
+  import Discord from "$lib/assets/Discord.svg";
+  import Instagram from "$lib/assets/Instagram.svg";
+  import Reddit from "$lib/assets/Reddit.svg";
+  import Telegram from "$lib/assets/Telegram.svg";
 
-    export let showJoinForUpdatesModal: boolean; // boolean
+  export let showJoinForUpdatesModal: boolean; // boolean
 
     let dialog: HTMLDialogElement;
 
@@ -24,12 +26,15 @@
         <main on:click|stopPropagation transition:fly={{ y: 40, easing: backInOut, duration: 700 }}>
             <div class="CenterRowFlex head">
                 <div class="h3 head__title">
-                    Join For Updates
+                  Join for updates
                 </div>
             </div>
             <div class="CenterRowFlex body">
                 <a href="https://twitter.com/lensview_" target="_blank">
                     <img src={Twitter} alt="">
+                </a>
+              <a href="https://discord.gg/nVBN9JMj" target="_blank">
+                <img src={Discord} alt="">
                 </a>
                 <a href="https://www.linkedin.com/company/lensviewio" target="_blank">
                     <img src={Linkedin} alt="">
@@ -37,12 +42,15 @@
                 <a href="https://getwaitlist.com/waitlist/8129" target="_blank">
                     <img src={Mail} alt="">
                 </a>
-                <a href="https://twitter.com/lensview_" target="_blank">
-                    <img src={Discord} alt="">
-                </a>
-                <a href="https://twitter.com/lensview_" target="_blank">
+              <a href="https://www.instagram.com/lensview.lens/" target="_blank">
                     <img src={Instagram} alt="">
                 </a>
+              <a href="https://www.reddit.com/r/lensview/" target="_blank">
+                <img src={Reddit} alt="">
+              </a>
+              <a href="https://t.me/lens_view" target="_blank">
+                <img src={Telegram} alt="">
+              </a>
             </div>
         </main>
     {/if}
@@ -67,6 +75,7 @@
 
   .body {
     gap: 2rem;
+    flex-wrap: wrap;
   }
 
   .body img {

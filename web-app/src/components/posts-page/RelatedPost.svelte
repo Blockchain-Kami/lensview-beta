@@ -12,17 +12,18 @@
         trendingUp
     } from "../../utils/frontend/appIcon";
     import getFormattedDate from "../../utils/frontend/getFormattedDate";
-    import {getCommentOfPublication} from "../../utils/frontend/getCommentOfPublication";
+    import { getCommentOfPublication } from "../../utils/frontend/getCommentOfPublication";
     import getImageURLUsingParentPubId from "../../utils/frontend/getImageURLUsingParentPubId";
-    import {onMount} from "svelte";
-    import {getPublicationByPubId} from "../../utils/frontend/getPublicationByPubId";
-    import {page} from "$app/stores";
+    import { onMount } from "svelte";
+    import { getPublicationByPubId } from "../../utils/frontend/getPublicationByPubId";
+    import { page } from "$app/stores";
     import DOMPurify from "dompurify";
-    import {PUBLIC_APP_LENS_ID} from "$env/static/public";
-    import {Tooltip} from "@svelte-plugins/tooltips";
-    import type {ObserverEventDetails, Options} from 'svelte-inview';
-    import {inview} from 'svelte-inview';
+    import { PUBLIC_APP_LENS_ID } from "$env/static/public";
+    import { Tooltip } from "@svelte-plugins/tooltips";
+    import type { ObserverEventDetails, Options } from "svelte-inview";
+    import { inview } from "svelte-inview";
     import MediaQuery from "$lib/MediaQuery.svelte";
+    import getPictureURL from "../../utils/frontend/getPictureURL";
 
     type KeyStringValBoolean = {
         [key: string]: boolean;
@@ -223,7 +224,10 @@
                                 {:else}
                                     <div class="CenterRowFlex card__post">
                                         <div class="card__post__user-pic">
-                                            <img src={comment?.data?.publications?.items[0]?.profile?.picture?.original?.url}
+                                            <img src={getPictureURL(
+                                              comment?.data?.publications?.items[0]?.profile?.picture?.original?.url,
+                                              comment?.data?.publications?.items[0]?.profile?.ownedBy
+                                              )}
                                                  alt="avatar">
                                         </div>
                                         <div class="card__post__info">
