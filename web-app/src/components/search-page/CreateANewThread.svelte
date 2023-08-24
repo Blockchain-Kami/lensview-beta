@@ -1,6 +1,6 @@
 <script lang="ts">
     import AddNewPost from "../main-page/AddNewPost.svelte";
-    import {searchInputDetails} from "../../services/searchInputDetails";
+    import { searchInputDetails } from "../../services/searchInputDetails";
 
     let showAddNewPostModal = false;
 </script>
@@ -20,10 +20,9 @@
     <div class="create-btn">
         <button on:click={() => showAddNewPostModal = true}
                 class="btn">
-            Create a Post
+            Create a post
         </button>
     </div>
-
 </section>
 
 <AddNewPost userEnteredUrl={$searchInputDetails.userEnteredUrlOrKeywords} bind:showAddNewPostModal/>

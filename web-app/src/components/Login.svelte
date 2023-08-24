@@ -299,7 +299,7 @@
                 <div class="footer">
                     <button on:click="{connect}"
                             class="btn">
-                        Connect Wallet
+                      Connect wallet
                     </button>
                 </div>
             {:else}

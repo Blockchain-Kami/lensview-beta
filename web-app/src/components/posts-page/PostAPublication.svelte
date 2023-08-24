@@ -10,6 +10,7 @@
     import postAPublication from "../../utils/frontend/postAPublication";
     import { goto } from "$app/navigation";
     import { getNotificationsContext } from "svelte-notifications";
+    import GetTestMatic from "../GetTestMatic.svelte";
 
     const {addNotification} = getNotificationsContext();
     let userEnteredContent = "";
@@ -21,6 +22,7 @@
     let isThisComment = postPubId !== undefined;
     let pubId = isThisComment ? postPubId : $page.data.mainPostPubId;
     let pubBtnName = isThisComment ? "Comment" : "Post";
+    let showGetTestMaticModal = false;
 
     $: if (postPubId !== $page.data.postPubId) {
         postPubId = $page.data.postPubId;
@@ -228,6 +230,9 @@
             <!--                <Icon d={addPhoto}/>-->
             <!--                Photo-->
             <!--            </div>-->
+            <button class="footer__insert__item__matic" on:click={() => showGetTestMaticModal = true}>
+                Get test MATIC
+            </button>
         </div>
         <div class="CenterRowFlex footer__operations">
             <button on:click={postAnonymously}
@@ -251,6 +256,7 @@
 </section>
 
 <Login bind:showLoginModal/>
+<GetTestMatic bind:showGetTestMaticModal />
 <!---------------------------------------------------------------->
 
 
@@ -319,6 +325,11 @@
     gap: 0.7rem;
     align-items: flex-end;
     border-radius: 7px;
+  }
+
+  .footer__insert__item__matic {
+      color: var(--primary);
+      font-size: var(--small-font-size);
   }
 
   .footer__operations {

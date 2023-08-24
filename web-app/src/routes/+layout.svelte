@@ -304,12 +304,12 @@
                 {#if !isConnected}
                     <div class="menu__connect-box">
                         <div class="menu__connect-box__text">
-                            Hello Friend! Welcome to LensView.
+                            Hello friend! Welcome to LensView.
                         </div>
                         <div class="menu__connect-box__btn">
                             <button on:click="{connect}"
                                     class="btn">
-                                Connect Wallet
+                                Connect wallet
                             </button>
                         </div>
                     </div>
@@ -317,7 +317,7 @@
                     {#if !$isSignedIn}
                         <div class="menu__connect-box">
                             <div class="menu__connect-box__text">
-                                Hello Friend! Welcome to LensView.
+                                Hello friend! Welcome to LensView.
                             </div>
                             <div class="menu__connect-box__btn">
                                 {#if !signingIn }
@@ -361,7 +361,7 @@
                     <button on:click="{() => showJoinForUpdatesModal = true}"
                             class="btn-alt"
                             style="--btn-alt-color: #1e4748;">
-                        Join For Updates
+                        Join for updates
                     </button>
                 </div>
             </div>

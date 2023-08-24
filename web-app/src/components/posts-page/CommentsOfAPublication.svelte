@@ -193,7 +193,7 @@
     </div>
     <div class="filter__type">
       <select bind:value={selectedFilterType} on:change={updatedPromiseOfGetComment}>
-        <option value="mostLiked">Most Liked</option>
+        <option value="mostLiked">Most liked</option>
         <option value="latest">Latest</option>
       </select>
     </div>
