@@ -26,6 +26,7 @@
   import { isSignedIn } from "../../services/signInStatus";
   import { addReactionToAPost, removeReactionFromAPost } from "../../utils/frontend/updateReactionForAPost";
   import Login from "../Login.svelte";
+  import getPictureURL from "../../utils/frontend/getPictureURL";
 
 
   const {addNotification} = getNotificationsContext();
@@ -188,7 +189,10 @@
   {:then postPub}
     <div class="comment">
       <div class="comment__pic">
-        <img src={postPub?.data?.publications?.items[0]?.profile?.picture?.original?.url}
+        <img src={getPictureURL(
+          postPub?.data?.publications?.items[0]?.profile?.picture?.original?.url,
+          postPub?.data?.publications?.items[0]?.profile?.ownedBy
+          )}
              alt="avatar">
       </div>
       <div class="comment__body">

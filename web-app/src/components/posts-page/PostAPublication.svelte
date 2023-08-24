@@ -11,6 +11,7 @@
     import { goto } from "$app/navigation";
     import { getNotificationsContext } from "svelte-notifications";
     import GetTestMatic from "../GetTestMatic.svelte";
+    import getPictureURL from "../../utils/frontend/getPictureURL";
 
     const {addNotification} = getNotificationsContext();
     let userEnteredContent = "";
@@ -204,7 +205,10 @@
     <div class="CenterRowFlex body">
         <div class="body__user-pic">
             {#if $isSignedIn}
-                <img src={$userProfile?.picture?.original?.url} alt="">
+                <img src={getPictureURL(
+                  $userProfile?.picture?.original?.url,
+                  $userProfile?.ownedBy
+                  )} alt="">
             {:else}
                 <img src="https://api.dicebear.com/6.x/bottts-neutral/svg?seed=Buster" alt="">
             {/if}

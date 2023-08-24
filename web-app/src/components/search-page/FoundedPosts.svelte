@@ -10,18 +10,19 @@
         thumbUp,
         trendingUp
     } from "../../utils/frontend/appIcon";
-    import {getPublicationByPubId} from "../../utils/frontend/getPublicationByPubId";
+    import { getPublicationByPubId } from "../../utils/frontend/getPublicationByPubId";
     import getImageURLUsingParentPubId from "../../utils/frontend/getImageURLUsingParentPubId";
     import getFormattedDate from "../../utils/frontend/getFormattedDate";
-    import {getCommentOfPublication} from "../../utils/frontend/getCommentOfPublication";
-    import {searchInputDetails} from "../../services/searchInputDetails";
-    import type {SearchInputDetailsModel} from "../../models/searchInputDetails.model";
+    import { getCommentOfPublication } from "../../utils/frontend/getCommentOfPublication";
+    import { searchInputDetails } from "../../services/searchInputDetails";
+    import type { SearchInputDetailsModel } from "../../models/searchInputDetails.model";
     import DOMPurify from "dompurify";
-    import {Tooltip} from "@svelte-plugins/tooltips";
-    import {PUBLIC_APP_LENS_ID} from "$env/static/public";
+    import { Tooltip } from "@svelte-plugins/tooltips";
+    import { PUBLIC_APP_LENS_ID } from "$env/static/public";
     import MediaQuery from "$lib/MediaQuery.svelte";
-    import type {ObserverEventDetails, Options} from 'svelte-inview';
-    import {inview} from 'svelte-inview';
+    import type { ObserverEventDetails, Options } from "svelte-inview";
+    import { inview } from "svelte-inview";
+    import getPictureURL from "../../utils/frontend/getPictureURL";
 
     type KeyStringValBoolean = {
         [key: string]: boolean;
@@ -195,7 +196,10 @@
                                     {:else}
                                         <div class="CenterRowFlex mobile__card__post">
                                             <div class="mobile__card__post__user-pic">
-                                                <img src={comment?.data?.publications?.items[0]?.profile?.picture?.original?.url}
+                                                <img src={getPictureURL(
+                                                  comment?.data?.publications?.items[0]?.profile?.picture?.original?.url,
+                                                  comment?.data?.publications?.items[0]?.profile?.ownedBy
+                                                  )}
                                                      alt="avatar">
                                             </div>
                                             <div class="mobile__card__post__info">
@@ -344,7 +348,8 @@
                                     {:then comment}
                                         <div class="CenterRowFlex card__body__post">
                                             <div class="card__body__post__pic">
-                                                <img src={comment?.data?.publications?.items[0]?.profile?.picture?.original?.url}
+                                                <img
+                                                  src={getPictureURL(comment?.data?.publications?.items[0]?.profile?.picture?.original?.url)}
                                                      alt="avatar">
                                             </div>
                                             <div class="card__body__post__info">

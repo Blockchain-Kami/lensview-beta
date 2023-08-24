@@ -28,6 +28,7 @@
   import Login from "../Login.svelte";
   import { isSignedIn } from "../../services/signInStatus";
   import type { ReactionDetailsModel } from "../../models/reactionDetails.model";
+  import getPictureURL from "../../utils/frontend/getPictureURL";
 
 
   type CommentMoreStatus = {
@@ -256,7 +257,10 @@
         <a href={`/posts/${$page.data.mainPostPubId}/${comment?.id}`}
            class="comment">
           <div class="comment__pic">
-            <img src={comment?.profile?.picture?.original?.url}
+            <img src={getPictureURL(
+              comment?.profile?.picture?.original?.url,
+              comment?.profile?.ownedBy
+              )}
                  alt="avatar">
           </div>
           <div class="comment__body">
