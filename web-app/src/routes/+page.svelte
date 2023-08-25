@@ -27,6 +27,7 @@
     import { inview } from "svelte-inview";
     import MediaQuery from "$lib/MediaQuery.svelte";
     import getPictureURL from "../utils/frontend/getPictureURL";
+    import { MetaTags } from "svelte-meta-tags";
 
     type KeyStringValBoolean = {
         [key: string]: boolean;
@@ -216,6 +217,35 @@
 </MediaQuery>
 
 <AddNewPost bind:showAddNewPostModal/>
+
+<MetaTags
+  title="LensView"
+  titleTemplate="%s | Svelte Meta Tags"
+  description="The omnipresent comment section to discuss, fact-check, and share your views about any web page"
+  canonical="https://testnet.lensview.io/"
+  openGraph={{
+    url: 'https://testnet.lensview.io/',
+    title: 'LensView',
+    description: 'The omnipresent comment section to discuss, fact-check, and share your views about any web page',
+    images: [
+      {
+        url: 'https://i.postimg.cc/LXjvL1rD/lensview-logo.png',
+        width: 800,
+        height: 600,
+        alt: 'Og Image Alt'
+      }
+    ],
+    siteName: 'LensView'
+  }}
+  twitter={{
+    site: '@LensView',
+    cardType: 'summary_large_image',
+    title: 'LensView',
+    description: 'The omnipresent comment section to discuss, fact-check, and share your views about any web page',
+    image: 'https://i.postimg.cc/LXjvL1rD/lensview-logo.png',
+    imageAlt: 'LensView image'
+  }}
+/>
 
 <!---------------------------------------------------------------->
 
