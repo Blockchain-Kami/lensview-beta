@@ -13,19 +13,20 @@
         thumbUp,
         trendingUp
     } from "../utils/frontend/appIcon";
-    import type {PageData} from "./$types";
+    import type { PageData } from "./$types";
     import getFormattedDate from "../utils/frontend/getFormattedDate";
-    import {getCommentOfPublication} from "../utils/frontend/getCommentOfPublication";
+    import { getCommentOfPublication } from "../utils/frontend/getCommentOfPublication";
     import getImageURLUsingParentPubId from "../utils/frontend/getImageURLUsingParentPubId";
     import AddNewPost from "../components/main-page/AddNewPost.svelte";
     import IntroPrompt from "../components/main-page/IntroPrompt.svelte";
-    import {getNotificationsContext} from 'svelte-notifications';
+    import { getNotificationsContext } from "svelte-notifications";
     import DOMPurify from "dompurify";
-    import {Tooltip} from "@svelte-plugins/tooltips";
-    import {PUBLIC_APP_LENS_ID} from "$env/static/public";
-    import type {ObserverEventDetails, Options} from 'svelte-inview';
-    import {inview} from 'svelte-inview';
+    import { Tooltip } from "@svelte-plugins/tooltips";
+    import { PUBLIC_APP_LENS_ID } from "$env/static/public";
+    import type { ObserverEventDetails, Options } from "svelte-inview";
+    import { inview } from "svelte-inview";
     import MediaQuery from "$lib/MediaQuery.svelte";
+    import getPictureURL from "../utils/frontend/getPictureURL";
 
     type KeyStringValBoolean = {
         [key: string]: boolean;
@@ -154,7 +155,10 @@
                         {:else}
                             <div class="CenterRowFlex card__post">
                                 <div class="card__post__user-pic">
-                                    <img src={data?.data?.publications?.items[0]?.profile?.picture?.original?.url}
+                                    <img src={getPictureURL(
+                                      data?.data?.publications?.items[0]?.profile?.picture?.original?.url,
+                                      data?.data?.publications?.items[0]?.profile?.ownedBy
+                                      )}
                                          alt="avatar">
                                 </div>
                                 <div class="card__post__info">

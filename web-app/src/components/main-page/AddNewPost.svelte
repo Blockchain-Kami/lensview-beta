@@ -1,15 +1,16 @@
 <script lang="ts">
     import Icon from "$lib/Icon.svelte";
-    import {awesome, close, cross, flightTakeoff, signature, tick} from "../../utils/frontend/appIcon";
-    import {isSignedIn} from "../../services/signInStatus";
+    import { awesome, close, cross, flightTakeoff, signature, tick } from "../../utils/frontend/appIcon";
+    import { isSignedIn } from "../../services/signInStatus";
     import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
     import Login from "../Login.svelte";
     import postAPublication from "../../utils/frontend/postAPublication";
-    import {userProfile} from "../../services/profile";
-    import {getNotificationsContext} from 'svelte-notifications';
-    import {goto} from "$app/navigation";
-    import {fly} from 'svelte/transition'
-    import {backInOut} from "svelte/easing";
+    import { userProfile } from "../../services/profile";
+    import { getNotificationsContext } from "svelte-notifications";
+    import { goto } from "$app/navigation";
+    import { fly } from "svelte/transition";
+    import { backInOut } from "svelte/easing";
+    import GetTestMatic from "../GetTestMatic.svelte";
 
     const {addNotification} = getNotificationsContext();
     export let showAddNewPostModal: boolean;
@@ -26,6 +27,7 @@
     export let userEnteredUrl = "";
     let isUrlInvalid = false;
     let urlInvalidReason = "";
+    let showGetTestMaticModal = false;
 
     const checkIfContentIsInvalid = () => {
         const wordCount = calculateWordCount(userEnteredContent);
@@ -288,7 +290,7 @@
         <main on:click|stopPropagation transition:fly={{ y: 40, easing: backInOut, duration: 700 }}>
             <div class="CenterRowFlex head">
                 <div class="h3 head__title">
-                    Create a New Post
+                    Create a new post
                 </div>
                 <div class="head__close-btn">
                     <button on:click={() => dialog.close()}>
@@ -334,15 +336,23 @@
             </div>
             <div class="line"></div>
             <div class="CenterRowFlex footer">
-                <button on:click={postAnonymously}
-                        disabled={isContentInvalid}
-                        class="btn-alt"
-                        style="--btn-alt-color: #1e4748;">
-                    Post anonymously
-                </button>
+                <div class="footer__left">
+                    <button class="footer__left__matic"
+                            on:click={() => showGetTestMaticModal = true}>
+                        Get test MATIC
+                    </button>
+                </div>
+                <div class="CenterRowFlex footer__right">
+                    <button on:click={postAnonymously}
+                            disabled={isContentInvalid}
+                            class="btn-alt"
+                            style="--btn-alt-color: #1e4748;">
+                        Post anonymously
+                    </button>
                     <button class="btn" on:click={postThroughUser}
                             disabled={isContentInvalid || isUrlInvalid}>Post as you
                     </button>
+                </div>
             </div>
         </main>
     {/if}
@@ -351,6 +361,7 @@
 
 
 <Login bind:showLoginModal/>
+<GetTestMatic bind:showGetTestMaticModal />
 
 
 <style lang="scss">
@@ -429,9 +440,17 @@
   }
 
   .footer {
-    margin-left: auto;
-    padding: 1rem;
-    gap: 1rem;
+      justify-content: space-between;
+      padding: 1rem;
+  }
+
+  .footer__left__matic {
+      color: var(--primary);
+      font-size: var(--small-font-size);
+  }
+
+  .footer__right {
+      gap: 1rem;
   }
 
   @media only screen and (max-width: 1024px) {

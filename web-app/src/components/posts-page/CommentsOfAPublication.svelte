@@ -28,6 +28,7 @@
   import Login from "../Login.svelte";
   import { isSignedIn } from "../../services/signInStatus";
   import type { ReactionDetailsModel } from "../../models/reactionDetails.model";
+  import getPictureURL from "../../utils/frontend/getPictureURL";
 
 
   type CommentMoreStatus = {
@@ -193,7 +194,7 @@
     </div>
     <div class="filter__type">
       <select bind:value={selectedFilterType} on:change={updatedPromiseOfGetComment}>
-        <option value="mostLiked">Most Liked</option>
+        <option value="mostLiked">Most liked</option>
         <option value="latest">Latest</option>
       </select>
     </div>
@@ -256,7 +257,10 @@
         <a href={`/posts/${$page.data.mainPostPubId}/${comment?.id}`}
            class="comment">
           <div class="comment__pic">
-            <img src={comment?.profile?.picture?.original?.url}
+            <img src={getPictureURL(
+              comment?.profile?.picture?.original?.url,
+              comment?.profile?.ownedBy
+              )}
                  alt="avatar">
           </div>
           <div class="comment__body">
