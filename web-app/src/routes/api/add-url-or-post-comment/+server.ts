@@ -80,6 +80,10 @@ export async function POST(requestEvent) {
 					isUrlAlreadyAdded: true,
 					message: 'Link was already present in LensView. User comment added to the post.'
 				});
+			} else {
+				throw error(500, {
+					message: 'Error: Link is already added to LensView. Error adding user comment to the post.'
+				});
 			}
 		}
 	}
@@ -116,6 +120,10 @@ export async function POST(requestEvent) {
 					successCode: 4,
 					isUrlAlreadyAdded: false,
 					message: 'New URL added to LensView and user comment added to the post'
+				});
+			} else {
+				throw error(500, {
+					message: 'Error: Failed to add anonymous user\'s comment to the post.'
 				});
 			}
 		}
