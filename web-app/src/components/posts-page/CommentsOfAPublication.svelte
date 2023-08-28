@@ -358,7 +358,7 @@
               {@html Autolinker.link(DOMPurify.sanitize(comment?.metadata?.content), {
                 className: 'links',
               })}
-              <blockquote class="twitter-tweet" data-conversation="none">
+              <blockquote class="twitter-tweet" data-conversation="none" data-theme="dark">
                 <a
                   href={`https://twitter.com/username/status/${getLinkPreviewHtml(DOMPurify.sanitize(comment?.metadata?.content))}`}></a>
               </blockquote>
