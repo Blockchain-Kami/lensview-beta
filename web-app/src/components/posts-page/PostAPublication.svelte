@@ -78,6 +78,10 @@
         selection.deleteFromDocument();
         selection.getRangeAt(0).insertNode(document.createTextNode(pastedText));
 
+        // Update the userEnteredContent variable with the new content
+        userEnteredContent = document.getElementById("editableDiv").innerHTML;
+
+        // Perform any necessary checks or validations
         checkIfInputIsInvalid(event);
     }
 

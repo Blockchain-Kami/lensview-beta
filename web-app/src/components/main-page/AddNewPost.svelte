@@ -74,7 +74,11 @@
         selection.deleteFromDocument();
         selection.getRangeAt(0).insertNode(document.createTextNode(pastedText));
 
-        checkIfContentIsInvalid();
+        // Update the userEnteredContent variable with the new content
+        userEnteredContent = document.getElementById("editableDiv").innerHTML;
+
+        // Perform any necessary checks or validations
+        checkIfContentIsInvalid(event);
     }
 
     let postThroughUser = async () => {
