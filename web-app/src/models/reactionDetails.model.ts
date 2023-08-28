@@ -1,5 +1,5 @@
 export interface ReactionDetailsModel {
-	id: details;
+	id?: details;
 }
 
 interface details {
