@@ -25,7 +25,9 @@
     "svelte-inview": "^4.0.1",
     "svelte-notifications": "^0.9.98",
     "uuid": "^9.0.0",
-    "web3.storage": "^3.1.0"
+    "web3.storage": "^3.1.0",
+    "winston": "^3.10.0",
+    "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
     "@sveltejs/adapter-node": "^1.0.0-next.13",
