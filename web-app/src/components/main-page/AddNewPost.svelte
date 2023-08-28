@@ -420,6 +420,7 @@
     border-radius: 0.75rem;
     background: linear-gradient(172deg, rgba(50, 249, 255, 0.15) 33.55%, rgba(236, 254, 255, 0.15) 100%);
     padding: 1rem;
+      overflow-wrap: anywhere;
   }
 
   .body__content__input__err-msg {

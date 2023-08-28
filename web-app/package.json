@@ -14,6 +14,7 @@
   "dependencies": {
     "@svelte-plugins/tooltips": "^0.1.6",
     "@urql/svelte": "^3.0.1",
+    "autolinker": "^4.0.0",
     "axios": "^1.4.0",
     "bull": "^4.10.4",
     "dompurify": "^3.0.5",

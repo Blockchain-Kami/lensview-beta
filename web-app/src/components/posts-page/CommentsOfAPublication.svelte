@@ -29,6 +29,8 @@
   import { isSignedIn } from "../../services/signInStatus";
   import type { ReactionDetailsModel } from "../../models/reactionDetails.model";
   import getPictureURL from "../../utils/frontend/getPictureURL";
+  import Autolinker from "autolinker";
+  import getLinkPreviewHtml from "../../utils/frontend/getLinkPreviewHtml";
 
 
   type CommentMoreStatus = {
@@ -353,7 +355,14 @@
               {getFormattedDate(comment?.createdAt)}
             </div>
             <div class="comment__body__content">
-              {@html DOMPurify.sanitize(comment?.metadata?.content)}
+              {@html Autolinker.link(DOMPurify.sanitize(comment?.metadata?.content), {
+                className: 'links',
+              })}
+              <blockquote class="twitter-tweet" data-conversation="none">
+                <a
+                  href={`https://twitter.com/username/status/${getLinkPreviewHtml(DOMPurify.sanitize(comment?.metadata?.content))}`}></a>
+              </blockquote>
+              <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
             </div>
           </div>
         </a>
