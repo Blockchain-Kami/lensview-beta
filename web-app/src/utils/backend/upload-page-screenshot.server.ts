@@ -4,13 +4,14 @@ import {Web3Storage} from "web3.storage";
 
 import puppeteer from 'puppeteer';
 import {Blob} from "buffer";
+import {logger} from "../../log/logManager";
 
 const makeGatewayURLImage = (imgCID, imgName) => {
     return `https://${imgCID}.ipfs.w3s.link/${imgName}`;
 }
 
 const Screenshot = async (url) => {
-
+    logger.info("utils/backend : upload-page-screenshot.server.ts:: " + "EXECUTION START: Screenshot: " + "Starting Puppeteer.");
     try {
 
         /*
@@ -84,18 +85,18 @@ const Screenshot = async (url) => {
         const screenshot = await page.screenshot({ type: "jpeg" });
         await page.close();
         await browser.close();
+        logger.info("utils/backend : upload-page-screenshot.server.ts:: " + "EXECUTION END: Screenshot: " + "DONE: Image Captured by Puppeteer.");
         return screenshot;
 
-    } catch(e){
-        console.log("Could not connect to puppeteer");
-        console.log(e);
-        throw new Error(e);
+    } catch(error){
+        logger.info("utils/backend : upload-page-screenshot.server.ts:: " + "EXECUTION START: Screenshot: " + "FAILED: Could not Capture Image using Puppeteer: " + error);
+        throw new Error(error);
     }
 
 }
 
 export const uploadImage = async (url) => {
-
+    logger.info("utils/backend : upload-page-screenshot.server.ts:: " + "EXECUTION START: uploadImage: " + "Saving Image to Web3Storage, URL: " + url );
     const imgName = "image.jpg";
 
     try {
@@ -106,14 +107,16 @@ export const uploadImage = async (url) => {
         const client = new Web3Storage({token: PUBLIC_WEB3STORAGE_TOKEN});
 
         const imgCID = await client.put([file], {name: imgName});
-        return makeGatewayURLImage(imgCID, imgName);
+        const IPFSImageLink = makeGatewayURLImage(imgCID, imgName);
+        logger.info("utils/backend : upload-page-screenshot.server.ts:: " + "EXECUTION END: uploadImage: " + "DONE: Image Saved to Web3Storage: " + IPFSImageLink );
+        return IPFSImageLink
 
 
         // const screenshot = await Screenshot(url);
         // const client = new ThirdwebStorage();
         // return await client.upload(screenshot);
     } catch {
-        console.log("Failed to save");
+        logger.error("utils/backend : upload-page-screenshot.server.ts:: " + "EXECUTION END: uploadImage: " + "FAILED: Image Not Saved to Web3Storage.");
         return;
     }
 

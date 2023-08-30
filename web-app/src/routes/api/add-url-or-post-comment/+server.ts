@@ -13,7 +13,7 @@ import {logger} from "../../../log/logManager";
 export async function POST(requestEvent) {
 
 	try {
-		logger.info("add-url-or-post-comment: server.ts:: " + "EXECUTION START: ADD URL");
+		logger.info("add-url-or-post-comment: server.ts:: " + "EXECUTION START: ADD URL OR POST COMMENT");
 		const {request} = requestEvent;
 		const urlRequest = await request.json();
 
@@ -66,13 +66,13 @@ export async function POST(requestEvent) {
 		const [client, signer, profile] = authToken;
 
 		const publicationExists = await getParentPost(hashedURL);
-		pubId = publicationExists['parent_post_ID']
-
-		if (pubId) {
+		
+		if (publicationExists['parent_post_ID']) {
+			pubId = publicationExists['parent_post_ID'];
 			logger.info("add-url-or-post-comment: server.ts:: " + "Link is already added to LensView");
 			if (lensHandle) {
 				// front end will do the posting, throw error
-				logger.info("add-url-or-post-comment: server.ts:: " + "EXECUTION END: ADD URL: " + "Add user comment to " + pubId);
+				logger.info("add-url-or-post-comment: server.ts:: " + "EXECUTION END: ADD URL OR POST COMMENT: " + "Add user comment to " + pubId);
 				return json({
 					parentPubId: pubId,
 					successCode: 1,
@@ -83,7 +83,7 @@ export async function POST(requestEvent) {
 				const commentAdded = await commentAnonymously(pubId, postContent, client, signer, profile);
 
 				if (commentAdded) {
-					logger.info("add-url-or-post-comment: server.ts:: " + "EXECUTION END: ADD URL");
+					logger.info("add-url-or-post-comment: server.ts:: " + "EXECUTION END: ADD URL OR POST COMMENT");
 					return json({
 						parentPubId: pubId,
 						successCode: 2,
@@ -91,7 +91,7 @@ export async function POST(requestEvent) {
 						message: 'Link was already present in LensView. User comment added to the post.'
 					});
 				} else {
-					logger.error("add-url-or-post-comment: server.ts:: " + "EXECUTION END: ADD URL:" + "Failed to add anonymous comment to post");
+					logger.error("add-url-or-post-comment: server.ts:: " + "EXECUTION END: ADD URL OR POST COMMENT:" + "Failed to add anonymous comment to post");
 					throw error(500, {
 						message: 'Error: Link is already added to LensView. Error adding user comment to the post.'
 					});
@@ -102,7 +102,7 @@ export async function POST(requestEvent) {
 		const txHash = await savePost(urlObj, client, signer, profile);
 
 		if (!txHash) {
-			logger.error("add-url-or-post-comment: server.ts:: " + "EXECUTION END: ADD URL:");
+			logger.error("add-url-or-post-comment: server.ts:: " + "EXECUTION END: ADD URL OR POST COMMENT:");
 			throw error(500, {
 				message: 'Error: Failed to save URL to LensView'
 			});
@@ -116,7 +116,7 @@ export async function POST(requestEvent) {
 
 			if (lensHandle) {
 				// front end will post the user comment, return response
-				logger.info("add-url-or-post-comment: server.ts:: " + "EXECUTION END: ADD URL" + "Add user comment to " + pubId);
+				logger.info("add-url-or-post-comment: server.ts:: " + "EXECUTION END: ADD URL OR POST COMMENT" + "Add user comment to " + pubId);
 				return json({
 					parentPubId: pubId,
 					successCode: 3,
@@ -128,7 +128,7 @@ export async function POST(requestEvent) {
 				const commentAdded = await commentAnonymously(pubId, postContent, client, signer, profile);
 
 				if (commentAdded) {
-					logger.info("add-url-or-post-comment: server.ts:: " + "EXECUTION END: ADD URL");
+					logger.info("add-url-or-post-comment: server.ts:: " + "EXECUTION END: ADD URL OR POST COMMENT");
 					return json({
 						parentPubId: pubId,
 						successCode: 4,
@@ -136,14 +136,14 @@ export async function POST(requestEvent) {
 						message: 'New URL added to LensView and user comment added to the post'
 					});
 				} else {
-					logger.error("add-url-or-post-comment: server.ts :: " + "EXECUTION END: ADD URL:" + "Failed to add anonymous comment to post");
+					logger.error("add-url-or-post-comment: server.ts :: " + "EXECUTION END: ADD URL OR POST COMMENT:" + "Failed to add anonymous comment to post");
 					throw error(500, {
 						message: 'Error: Failed to add anonymous user\'s comment to the post.'
 					});
 				}
 			}
 		} else {
-			logger.error("add-url-or-post-comment: server.ts:: " + "EXECUTION END: ADD URL: " + "Transaction not indexed by Lens API. Time exceeded 60 seconds");
+			logger.error("add-url-or-post-comment: server.ts:: " + "EXECUTION END: ADD URL OR POST COMMENT: " + "Transaction not indexed by Lens API. Time exceeded 60 seconds");
 			throw error(500, {
 				message: 'Error: Transaction not indexed by Lens API. Time exceeded 60 seconds.'
 			});
@@ -151,7 +151,7 @@ export async function POST(requestEvent) {
 	} catch(error) {
 		logger.error("add-url-or-post-comment: server.ts:: " + error);
 		return error(500, {
-			message: 'Failed to add URL to LensView'
+			message: 'Failed to ADD URL OR POST COMMENT to LensView'
 		});
 	}
 }

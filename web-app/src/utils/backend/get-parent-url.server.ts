@@ -1,4 +1,3 @@
-import { error } from '@sveltejs/kit';
 import { PUBLIC_APP_LENS_ID, PUBLIC_LENS_API_URL } from '$env/static/public';
 import getPosts from '../../graphql/getPosts';
 import {logger} from "../../log/logManager";
@@ -33,7 +32,7 @@ export const getParentPost = async (hashedURL) => {
 		try {
 			const parentPostID = response.data.publications.items[0].id;
 			const sourceURL = response.data.publications.items[0].metadata.content;
-
+			logger.info("utils/backend: get-parent-url.server.ts :: " + "EXECUTION END: getParentPost: " + "Publication found: " + parentPostID);
 			return {
 				status: 200,
 				parent_post_ID: parentPostID,
@@ -41,6 +40,7 @@ export const getParentPost = async (hashedURL) => {
 				message: 'Successfully fetched parent publication ID'
 			};
 		} catch (err) {
+			logger.error("utils/backend: get-parent-url.server.ts :: " + "EXECUTION END: getParentPost: " + "Failed to extract pubID from response.");
 			return {
 				status: 500,
 				parent_post_ID: null,
@@ -49,6 +49,12 @@ export const getParentPost = async (hashedURL) => {
 			};
 		}
 	} catch (err) {
-		throw error(500, 'Could not connect to Lens Protocol');
+		logger.error("utils/backend: get-parent-url.server.ts :: " + "EXECUTION END: getParentPost: " + "Error connecting to Lens Protocol.");
+		return {
+			status: 500,
+			parent_post_ID: null,
+			source_url: null,
+			message: 'Error: Could not connect to Lens Protocol.'
+		};
 	}
 };

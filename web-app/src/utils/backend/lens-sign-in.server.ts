@@ -80,11 +80,12 @@ const getUserProfile = async () => {
     try {
         const response = await client.query(getDefaultProfile, {
             address: APP_ADDRESS
-        }).toPromise()
-        logger.info("utils/backend: lens-sign-in :: " + "EXECUTION END: getUserProfile: " + "SUCCESSFUL");
-        return response.data.defaultProfile;
+        }).toPromise();
+        const defaultProfile = response.data.defaultProfile;
+        logger.info("utils/backend: lens-sign-in :: " + "EXECUTION END: getUserProfile: " + "SUCCESSFUL: Signed in with: " + defaultProfile);
+        return defaultProfile;
     } catch (error) {
-        logger.info("utils/backend: lens-sign-in :: " + "EXECUTION END: getUserProfile: " + "FAILED: " + error);
+        logger.info("utils/backend: lens-sign-in :: " + "EXECUTION END: getUserProfile: " + "FAILED: Failed to Sign In " + error);
         return null
     }
 };

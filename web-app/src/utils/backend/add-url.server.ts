@@ -5,6 +5,7 @@ import {PUBLIC_LENS_HUB_CONTRACT_ADDRESS} from "$env/static/public";
 import LENS_HUB_ABI from "../../abis/lens-hub-contract-abi.json";
 import {getGas} from "./fetch-gas.server";
 import createPostTypedData from "../../graphql/createPostTypedData";
+import {logger} from "../../log/logManager";
 
 const {_} = pkg;
 
@@ -29,20 +30,14 @@ const signCreatePostTypedData = async (request, client, signer) => {
         request
     }).toPromise();
     const postTypedData = result.data.createPostTypedData;
-    // console.log('create post: createPostTypedData', result);
-
     const typedData = postTypedData.typedData;
-    console.log('create post: typedData', typedData.value);
-
     const signature = await signedTypeData(typedData.domain, typedData.types, typedData.value, signer);
-    console.log('create post: signature', signature);
-
     return {result, signature};
 }
 
 const savePost = async (urlObj, client, signer, profile) => {
+    logger.info("utils/backend: add-url.server.ts :: " + "EXECUTION START: savePost");
     isPosting = true;
-    console.log("Post called :");
 
     const contentURI = await uploadToIPFS(urlObj);
     if (!contentURI) {
@@ -62,21 +57,13 @@ const savePost = async (urlObj, client, signer, profile) => {
 
     try {
         const signedResult = await signCreatePostTypedData(createPostRequest, client, signer)
-        console.log("signedResult : " + JSON.stringify(signedResult));
-
         const {v, r, s} = splitSignature(signedResult.signature)
-
-        console.log("v : " + v);
-        console.log("r : " + r);
-        console.log("s : " + s);
 
         const contract = new ethers.Contract(
             PUBLIC_LENS_HUB_CONTRACT_ADDRESS,
             LENS_HUB_ABI,
             signer
         )
-
-        console.log("Contract instance created");
 
         // get gas estimates
         const gas = await getGas();
@@ -102,19 +89,17 @@ const savePost = async (urlObj, client, signer, profile) => {
         })
 
         await tx.wait();
-
+        logger.info("utils/backend: add-url.server.ts :: " + "Transaction Sent: savePost");
         isPosting = false;
-        console.log('successfully created post: tx hash', tx.hash);
-        console.log('successfully created post: tx hash', JSON.stringify(tx));
-
+        logger.info("utils/backend: add-url.server.ts :: " + "Transaction Confirmed: savePost : Transaction Hash: " + tx.hash);
+        logger.info("utils/backend: add-url.server.ts :: " + "EXECUTION END: savePost : URL added successfully: " + urlObj.url);
         return tx.hash;
 
-    } catch (err) {
-        console.log('error: ', err);
+    } catch (error) {
+        logger.info("utils/backend: add-url.server.ts :: " + "EXECUTION END: savePost : Failed to add URL: " + urlObj.url);
         isPosting = false;
+        return isPosting;
     }
-
-    return isPosting;
 }
 
 export default savePost;
