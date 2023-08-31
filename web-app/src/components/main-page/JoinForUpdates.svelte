@@ -48,7 +48,7 @@
               <a href="https://www.reddit.com/r/lensview/" target="_blank">
                 <img src={Reddit} alt="">
               </a>
-              <a href="https://t.me/lens_view" target="_blank">
+              <a href="https://t.me/lensviewio" target="_blank">
                 <img src={Telegram} alt="">
               </a>
             </div>

@@ -62,7 +62,7 @@
         return words.length;
     }
 
-    const handlePaste = (event) => {
+    const handlePaste = async (event: ClipboardEvent) => {
         // Prevent the default paste behavior
         event.preventDefault();
 
@@ -79,11 +79,15 @@
         selection.getRangeAt(0).insertNode(document.createTextNode(pastedText));
 
         // Update the userEnteredContent variable with the new content
-        userEnteredContent = document.getElementById("editableDiv").innerHTML;
+        const editableDiv = document.getElementById("editableDiv");
+        if (editableDiv) {
+            userEnteredContent = editableDiv.innerHTML;
+        }
 
         // Perform any necessary checks or validations
-        checkIfInputIsInvalid(event);
+        checkIfInputIsInvalid();
     }
+
 
     let postThroughUser = async () => {
         if (!checkIsSignedIn()) {
