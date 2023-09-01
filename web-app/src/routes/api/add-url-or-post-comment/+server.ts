@@ -108,6 +108,7 @@ export async function POST(requestEvent) {
 			});
 		}
 		const indexed = await checkUntilMainPostAdded(txHash, Date.now());
+		logger.info("add-url-or-post-comment: server.ts:: " + "EXECUTING: ADD URL OR POST COMMENT" + "Value of indexed " + indexed);
 
 		if (indexed) {
 			imageQueue.add({urlObj});
