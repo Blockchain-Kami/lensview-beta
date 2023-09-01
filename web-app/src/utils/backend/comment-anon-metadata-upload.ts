@@ -9,6 +9,7 @@ import {
 } from '$env/static/public';
 import { File, Web3Storage } from 'web3.storage';
 import { v4 as uuidv4 } from 'uuid';
+import {logger} from "../../log/logManager";
 
 function getAccessToken() {
 	// If you're just testing, you can paste in a token
@@ -36,6 +37,8 @@ function makeFileObjects(content) {
 
     // //Getting profile of the connected user and saving it to "profile" variable
     // getUserProfile(address);
+
+    logger.info("utils/backend: comment-anon-metadata.server.ts :: " + "EXECUTION START: makeFileObjects");
     const metaData = {
         version: '2.0.0',
         content: content,
@@ -68,12 +71,13 @@ function makeFileObjects(content) {
     };
 
     try {
+        logger.info("utils/backend: comment-anon-metadata.server.ts :: " + "EXECUTION END: makeFileObjects: Successful");
         return [
             new File(['contents-of-file-1'], 'plain-utf8.txt'),
             new File([JSON.stringify(metaData)], 'metaData.json')];
     } catch {
-        console.log("failed to create metadata file")
-        return
+        logger.error("utils/backend: comment-anon-metadata.server.ts :: " + "EXECUTION END: makeFileObjects: Failed to create files");
+        return null;
     }
 }
 
@@ -83,22 +87,23 @@ function makeFileObjects(content) {
  * 4. Upload to IPFS
  */
 const uploadCommentToIPFS = async (content) => {
+    logger.info("utils/backend: comment-anon-metadata.server.ts :: " + "EXECUTION START: uploadCommentToIPFS.");
 
     try {
         /*** Web3.storage ***/
         const client = makeStorageClient()
         const files = makeFileObjects(content);
+        if (files === null) {
+            logger.error("utils/backend: comment-anon-metadata.server.ts :: " + "EXECUTION END: uploadCommentToIPFS: Failed");
+            return null
+        }
         const cid = await client.put(files);
-        console.log('stored files with cid:', cid)
         const uri = `https://${cid}.ipfs.w3s.link/metaData.json`;
-
-        console.log("URI : " + uri);
-
+        logger.info("utils/backend: comment-anon-metadata.server.ts :: " + "EXECUTION END: uploadCommentToIPFS : Stored file to IPFS, URI:  " + uri);
         return uri
-
-    } catch (e) {
-        console.log("Failed to upload file to IPFS");
-        console.log(e)
+    } catch (error) {
+        logger.error("utils/backend: comment-anon-metadata.server.ts :: " + "EXECUTION END: uploadCommentToIPFS : Failed to upload metadata to IPFS: " + error);
+        return null;
     }
 
 }

@@ -1,16 +1,15 @@
 import {ethers} from 'ethers';
 import axios from 'axios';
+import {logger} from "../../log/logManager";
 
 // get max fees from gas station
 
 
 const fetchGas = async () => {
-
+    logger.info("utils/backend: fetch-gas.server.ts :: " + "EXECUTION START: fetchGas.");
     let maxFeePerGas = ethers.BigNumber.from(50000000000); // fallback to 50 gwei
     let maxPriorityFeePerGas = ethers.BigNumber.from(50000000000);// fallback to 50 gwei
     try {
-        console.log("FetchGas called");
-        console.log("Estimating gas for the transaction");
         const { data } = await axios({
             method: 'get',
             url: 'https://gasstation-testnet.polygon.technology/v2'
@@ -23,20 +22,21 @@ const fetchGas = async () => {
             Math.ceil(data.fast.maxPriorityFee) + '',
             'gwei'
         );
+        logger.info("utils/backend: fetch-gas.server.ts :: " + "EXECUTION END: fetchGas : Successfully Fetched Gas Price.");
         return [Number(maxFeePerGas._hex),Number(maxPriorityFeePerGas._hex)];
     } catch (error) {
         // ignore
-        console.log("Failed to fetch gas estimates, fallback to 50 gwei");
+        logger.error("utils/backend: fetch-gas.server.ts :: " + "EXECUTION END: fetchGas : Failed to fetch gas, fallback to 50 Gwei.");
         return [Number(maxFeePerGas._hex),Number(maxPriorityFeePerGas._hex)];
     }
 }
 
 export const getGas = async() => {
+    logger.info("utils/backend: fetch-gas.server.ts :: " + "EXECUTION START: getGas");
     const gas = await fetchGas();
     const maxFeePerGas = gas[0];
     const maxPriorityFeePerGas = gas[1];
-    console.log("max fee per gas:",maxFeePerGas);
-    console.log("max priority fee per gas:",maxPriorityFeePerGas);
+    logger.info("utils/backend: fetch-gas.server.ts :: " + "EXECUTION END: getGas :: " + "maxFeePerGas: " + maxFeePerGas + ", " + "maxPriorityFeePerGas: " + maxPriorityFeePerGas);
     return [maxFeePerGas, maxPriorityFeePerGas];
 }
 
