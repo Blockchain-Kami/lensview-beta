@@ -29,7 +29,7 @@ export const isInputTypeUrl = (url: string) => {
         logger.error("utils/backend: check-input-type :: " + "EXECUTION END: isInputTypeUrl: " + "Error processing the input: " + error);
         return null;
     }
-    logger.info("utils/backend: check-input-type :: " + "EXECUTION END: isInputTypeUrl: " + urlRequest);
+    logger.info("utils/backend: check-input-type :: " + "EXECUTION END: isInputTypeUrl: URL: " + urlRequest);
     return urlRequest;
 };
 

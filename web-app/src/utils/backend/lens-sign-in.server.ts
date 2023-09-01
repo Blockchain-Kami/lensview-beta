@@ -70,7 +70,7 @@ export const signInWithLens = async () => {
         }
 
     } catch (error) {
-        logger.info("utils/backend: lens-sign-in :: " + "EXECUTION END: signInWithLens: " + "FAILED: " + error);
+        logger.error("utils/backend: lens-sign-in :: " + "EXECUTION END: signInWithLens: " + "FAILED: " + error);
         return null;
     }
 }
@@ -85,7 +85,7 @@ const getUserProfile = async () => {
         logger.info("utils/backend: lens-sign-in :: " + "EXECUTION END: getUserProfile: " + "SUCCESSFUL: Signed in with: " + defaultProfile);
         return defaultProfile;
     } catch (error) {
-        logger.info("utils/backend: lens-sign-in :: " + "EXECUTION END: getUserProfile: " + "FAILED: Failed to Sign In " + error);
+        logger.error("utils/backend: lens-sign-in :: " + "EXECUTION END: getUserProfile: " + "FAILED: Failed to Sign In " + error);
         return null
     }
 };

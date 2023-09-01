@@ -39,8 +39,8 @@ export const getParentPost = async (hashedURL) => {
 				source_url: sourceURL,
 				message: 'Successfully fetched parent publication ID'
 			};
-		} catch (err) {
-			logger.error("utils/backend: get-parent-url.server.ts :: " + "EXECUTION END: getParentPost: " + "Failed to extract pubID from response.");
+		} catch (error) {
+			logger.error("utils/backend: get-parent-url.server.ts :: " + "EXECUTION END: getParentPost: " + "Failed to extract pubID from response: " + error);
 			return {
 				status: 500,
 				parent_post_ID: null,
@@ -48,8 +48,8 @@ export const getParentPost = async (hashedURL) => {
 				message: 'Error: Could not extract publication ID from response'
 			};
 		}
-	} catch (err) {
-		logger.error("utils/backend: get-parent-url.server.ts :: " + "EXECUTION END: getParentPost: " + "Error connecting to Lens Protocol.");
+	} catch (error) {
+		logger.error("utils/backend: get-parent-url.server.ts :: " + "EXECUTION END: getParentPost: " + "Error connecting to Lens Protocol: " +error);
 		return {
 			status: 500,
 			parent_post_ID: null,

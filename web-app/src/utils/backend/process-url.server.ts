@@ -55,7 +55,7 @@ export const preprocessURL = (url) => {
         const path = origin + processedURL['pathname'];
         const query = processedURL['searchParams'];
         const domain = hostname.substring(0, hostname.indexOf('.'));
-        logger.info("utils/backend: process-url :: " + "EXECUTION END: preprocessURL: " + cleanURL);
+        logger.info("utils/backend: process-url :: " + "EXECUTION END: preprocessURL: Cleaned URL: " + cleanURL);
         return [
             cleanURL.toString().trim(),
             hostname.trim(),
