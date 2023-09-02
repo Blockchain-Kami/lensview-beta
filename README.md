@@ -5,7 +5,7 @@ LensView is revolutionizing the way people interact with the internet by creatin
 ## 📽️ Demo & Presentation Video
 
 <a href="https://youtu.be/Q-Ni7IC5kxI?si=dfqsBttH0AzZ1RgL">
-    <img src="img_2.png" width="60" height="60" style="border-radius: 10px">
+    <img src="https://i.postimg.cc/t4qFqNSD/img-2.png" width="60" height="60" style="border-radius: 10px">
 </a>
 
 ## 🌟 Join for updates
