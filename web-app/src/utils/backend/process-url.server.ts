@@ -1,5 +1,6 @@
 import {URL} from 'url';
 import {websiteSpecificCleaning} from "./website-cleaning.server";
+import {logger} from "../../log/logManager";
 /**
  * Preprocess and clean the URL before storing.
  * The URL will be stored according to the following rules:
@@ -19,7 +20,7 @@ import {websiteSpecificCleaning} from "./website-cleaning.server";
  *
  **/
 export const preprocessURL = (url) => {
-
+    logger.info("utils/backend: process-url :: " + "EXECUTION START: preprocessURL: " + url);
     try {
         // convert the url to a URL object
         const parsedURL = new URL(url);
@@ -54,7 +55,7 @@ export const preprocessURL = (url) => {
         const path = origin + processedURL['pathname'];
         const query = processedURL['searchParams'];
         const domain = hostname.substring(0, hostname.indexOf('.'));
-
+        logger.info("utils/backend: process-url :: " + "EXECUTION END: preprocessURL: Cleaned URL: " + cleanURL);
         return [
             cleanURL.toString().trim(),
             hostname.trim(),
@@ -63,8 +64,8 @@ export const preprocessURL = (url) => {
             query
         ];
 
-    } catch {
-        console.log('Failed to process URL');
+    } catch (error) {
+        logger.error("utils/backend: process-url :: " + "EXECUTION END: preprocessURL:" + "Error: " + error);
         return null
     }
 };

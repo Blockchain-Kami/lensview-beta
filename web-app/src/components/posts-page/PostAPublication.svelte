@@ -62,7 +62,7 @@
         return words.length;
     }
 
-    const handlePaste = (event) => {
+    const handlePaste = async (event: ClipboardEvent) => {
         // Prevent the default paste behavior
         event.preventDefault();
 
@@ -78,8 +78,16 @@
         selection.deleteFromDocument();
         selection.getRangeAt(0).insertNode(document.createTextNode(pastedText));
 
-        checkIfInputIsInvalid(event);
+        // Update the userEnteredContent variable with the new content
+        const editableDiv = document.getElementById("editableDiv");
+        if (editableDiv) {
+            userEnteredContent = editableDiv.innerHTML;
+        }
+
+        // Perform any necessary checks or validations
+        checkIfInputIsInvalid();
     }
+
 
     let postThroughUser = async () => {
         if (!checkIsSignedIn()) {
@@ -135,10 +143,10 @@
         const mainPostPubId = $page.data.mainPostPubId;
         const postPubId = $page.data.postPubId;
 
-        console.log("Post on its way!");
+        console.log(`${pubBtnName} on its way!`);
         addNotification({
             position: 'top-right',
-            heading: 'Post on its way!',
+            heading: `${pubBtnName} on its way!`,
             description: `Your anonymous ${pubBtnName.toLowerCase()} is getting ready to shine! Hang tight for a brief moment - your patience is golden!`,
             type: flightTakeoff,
             removeAfter: 7000,
@@ -303,6 +311,7 @@
     border-radius: 0.75rem;
     background: linear-gradient(172deg, rgba(50, 249, 255, 0.15) 33.55%, rgba(236, 254, 255, 0.15) 100%);
     padding: 1rem;
+      overflow-wrap: anywhere;
   }
 
   .body__input__err-msg {

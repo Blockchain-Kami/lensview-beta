@@ -3,8 +3,10 @@ import { getParentPost } from '../../../utils/backend/get-parent-url.server';
 import { preprocessURL } from '../../../utils/backend/process-url.server';
 import { createHash } from '../../../utils/backend/sha1.server';
 import { isInputTypeUrl } from '../../../utils/backend/check-input-type.server';
+import {logger} from "../../../log/logManager";
 
 export async function POST(requestEvent) {
+	logger.info("routes/api/is-url-valid-get-parent-pubId: +server.ts :: " + "EXECUTION START");
 	const { request } = requestEvent;
 	const urlRequest = await request.json();
 
@@ -14,6 +16,7 @@ export async function POST(requestEvent) {
 		const [url, , ,] = preprocessURL(Url);
 
 		if (!url) {
+			logger.error("routes/api/is-url-valid-get-parent-pubId: +server.ts :: " + "EXECUTION END: Failed to process URL: " + Url);
 			throw error(400, {
 				message: 'Error processing the URL'
 			});
@@ -29,6 +32,7 @@ export async function POST(requestEvent) {
 				isURL: true,
 				message: 'Parent publication ID was fetched successfully'
 			};
+			logger.info("routes/api/is-url-valid-get-parent-pubId: +server.ts :: " + "EXECUTION END: DONE: Parent Pub ID of URL " + url + " is: " + parentPostID);
 			return json(response);
 		} else if (res['status'] == 404) {
 			const response = {
@@ -36,8 +40,10 @@ export async function POST(requestEvent) {
 				isURL: true,
 				message: 'Could not find any publications on Lens Protocol'
 			};
+			logger.info("routes/api/is-url-valid-get-parent-pubId: +server.ts :: " + "EXECUTION END: DONE: Could not find any publications for: " + url);
 			return json(response);
 		} else {
+			logger.error("routes/api/is-url-valid-get-parent-pubId: +server.ts :: " + "EXECUTION END: FAILED: Could Not Connect To Lens Protocol");
 			throw error(500, {
 				parentPublicationID: null,
 				isURL: true,
@@ -45,6 +51,7 @@ export async function POST(requestEvent) {
 			});
 		}
 	} else {
+		logger.info("routes/api/is-url-valid-get-parent-pubId: +server.ts :: " + "EXECUTION END: DONE: Incorrect URL Format or User Entered a Tag");
 		const response = {
 			parentPublicationID: null,
 			isURL: false,

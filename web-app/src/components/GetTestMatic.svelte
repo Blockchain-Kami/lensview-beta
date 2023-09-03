@@ -35,7 +35,7 @@
         <a href="https://discordapp.com/channels/1143933435132522667/1144165263999238174" target="_blank">
           <img src={Discord} alt="">
         </a>
-        <a href="https://t.me/LensViewSupport" target="_blank">
+        <a href="https://t.me/lensviewiosupport" target="_blank">
           <img src={Telegram} alt="">
         </a>
       </div>

@@ -14,6 +14,7 @@
   "dependencies": {
     "@svelte-plugins/tooltips": "^0.1.6",
     "@urql/svelte": "^3.0.1",
+    "autolinker": "^4.0.0",
     "axios": "^1.4.0",
     "bull": "^4.10.4",
     "dompurify": "^3.0.5",
@@ -26,7 +27,9 @@
     "svelte-meta-tags": "^3.0.3",
     "svelte-notifications": "^0.9.98",
     "uuid": "^9.0.0",
-    "web3.storage": "^3.1.0"
+    "web3.storage": "^3.1.0",
+    "winston": "^3.10.0",
+    "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
     "@sveltejs/adapter-node": "^1.0.0-next.13",

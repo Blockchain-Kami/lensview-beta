@@ -58,7 +58,7 @@
         return words.length;
     }
 
-    const handlePaste = (event) => {
+    const handlePaste = async (event: ClipboardEvent) => {
         // Prevent the default paste behavior
         event.preventDefault();
 
@@ -74,6 +74,13 @@
         selection.deleteFromDocument();
         selection.getRangeAt(0).insertNode(document.createTextNode(pastedText));
 
+        // Update the userEnteredContent variable with the new content
+        const editableDiv = document.getElementById("editableDiv");
+        if (editableDiv) {
+            userEnteredContent = editableDiv.innerHTML;
+        }
+
+        // Perform any necessary checks or validations
         checkIfContentIsInvalid();
     }
 
@@ -420,6 +427,7 @@
     border-radius: 0.75rem;
     background: linear-gradient(172deg, rgba(50, 249, 255, 0.15) 33.55%, rgba(236, 254, 255, 0.15) 100%);
     padding: 1rem;
+      overflow-wrap: anywhere;
   }
 
   .body__content__input__err-msg {
