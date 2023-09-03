@@ -10,7 +10,7 @@
     import { userProfile } from "../services/profile";
     import getUserProfiles from "../utils/frontend/getUserProfiles";
     import { onMount } from "svelte";
-    import { PUBLIC_IS_PROD } from "$env/static/public";
+    import { PUBLIC_DOMAIN_NAME, PUBLIC_IS_PROD } from "$env/static/public";
     import { home, homeDualTone, menu, menuOpen, search } from "../utils/frontend/appIcon";
     import Icon from "$lib/Icon.svelte";
     import DualToneIcon from "$lib/DualToneIcon.svelte";
@@ -23,6 +23,8 @@
     import { quintOut } from "svelte/easing";
     import LensviewLogo from "$lib/assets/LensviewLogo.svg";
     import { reloadAPublication, reloadCommentOfAPublication, reloadMainPost } from "../services/reloadPublication";
+    import { MetaTags } from "svelte-meta-tags";
+    import { metaTagsDescription, metaTagsImageAlt, metaTagsImageUrl, metaTagsTitle } from "../services/metaTags";
 
     let isConnected = false;
     let signingIn = false;
@@ -377,6 +379,33 @@
 
 <JoinForUpdates bind:showJoinForUpdatesModal/>
 </Notifications>
+
+<MetaTags
+        title={$metaTagsTitle}
+        description={$metaTagsDescription}
+        openGraph={{
+    url: `https://${PUBLIC_DOMAIN_NAME}`,
+    title: `${$metaTagsTitle}`,
+    description: `${$metaTagsDescription}`,
+    images: [
+      {
+        url: `${$metaTagsImageUrl}`,
+        width: 800,
+        height: 600,
+        alt: `${$metaTagsImageAlt}`,
+      }
+    ],
+    siteName: 'LensView'
+  }}
+        twitter={{
+    site: '@lensview_',
+    cardType: 'summary_large_image',
+    title: `${$metaTagsTitle}`,
+    description: `${$metaTagsDescription}`,
+    image: `${$metaTagsImageUrl}`,
+    imageAlt: `${$metaTagsImageAlt}`,
+  }}
+/>
 <!---------------------------------------------------------------->
 
 

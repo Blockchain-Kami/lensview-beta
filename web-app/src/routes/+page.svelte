@@ -27,7 +27,8 @@
     import { inview } from "svelte-inview";
     import MediaQuery from "$lib/MediaQuery.svelte";
     import getPictureURL from "../utils/frontend/getPictureURL";
-    import { MetaTags } from "svelte-meta-tags";
+    import { onMount } from "svelte";
+    import { metaTagsDescription, metaTagsImageAlt, metaTagsImageUrl, metaTagsTitle } from "../services/metaTags";
 
     type KeyStringValBoolean = {
         [key: string]: boolean;
@@ -41,6 +42,13 @@
         threshold: 1
     };
     let isInView: KeyStringValBoolean = {};
+
+    onMount(() => {
+        metaTagsTitle.setMetaTagsTitle("LensView");
+        metaTagsDescription.setMetaTagsDescription("The omnipresent comment section to discuss, fact-check, and share your views about any web page");
+        metaTagsImageUrl.setMetaTagsImageUrl(`https://i.postimg.cc/sXM5Hf9v/Lens-View-Banner-min.png`);
+        metaTagsImageAlt.setMetaTagsImageAlt("LensView Banner Image");
+    });
 
     const handleChange = (event: CustomEvent<ObserverEventDetails>, id: string) => {
         isInView[id] = event.detail.inView;
@@ -217,35 +225,6 @@
 </MediaQuery>
 
 <AddNewPost bind:showAddNewPostModal/>
-
-<MetaTags
-  title="LensView"
-  titleTemplate="%s | Svelte Meta Tags"
-  description="The omnipresent comment section to discuss, fact-check, and share your views about any web page"
-  canonical="https://testnet.lensview.io/"
-  openGraph={{
-    url: 'https://testnet.lensview.io/',
-    title: 'LensView',
-    description: 'The omnipresent comment section to discuss, fact-check, and share your views about any web page',
-    images: [
-      {
-        url: 'https://i.postimg.cc/LXjvL1rD/lensview-logo.png',
-        width: 800,
-        height: 600,
-        alt: 'Og Image Alt'
-      }
-    ],
-    siteName: 'LensView'
-  }}
-  twitter={{
-    site: '@LensView',
-    cardType: 'summary_large_image',
-    title: 'LensView',
-    description: 'The omnipresent comment section to discuss, fact-check, and share your views about any web page',
-    image: 'https://i.postimg.cc/LXjvL1rD/lensview-logo.png',
-    imageAlt: 'LensView image'
-  }}
-/>
 
 <!---------------------------------------------------------------->
 
