@@ -27,6 +27,8 @@
     import { inview } from "svelte-inview";
     import MediaQuery from "$lib/MediaQuery.svelte";
     import getPictureURL from "../utils/frontend/getPictureURL";
+    import { onMount } from "svelte";
+    import { metaTagsDescription, metaTagsImageAlt, metaTagsImageUrl, metaTagsTitle } from "../services/metaTags";
 
     type KeyStringValBoolean = {
         [key: string]: boolean;
@@ -40,6 +42,13 @@
         threshold: 1
     };
     let isInView: KeyStringValBoolean = {};
+
+    onMount(() => {
+        metaTagsTitle.setMetaTagsTitle("LensView");
+        metaTagsDescription.setMetaTagsDescription("The omnipresent comment section to discuss, fact-check, and share your views about any web page");
+        metaTagsImageUrl.setMetaTagsImageUrl(`https://i.postimg.cc/sXM5Hf9v/Lens-View-Banner-min.png`);
+        metaTagsImageAlt.setMetaTagsImageAlt("LensView Banner Image");
+    });
 
     const handleChange = (event: CustomEvent<ObserverEventDetails>, id: string) => {
         isInView[id] = event.detail.inView;

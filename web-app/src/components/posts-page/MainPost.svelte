@@ -27,6 +27,7 @@
     import Login from "../Login.svelte";
     import { onMount } from "svelte";
     import { reloadMainPost } from "../../services/reloadPublication";
+    import { metaTagsImageAlt, metaTagsImageUrl, metaTagsTitle } from "../../services/metaTags";
 
 
     const {addNotification} = getNotificationsContext();
@@ -165,6 +166,18 @@
         downVoteCount = passedDownVoteCount;
         return "";
     };
+
+    const updateMetaTagsTitle = (webPageUrl: string) => {
+        const domain = new URL(webPageUrl).hostname.replace("www.", "");
+        metaTagsTitle.setMetaTagsTitle(`${domain} | LensView`);
+        metaTagsImageAlt.setMetaTagsImageAlt(`${domain} webpage image`);
+        return "";
+    };
+
+    const updateMetaTagsImageUrl = (imageUrl: string) => {
+        metaTagsImageUrl.setMetaTagsImageUrl(imageUrl);
+        return "";
+    };
 </script>
 
 
@@ -203,6 +216,7 @@
                     {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
                         <div class="tablet__main-post__image__loader"></div>
                     {:then imageUrl}
+                        {updateMetaTagsImageUrl(imageUrl)}
                         <div class="tablet__main-post__image">
                             <img src={imageUrl} alt="">
                         </div>
@@ -211,6 +225,7 @@
                        href={mainPostPub?.data?.publications?.items[0]?.metadata.content}
                        target="_blank"
                     >
+                        {updateMetaTagsTitle(mainPostPub?.data?.publications?.items[0]?.metadata.content)}
                         <Icon d={redirect}/>
                         {mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(0, 40)}
                         ...
@@ -311,6 +326,7 @@
                 {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
                     <div class="image__loader"></div>
                 {:then imageUrl}
+                    {updateMetaTagsImageUrl(imageUrl)}
                     <a href={`/posts/${mainPostPubId}`}>
                         <img src={imageUrl} alt="">
                     </a>
@@ -323,6 +339,7 @@
                                target="_blank"
                                class="CenterRowFlex"
                             >
+                                {updateMetaTagsTitle(mainPostPub?.data?.publications?.items[0]?.metadata.content)}
                                 <div class="CenterRowFlex main-post__content__top__redirect">
                                     <Icon d={redirect}/>
                                 </div>

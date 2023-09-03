@@ -31,6 +31,7 @@
   import getPictureURL from "../../utils/frontend/getPictureURL";
   import Autolinker from "autolinker";
   import getLinkPreviewHtml from "../../utils/frontend/getLinkPreviewHtml";
+  import { metaTagsDescription } from "../../services/metaTags";
 
 
   type CommentMoreStatus = {
@@ -185,6 +186,11 @@
     };
     return "";
   };
+
+  const updateMetaTagsDescription = (description: string) => {
+    metaTagsDescription.setMetaTagsDescription(description);
+    return "";
+  };
 </script>
 
 
@@ -255,7 +261,7 @@
         </div>
       </div>
     {:then commentsData}
-      {#each commentsData?.data?.publications?.items as comment}
+      {#each commentsData?.data?.publications?.items as comment, index}
         <a href={`/posts/${$page.data.mainPostPubId}/${comment?.id}`}
            class="comment">
           <div class="comment__pic">
@@ -355,6 +361,9 @@
               {getFormattedDate(comment?.createdAt)}
             </div>
             <div class="comment__body__content">
+              {#if index === 0}
+                {updateMetaTagsDescription(comment?.metadata?.content)}
+              {/if}
               {@html Autolinker.link(DOMPurify.sanitize(comment?.metadata?.content), {
                 className: 'links',
               })}
