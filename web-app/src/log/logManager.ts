@@ -10,7 +10,7 @@ const transport = new (winston.transports.DailyRotateFile)({
     json: false,
     zippedArchive: true,
     maxSize: '20m',
-    maxFiles: '14d'
+    maxFiles: '2d'
 
 });
 
