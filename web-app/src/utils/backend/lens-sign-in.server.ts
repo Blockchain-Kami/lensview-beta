@@ -7,6 +7,7 @@ import getDefaultProfile from "../../graphql/getDefaultProfile";
 
 import {API_KEY, APP_ADDRESS, PRIVATE_KEY} from "$env/static/private";
 import {PUBLIC_LENS_API_URL} from "$env/static/public";
+import {logger} from "../../log/logManager";
 
 
 let accessTokenFromLens;
@@ -26,7 +27,7 @@ let client = createClient({
  *    iii. Update Client with new Access Token
  */
 export const signInWithLens = async () => {
-
+    logger.info("utils/backend: lens-sign-in :: " + "EXECUTION START: signInWithLens");
     try {
         // console.log(challenge);
         /* first request the challenge from the API server */
@@ -45,7 +46,6 @@ export const signInWithLens = async () => {
                 authenticate: {accessToken}
             }
         } = authData
-        console.log({accessToken})
         accessTokenFromLens = accessToken;
 
         /** you can now use the accessToken to make authenticated requests to the API server **/
@@ -62,23 +62,31 @@ export const signInWithLens = async () => {
 
         /** Getting profile of the connected user and saving it to "profile" variable **/
         profile = await getUserProfile();
-        console.log("Profile: " + profile);
-        return [client, signer, profile];
+        if (profile != null) {
+            logger.info("utils/backend: lens-sign-in :: " + "EXECUTION END: signInWithLens: " + "SUCCESSFUL");
+            return [client, signer, profile];
+        } else {
+            return null
+        }
 
-    } catch (err) {
-        console.log('Error signing in: ', err)
+    } catch (error) {
+        logger.error("utils/backend: lens-sign-in :: " + "EXECUTION END: signInWithLens: " + "FAILED: " + error);
+        return null;
     }
 }
 
 const getUserProfile = async () => {
+    logger.info("utils/backend: lens-sign-in :: " + "EXECUTION START: getUserProfile");
     try {
-        console.log("Get User Profile Called")
         const response = await client.query(getDefaultProfile, {
             address: APP_ADDRESS
-        }).toPromise()
-        return response.data.defaultProfile;
-    } catch (err) {
-        console.log('error fetching user profile...: ', err)
+        }).toPromise();
+        const defaultProfile = response.data.defaultProfile;
+        logger.info("utils/backend: lens-sign-in :: " + "EXECUTION END: getUserProfile: " + "SUCCESSFUL: Signed in with: " + defaultProfile);
+        return defaultProfile;
+    } catch (error) {
+        logger.error("utils/backend: lens-sign-in :: " + "EXECUTION END: getUserProfile: " + "FAILED: Failed to Sign In " + error);
+        return null
     }
 };
 

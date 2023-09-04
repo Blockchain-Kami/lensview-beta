@@ -1,72 +1,87 @@
 <script lang="ts">
-  import LinkPreview from "../../../components/posts-page/LinkPreview.svelte";
+  import MainPost from "../../../components/posts-page/MainPost.svelte";
   import PostAPublication from "../../../components/posts-page/PostAPublication.svelte";
   import CommentsOfAPublication from "../../../components/posts-page/CommentsOfAPublication.svelte";
   import Publication from "../../../components/posts-page/Publication.svelte";
+  import { page } from "$app/stores";
+  import MediaQuery from "$lib/MediaQuery.svelte";
 
-  export let data;
+  let postPubId = $page.data.postPubId;
+
+  $: if (postPubId !== $page.data.postPubId) {
+    postPubId = $page.data.postPubId;
+  }
 
 </script>
 
 
-<!------------------------------ HTML ------------------------------>
-<section class="CenterRowFlex">
-  {#if data}
-    <div class="CenterColumnFlex link-preview">
-      <LinkPreview mainPostPub={data["mainPostPub"]} url={data["URL"]} />
-    </div>
-    <div class="CenterColumnFlex posts">
-      {#if data["openCommentSection"]}
-        <Publication hashedURL={data["hashedURL"]} pub={data["pub"]} />
+<!----------------------------- HTML ----------------------------->
+
+
+<MediaQuery query="(max-width: 1024px)" let:matches>
+  {#if matches}
+    <main class="tablet">
+      <MainPost/>
+      {#if postPubId !== undefined }
+        <Publication/>
       {/if}
-      <PostAPublication hashedURL={data["hashedURL"]} pubId={data["pubId"]}
-                        openCommentSection={data["openCommentSection"]} />
-      <CommentsOfAPublication hashedURL={data["hashedURL"]} commentsList={data["items"]} />
-    </div>
+      <PostAPublication/>
+      <CommentsOfAPublication/>
+    </main>
   {:else}
-    <h1>404</h1>
+    <main>
+      <div class="left">
+        <MainPost/>
+      </div>
+      <div class="right">
+        {#if postPubId !== undefined }
+          <Publication/>
+        {/if}
+        <PostAPublication/>
+        <CommentsOfAPublication/>
+      </div>
+    </main>
   {/if}
+</MediaQuery>
 
-</section>
-<!-------------------------------------------------------------------->
+<!---------------------------------------------------------------->
 
 
-<!------------------------------ Style ------------------------------>
+<!----------------------------- STYLE ----------------------------->
 <style lang="scss">
-  section {
-    width: 100%;
-    height: 100vh;
-  }
-
-  .link-preview {
-    width: 45%;
-    height: 100vh;
-    background-color: aliceblue;
-    justify-content: flex-end;
-  }
-
-  .posts {
-    width: 55%;
-    height: 100vh;
-    background: azure;
+  .tablet {
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
+    background: #0d171d;
+    padding: 2rem;
+    margin-top: 4rem;
   }
 
-  @media only screen and (max-width: 700px) {
-    section {
-            flex-direction: column;
-            justify-content: flex-start;
-            padding-top: 4rem;
-        }
+  main {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    background: #0d171d;
+  }
 
-        .posts {
-            width: 100%;
-        }
+  .left {
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+    height: 100dvh;
+    overflow: auto;
+    padding: 4rem 2rem 0 2rem;
+  }
 
-        .link-preview {
-            width: 100%;
-        }
-    }
+  .right {
+    display: flex;
+    flex-direction: column;
+    width: 55%;
+    height: 100dvh;
+    overflow: auto;
+    padding: 6rem 2rem 2rem 2rem;
+    gap: 2rem;
+  }
 </style>
-
-<!-------------------------------------------------------------------->
+<!----------------------------------------------------------------->

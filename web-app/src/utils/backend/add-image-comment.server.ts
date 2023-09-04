@@ -5,6 +5,7 @@ import LENS_HUB_ABI from "../../abis/lens-hub-contract-abi.json";
 import {getGas} from "./fetch-gas.server";
 import createCommentTypedData from "../../graphql/createCommentTypedData";
 import omitDeep from "omit-deep";
+import {logger} from "../../log/logManager";
 
 let isPosting = false;
 
@@ -37,11 +38,14 @@ const signCreateCommentTypedData = async (request, client, signer) => {
 
 
 
-const postImageComment = async (urlObj, pubId, client, signer, profile) => {
-
+const addImageComment = async (urlObj, pubId, client, signer, profile) => {
+    logger.info("utils/backend: add-image-comment.server.ts :: " + "EXECUTION START: addImageComment : URL " + urlObj['url']);
     isPosting = true;
 
-    const contentURI = await uploadImageCommentToIPFS(urlObj)
+    const contentURI = await uploadImageCommentToIPFS(urlObj);
+    if (contentURI === null) {
+        logger.error("utils/backend: add-image-comment.server.ts :: " + "EXECUTION END: addImageComment: Failed");
+    }
     const createCommentRequest = {
         profileId: profile.id,
         publicationId: pubId,
@@ -63,9 +67,7 @@ const postImageComment = async (urlObj, pubId, client, signer, profile) => {
             PUBLIC_LENS_HUB_CONTRACT_ADDRESS,
             LENS_HUB_ABI,
             signer
-        )
-
-        console.log("Contract instance created");
+        );
 
         // get gas estimates
         const gas = await getGas();
@@ -94,18 +96,17 @@ const postImageComment = async (urlObj, pubId, client, signer, profile) => {
         })
 
         await tx.wait();
-
+        logger.info("utils/backend: add-image-comment.server.ts :: " + "Transaction Sent: addImageComment");
         isPosting = false;
-        console.log('successfully created comment: tx hash', tx.hash);
-
+        logger.info("utils/backend: add-image-comment.server.ts :: " + "Transaction Confirmed: addImageComment : Transaction Hash: " + tx.hash);
+        logger.info("utils/backend: add-image-comment.server.ts :: " + "EXECUTION END: addImageComment : Image added to pubID: " + pubId);
         return tx.hash;
 
-    } catch (err) {
-        console.log('error while trying to post image comment to post with publication ID: ', pubId);
+    } catch (error) {
+        logger.info("utils/backend: comment-anonymously.server.ts :: " + "EXECUTION END: addImageComment : Failed to Add Image Comment to pubID: " + pubId);
         isPosting = false;
+        return isPosting;
     }
-
-    return isPosting;
 }
 
-export default postImageComment;
+export default addImageComment;

@@ -1,66 +1,79 @@
-<script>
-  export let showModal; // boolean
+<script lang="ts">
+  import Icon from "$lib/Icon.svelte";
+  import {close} from "../utils/frontend/appIcon";
+  import {backInOut} from "svelte/easing";
+  import {fly} from 'svelte/transition'
 
-  let dialog; // HTMLDialogElement
+  export let showTestModal: boolean;
 
-  $: if (dialog && showModal) dialog.showModal();
+  let dialog: HTMLDialogElement;
+
+  $: if (dialog && showTestModal) dialog.showModal();
+
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <dialog
-  bind:this={dialog}
-  on:close={() => (showModal = false)}
-  on:click|self={() => dialog.close()}
+        bind:this={dialog}
+        on:close={() => (showTestModal = false)}
+        on:click|self={() => dialog.close()}
 >
-  <div on:click|stopPropagation>
-    <slot name="header" />
-    <hr />
-    <slot />
-    <hr />
-    <!-- svelte-ignore a11y-autofocus -->
-    <button autofocus on:click={() => dialog.close()}>close modal</button>
-  </div>
+  {#if showTestModal}
+    <main on:click|stopPropagation transition:fly={{ y: 40, easing: backInOut, duration: 700 }}>
+      <div class="CenterRowFlex head">
+        <div class="h3 head__title">
+          Heading
+        </div>
+        <div class="head__close-btn">
+          <button on:click={() => dialog.close()}>
+            <Icon d={close}/>
+          </button>
+        </div>
+      </div>
+      <div class="body">
+        Testing
+      </div>
+      <div class="line"></div>
+      <div class="footer">
+        <button class="btn">Test</button>
+      </div>
+    </main>
+  {/if}
 </dialog>
 
-<style>
-    dialog {
-        max-width: 32em;
-        border-radius: 0.2em;
-        border: none;
-        padding: 0;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
+<style lang="scss">
+  main {
+    display: flex;
+    flex-direction: column;
+    background: #1e4748 fixed;
+    color: var(--text);
+    min-width: 21rem;
+    border-radius: 10px;
+  }
 
-    dialog[open] {
-        animation: fade-in 0.3s ease-in-out;
-    }
+  .head {
+    justify-content: space-between;
+    background: #18393a;
+    padding: 1.2rem;
+    color: var(--primary);
+    border-radius: 10px 10px 0 0;
+  }
 
-    @keyframes fade-in {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
+  .body {
+    padding: 1rem;
+    min-width: 25rem;
+  }
 
-    dialog[open]::backdrop {
-        animation: fade-in-backdrop 0.2s ease-out;
-    }
+  .line {
+    border: 0.5px solid #4b6c6d;
+    width: 90%;
+    margin-top: auto;
+    align-self: center;
+  }
 
-    @keyframes fade-in-backdrop {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
+  .footer {
+    margin-left: auto;
+    padding: 1rem;
+  }
 
-    button {
-        display: block;
-    }
 </style>
