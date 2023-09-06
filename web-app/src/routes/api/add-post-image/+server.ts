@@ -77,13 +77,21 @@ export async function POST(requestEvent) {
             image: ''
         };
 
-        urlObj['image'] = await uploadImage(sourceURL);
-        await addImageComment(urlObj, pubId, client, signer, profile);
+        const imageAdded = await uploadImage(sourceURL);
+        if (imageAdded) {
+            urlObj['image'] =
+                await addImageComment(urlObj, pubId, client, signer, profile);
 
-        return json('Image has been added.');
+            return json('Image has been added.');
+        } else {
+            throw error(500, {
+                message: "Failed to Add Image Comment"
+            })
+        }
+
 
     } catch (e) {
-        return error(500, {
+        throw error(500, {
             message: 'Failed to add screenshot.'
         })
     }
