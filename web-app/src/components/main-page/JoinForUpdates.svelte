@@ -33,7 +33,7 @@
                 <a href="https://twitter.com/lensview_" target="_blank">
                     <img src={Twitter} alt="">
                 </a>
-              <a href="https://discord.gg/nVBN9JMj" target="_blank">
+              <a href="https://discord.gg/ZB6snNmTnh" target="_blank">
                 <img src={Discord} alt="">
                 </a>
                 <a href="https://www.linkedin.com/company/lensviewio" target="_blank">
