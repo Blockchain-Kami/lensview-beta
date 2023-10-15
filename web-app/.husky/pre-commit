@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+cd web-app
+
+##TODO: enable below line when backend code is removed from web-app
+#npm run format && npm run lint
