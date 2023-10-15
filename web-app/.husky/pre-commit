@@ -3,5 +3,5 @@
 
 cd web-app
 
-##TODO: enable below line when backend code is removed from web-app
+##TODO: Enable below line when backend code is removed from web-app
 #npm run format && npm run lint
