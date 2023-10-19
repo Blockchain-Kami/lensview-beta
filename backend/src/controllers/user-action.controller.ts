@@ -21,7 +21,7 @@ export const addReaction = async (
     // Call the function to add the reaction to the post
     await addReactionToAPostUtil(req.body.publicationId, req.body.reaction);
 
-    res.status(200).json({
+    res.status(201).json({
       message: "Reaction added successfully"
     });
   } catch (error) {
@@ -51,7 +51,7 @@ export const removeReaction = async (
       req.body.reaction
     );
 
-    res.status(200).json({
+    res.status(201).json({
       message: "Reaction removed successfully"
     });
   } catch (error) {
