@@ -1,5 +1,6 @@
 import { getRelatedParentPublicationsUtil } from "../related-parent-publications.util";
 import { FAILURE, SUCCESS } from "../../config/app-constants.config";
+import { PostPublicationsLensProtocolModel } from "../../models/lens-protocol/post.publications.lens-protocol.model";
 
 export const getPublicationsForTagPublicationsUtil = async (
   inputString: string
@@ -16,8 +17,7 @@ export const getPublicationsForTagPublicationsUtil = async (
           keyword.toLowerCase()
         );
         const items = res?.items;
-        // TODO 2: Create a generic type for publication which can be used in all the APIs
-        items.forEach((publication: { id: string; __typename: string }) => {
+        items.forEach((publication: PostPublicationsLensProtocolModel) => {
           relatedPublications.push(publication?.id);
         });
       }
