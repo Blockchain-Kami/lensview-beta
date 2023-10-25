@@ -7,6 +7,13 @@ import { getPublicationsForUrlPublicationsUtil } from "../utils/publications/get
 import { getPublicationsForTagPublicationsUtil } from "../utils/publications/get-publications-for-tag.publications.util";
 import { SUCCESS, httpStatusCodes } from "../config/app-constants.config";
 
+/**
+ * Retrieves related publications based on the given search query.
+ *
+ * @param {Request<unknown, unknown, unknown, RelatedPublicationsRequestQueryModel>} req - The request object.
+ * @param {Response<RelatedPublicationsResponseModel>} res - The response object.
+ * @return {Promise<void>} A Promise that resolves when the related publications are retrieved.
+ */
 export const getRelatedPublicationsController = async (
   req: Request<unknown, unknown, unknown, RelatedPublicationsRequestQueryModel>,
   res: Response<RelatedPublicationsResponseModel>

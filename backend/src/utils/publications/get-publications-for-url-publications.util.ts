@@ -2,6 +2,13 @@ import { preprocessURLUtil } from "../preprocess-url.util";
 import { createHashUtil } from "../create-hash.util";
 import { getRelatedParentPublicationsUtil } from "../related-parent-publications.util";
 import { SUCCESS } from "../../config/app-constants.config";
+
+/**
+ * Retrieves the publications related to a given URL.
+ *
+ * @param {string} URL - The URL for which to retrieve related publications.
+ * @return {Promise<{relatedPublications: string[], message: string}>} - The related publications and a success message.
+ */
 export const getPublicationsForUrlPublicationsUtil = async (URL: string) => {
   let relatedPublications: Array<string> = [];
   const urlObject = preprocessURLUtil(URL);

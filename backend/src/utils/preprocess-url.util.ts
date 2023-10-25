@@ -19,6 +19,13 @@ import { websiteSpecificCleaningUtil } from "./website-specific-cleaning.util";
  *      in this case the trailing / will not be removed as this is the standard way of writing the url
  *
  **/
+
+/**
+ * Preprocesses a URL by extracting relevant information and cleaning it.
+ * @param url - The URL to preprocess.
+ * @returns An array containing the cleaned URL, hostname, domain, path, and query parameters.
+ *          Returns null if the URL is invalid.
+ */
 export const preprocessURLUtil = (url: string) => {
   try {
     // convert the url to a URL object

@@ -1,5 +1,11 @@
 import { URL } from "url";
 
+/**
+ * Checks if the input string is a valid URL.
+ *
+ * @param url - The input string to be checked.
+ * @returns The input string if it is a valid URL, otherwise null.
+ */
 export const isInputTypeURLUtil = (url: string) => {
   let urlRequest = url;
   try {
