@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { RelatedPublicationsRequestQueryModel } from "../../models/request-queries/related-publications.request-query.model";
+import { ClientError } from "../../errors/client-error.error";
 
 /**
- * Validate the related route request middleware.
+ * Validate the requests query parameter 'search_query'.
  *
  * @param {Request<unknown, unknown, unknown, RelatedPublicationsRequestQueryModel>} req - The request object.
  * @param {Response} res - The response object.
@@ -17,6 +18,9 @@ export const validateRelatedRouteRequestMiddleware = (
   if (req.query && req.query.search_query) {
     return next();
   } else {
-    throw new Error("Check the request query parameter: search_query");
+    throw new ClientError(
+      "Check the request query parameter: search_query",
+      400
+    );
   }
 };

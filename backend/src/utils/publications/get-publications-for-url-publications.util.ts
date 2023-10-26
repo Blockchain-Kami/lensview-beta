@@ -2,6 +2,7 @@ import { preprocessURLUtil } from "../preprocess-url.util";
 import { createHashUtil } from "../create-hash.util";
 import { getRelatedParentPublicationsUtil } from "../related-parent-publications.util";
 import { SUCCESS } from "../../config/app-constants.config";
+import { InternalServerError } from "../../errors/internal-server-error.error";
 
 /**
  * Retrieves the publications related to a given URL.
@@ -17,16 +18,19 @@ export const getPublicationsForUrlPublicationsUtil = async (URL: string) => {
     const tag = createHashUtil(hostname.toString());
 
     const relatedPosts = await getRelatedParentPublicationsUtil(tag);
-
-    if (relatedPosts["items"].length < 1) {
-      relatedPublications = [];
-    } else {
-      for (let i = 0; i < relatedPosts["items"].length; i++) {
-        relatedPublications.push(relatedPosts["items"][i]["id"]);
+    if (relatedPosts) {
+      if (relatedPosts["items"].length < 1) {
+        relatedPublications = [];
+      } else {
+        for (let i = 0; i < relatedPosts["items"].length; i++) {
+          relatedPublications.push(relatedPosts["items"][i]["id"]);
+        }
       }
+    } else {
+      throw new InternalServerError("Error fetching data from Lens API", 504);
     }
   } else {
-    throw new Error();
+    throw new InternalServerError("Error parsing the input URL", 500);
   }
   return {
     relatedPublications,

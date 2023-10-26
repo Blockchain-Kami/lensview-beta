@@ -1,6 +1,7 @@
 import baseClientUtil from "./lens-protocol/base-client.util";
 import relatedPubs from "../graphql/get-related-pubs.graphql";
 import { PUBLIC_APP_LENS_ID } from "../config/env.config";
+import { InternalServerError } from "../errors/internal-server-error.error";
 
 /**
  * Retrieves the related parent publications based on a given tag.
@@ -15,10 +16,8 @@ export const getRelatedParentPublicationsUtil = async (tag: string) => {
         lensId: PUBLIC_APP_LENS_ID
       })
       .toPromise();
-
     return posts?.data?.publications;
   } catch (error) {
-    console.log("Error in getRelatedParentPublications", error);
-    return null;
+    throw new InternalServerError("Error Fetching Data From Lens API", 504);
   }
 };

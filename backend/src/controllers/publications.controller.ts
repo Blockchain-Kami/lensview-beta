@@ -33,6 +33,7 @@ export const getRelatedPublicationsController = async (
       response?.message == SUCCESS
     ) {
       res.status(httpStatusCodes.NO_CONTENT).send({
+        status: 0,
         relatedPubArray: [],
         message: "No related publications found."
       });
@@ -41,19 +42,22 @@ export const getRelatedPublicationsController = async (
       response?.message == SUCCESS
     ) {
       return res.status(httpStatusCodes.OK).send({
+        status: 0,
         relatedPubArray: response.relatedPublications,
         message: "Publication IDs fetched successfully."
       });
     } else {
       res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
+        status: 1,
         relatedPubArray: [],
         message: "Lens API might be down. Please try again later."
       });
     }
-  } catch (e) {
+  } catch (error) {
     res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
+      status: 1,
       relatedPubArray: [],
-      message: "Something went wrong with LensView server."
+      message: "Something went wrong: " + error
     });
   }
 };

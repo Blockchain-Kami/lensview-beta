@@ -12,7 +12,7 @@ query Publications($hashedURL: String!, $lensId: ProfileId) {
   }) {
     items { 
     ... on Post {
-      ...PostFields
+      ...PostFieldss
     }
     }
   }
