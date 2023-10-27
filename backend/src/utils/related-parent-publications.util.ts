@@ -1,5 +1,5 @@
 import baseClientUtil from "./lens-protocol/base-client.util";
-import relatedPubs from "../graphql/get-related-pubs.graphql";
+import relatedPubs from "../graphql/get-related-pubs-query.graphql";
 import { PUBLIC_APP_LENS_ID } from "../config/env.config";
 
 /**
