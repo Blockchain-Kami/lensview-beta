@@ -1,6 +1,5 @@
 import { getRelatedParentPublicationsUtil } from "../related-parent-publications.util";
 import { FAILURE, SUCCESS } from "../../config/app-constants.config";
-import { PostPublicationsLensProtocolModel } from "../../models/lens-protocol/post.publications.lens-protocol.model";
 
 /**
  * Finds publications related to the input string.
@@ -11,7 +10,7 @@ import { PostPublicationsLensProtocolModel } from "../../models/lens-protocol/po
  */
 export const getPublicationsForTagPublicationsUtil = async (
   inputString: string
-) => {
+): Promise<{ relatedPublications: string[]; message: number }> => {
   try {
     const relatedPublications: Array<string> = [];
     const keywords = inputString.trim().split(" ");
@@ -23,9 +22,12 @@ export const getPublicationsForTagPublicationsUtil = async (
         const res = await getRelatedParentPublicationsUtil(
           keyword.toLowerCase()
         );
-        const items = res?.items;
-        items.forEach((publication: PostPublicationsLensProtocolModel) => {
-          relatedPublications.push(publication?.id);
+
+        const items = res?.items || [];
+
+        items.forEach((publication) => {
+          if (publication.__typename === "Post")
+            relatedPublications.push(publication?.id);
         });
       }
     }
