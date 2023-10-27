@@ -10,7 +10,7 @@ import { SUCCESS } from "../../config/app-constants.config";
  * @return {Promise<{relatedPublications: string[], message: string}>} - The related publications and a success message.
  */
 export const getPublicationsForUrlPublicationsUtil = async (URL: string) => {
-  let relatedPublications: Array<string> = [];
+  const relatedPublications: Array<string> = [];
   const urlObject = preprocessURLUtil(URL);
   const hostname = urlObject?.[1];
   if (hostname) {
@@ -18,13 +18,12 @@ export const getPublicationsForUrlPublicationsUtil = async (URL: string) => {
 
     const relatedPosts = await getRelatedParentPublicationsUtil(tag);
 
-    if (relatedPosts["items"].length < 1) {
-      relatedPublications = [];
-    } else {
-      for (let i = 0; i < relatedPosts["items"].length; i++) {
-        relatedPublications.push(relatedPosts["items"][i]["id"]);
-      }
-    }
+    const items = relatedPosts?.items || [];
+
+    items.forEach((publication) => {
+      if (publication.__typename === "Post")
+        relatedPublications.push(publication?.id);
+    });
   } else {
     throw new Error();
   }
