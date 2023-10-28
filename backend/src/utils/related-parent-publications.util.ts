@@ -1,5 +1,5 @@
 import baseClientUtil from "./lens-protocol/base-client.util";
-import relatedPubs from "../graphql/get-related-pubs.graphql";
+import getRelatedPubsQuery from "../graphql/get-related-pubs-query.graphql";
 import { PUBLIC_APP_LENS_ID } from "../config/env.config";
 import { InternalServerError } from "../errors/internal-server-error.error";
 
@@ -11,7 +11,7 @@ import { InternalServerError } from "../errors/internal-server-error.error";
 export const getRelatedParentPublicationsUtil = async (tag: string) => {
   try {
     const posts = await baseClientUtil
-      .query(relatedPubs, {
+      .query(getRelatedPubsQuery, {
         hashedURL: tag,
         lensId: PUBLIC_APP_LENS_ID
       })

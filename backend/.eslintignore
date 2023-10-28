@@ -7,3 +7,4 @@ node_modules
 # Ignore files for PNPM, NPM and YARN
 package.json
 package-lock.json
+src/gql
