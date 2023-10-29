@@ -9,7 +9,5 @@ const refreshMutation = `
       refreshToken
     }
   }
-`
-;
-
+`;
 export default refreshMutation;

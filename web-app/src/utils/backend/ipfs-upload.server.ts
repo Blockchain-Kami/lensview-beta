@@ -10,7 +10,7 @@ import {
 import { File, Web3Storage } from 'web3.storage';
 import { v4 as uuidv4 } from 'uuid';
 import { createTags } from './create-tags.server';
-import {logger} from "../../log/logManager";
+import { logger } from '../../log/logManager';
 
 function getAccessToken() {
 	// If you're just testing, you can paste in a token
@@ -38,7 +38,7 @@ function makeFileObjects(urlObj) {
 
 	// //Getting profile of the connected user and saving it to "profile" variable
 	// getUserProfile(address);
-	logger.info("utils/backend: ipfs-upload.server.ts :: " + "EXECUTION START: makeFileObjects");
+	logger.info('utils/backend: ipfs-upload.server.ts :: ' + 'EXECUTION START: makeFileObjects');
 	const userTags = urlObj['tags'];
 	const URLtags = [
 		urlObj['hashedURL'],
@@ -93,7 +93,10 @@ function makeFileObjects(urlObj) {
 			new File([JSON.stringify(metaData)], 'metaData.json')
 		];
 	} catch {
-		logger.error("utils/backend: ipfs-upload.server.ts :: " + "EXECUTION END: makeFileObjects: Failed to create files");
+		logger.error(
+			'utils/backend: ipfs-upload.server.ts :: ' +
+				'EXECUTION END: makeFileObjects: Failed to create files'
+		);
 		return null;
 	}
 }
@@ -104,22 +107,34 @@ function makeFileObjects(urlObj) {
  * 4. Upload to IPFS
  */
 const uploadToIPFS = async (urlObj) => {
-	logger.info("utils/backend: ipfs-upload.server.ts :: " + "EXECUTION START: uploadToIPFS");
+	logger.info('utils/backend: ipfs-upload.server.ts :: ' + 'EXECUTION START: uploadToIPFS');
 	try {
 		/*** Web3.storage ***/
 		const client = makeStorageClient();
 		const files = makeFileObjects(urlObj);
 		if (files === null) {
-			logger.error("utils/backend: ipfs-upload.server.ts :: " + "EXECUTION END: uploadToIPFS: Failed");
-			return null
+			logger.error(
+				'utils/backend: ipfs-upload.server.ts :: ' + 'EXECUTION END: uploadToIPFS: Failed'
+			);
+			return null;
 		}
-		logger.info("utils/backend: ipfs-upload.server.ts :: " + "EXECUTION END: makeFileObjects: Successful");
+		logger.info(
+			'utils/backend: ipfs-upload.server.ts :: ' + 'EXECUTION END: makeFileObjects: Successful'
+		);
 		const cid = await client.put(files);
 		const uri = `https://${cid}.ipfs.w3s.link/metaData.json`;
-		logger.info("utils/backend: ipfs-upload.server.ts :: " + "EXECUTION END: uploadToIPFS: Successfully Uploaded. URI: " + uri );
+		logger.info(
+			'utils/backend: ipfs-upload.server.ts :: ' +
+				'EXECUTION END: uploadToIPFS: Successfully Uploaded. URI: ' +
+				uri
+		);
 		return uri;
 	} catch (error) {
-		logger.error("utils/backend: ipfs-upload.server.ts :: " + "EXECUTION END: uploadToIPFS : Failed to upload metadata to IPFS: " + error);
+		logger.error(
+			'utils/backend: ipfs-upload.server.ts :: ' +
+				'EXECUTION END: uploadToIPFS : Failed to upload metadata to IPFS: ' +
+				error
+		);
 		return null;
 	}
 };

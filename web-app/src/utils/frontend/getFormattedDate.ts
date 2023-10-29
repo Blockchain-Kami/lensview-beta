@@ -51,4 +51,3 @@ const getFormattedDate = (date: string) => {
 };
 
 export default getFormattedDate;
-

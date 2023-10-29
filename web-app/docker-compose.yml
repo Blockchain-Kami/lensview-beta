@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 services:
   lensview-beta:
     image: lensview-beta-image:${DOCKER_VERSION_TAG}
@@ -9,6 +9,6 @@ services:
         PORT: 3000
     container_name: lensview-beta-container
     ports:
-      - "3000:3000/tcp"
+      - '3000:3000/tcp'
     env_file:
       - .env

@@ -29,6 +29,6 @@ mutation createPostTypedData($request: CreatePublicPostRequest!) {
     }
   }
 }
-`
+`;
 
 export default createPostTypedData;

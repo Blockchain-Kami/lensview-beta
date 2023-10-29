@@ -12,4 +12,3 @@ function manageUserProfile() {
 }
 
 export const userProfile = manageUserProfile();
-

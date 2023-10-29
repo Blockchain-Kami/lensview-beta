@@ -250,6 +250,6 @@ fragment ReferenceModuleFields on ReferenceModule {
     degreesOfSeparation
   }
 }
-`
+`;
 
 export default getPosts;

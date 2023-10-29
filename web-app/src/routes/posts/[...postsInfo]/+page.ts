@@ -25,7 +25,6 @@ export const load = (async ({ params }: LoadEvent) => {
 	};
 }) satisfies PageLoad;
 
-
 // import type { PageLoad } from './$types';
 // import { getExplorePublicationsForApp } from '../../../utils/frontend/getExplorePublicationsForApp';
 //
@@ -37,10 +36,6 @@ export const load = (async ({ params }: LoadEvent) => {
 // 		explorePublicationsForApp: explorePublicationsForApp
 // 	};
 // }) satisfies PageLoad;
-
-
-
-
 
 // import type { LoadEvent } from "@sveltejs/kit";
 // import { userEnteredURL } from "../../../services/userEnteredURL";

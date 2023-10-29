@@ -3,7 +3,7 @@ export interface CustomNotificationModel {
 	type?: string;
 	description?: string;
 	ctaBtnName?: string;
-	ctaFunction?: any;
+	ctaFunction?(): void;
 	position?: string;
 	removeAfter?: number;
 }

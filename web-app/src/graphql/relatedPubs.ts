@@ -21,6 +21,6 @@ query Publications($hashedURL: String!, $lensId: ProfileId) {
 fragment PostFields on Post {
   id
 }
-`
+`;
 
 export default relatedPubs;

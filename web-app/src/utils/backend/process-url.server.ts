@@ -1,6 +1,6 @@
-import {URL} from 'url';
-import {websiteSpecificCleaning} from "./website-cleaning.server";
-import {logger} from "../../log/logManager";
+import { URL } from 'url';
+import { websiteSpecificCleaning } from './website-cleaning.server';
+import { logger } from '../../log/logManager';
 /**
  * Preprocess and clean the URL before storing.
  * The URL will be stored according to the following rules:
@@ -20,52 +20,58 @@ import {logger} from "../../log/logManager";
  *
  **/
 export const preprocessURL = (url) => {
-    logger.info("utils/backend: process-url :: " + "EXECUTION START: preprocessURL: " + url);
-    try {
-        // convert the url to a URL object
-        const parsedURL = new URL(url);
-        // logic to handle https and http urls
-        if (parsedURL['protocol'] === 'https:' || parsedURL['protocol'] === 'http:') {
-            // remove extra hash at the end of the pathname, if it exists in the url
-            if (parsedURL['pathname'].toString()[parsedURL['pathname'].length - 1] === '/' && parsedURL['pathname'].toString().length > 1) {
-                parsedURL['pathname'] = parsedURL['pathname'].toString().substring(0, parsedURL['pathname'].length - 1);
-            }
-            // remove extra / from the url
-            if (parsedURL['protocol'] === 'https:') {
-                url = parsedURL['protocol'].toString() + '//' + parsedURL['href'].toString().substring(8,).replaceAll(/[/]+/g, '/');
+	logger.info('utils/backend: process-url :: ' + 'EXECUTION START: preprocessURL: ' + url);
+	try {
+		// convert the url to a URL object
+		const parsedURL = new URL(url);
+		// logic to handle https and http urls
+		if (parsedURL['protocol'] === 'https:' || parsedURL['protocol'] === 'http:') {
+			// remove extra hash at the end of the pathname, if it exists in the url
+			if (
+				parsedURL['pathname'].toString()[parsedURL['pathname'].length - 1] === '/' &&
+				parsedURL['pathname'].toString().length > 1
+			) {
+				parsedURL['pathname'] = parsedURL['pathname']
+					.toString()
+					.substring(0, parsedURL['pathname'].length - 1);
+			}
+			// remove extra / from the url
+			if (parsedURL['protocol'] === 'https:') {
+				url =
+					parsedURL['protocol'].toString() +
+					'//' +
+					parsedURL['href'].toString().substring(8).replaceAll(/[/]+/g, '/');
+			} else if (parsedURL['protocol'] === 'http:') {
+				url =
+					parsedURL['protocol'].toString() +
+					'//' +
+					parsedURL['href'].toString().substring(7).replaceAll(/[/]+/g, '/');
+			}
+		}
+		// logic to handle data URIs
+		else if (parsedURL['protocol'] === 'data:') {
+			url = parsedURL['href'];
+		}
 
-            } else if (parsedURL['protocol'] === 'http:') {
-                url = parsedURL['protocol'].toString() + '//' + parsedURL['href'].toString().substring(7,).replaceAll(/[/]+/g, '/');
-            }
+		url = websiteSpecificCleaning(url);
 
-        }
-        // logic to handle data URIs
-        else if (parsedURL['protocol'] === 'data:') {
-            url = parsedURL['href'];
-        }
-
-        url = websiteSpecificCleaning(url);
-
-        const processedURL = new URL(url);
-        // extract the relevant pieces of the url
-        const cleanURL = processedURL['href'];
-        const origin = processedURL['origin'];
-        const hostname = processedURL['hostname'];
-        // path is without query parameter
-        const path = origin + processedURL['pathname'];
-        const query = processedURL['searchParams'];
-        const domain = hostname.substring(0, hostname.indexOf('.'));
-        logger.info("utils/backend: process-url :: " + "EXECUTION END: preprocessURL: Cleaned URL: " + cleanURL);
-        return [
-            cleanURL.toString().trim(),
-            hostname.trim(),
-            domain.trim(),
-            path.trim(),
-            query
-        ];
-
-    } catch (error) {
-        logger.error("utils/backend: process-url :: " + "EXECUTION END: preprocessURL:" + "Error: " + error);
-        return null
-    }
+		const processedURL = new URL(url);
+		// extract the relevant pieces of the url
+		const cleanURL = processedURL['href'];
+		const origin = processedURL['origin'];
+		const hostname = processedURL['hostname'];
+		// path is without query parameter
+		const path = origin + processedURL['pathname'];
+		const query = processedURL['searchParams'];
+		const domain = hostname.substring(0, hostname.indexOf('.'));
+		logger.info(
+			'utils/backend: process-url :: ' + 'EXECUTION END: preprocessURL: Cleaned URL: ' + cleanURL
+		);
+		return [cleanURL.toString().trim(), hostname.trim(), domain.trim(), path.trim(), query];
+	} catch (error) {
+		logger.error(
+			'utils/backend: process-url :: ' + 'EXECUTION END: preprocessURL:' + 'Error: ' + error
+		);
+		return null;
+	}
 };
