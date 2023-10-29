@@ -11,7 +11,8 @@
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"lint-and-fix": "eslint . --ext .ts --fix",
 		"format": "prettier --plugin-search-dir . --write .",
-		"prepare": "cd .. && husky install web-app/.husky"
+		"prepare": "cd .. && husky install web-app/.husky",
+		"codegen": "graphql-codegen --watch"
 	},
 	"dependencies": {
 		"@svelte-plugins/tooltips": "^0.1.8",
@@ -34,6 +35,9 @@
 		"winston-daily-rotate-file": "^4.7.1"
 	},
 	"devDependencies": {
+		"@graphql-codegen/cli": "^5.0.0",
+		"@graphql-codegen/client-preset": "^4.1.0",
+		"@parcel/watcher": "^2.3.0",
 		"@sveltejs/adapter-node": "^1.0.0-next.13",
 		"@sveltejs/kit": "^1.5.0",
 		"@types/dompurify": "^3.0.2",
