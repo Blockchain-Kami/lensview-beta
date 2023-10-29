@@ -108,7 +108,7 @@
 									</div>
 									<button
 										class="card__image__layer1__more-icon"
-										on:click={() => openCloseCardsMore(event, item?.id)}
+										on:click={(event) => openCloseCardsMore(event, item?.id)}
 									>
 										<Icon d={moreHoriz} />
 									</button>
@@ -116,12 +116,12 @@
 								{#if isCardsMoreOpen[item?.id]}
 									<div class="CenterColumnFlex card__image__more">
 										<button
-											on:click={() => sharePost(event, item?.id)}
+											on:click={(event) => sharePost(event, item?.id)}
 											class="CenterRowFlex card__image__more__share"
 										>
-											<div class="CenterRowFlex card__image__more__share__icon">
+											<span class="CenterRowFlex card__image__more__share__icon">
 												<Icon d={share} size="1.2em" />
-											</div>
+											</span>
 											Share
 										</button>
 									</div>

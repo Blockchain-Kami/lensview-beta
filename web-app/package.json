@@ -14,7 +14,7 @@
 		"prepare": "cd .. && husky install web-app/.husky"
 	},
 	"dependencies": {
-		"@svelte-plugins/tooltips": "^0.1.6",
+		"@svelte-plugins/tooltips": "^0.1.8",
 		"@urql/svelte": "^3.0.1",
 		"autolinker": "^4.0.0",
 		"axios": "^1.4.0",
@@ -43,6 +43,7 @@
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte": "^2.26.0",
+		"eslint-plugin-prettier": "^4.0.0",
 		"prettier": "^2.8.0",
 		"prettier-plugin-svelte": "^2.8.1",
 		"sass": "^1.62.1",

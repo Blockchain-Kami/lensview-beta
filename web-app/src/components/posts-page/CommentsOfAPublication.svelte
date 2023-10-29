@@ -361,9 +361,9 @@
 												on:click={() => sharePost(event, comment?.id)}
 												class="CenterRowFlex comment__body__more__share"
 											>
-												<div class="CenterRowFlex comment__body__more__share__icon">
+												<span class="CenterRowFlex comment__body__more__share__icon">
 													<Icon d={share} size="1.2em" />
-												</div>
+												</span>
 												Share
 											</button>
 										</div>
