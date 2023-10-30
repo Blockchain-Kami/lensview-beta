@@ -1,4 +1,4 @@
-import addReactionMutation from '../../graphql/add-reaction-mutation.graphql';
+import addReactionMutation from '../../graphql/addReactionMutation.graphql';
 import removeReaction from '../../graphql/removeReaction';
 import { userProfile } from '../../services/profile';
 import { createUserClient } from './createClient';

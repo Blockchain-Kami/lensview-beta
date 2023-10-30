@@ -26,7 +26,7 @@
 		isCreatingLensHandle = true;
 		const response = await createLensHandle(userEnteredHandle);
 
-		if (response.data.createProfile?.reason === 'HANDLE_TAKEN') {
+		if (response?.data.createProfile?.reason === 'HANDLE_TAKEN') {
 			isCreatingLensHandle = false;
 			addNotification({
 				position: 'top-right',
@@ -37,8 +37,8 @@
 			});
 			dialog.close();
 		} else {
-			if (response.data.createProfile?.txHash) {
-				await checkUntilProfileIsCreated(response.data.createProfile?.txHash, Date.now());
+			if (response?.data.createProfile?.txHash) {
+				await checkUntilProfileIsCreated(response?.data.createProfile?.txHash, Date.now());
 			} else {
 				isCreatingLensHandle = false;
 				addNotification({
