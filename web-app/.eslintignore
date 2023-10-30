@@ -11,4 +11,5 @@ node_modules
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
+schema.graphql
 src/gql
