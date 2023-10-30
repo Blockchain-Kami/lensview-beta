@@ -1,25 +1,25 @@
 const extractTwitterIDFromLastLink = (content: string) => {
-	console.log('content : ' + content);
-	const pattern = /https:\/\/twitter\.com\/\w+\/status\/(\d+)/g;
-	const matches = [...content.matchAll(pattern)];
+  console.log("content : " + content);
+  const pattern = /https:\/\/twitter\.com\/\w+\/status\/(\d+)/g;
+  const matches = [...content.matchAll(pattern)];
 
-	if (matches.length > 0) {
-		const lastMatch = matches[matches.length - 1];
-		return lastMatch[1];
-	}
+  if (matches.length > 0) {
+    const lastMatch = matches[matches.length - 1];
+    return lastMatch[1];
+  }
 
-	return null;
+  return null;
 };
 
 const getLinkPreviewHtml = (content: string) => {
-	const twitterID = extractTwitterIDFromLastLink(content);
-	if (twitterID) {
-		console.log('Extracted ID from the last link:', twitterID);
-		return twitterID;
-	} else {
-		console.log('No Twitter URLs found.');
-		return ``;
-	}
+  const twitterID = extractTwitterIDFromLastLink(content);
+  if (twitterID) {
+    console.log("Extracted ID from the last link:", twitterID);
+    return twitterID;
+  } else {
+    console.log("No Twitter URLs found.");
+    return ``;
+  }
 };
 
 export default getLinkPreviewHtml;
