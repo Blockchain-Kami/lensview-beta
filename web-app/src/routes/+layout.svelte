@@ -320,7 +320,7 @@
               Hello friend! Welcome to LensView.
             </div>
             <div class="menu__connect-box__btn">
-              <button on:click={connect} class="btn"> Connect wallet </button>
+              <button on:click={connect} class="btn"> Connect wallet</button>
             </div>
           </div>
         {:else if !$isSignedIn}
