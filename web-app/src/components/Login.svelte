@@ -295,7 +295,7 @@
         <div class="body">Please connect your wallet to continue</div>
         <div class="line" />
         <div class="footer">
-          <button on:click={connect} class="btn"> Connect wallet </button>
+          <button on:click={connect} class="btn"> Connect wallet</button>
         </div>
       {:else if !$isSignedIn}
         {#if !signingIn}

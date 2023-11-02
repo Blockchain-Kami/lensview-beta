@@ -1,6 +1,6 @@
 import { refreshAuthToken } from "./accessTokenHelper";
 import baseClient from "./baseClient";
-import { createClient, Client } from "@urql/core";
+import { Client, createClient } from "@urql/core";
 import { PUBLIC_LENS_API_URL } from "$env/static/public";
 
 const STORAGE_KEY = "LH_STORAGE_KEY";

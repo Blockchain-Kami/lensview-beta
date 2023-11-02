@@ -171,8 +171,9 @@
           <button
             class="btn"
             on:click={initiateCreateLensHandle}
-            disabled={isInputInvalid}>Create Lens Handle</button
-          >
+            disabled={isInputInvalid}
+            >Create Lens Handle
+          </button>
         {:else}
           <button class="btn" disabled
             >Creating &nbsp;

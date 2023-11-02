@@ -1,7 +1,6 @@
 import { PUBLIC_WEB3STORAGE_TOKEN } from "$env/static/public";
 import { Web3Storage } from "web3.storage";
 // import { ThirdwebStorage} from "@thirdweb-dev/storage";
-
 import puppeteer from "puppeteer";
 import { Blob } from "buffer";
 import { logger } from "../../log/logManager";
