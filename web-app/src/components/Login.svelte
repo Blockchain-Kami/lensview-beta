@@ -1,16 +1,8 @@
 <script lang="ts">
   import Icon from "$lib/Icon.svelte";
-  import { close, cross, tick, wallet } from "../utils/frontend/appIcon";
+  import { close, cross, tick } from "../utils/frontend/appIcon";
   import Loader from "$lib/Loader.svelte";
-  import { userAuthentication } from "../utils/frontend/authenticate";
-  import getUserProfiles from "../utils/frontend/getUserProfiles";
-  import getDefaultUserProfile from "../utils/frontend/getDefaultUserProfile";
-  import { userProfile } from "../services/profile";
   import CreateLensHandle from "./CreateLensHandle.svelte";
-  import { isSignedIn } from "../services/signInStatus";
-  import { userAddress } from "../services/userAddress";
-  import { PUBLIC_IS_PROD } from "$env/static/public";
-  import { onMount } from "svelte";
   import { fly } from "svelte/transition";
   import { backInOut } from "svelte/easing";
   import { getNotificationsContext } from "svelte-notifications";
@@ -19,206 +11,93 @@
     reloadCommentOfAPublication,
     reloadMainPost
   } from "../services/reloadPublication";
+  import getMetamaskAddressAuthenticationUtil from "../utils/authentication/get-metamask-address.authentication.util";
+  import isValidAccessTokenPresentInLsForAddressAuthenticationUtil from "../utils/authentication/is-valid-access-token-present-in-ls-for-address.authentication.util";
+  import { addressUserStore } from "../stores/user/address.user.store";
+  import parseNotificationObjectWithFunctionUtil from "../utils/parse-notification-object-with-function.util";
+  import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
+  import { idsAndHandlesUserStore } from "../stores/user/ids-and-handles.user.store";
+  import retrieveAccessTokenAuthenticationUtil from "../utils/authentication/retrieve-access-token.authentication.util";
+  import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
 
   const { addNotification } = getNotificationsContext();
   export let showLoginModal: boolean;
   let dialog: HTMLDialogElement;
   $: if (dialog && showLoginModal) dialog.showModal();
 
-  let isConnected = false;
-  let signingIn = false;
-  let isHandleCreated = true;
+  let loggingIn = false;
   let showCreateLensHandleModal = false;
-  let isThisConnectWalletAccountChange = false;
-  let chainIDToBeUsed: string;
 
-  onMount(async () => {
-    if (PUBLIC_IS_PROD === "false") {
-      chainIDToBeUsed = "0x13881";
-    } else {
-      chainIDToBeUsed = "0x89";
-    }
-
-    if (typeof window.ethereum === "undefined") {
-      // alert("Please install metamask to interact with this application, but you can still view the others posts");
-    }
-
-    window.ethereum.on("chainChanged", (chainId: string) => {
-      if (chainId !== chainIDToBeUsed) {
-        window.location.reload();
-      }
-    });
-
-    window.ethereum.on("accountsChanged", (_switchedAddress: string) => {
-      if (!isThisConnectWalletAccountChange) {
-        window.location.reload();
-      } else {
-        isThisConnectWalletAccountChange = false;
-      }
-    });
-  });
-
-  /**TODO: 1. Check for chain and if it is not polygon testnet then do necessary changes
-   *       2. Check if there is any stored address in local storage if yes then do not ask for connect wallet
-   *       3. Check if refresh token is present in local storage and not expired, if yes then do not ask for sign in
-   *       4. Handle scenarios when user switches network
-   */
-  async function connect() {
-    if (typeof window.ethereum === "undefined") {
-      dialog.close();
-      addNotification({
-        position: "top-right",
-        heading: "Please install Metamask",
-        description:
-          "Please install metamask to post as yourself, you can still view others posts and post anonymously",
-        type: wallet,
-        removeAfter: 15000,
-        ctaBtnName: "Install Metamask",
-        ctaFunction: () => {
-          window.open("https://metamask.io/", "_blank");
-        }
-      });
-    } else {
-      /* this allows the user to connect their wallet */
-      try {
-        await switchUserToCorrectChain();
-
-        isThisConnectWalletAccountChange = true;
-
-        const account = await window.ethereum.request({
-          method: "eth_requestAccounts"
-        });
-
-        isThisConnectWalletAccountChange = false;
-        if (account.length) {
-          userAddress.setUserAddress(account[0]);
-          isConnected = true;
-        } else {
-          isConnected = false;
-        }
-        console.log("Account : " + JSON.stringify(account));
-        console.log("isConnected : " + isConnected);
-        console.log("");
-      } catch (error) {
-        isThisConnectWalletAccountChange = false;
-        console.log(error);
+  export const onLoginIntialization = async () => {
+    console.log("onLoginIntialization");
+    try {
+      await getMetamaskAddressAuthenticationUtil(true);
+      const isValidAccessTokenPresentInLocalStorage =
+        await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
+      console.log(
+        "isValidAccessTokenPresentInLocalStorage: " +
+          isValidAccessTokenPresentInLocalStorage
+      );
+      if (isValidAccessTokenPresentInLocalStorage) {
+        await setProfileAuthenticationUtil();
+        isLoggedInUserStore.setLoggedInStatus(true);
+        loggingIn = false;
         dialog.close();
         addNotification({
           position: "top-right",
-          heading: "Error while connecting wallet",
-          description: "Please try again to connect",
-          type: cross,
-          removeAfter: 3000
+          heading: "Successfully logged in",
+          description: "You are now logged in",
+          type: tick,
+          removeAfter: 10000
         });
       }
-    }
-  }
-
-  const switchUserToCorrectChain = async () => {
-    const chainId = await window.ethereum.request({ method: "eth_chainId" });
-
-    console.log("Chain Id : " + chainId);
-
-    if (chainId !== chainIDToBeUsed) {
-      try {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: chainIDToBeUsed }]
-        });
-      } catch (switchError) {
-        // This error code indicates that the chain has not been added to MetaMask.
-        if (switchError.code === 4902) {
-          try {
-            if (PUBLIC_IS_PROD === "false") {
-              await window.ethereum.request({
-                method: "wallet_addEthereumChain",
-                params: [
-                  {
-                    chainId: "0x13881",
-                    chainName: "Mumbai",
-                    rpcUrls: ["https://rpc-mumbai.maticvigil.com"],
-                    blockExplorerUrls: ["https://mumbai.polygonscan.com"],
-                    nativeCurrency: {
-                      name: "MATIC",
-                      symbol: "MATIC",
-                      decimals: 18
-                    }
-                  }
-                ]
-              });
-            } else {
-              await window.ethereum.request({
-                method: "wallet_addEthereumChain",
-                params: [
-                  {
-                    chainId: "0x89",
-                    chainName: "Polygon",
-                    rpcUrls: ["https://polygon-rpc.com"],
-                    blockExplorerUrls: ["https://polygonscan.com"],
-                    nativeCurrency: {
-                      name: "MATIC",
-                      symbol: "MATIC",
-                      decimals: 18
-                    }
-                  }
-                ]
-              });
-            }
-          } catch (addError) {
-            console.log("Error adding chain", addError);
-            throw new Error(addError);
-          }
-        } else {
-          console.log("Error switching chain", switchError);
-          throw new Error(switchError);
-        }
-      }
+    } catch (error) {
+      dialog.close();
+      console.log(error);
+      addNotification(
+        parseNotificationObjectWithFunctionUtil((error as Error).message)
+      );
     }
   };
 
-  const signInWithLens = async () => {
-    /*** Authenticate **/
+  const logInWithLens = async () => {
+    loggingIn = true;
     try {
-      signingIn = true;
-      await userAuthentication();
-      const fetchedProfiles = await getUserProfiles();
-
-      if (fetchedProfiles.length === 0) {
-        console.log("Fetched Profile : " + JSON.stringify(fetchedProfiles));
-        showCreateLensHandleModal = true;
-        signingIn = false;
-        isHandleCreated = false;
-        successfullySignInNotification();
-      } else {
-        isHandleCreated = true;
-        showCreateLensHandleModal = false;
-        const defaultProfile = await getDefaultUserProfile();
-
-        if (defaultProfile !== null) {
-          userProfile.setUserProfile(defaultProfile);
-        } else {
-          userProfile.setUserProfile(fetchedProfiles[0]);
-        }
-
-        reloadMainPost.setReloadMainPost(Date.now());
-        reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
-        reloadAPublication.setReloadAPublication(Date.now());
-        signingIn = false;
-        isSignedIn.setSignInStatus(true);
-        successfullySignInNotification();
-      }
+      await retrieveAccessTokenAuthenticationUtil();
+      await setProfileAuthenticationUtil();
+      isLoggedInUserStore.setLoggedInStatus(true);
+      reloadMainPost.setReloadMainPost(Date.now());
+      reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
+      reloadAPublication.setReloadAPublication(Date.now());
+      loggingIn = false;
+      successfullySignInNotification();
+      console.log(
+        "Local Storage: " +
+          JSON.parse(localStorage.getItem("IDS_AUTH_DATA") as string)
+      );
     } catch (error) {
-      console.log("Error authenticating user");
-      isSignedIn.setSignInStatus(false);
-      signingIn = false;
+      loggingIn = false;
       dialog.close();
+      console.log("error: " + error);
       addNotification({
         position: "top-right",
-        heading: "Error while signing-in",
-        description: "Please try again to sign-in",
+        heading: "Error while logging in",
+        description: (error as Error).message + ". Please try again",
         type: cross,
-        removeAfter: 3000
+        removeAfter: 10000
       });
+    }
+  };
+
+  const connect = async () => {
+    try {
+      await getMetamaskAddressAuthenticationUtil(false);
+    } catch (error) {
+      console.log("connect error : ", error);
+      dialog.close();
+      addNotification(
+        parseNotificationObjectWithFunctionUtil((error as Error).message)
+      );
     }
   };
 
@@ -226,8 +105,8 @@
     dialog.close();
     addNotification({
       position: "top-right",
-      heading: "Successfully signed-in",
-      description: "You have successfully signed-in to Lens Views",
+      heading: "Successfully logged-in",
+      description: "You have successfully logged-in to Lens Views",
       type: tick,
       removeAfter: 3000
     });
@@ -237,38 +116,6 @@
     showCreateLensHandleModal = true;
     dialog.close();
   };
-
-  const checkIsSignedIn = () => {
-    let isSignedInVal;
-    const unsubscribe = isSignedIn.subscribe((val) => {
-      isSignedInVal = val;
-    });
-    unsubscribe();
-
-    return isSignedInVal;
-  };
-
-  const bodyMessage = () => {
-    if (!isConnected) {
-      return;
-    }
-
-    if (!checkIsSignedIn()) {
-      return;
-    }
-
-    if (!isHandleCreated) {
-      return;
-    }
-  };
-
-  $: if (
-    isConnected !== isConnected ||
-    checkIsSignedIn() !== checkIsSignedIn() ||
-    isHandleCreated !== isHandleCreated
-  ) {
-    bodyMessage();
-  }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -291,20 +138,34 @@
         </div>
       </div>
 
-      {#if !isConnected}
+      {#if !$addressUserStore}
         <div class="body">Please connect your wallet to continue</div>
         <div class="line" />
         <div class="footer">
           <button on:click={connect} class="btn"> Connect wallet</button>
         </div>
-      {:else if !$isSignedIn}
-        {#if !signingIn}
-          {#if isHandleCreated}
-            <div class="body">Please sign-in with Lens</div>
+      {:else if !$isLoggedInUserStore}
+        {#if !loggingIn}
+          {#if $idsAndHandlesUserStore.length > 0}
+            <div class="body">
+              Please login with Lens
+              <br />
+              <br />
+              Handle linked to
+              <span class="body__address"
+                >{$addressUserStore.substring(0, 5) +
+                  "..." +
+                  $addressUserStore.slice(-5)}</span
+              >
+              is
+              <span class="body__handle"
+                >{$idsAndHandlesUserStore[0].handle.substring(5)}</span
+              >
+            </div>
             <div class="line" />
             <div class="footer">
-              <button on:click={signInWithLens} class="btn">
-                Sign-In With Lens
+              <button on:click={logInWithLens} class="btn">
+                Login With Lens
               </button>
             </div>
           {:else}
@@ -321,11 +182,25 @@
             </div>
           {/if}
         {:else}
-          <div class="body">Please sign-in with Lens</div>
+          <div class="body">
+            Please login with Lens
+            <br />
+            <br />
+            Handle linked to
+            <span class="body__address"
+              >{$addressUserStore.substring(0, 5) +
+                "..." +
+                $addressUserStore.slice(-5)}</span
+            >
+            is
+            <span class="body__handle"
+              >{$idsAndHandlesUserStore[0].handle.substring(5)}</span
+            >
+          </div>
           <div class="line" />
           <div class="footer">
             <button class="btn" disabled>
-              Signing In &nbsp;
+              Logging In &nbsp;
               <Loader />
             </button>
           </div>
@@ -358,6 +233,16 @@
   .body {
     padding: 1rem;
     min-width: 25rem;
+  }
+
+  .body__address {
+    font-style: italic;
+  }
+
+  .body__handle {
+    font-weight: var(--semi-medium-font-weight);
+    color: var(--primary);
+    font-size: var(--medium-font-size);
   }
 
   .line {

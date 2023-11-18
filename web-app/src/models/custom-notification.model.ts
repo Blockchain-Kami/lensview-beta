@@ -4,6 +4,7 @@ export interface CustomNotificationModel {
   description?: string;
   ctaBtnName?: string;
   ctaFunction?(): void;
+  ctaFunctionString?: string;
   position?: string;
   removeAfter?: number;
 }

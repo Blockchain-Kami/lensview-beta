@@ -2,6 +2,7 @@ import { refreshAuthToken } from "./accessTokenHelper";
 import baseClient from "./baseClient";
 import { Client, createClient } from "@urql/core";
 import { PUBLIC_LENS_API_URL } from "$env/static/public";
+import { cacheExchange, fetchExchange } from "@urql/svelte";
 
 const STORAGE_KEY = "LH_STORAGE_KEY";
 
@@ -23,6 +24,7 @@ export async function createUserClient() {
       const accessToken = await refreshAuthToken();
       const userClient: Client = createClient({
         url: PUBLIC_LENS_API_URL,
+        exchanges: [cacheExchange, fetchExchange],
         fetchOptions: {
           headers: {
             "x-access-token": `Bearer ${accessToken}`

@@ -1,16 +1,10 @@
 <script lang="ts">
   import "../global.scss";
-  import { userAddress } from "../services/userAddress";
-  import { userAuthentication } from "../utils/frontend/authenticate";
   import { goto } from "$app/navigation";
-  import { isSignedIn } from "../services/signInStatus";
   import { searchInputDetails } from "../services/searchInputDetails";
-  import getDefaultUserProfile from "../utils/frontend/getDefaultUserProfile";
   import CreateLensHandle from "../components/CreateLensHandle.svelte";
-  import { userProfile } from "../services/profile";
-  import getUserProfiles from "../utils/frontend/getUserProfiles";
   import { onMount } from "svelte";
-  import { PUBLIC_IS_PROD } from "$env/static/public";
+  import { PUBLIC_IS_PROD, PUBLIC_LENS_API_URL } from "$env/static/public";
   import {
     home,
     homeDualTone,
@@ -36,26 +30,76 @@
   import { MetaTags } from "svelte-meta-tags";
   import { metaTagsTitle } from "../services/metaTags";
 
-  let isConnected = false;
-  let signingIn = false;
+  import {
+    cacheExchange,
+    Client,
+    fetchExchange,
+    setContextClient
+  } from "@urql/svelte";
+
+  import Login from "../components/Login.svelte";
+  import getMetamaskAddressAuthenticationUtil from "../utils/authentication/get-metamask-address.authentication.util";
+  import isValidAccessTokenPresentInLsForAddressAuthenticationUtil from "../utils/authentication/is-valid-access-token-present-in-ls-for-address.authentication.util";
+  import { addressUserStore } from "../stores/user/address.user.store";
+  import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
+  import { profileUserStore } from "../stores/user/profile.user.store";
+  import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
+
   let userEnteredUrlOrKeywords = "";
   let showCreateLensHandleModal = false;
   let showJoinForUpdatesModal = false;
-  let isHandleCreated = true;
-  let isThisConnectWalletAccountChange = false;
-  let chainIDToBeUsed: string;
   let menuActive = false;
   let isSearching = false;
+  let showLoginModal = false;
+  let onLoginIntialization: () => Promise<void>;
+
+  const client = new Client({
+    url: PUBLIC_LENS_API_URL,
+    exchanges: [cacheExchange, fetchExchange],
+    requestPolicy: "cache-and-network"
+  });
+  setContextClient(client);
 
   onMount(async () => {
+    try {
+      await getMetamaskAddressAuthenticationUtil(true);
+
+      let address;
+      const unsub = addressUserStore.subscribe((_address) => {
+        address = _address;
+      });
+      unsub();
+
+      if (address) {
+        const isValidAccessTokenPresentInLocalStorage =
+          await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
+
+        console.log(
+          "isValidAccessTokenPresentInLocalStorage : " +
+            isValidAccessTokenPresentInLocalStorage
+        );
+
+        if (isValidAccessTokenPresentInLocalStorage) {
+          await setProfileAuthenticationUtil();
+          isLoggedInUserStore.setLoggedInStatus(true);
+
+          setReloadMethods();
+        }
+      }
+    } catch (error) {
+      showLoginModal = false;
+      console.log(error);
+    }
+
+    accountAndChainChangedMethods();
+  });
+
+  const accountAndChainChangedMethods = () => {
+    let chainIDToBeUsed: string;
     if (PUBLIC_IS_PROD === "false") {
       chainIDToBeUsed = "0x13881";
     } else {
       chainIDToBeUsed = "0x89";
-    }
-
-    if (typeof window.ethereum === "undefined") {
-      // alert("Please install metamask to interact with this application, but you can still view the others posts");
     }
 
     window.ethereum.on("chainChanged", (chainId: string) => {
@@ -64,146 +108,26 @@
       }
     });
 
-    window.ethereum.on("accountsChanged", (_switchedAddress: string) => {
-      if (!isThisConnectWalletAccountChange) {
-        window.location.reload();
-      } else {
-        isThisConnectWalletAccountChange = false;
-      }
+    addressUserStore.subscribe((address) => {
+      window.ethereum.on("accountsChanged", (switchedAddress: string) => {
+        console.log("account changed: " + switchedAddress);
+        console.log("address: " + address);
+        if (address !== null && switchedAddress !== address) {
+          window.location.reload();
+        }
+      });
     });
-  });
-
-  /**TODO: 1. Check for chain and if it is not polygon testnet then do necessary changes
-   *       2. Check if there is any stored address in local storage if yes then do not ask for connect wallet
-   *       3. Check if refresh token is present in local storage and not expired, if yes then do not ask for sign in
-   *       4. Handle scenarios when user switches network
-   */
-  async function connect() {
-    if (typeof window.ethereum === "undefined") {
-      alert(
-        "Please install metamask to interact with this application, but you can still view the others posts"
-      );
-    } else {
-      /* this allows the user to connect their wallet */
-      try {
-        await switchUserToCorrectChain();
-
-        isThisConnectWalletAccountChange = true;
-
-        const account = await window.ethereum.request({
-          method: "eth_requestAccounts"
-        });
-
-        isThisConnectWalletAccountChange = false;
-        if (account.length) {
-          userAddress.setUserAddress(account[0]);
-          isConnected = true;
-        } else {
-          isConnected = false;
-        }
-        console.log("Account : " + JSON.stringify(account));
-      } catch (error) {
-        isThisConnectWalletAccountChange = false;
-        console.log(error);
-      }
-    }
-  }
-
-  const switchUserToCorrectChain = async () => {
-    const chainId = await window.ethereum.request({ method: "eth_chainId" });
-
-    console.log("Chain Id : " + chainId);
-
-    if (chainId !== chainIDToBeUsed) {
-      try {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: chainIDToBeUsed }]
-        });
-      } catch (switchError) {
-        // This error code indicates that the chain has not been added to MetaMask.
-        if (switchError.code === 4902) {
-          try {
-            if (PUBLIC_IS_PROD === "false") {
-              await window.ethereum.request({
-                method: "wallet_addEthereumChain",
-                params: [
-                  {
-                    chainId: "0x13881",
-                    chainName: "Mumbai",
-                    rpcUrls: ["https://rpc-mumbai.maticvigil.com"],
-                    blockExplorerUrls: ["https://mumbai.polygonscan.com"],
-                    nativeCurrency: {
-                      name: "MATIC",
-                      symbol: "MATIC",
-                      decimals: 18
-                    }
-                  }
-                ]
-              });
-            } else {
-              await window.ethereum.request({
-                method: "wallet_addEthereumChain",
-                params: [
-                  {
-                    chainId: "0x89",
-                    chainName: "Polygon",
-                    rpcUrls: ["https://polygon-rpc.com"],
-                    blockExplorerUrls: ["https://polygonscan.com"],
-                    nativeCurrency: {
-                      name: "MATIC",
-                      symbol: "MATIC",
-                      decimals: 18
-                    }
-                  }
-                ]
-              });
-            }
-          } catch (addError) {
-            console.log("Error adding chain", addError);
-            throw new Error(addError);
-          }
-        } else {
-          console.log("Error switching chain", switchError);
-          throw new Error(switchError);
-        }
-      }
-    }
   };
 
-  const signInWithLens = async () => {
-    /*** Authenticate **/
-    try {
-      signingIn = true;
-      await userAuthentication();
-      const fetchedProfiles = await getUserProfiles();
+  const setReloadMethods = () => {
+    reloadMainPost.setReloadMainPost(Date.now());
+    reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
+    reloadAPublication.setReloadAPublication(Date.now());
+  };
 
-      if (fetchedProfiles.length === 0) {
-        console.log("Fetched Profile : " + JSON.stringify(fetchedProfiles));
-        showCreateLensHandleModal = true;
-        signingIn = false;
-        isHandleCreated = false;
-      } else {
-        isHandleCreated = true;
-        showCreateLensHandleModal = false;
-        const defaultProfile = await getDefaultUserProfile();
-
-        if (defaultProfile !== null) {
-          userProfile.setUserProfile(defaultProfile);
-        } else {
-          userProfile.setUserProfile(fetchedProfiles[0]);
-        }
-        reloadMainPost.setReloadMainPost(Date.now());
-        reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
-        reloadAPublication.setReloadAPublication(Date.now());
-        signingIn = false;
-        isSignedIn.setSignInStatus(true);
-      }
-    } catch (error) {
-      console.log("Error authenticating user");
-      isSignedIn.setSignInStatus(false);
-      signingIn = false;
-    }
+  const openLoginModal = () => {
+    showLoginModal = true;
+    onLoginIntialization();
   };
 
   const redirectToPostsOrSearchPage = async () => {
@@ -287,6 +211,7 @@
       ><img alt="Untitled-presentation-3" src={LensviewLogo} />
     </a>
   </div>
+
   <main>
     {#if menuActive}
       <div
@@ -304,49 +229,25 @@
             <Icon d={menuOpen} color="#fff" size="2em" />
           </button>
         </div>
-        {#if $isSignedIn}
+        {#if $isLoggedInUserStore}
           <div class="CenterColumnFlex menu__user-box">
             <div class="menu__user-box__avatar">
-              <img src={$userProfile.picture.original.url} alt="" />
+              <img
+                src={`https://cdn.stamp.fyi/avatar/eth:${$profileUserStore?.ownedBy?.address}?s=300`}
+                alt=""
+              />
             </div>
             <div class="menu__user-box__handle">
-              {$userProfile.handle}
+              {$profileUserStore?.handle?.fullHandle.substring(5)}
             </div>
-            <!--{$userAddress.slice(0, 5)} ... {$userAddress.slice(-5)}-->
           </div>
-        {:else if !isConnected}
+        {:else}
           <div class="menu__connect-box">
             <div class="menu__connect-box__text">
               Hello friend! Welcome to LensView.
             </div>
             <div class="menu__connect-box__btn">
-              <button on:click={connect} class="btn"> Connect wallet</button>
-            </div>
-          </div>
-        {:else if !$isSignedIn}
-          <div class="menu__connect-box">
-            <div class="menu__connect-box__text">
-              Hello friend! Welcome to LensView.
-            </div>
-            <div class="menu__connect-box__btn">
-              {#if !signingIn}
-                {#if isHandleCreated}
-                  <button on:click={signInWithLens} class="btn"
-                    >Sign-In With Lens
-                  </button>
-                {:else}
-                  <button
-                    on:click={() => (showCreateLensHandleModal = true)}
-                    class="btn"
-                    >Create Lens Handle
-                  </button>
-                {/if}
-              {:else}
-                <button class="btn" disabled>
-                  Signing In &nbsp;
-                  <Loader />
-                </button>
-              {/if}
+              <button on:click={openLoginModal} class="btn"> Login </button>
             </div>
           </div>
         {/if}
@@ -381,6 +282,8 @@
       <slot />
     </div>
   </main>
+
+  <Login bind:showLoginModal bind:onLoginIntialization />
 
   <CreateLensHandle bind:showCreateLensHandleModal />
 
