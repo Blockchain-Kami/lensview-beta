@@ -1,5 +1,5 @@
 import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
-import challengeQueryGraphql from "../../graphql/challenge-query.graphql";
+import challengeQueryGraphql from "../../graphql/queries/challenge.query.graphql";
 
 const getChallengeInfoLensService = async (address: string, id: string) => {
   console.log("getChallengeInfoLensService signedBy", address);

@@ -1,4 +1,4 @@
-import { graphql } from "../gql";
+import { graphql } from "../../gql";
 
 const challengeQueryGraphql = graphql(`
   query Challenge($request: ChallengeRequest!) {

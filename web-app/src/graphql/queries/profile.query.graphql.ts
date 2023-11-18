@@ -1,4 +1,4 @@
-import { graphql } from "../gql";
+import { graphql } from "../../gql";
 
 const profileQueryGraphql = graphql(`
   query profile($request: ProfileRequest!) {

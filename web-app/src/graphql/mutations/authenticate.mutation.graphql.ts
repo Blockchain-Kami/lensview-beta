@@ -1,4 +1,4 @@
-import { graphql } from "../gql";
+import { graphql } from "../../gql";
 
 const authenticateMutationGraphql = graphql(`
   mutation Authenticate($request: SignedAuthChallenge!) {

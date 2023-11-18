@@ -1,4 +1,4 @@
-import refreshMutationGraphql from "../../graphql/refresh-mutation.graphql";
+import refreshMutationGraphql from "../../graphql/mutations/refresh.mutation.graphql";
 import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
 
 const getAccessTokenUsingRefreshTokenLensService = async (

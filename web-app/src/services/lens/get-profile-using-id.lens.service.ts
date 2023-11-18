@@ -1,4 +1,4 @@
-import profileQueryGraphql from "../../graphql/profile-query.graphql";
+import profileQueryGraphql from "../../graphql/queries/profile.query.graphql";
 import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
 
 const getProfileUsingIdLensService = async (id: string) => {

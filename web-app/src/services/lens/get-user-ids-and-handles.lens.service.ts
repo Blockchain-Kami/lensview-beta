@@ -1,4 +1,4 @@
-import profileManagedQueryGraphql from "../../graphql/profile-managed-query.graphql";
+import profileManagedQueryGraphql from "../../graphql/queries/profile-managed.query.graphql";
 import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
 
 const getUserIdsAndHandlesLensService = async (address: string) => {

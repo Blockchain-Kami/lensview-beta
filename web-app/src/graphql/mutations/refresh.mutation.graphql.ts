@@ -1,4 +1,4 @@
-import { graphql } from "../gql";
+import { graphql } from "../../gql";
 
 const refreshMutationGraphql = graphql(`
   mutation Refresh($request: RefreshRequest!) {

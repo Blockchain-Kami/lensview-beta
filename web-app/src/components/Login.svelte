@@ -2,7 +2,7 @@
   import Icon from "$lib/Icon.svelte";
   import { close, cross, tick } from "../utils/frontend/appIcon";
   import Loader from "$lib/Loader.svelte";
-  import CreateLensHandle from "./CreateLensHandle.svelte";
+  import CreateLensProfile from "./CreateLensProfile.svelte";
   import { fly } from "svelte/transition";
   import { backInOut } from "svelte/easing";
   import { getNotificationsContext } from "svelte-notifications";
@@ -26,7 +26,7 @@
   $: if (dialog && showLoginModal) dialog.showModal();
 
   let loggingIn = false;
-  let showCreateLensHandleModal = false;
+  let showCreateLensProfileModal = false;
 
   export const onLoginIntialization = async () => {
     console.log("onLoginIntialization");
@@ -65,12 +65,12 @@
     try {
       await retrieveAccessTokenAuthenticationUtil();
       await setProfileAuthenticationUtil();
+
       isLoggedInUserStore.setLoggedInStatus(true);
-      reloadMainPost.setReloadMainPost(Date.now());
-      reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
-      reloadAPublication.setReloadAPublication(Date.now());
+      setReloadMethods();
       loggingIn = false;
       successfullySignInNotification();
+
       console.log(
         "Local Storage: " +
           JSON.parse(localStorage.getItem("IDS_AUTH_DATA") as string)
@@ -87,6 +87,12 @@
         removeAfter: 10000
       });
     }
+  };
+
+  const setReloadMethods = () => {
+    reloadMainPost.setReloadMainPost(Date.now());
+    reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
+    reloadAPublication.setReloadAPublication(Date.now());
   };
 
   const connect = async () => {
@@ -112,8 +118,8 @@
     });
   };
 
-  const openCreateLensHandleModal = () => {
-    showCreateLensHandleModal = true;
+  const openCreateLensProfileModal = () => {
+    showCreateLensProfileModal = true;
     dialog.close();
   };
 </script>
@@ -172,12 +178,12 @@
             <div class="body">
               No Account found!
               <br />
-              Please create lens handle to sign-up
+              Please create Lens Profile to continue
             </div>
             <div class="line" />
             <div class="footer">
-              <button on:click={openCreateLensHandleModal} class="btn">
-                Create Lens Handle
+              <button on:click={openCreateLensProfileModal} class="btn">
+                Create Lens Profile
               </button>
             </div>
           {/if}
@@ -210,7 +216,7 @@
   {/if}
 </dialog>
 
-<CreateLensHandle bind:showCreateLensHandleModal />
+<CreateLensProfile bind:showCreateLensProfileModal />
 
 <style lang="scss">
   main {

@@ -1,5 +1,5 @@
 import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
-import authenticateMutationGraphql from "../../graphql/authenticate-mutation.graphql";
+import authenticateMutationGraphql from "../../graphql/mutations/authenticate.mutation.graphql";
 
 const getAccessTokenUsingChallengeLensService = async (
   ChallengeId: string,

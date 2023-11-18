@@ -1,4 +1,4 @@
-import { graphql } from "../gql";
+import { graphql } from "../../gql";
 
 const lastLoggedInProfileQuery = graphql(/* GraphQL */ `
   query lastLoggedInProfile($request: LastLoggedInProfileRequest!) {

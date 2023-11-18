@@ -2,7 +2,6 @@
   import "../global.scss";
   import { goto } from "$app/navigation";
   import { searchInputDetails } from "../services/searchInputDetails";
-  import CreateLensHandle from "../components/CreateLensHandle.svelte";
   import { onMount } from "svelte";
   import { PUBLIC_IS_PROD, PUBLIC_LENS_API_URL } from "$env/static/public";
   import {
@@ -46,7 +45,6 @@
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
 
   let userEnteredUrlOrKeywords = "";
-  let showCreateLensHandleModal = false;
   let showJoinForUpdatesModal = false;
   let menuActive = false;
   let isSearching = false;
@@ -284,8 +282,6 @@
   </main>
 
   <Login bind:showLoginModal bind:onLoginIntialization />
-
-  <CreateLensHandle bind:showCreateLensHandleModal />
 
   <JoinForUpdates bind:showJoinForUpdatesModal />
 </Notifications>
