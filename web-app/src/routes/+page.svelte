@@ -1,4 +1,5 @@
 <script lang="ts">
+  console.log("test");
 </script>
 
 <!--<pre>{JSON.stringify($charactersQueryStore.data, null, 2)}</pre>-->
