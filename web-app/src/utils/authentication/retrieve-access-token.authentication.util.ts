@@ -1,8 +1,8 @@
 import { addressUserStore } from "../../stores/user/address.user.store";
 import getChallengeInfoLensService from "../../services/lens/get-challenge-info.lens.service";
 import { idsAndHandlesUserStore } from "../../stores/user/ids-and-handles.user.store";
-import getSignerWeb3Util from "../web3/get-signer.web3.util";
 import getAccessTokenUsingChallengeLensService from "../../services/lens/get-access-token-using-challenge.lens.service";
+import { getSigner } from "../ethers.util";
 
 const retrieveAccessTokenAuthenticationUtil = async () => {
   try {
@@ -27,7 +27,7 @@ const retrieveAccessTokenAuthenticationUtil = async () => {
 
     if (!challengeInfo?.data?.challenge) return new Error("No challenge found");
 
-    const signer = getSignerWeb3Util();
+    const signer = getSigner();
     const signature = await signer.signMessage(
       challengeInfo.data.challenge.text
     );

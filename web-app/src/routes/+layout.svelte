@@ -43,6 +43,7 @@
   import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
   import { profileUserStore } from "../stores/user/profile.user.store";
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
+  import postOnChain from "../utils/publications/post-onchain.publication.util";
 
   let userEnteredUrlOrKeywords = "";
   let showJoinForUpdatesModal = false;
@@ -126,6 +127,10 @@
   const openLoginModal = () => {
     showLoginModal = true;
     onLoginIntialization();
+  };
+
+  const postTest = () => {
+    postOnChain();
   };
 
   const redirectToPostsOrSearchPage = async () => {
@@ -249,6 +254,7 @@
             </div>
           </div>
         {/if}
+        <button on:click={postTest} class="btn"> Test </button>
         <div class="menu__options">
           <a href="/" class="CenterRowFlex menu__options__item">
             <div class="menu__options__item__icon">
