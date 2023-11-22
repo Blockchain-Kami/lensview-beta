@@ -8,18 +8,90 @@ import { signedTypeData } from "../ethers.util";
 import broadcastOnchainRequestLensService from "../../services/lens/broadcast-onchain-request.lens.service";
 import { waitUntilBroadcastTransactionIsComplete } from "../transaction/wait-until-complete.transaction.util";
 import type { RelayError, RelaySuccess } from "../../gql/graphql";
-import { textOnly } from "@lens-protocol/metadata";
+import { MetadataAttributeType, textOnly } from "@lens-protocol/metadata";
+import { PUBLIC_SOURCE_APP_ID } from "$env/static/public";
 
 const commentOnChainPublicationUtil = async () => {
+  //TODO: Check in production weather we need "@lens-protocol/metadata", if it works putting in
+  // devDependencies then keep it or go with schema approach that there in "api-examples" repo
+  // https://docs.lens.xyz/docs/publication-metadata#json-schemas
+
+  // const metadata = image({
+  //   locale: "en-US",
+  //   tags: ["dd472d3370b389eb8399ea7c795ca9e76ff0d4d7"], //imagePub
+  //   appId: PUBLIC_SOURCE_APP_ID,
+  //   attributes: [
+  //     {
+  //       key: "creator",
+  //       type: MetadataAttributeType.STRING,
+  //       value: "anjaysahoodev"
+  //     },
+  //     {
+  //       key: "app",
+  //       type: MetadataAttributeType.STRING,
+  //       value: "lensviewtest123"
+  //     },
+  //     {
+  //       key: "created on",
+  //       type: MetadataAttributeType.STRING,
+  //       value: Date.now().toString()
+  //     }
+  //   ],
+  //   image: {
+  //     item: "https://ik.imagekit.io/lens/media-snapshot/c5c43e9298b1eb8120e3963244387144132334c9aacddffc0b4900359642897c.jpg",
+  //     type: MediaImageMimeType.PNG,
+  //     altTag: "Me touching grass",
+  //     license: MetadataLicenseType.CCO
+  //   },
+  //   attachments: [
+  //     {
+  //       item: "https://ik.imagekit.io/lens/media-snapshot/c5c43e9298b1eb8120e3963244387144132334c9aacddffc0b4900359642897c.jpg",
+  //       type: MediaImageMimeType.PNG,
+  //       altTag: "Me touching grass",
+  //       license: MetadataLicenseType.CCO
+  //     }
+  //   ],
+  //   title: "Post by @anjaysahoodev",
+  //   content: "Image link for the url: ${IPFSLink}"
+  //   //TODO: Check for below fields usage
+  //   // content: EncryptableMarkdown
+  //   // attachments: [PublicationMetadataMediaVideo],
+  //   // hideFromFeed: true,
+  //   // encryptedWith: PublicationMetadataLitEncryption,
+  // });
+
   const metadata = textOnly({
-    content: "Comment GM!"
+    locale: "en-US",
+    tags: ["0f89daeb0a63c7b73224315c5514c21ba0453985"], //userHash
+    appId: PUBLIC_SOURCE_APP_ID,
+    attributes: [
+      {
+        key: "creator",
+        type: MetadataAttributeType.STRING,
+        value: "anjaysahoodev"
+      },
+      {
+        key: "app",
+        type: MetadataAttributeType.STRING,
+        value: "lensviewtest123"
+      },
+      {
+        key: "created on",
+        type: MetadataAttributeType.STRING,
+        value: Date.now().toString()
+      }
+    ],
+    content: "Test post content testing"
+    //TODO: Check for below fields usage
+    // encryptedWith: PublicationMetadataLitEncryption,
+    // hideFromFeed: false,
   });
 
   const ipfsResultUri = await uploadIpfs(JSON.stringify(metadata));
   console.log("post onchain: ipfs result uri", ipfsResultUri);
 
   const request: OnchainCommentRequest = {
-    commentOn: "0x038e-0x0d",
+    commentOn: "0x038e-0x1a",
     contentURI: ipfsResultUri
     // you can play around with open actions modules here all request
     // objects are in `publication-open-action-options.ts`

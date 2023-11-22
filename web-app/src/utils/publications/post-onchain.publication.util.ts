@@ -9,11 +9,45 @@ import createOnchainPostTypedDataLensService from "../../services/lens/create-on
 import broadcastOnchainRequestLensService from "../../services/lens/broadcast-onchain-request.lens.service";
 import { waitUntilBroadcastTransactionIsComplete } from "../transaction/wait-until-complete.transaction.util";
 import { signedTypeData } from "../ethers.util";
-import { textOnly } from "@lens-protocol/metadata";
+import { link } from "@lens-protocol/metadata";
+import { MetadataAttributeType } from "@lens-protocol/metadata";
+import { PUBLIC_SOURCE_APP_ID } from "$env/static/public";
 
 const postOnChainPublicationUtil = async () => {
-  const metadata = textOnly({
-    content: "GM!"
+  //TODO: Check in production weather we need "@lens-protocol/metadata", if it works putting in
+  // devDependencies then keep it or go with schema approach that there in "api-examples" repo
+  // https://docs.lens.xyz/docs/publication-metadata#json-schemas
+
+  const metadata = link({
+    locale: "en-US",
+    tags: [
+      "0f89daeb0a63c7b73224315c5514c21ba0453985", //userPubHash
+      "862a4fb3d7b604df38a6dd5125d341b2fa14b20b" //URLHash
+    ],
+    appId: PUBLIC_SOURCE_APP_ID,
+    attributes: [
+      {
+        key: "creator",
+        type: MetadataAttributeType.STRING,
+        value: "anjaysahoodev"
+      },
+      {
+        key: "app",
+        type: MetadataAttributeType.STRING,
+        value: "lensviewtest123"
+      },
+      {
+        key: "created on",
+        type: MetadataAttributeType.STRING,
+        value: Date.now().toString()
+      }
+    ],
+    sharingLink: "https://www.lens.xyz/",
+    content: "Post by @anjaysahoodev 3"
+    //TODO: Check for below fields usage
+    // attachments: [PublicationMetadataMediaVideo],
+    // "encryptedWith": PublicationMetadataLitEncryption,
+    // "hideFromFeed": true,
   });
 
   const ipfsResultUri = await uploadIpfs(JSON.stringify(metadata));
