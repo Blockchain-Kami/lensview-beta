@@ -1,25 +1,25 @@
-import type {
-  CreateOnchainPostBroadcastItemResult,
-  OnchainPostRequest,
-  RelayError,
-  RelaySuccess
-} from "../../gql/graphql";
 import { uploadIpfs } from "../ipfs.util";
-import createOnchainPostTypedDataLensService from "../../services/lens/create-onchain-post-typed-data.lens.service";
+import type {
+  CreateOnchainCommentBroadcastItemResult,
+  OnchainCommentRequest
+} from "../../gql/graphql";
+import createOnchainCommentTypedDataLensService from "../../services/lens/create-onchain-comment-typed-data.lens.service";
+import { signedTypeData } from "../ethers.util";
 import broadcastOnchainRequestLensService from "../../services/lens/broadcast-onchain-request.lens.service";
 import { waitUntilBroadcastTransactionIsComplete } from "../transaction/wait-until-complete.transaction.util";
-import { signedTypeData } from "../ethers.util";
+import type { RelayError, RelaySuccess } from "../../gql/graphql";
 import { textOnly } from "@lens-protocol/metadata";
 
-const postOnChainPublicationUtil = async () => {
+const commentOnChainPublicationUtil = async () => {
   const metadata = textOnly({
-    content: "GM!"
+    content: "Comment GM!"
   });
 
   const ipfsResultUri = await uploadIpfs(JSON.stringify(metadata));
   console.log("post onchain: ipfs result uri", ipfsResultUri);
 
-  const request: OnchainPostRequest = {
+  const request: OnchainCommentRequest = {
+    commentOn: "0x038e-0x0d",
     contentURI: ipfsResultUri
     // you can play around with open actions modules here all request
     // objects are in `publication-open-action-options.ts`
@@ -30,19 +30,19 @@ const postOnChainPublicationUtil = async () => {
     // referenceModule: referenceModuleFollowOnly,
   };
 
-  const { id, typedData } = (await createOnchainPostTypedDataLensService(
+  const { id, typedData } = (await createOnchainCommentTypedDataLensService(
     request
-  )) as CreateOnchainPostBroadcastItemResult;
-  console.log("post onchain: result", { id, typedData });
+  )) as CreateOnchainCommentBroadcastItemResult;
+  console.log("comment onchain: result", { id, typedData });
 
-  console.log("post onchain: typedData", typedData);
+  console.log("comment onchain: typedData", typedData);
 
   const signature = await signedTypeData(
     typedData.domain,
     typedData.types,
     typedData.value
   );
-  console.log("post onchain: signature", signature);
+  console.log("comment onchain: signature", signature);
 
   // if (USE_GASLESS) {
   const broadcastResult = (await broadcastOnchainRequestLensService({
@@ -50,14 +50,19 @@ const postOnChainPublicationUtil = async () => {
     signature
   })) as RelaySuccess | RelayError;
 
-  await waitUntilBroadcastTransactionIsComplete(broadcastResult, "post");
+  await waitUntilBroadcastTransactionIsComplete(broadcastResult, "Comment");
   // } else {
   //   const { v, r, s } = splitSignature(signature);
   //
-  //   const tx = await lensHub.postWithSig(
+  //   const tx = await lensHub.commentWithSig(
   //     {
   //       profileId: typedData.value.profileId,
   //       contentURI: typedData.value.contentURI,
+  //       pointedProfileId: typedData.value.pointedProfileId,
+  //       pointedPubId: typedData.value.pointedPubId,
+  //       referrerProfileIds: typedData.value.referrerProfileIds,
+  //       referrerPubIds: typedData.value.referrerPubIds,
+  //       referenceModuleData: typedData.value.referenceModuleData,
   //       actionModules: typedData.value.actionModules,
   //       actionModulesInitDatas: typedData.value.actionModulesInitDatas,
   //       referenceModule: typedData.value.referenceModule,
@@ -69,10 +74,11 @@ const postOnChainPublicationUtil = async () => {
   //       r,
   //       s,
   //       deadline: typedData.value.deadline
-  //     }
+  //     },
+  //     { gasLimit: 10000000 }
   //   );
-  //   console.log("post onchain: tx hash", tx.hash);
+  //   console.log("comment onchain: tx hash", tx.hash);
   // }
 };
 
-export default postOnChainPublicationUtil;
+export default commentOnChainPublicationUtil;
