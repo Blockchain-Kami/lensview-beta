@@ -43,6 +43,8 @@
   import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
   import { profileUserStore } from "../stores/user/profile.user.store";
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
+  import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
+  import commentOnChainPublicationUtil from "../utils/publications/comment-onchain.publication.util";
 
   let userEnteredUrlOrKeywords = "";
   let showJoinForUpdatesModal = false;
@@ -126,6 +128,14 @@
   const openLoginModal = () => {
     showLoginModal = true;
     onLoginIntialization();
+  };
+
+  const postTest = () => {
+    postOnChainPublicationUtil();
+  };
+
+  const commentTest = () => {
+    commentOnChainPublicationUtil();
   };
 
   const redirectToPostsOrSearchPage = async () => {
@@ -249,6 +259,8 @@
             </div>
           </div>
         {/if}
+        <button on:click={postTest} class="btn"> Test Post</button>
+        <button on:click={commentTest} class="btn"> Test Comment</button>
         <div class="menu__options">
           <a href="/" class="CenterRowFlex menu__options__item">
             <div class="menu__options__item__icon">

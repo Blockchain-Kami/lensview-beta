@@ -11,7 +11,6 @@
   import { backInOut } from "svelte/easing";
   import { getNotificationsContext } from "svelte-notifications";
   import createProfileWithHandleLensService from "../services/lens/create-profile-with-handle.lens.service";
-  import checkUntilTxIndexedLensUtil from "../utils/lens/check-until-tx-indexed.lens.util";
   import {
     reloadAPublication,
     reloadCommentOfAPublication,
@@ -21,6 +20,7 @@
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
   import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
   import isValidAccessTokenPresentInLsForAddressAuthenticationUtil from "../utils/authentication/is-valid-access-token-present-in-ls-for-address.authentication.util";
+  import { waitUntilComplete } from "../utils/indexer/has-transaction-been-indexed.indexer.util";
 
   const { addNotification } = getNotificationsContext();
   export let showCreateLensProfileModal: boolean;
@@ -46,7 +46,7 @@
       if (createProfileWithHandleData?.__typename === "RelaySuccess") {
         const txId = createProfileWithHandleData?.txId;
 
-        await checkUntilTxIndexedLensUtil(txId, null, Date.now());
+        await waitUntilComplete({ forTxId: txId }, Date.now());
         console.log("waiting for tx to be indexed");
         await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
         await retrieveAccessTokenAuthenticationUtil();

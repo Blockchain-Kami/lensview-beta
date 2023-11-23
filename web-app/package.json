@@ -15,6 +15,7 @@
     "codegen": "graphql-codegen --watch"
   },
   "dependencies": {
+    "@lens-protocol/metadata": "^1.0.5",
     "@svelte-plugins/tooltips": "^0.1.8",
     "autolinker": "^4.0.0",
     "axios": "^1.4.0",
@@ -39,6 +40,7 @@
     "@sveltejs/adapter-node": "^1.0.0-next.13",
     "@sveltejs/kit": "^1.5.0",
     "@types/dompurify": "^3.0.2",
+    "@types/omit-deep": "^0.3.2",
     "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
