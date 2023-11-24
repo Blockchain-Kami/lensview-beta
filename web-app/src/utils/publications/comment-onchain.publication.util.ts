@@ -24,12 +24,12 @@ const commentOnChainPublicationUtil = async () => {
   //     {
   //       key: "creator",
   //       type: MetadataAttributeType.STRING,
-  //       value: "anjaysahoodev"
+  //       value: "testlenviewcode"
   //     },
   //     {
   //       key: "app",
   //       type: MetadataAttributeType.STRING,
-  //       value: "lensviewtest123"
+  //       value: "testlenviewcode"
   //     },
   //     {
   //       key: "created on",
@@ -51,7 +51,7 @@ const commentOnChainPublicationUtil = async () => {
   //       license: MetadataLicenseType.CCO
   //     }
   //   ],
-  //   title: "Post by @anjaysahoodev",
+  //   title: "Post by @testlenviewcode",
   //   content: "Image link for the url: ${IPFSLink}"
   //   //TODO: Check for below fields usage
   //   // content: EncryptableMarkdown
@@ -73,7 +73,7 @@ const commentOnChainPublicationUtil = async () => {
       {
         key: "app",
         type: MetadataAttributeType.STRING,
-        value: "lensviewtest123"
+        value: "testlenviewcode"
       },
       {
         key: "created on",
@@ -81,7 +81,7 @@ const commentOnChainPublicationUtil = async () => {
         value: Date.now().toString()
       }
     ],
-    content: "Test post content testing"
+    content: "Setting up query for v2 test"
     //TODO: Check for below fields usage
     // encryptedWith: PublicationMetadataLitEncryption,
     // hideFromFeed: false,
@@ -91,7 +91,7 @@ const commentOnChainPublicationUtil = async () => {
   console.log("post onchain: ipfs result uri", ipfsResultUri);
 
   const request: OnchainCommentRequest = {
-    commentOn: "0x038e-0x1a",
+    commentOn: "0x04fb-0x01",
     contentURI: ipfsResultUri
     // you can play around with open actions modules here all request
     // objects are in `publication-open-action-options.ts`

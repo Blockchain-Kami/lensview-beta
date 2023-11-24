@@ -21,20 +21,20 @@ const postOnChainPublicationUtil = async () => {
   const metadata = link({
     locale: "en-US",
     tags: [
-      "0f89daeb0a63c7b73224315c5514c21ba0453985", //userPubHash
-      "862a4fb3d7b604df38a6dd5125d341b2fa14b20b" //URLHash
+      "418f361f5cdc602c856956bf752c06a29c52e54a", //anonymousPubHash
+      "8a5bcce8dd20adda1873b5e74a77268851b32500" //URLHash
     ],
     appId: PUBLIC_SOURCE_APP_ID,
     attributes: [
       {
         key: "creator",
         type: MetadataAttributeType.STRING,
-        value: "anjaysahoodev"
+        value: "testlenviewcode"
       },
       {
         key: "app",
         type: MetadataAttributeType.STRING,
-        value: "lensviewtest123"
+        value: "testlenviewcode"
       },
       {
         key: "created on",
@@ -42,8 +42,8 @@ const postOnChainPublicationUtil = async () => {
         value: Date.now().toString()
       }
     ],
-    sharingLink: "https://www.lens.xyz/",
-    content: "Post by @anjaysahoodev 3"
+    sharingLink: "https://scottspence.com/posts/use-urql-with-sveltekit",
+    content: "Post by @testlenviewcode"
     //TODO: Check for below fields usage
     // attachments: [PublicationMetadataMediaVideo],
     // "encryptedWith": PublicationMetadataLitEncryption,
