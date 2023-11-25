@@ -91,7 +91,7 @@ const commentOnChainPublicationUtil = async () => {
   console.log("post onchain: ipfs result uri", ipfsResultUri);
 
   const request: OnchainCommentRequest = {
-    commentOn: "0x04fb-0x01",
+    commentOn: "0x2a-0x01",
     contentURI: ipfsResultUri
     // you can play around with open actions modules here all request
     // objects are in `publication-open-action-options.ts`
