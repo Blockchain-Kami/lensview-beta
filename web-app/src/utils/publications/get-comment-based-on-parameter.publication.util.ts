@@ -61,9 +61,9 @@ const getCommentBasedOnParameterPublicationUtil = async (
     }
 
     return await getCommentLensService(request!);
-  } catch (err) {
-    console.log(err);
-    throw err;
+  } catch (error) {
+    console.log("getCommentBasedOnParameterPublicationUtil error", error);
+    throw error;
   }
 };
 

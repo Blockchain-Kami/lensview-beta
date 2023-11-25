@@ -23,7 +23,26 @@ const explorePublicationLensService = async () => {
     })
     .toPromise();
 
-  return result.data?.explorePublications;
+  return result.data?.explorePublications as {
+    __typename: "PaginatedExplorePublicationResult";
+    items: {
+      __typename: "Post";
+      id: string;
+      createdAt: string;
+      by: {
+        id: string;
+      };
+      stats: {
+        comments: number;
+        upvotes: number;
+        downvotes: number;
+      };
+      metadata: {
+        __typename: "LinkMetadataV3";
+        sharingLink: string;
+      };
+    }[];
+  };
 };
 
 export default explorePublicationLensService;

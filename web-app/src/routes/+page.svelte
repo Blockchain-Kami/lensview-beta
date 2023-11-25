@@ -11,8 +11,7 @@
     thumbDown,
     thumbUp,
     trendingUp
-  } from "../utils/frontend/appIcon";
-  import getFormattedDate from "../utils/frontend/getFormattedDate";
+  } from "../utils/app-icon.util";
   import AddNewPost from "../components/main-page/AddNewPost.svelte";
   import IntroPrompt from "../components/main-page/IntroPrompt.svelte";
   import { getNotificationsContext } from "svelte-notifications";
@@ -22,7 +21,6 @@
   import type { ObserverEventDetails, Options } from "svelte-inview";
   import { inview } from "svelte-inview";
   import MediaQuery from "$lib/MediaQuery.svelte";
-  import getPictureURL from "../utils/frontend/getPictureURL";
   import { onMount } from "svelte";
   import {
     metaTagsDescription,
@@ -30,17 +28,18 @@
     metaTagsImageUrl,
     metaTagsTitle
   } from "../services/metaTags";
-  import type { PaginatedExplorePublicationResult } from "../gql/graphql";
   import getImageCommentLensService from "../services/lens/get-image-comment.lens.service";
   import getCommentBasedOnParameterPublicationUtil from "../utils/publications/get-comment-based-on-parameter.publication.util";
   import { LimitType } from "../gql/graphql";
+  import getPictureURLUtil from "../utils/get-picture-URL.util";
+  import getFormattedDateHelperUtil from "../utils/helper/get-formatted-date.helper.util";
 
   type KeyStringValBoolean = {
     [key: string]: boolean;
   };
 
   const { addNotification } = getNotificationsContext();
-  export let data: PaginatedExplorePublicationResult;
+  export let data;
   let isCardsMoreOpen: KeyStringValBoolean = {};
   let showAddNewPostModal = false;
   const options: Options = {
@@ -166,7 +165,7 @@
                   </div>
                 </a>
                 <div class="card__info__content__time">
-                  {getFormattedDate(item?.createdAt)}
+                  {getFormattedDateHelperUtil(item?.createdAt)}
                 </div>
               </div>
             </div>
@@ -185,7 +184,7 @@
                 <div class="CenterRowFlex card__post">
                   <div class="card__post__user-pic">
                     <img
-                      src={getPictureURL(
+                      src={getPictureURLUtil(
                         comments.items[0]?.by?.metadata?.picture?.optimized
                           ?.uri,
                         comments.items[0]?.by?.ownedBy?.address
@@ -228,14 +227,15 @@
                           <Icon d={trendingUp} />
                         </div>
                         <div class="card__post__info__head__trend__count">
-                          {comments?.items[0]?.stats?.upvotes?.totalUpvotes ===
-                          undefined
+                          {comments?.items[0]?.stats?.upvotes === undefined
                             ? 0
                             : comments?.items[0]?.stats?.upvotes}
                         </div>
                       </div>
                       <div class="card__post__info__head__time">
-                        {getFormattedDate(comments?.items[0]?.createdAt)}
+                        {getFormattedDateHelperUtil(
+                          comments?.items[0]?.createdAt
+                        )}
                       </div>
                     </div>
                     <div class="card__post__info__body">
