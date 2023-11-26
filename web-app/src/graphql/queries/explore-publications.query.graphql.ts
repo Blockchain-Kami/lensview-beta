@@ -7,9 +7,6 @@ const explorePublicationsQueryGraphql = graphql(`
         ... on Post {
           id
           createdAt
-          by {
-            id
-          }
           stats {
             comments
             upvotes: reactions(request: { type: UPVOTE })
@@ -17,7 +14,6 @@ const explorePublicationsQueryGraphql = graphql(`
           }
           metadata {
             ... on LinkMetadataV3 {
-              tags
               sharingLink
             }
           }

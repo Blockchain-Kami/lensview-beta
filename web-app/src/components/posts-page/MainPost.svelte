@@ -13,16 +13,12 @@
     thumbUp,
     thumbUpAlt,
     unfoldMore
-  } from "../../utils/frontend/appIcon";
+  } from "../../utils/app-icon.util";
   import RelatedPost from "./RelatedPost.svelte";
   import { page } from "$app/stores";
-  import { getPublicationByPubId } from "../../utils/frontend/getPublicationByPubId";
-  import getFormattedDate from "../../utils/frontend/getFormattedDate";
-  import getImageURLUsingParentPubId from "../../utils/frontend/getImageURLUsingParentPubId";
   import { totalPosts } from "../../services/totalPosts";
   import { getNotificationsContext } from "svelte-notifications";
   import MediaQuery from "$lib/MediaQuery.svelte";
-  import { isSignedIn } from "../../services/signInStatus";
   import {
     addReactionToAPost,
     removeReactionFromAPost
@@ -35,6 +31,10 @@
     metaTagsImageUrl,
     metaTagsTitle
   } from "../../services/metaTags";
+  import getLinkPublicationLensService from "../../services/lens/get-link-publication.lens.service";
+  import getImageCommentLensService from "../../services/lens/get-image-comment.lens.service";
+  import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
 
   const { addNotification } = getNotificationsContext();
   let mainPostPubId = $page.data.mainPostPubId;
@@ -44,17 +44,17 @@
   let upVoteCount = 0;
   let downVoteCount = 0;
 
-  let promiseOfGetMainPost = getPublicationByPubId(mainPostPubId);
+  let promiseOfGetMainPost = getLinkPublicationLensService(mainPostPubId);
 
   $: if (mainPostPubId !== $page.data.mainPostPubId) {
     mainPostPubId = $page.data.mainPostPubId;
-    promiseOfGetMainPost = getPublicationByPubId(mainPostPubId);
+    promiseOfGetMainPost = getLinkPublicationLensService(mainPostPubId);
   }
 
   onMount(() => {
     reloadMainPost.subscribe((val) => {
       console.log("Reloaded main post" + val);
-      promiseOfGetMainPost = getPublicationByPubId(mainPostPubId);
+      promiseOfGetMainPost = getLinkPublicationLensService(mainPostPubId);
     });
   });
 
@@ -63,7 +63,7 @@
     return fetchedTotalPosts;
   };
 
-  const sharePost = (event: Event, id) => {
+  const sharePost = (event: Event, id: string) => {
     event.preventDefault();
     event.stopPropagation();
     navigator.clipboard.writeText(window.location.origin + "/posts/" + id);
@@ -80,13 +80,13 @@
     event.preventDefault();
     event.stopPropagation();
 
-    let signedStatus;
-    const unsub = isSignedIn.subscribe((value) => {
-      signedStatus = value;
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
     });
     unsub();
 
-    if (!signedStatus) {
+    if (!isUserLoggedIn) {
       openLoginNotification();
     } else {
       try {
@@ -119,13 +119,13 @@
     event.preventDefault();
     event.stopPropagation();
 
-    let signedStatus;
-    const unsub = isSignedIn.subscribe((value) => {
-      signedStatus = value;
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
     });
     unsub();
 
-    if (!signedStatus) {
+    if (!isUserLoggedIn) {
       openLoginNotification();
     } else {
       try {
@@ -166,11 +166,29 @@
   };
 
   const updateReactionDetails = (
-    passedReaction: string,
+    passedUpVoteStatus: boolean,
+    passedDownVoteStatus: boolean,
     passedUpVoteCount: number,
     passedDownVoteCount: number
   ) => {
-    reaction = passedReaction;
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
+    });
+    unsub();
+
+    if (!isUserLoggedIn) {
+      reaction = null;
+    } else {
+      if (passedUpVoteStatus) {
+        reaction = "UPVOTE";
+      } else if (passedDownVoteStatus) {
+        reaction = "DOWNVOTE";
+      } else {
+        reaction = null;
+      }
+    }
+
     upVoteCount = passedUpVoteCount;
     downVoteCount = passedDownVoteCount;
     return "";
@@ -222,7 +240,7 @@
         {/if}
       {:then mainPostPub}
         <a href={`/posts/${mainPostPubId}`} class="tablet__main-post">
-          {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
+          {#await getImageCommentLensService(mainPostPub?.id)}
             <div class="tablet__main-post__image__loader" />
           {:then imageUrl}
             {updateMetaTagsImageUrl(imageUrl)}
@@ -232,32 +250,26 @@
           {/await}
           <a
             class="CenterRowFlex tablet__main-post__url"
-            href={mainPostPub?.data?.publications?.items[0]?.metadata.content}
+            href={mainPostPub?.metadata?.sharingLink}
             target="_blank"
           >
-            {updateMetaTagsTitle(
-              mainPostPub?.data?.publications?.items[0]?.metadata.content
-            )}
+            {updateMetaTagsTitle(mainPostPub?.metadata?.sharingLink)}
             <Icon d={redirect} />
-            {mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(
-              0,
-              40
-            )}
+            {mainPostPub?.metadata?.sharingLink.substring(0, 40)}
             ...
           </a>
           <div class="tablet__main-post__info">
             <div class="tablet__main-post__info__top">
               <div class="CenterRowFlex tablet__main-post__info__top__reaction">
                 {updateReactionDetails(
-                  mainPostPub?.data?.publications?.items[0]?.reaction,
-                  mainPostPub?.data?.publications?.items[0]?.stats
-                    ?.totalUpvotes,
-                  mainPostPub?.data?.publications?.items[0]?.stats
-                    ?.totalDownvotes
+                  mainPostPub?.operations?.hasUpVoted,
+                  mainPostPub?.operations?.hasDownVoted,
+                  mainPostPub?.stats?.upvotes,
+                  mainPostPub?.stats?.downvotes
                 )}
                 {#if reaction === "UPVOTE"}
                   <button
-                    on:click={() => callRemoveReaction(event, "UPVOTE")}
+                    on:click={(event) => callRemoveReaction(event, "UPVOTE")}
                     class="CenterRowFlex tablet__main-post__info__top__reaction__val"
                   >
                     <Icon d={thumbUp} />
@@ -265,7 +277,7 @@
                   </button>
                 {:else}
                   <button
-                    on:click={() => callAddReaction(event, "UPVOTE")}
+                    on:click={(event) => callAddReaction(event, "UPVOTE")}
                     class="CenterRowFlex tablet__main-post__info__top__reaction__val"
                   >
                     <Icon d={thumbUpAlt} />
@@ -277,7 +289,7 @@
                 />
                 {#if reaction === "DOWNVOTE"}
                   <button
-                    on:click={() => callRemoveReaction(event, "DOWNVOTE")}
+                    on:click={(event) => callRemoveReaction(event, "DOWNVOTE")}
                     class="CenterRowFlex tablet__main-post__info__top__reaction__val"
                   >
                     <Icon d={thumbDown} />
@@ -285,7 +297,7 @@
                   </button>
                 {:else}
                   <button
-                    on:click={() => callAddReaction(event, "DOWNVOTE")}
+                    on:click={(event) => callAddReaction(event, "DOWNVOTE")}
                     class="CenterRowFlex tablet__main-post__info__top__reaction__val"
                   >
                     <Icon d={thumbDownAlt} />
@@ -297,13 +309,10 @@
                 class="CenterRowFlex tablet__main-post__info__top__posts-count"
               >
                 <Icon d={modeComment} />
-                {getTotalPosts(
-                  mainPostPub?.data?.publications?.items[0]?.stats
-                    ?.totalAmountOfComments
-                )}
+                {getTotalPosts(mainPostPub?.stats?.comments)}
               </div>
               <button
-                on:click={() => sharePost(event, $page.data.mainPostPubId)}
+                on:click={(event) => sharePost(event, $page.data.mainPostPubId)}
                 class="CenterRowFlex main-post__content__bottom__share"
               >
                 <Icon d={share} />
@@ -314,13 +323,10 @@
                 Added by:
               </div>
               <div class="tablet__main-post__info__bottom__added-by__handle">
-                {mainPostPub?.data?.publications?.items[0]?.metadata
-                  ?.attributes[0]?.value}
+                {mainPostPub?.metadata?.attributes[0]?.value}
               </div>
               <div class="tablet__main-post__info__bottom__time">
-                {getFormattedDate(
-                  mainPostPub?.data?.publications?.items[0]?.createdAt
-                )}
+                {getFormattedDateHelperUtil(mainPostPub?.createdAt)}
               </div>
             </div>
           </div>
@@ -333,10 +339,7 @@
             </button>
           </div>
           <div class="related-posts-body">
-            <RelatedPost
-              userEnteredUrl={mainPostPub?.data?.publications?.items[0]
-                ?.metadata?.content}
-            />
+            <RelatedPost userEnteredUrl={mainPostPub?.metadata?.sharingLink} />
           </div>
         {:else}
           <button
@@ -360,7 +363,7 @@
           <RelatedPost userEnteredUrl={""} />
         </div>
       {:then mainPostPub}
-        {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
+        {#await getImageCommentLensService(mainPostPub?.id)}
           <div class="image__loader" />
         {:then imageUrl}
           {updateMetaTagsImageUrl(imageUrl)}
@@ -375,19 +378,16 @@
           >
             <div class="CenterRowFlex main-post__content__top">
               <a
-                href={mainPostPub?.data?.publications?.items[0]?.metadata
-                  .content}
+                href={mainPostPub?.metadata?.sharingLink}
                 target="_blank"
                 class="CenterRowFlex"
               >
-                {updateMetaTagsTitle(
-                  mainPostPub?.data?.publications?.items[0]?.metadata.content
-                )}
+                {updateMetaTagsTitle(mainPostPub?.metadata?.sharingLink)}
                 <div class="CenterRowFlex main-post__content__top__redirect">
                   <Icon d={redirect} />
                 </div>
                 <div class="main-post__content__top__url">
-                  &nbsp;&nbsp;{mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(
+                  &nbsp;&nbsp;{mainPostPub?.metadata?.sharingLink.substring(
                     0,
                     40
                   )}
@@ -395,9 +395,7 @@
                 </div>
               </a>
               <div class="main-post__content__top__time">
-                {getFormattedDate(
-                  mainPostPub?.data?.publications?.items[0]?.createdAt
-                )}
+                {getFormattedDateHelperUtil(mainPostPub?.createdAt)}
               </div>
               <div class="CenterRowFlex main-post__content__top__more">
                 <Icon d={moreVert} />
@@ -406,15 +404,14 @@
             <div class="CenterRowFlex main-post__content__bottom">
               <div class="CenterRowFlex main-post__content__bottom__reaction">
                 {updateReactionDetails(
-                  mainPostPub?.data?.publications?.items[0]?.reaction,
-                  mainPostPub?.data?.publications?.items[0]?.stats
-                    ?.totalUpvotes,
-                  mainPostPub?.data?.publications?.items[0]?.stats
-                    ?.totalDownvotes
+                  mainPostPub?.operations?.hasUpVoted,
+                  mainPostPub?.operations?.hasDownVoted,
+                  mainPostPub?.stats?.upvotes,
+                  mainPostPub?.stats?.downvotes
                 )}
                 {#if reaction === "UPVOTE"}
                   <button
-                    on:click={() => callRemoveReaction(event, "UPVOTE")}
+                    on:click={(event) => callRemoveReaction(event, "UPVOTE")}
                     class="CenterRowFlex main-post__content__bottom__reaction__val"
                   >
                     <Icon d={thumbUp} />
@@ -422,7 +419,7 @@
                   </button>
                 {:else}
                   <button
-                    on:click={() => callAddReaction(event, "UPVOTE")}
+                    on:click={(event) => callAddReaction(event, "UPVOTE")}
                     class="CenterRowFlex main-post__content__bottom__reaction__val"
                   >
                     <Icon d={thumbUpAlt} />
@@ -434,7 +431,7 @@
                 />
                 {#if reaction === "DOWNVOTE"}
                   <button
-                    on:click={() => callRemoveReaction(event, "DOWNVOTE")}
+                    on:click={(event) => callRemoveReaction(event, "DOWNVOTE")}
                     class="CenterRowFlex main-post__content__bottom__reaction__val"
                   >
                     <Icon d={thumbDown} />
@@ -442,7 +439,7 @@
                   </button>
                 {:else}
                   <button
-                    on:click={() => callAddReaction(event, "DOWNVOTE")}
+                    on:click={(event) => callAddReaction(event, "DOWNVOTE")}
                     class="CenterRowFlex main-post__content__bottom__reaction__val"
                   >
                     <Icon d={thumbDownAlt} />
@@ -454,14 +451,11 @@
                 class="CenterRowFlex main-post__content__bottom__posts-count"
               >
                 <Icon d={modeComment} />
-                {getTotalPosts(
-                  mainPostPub?.data?.publications?.items[0]?.stats
-                    ?.totalAmountOfComments
-                )}
+                {getTotalPosts(mainPostPub?.stats?.comments)}
                 &nbsp;Posts
               </div>
               <button
-                on:click={() => sharePost(event, $page.data.mainPostPubId)}
+                on:click={(event) => sharePost(event, $page.data.mainPostPubId)}
                 class="CenterRowFlex main-post__content__bottom__share"
               >
                 <Icon d={share} />
@@ -471,8 +465,7 @@
                   Added by:
                 </div>
                 <div class="main-post__content__bottom__added-by__handle">
-                  {mainPostPub?.data?.publications?.items[0]?.metadata
-                    ?.attributes[0]?.value}
+                  {mainPostPub?.metadata?.attributes[0]?.value}
                 </div>
               </div>
             </div>
@@ -480,10 +473,7 @@
         </div>
         <div class="h2 related-posts-head">Related Posts</div>
         <div class="related-posts-body">
-          <RelatedPost
-            userEnteredUrl={mainPostPub?.data?.publications?.items[0]?.metadata
-              ?.content}
-          />
+          <RelatedPost userEnteredUrl={mainPostPub?.metadata?.sharingLink} />
         </div>
       {/await}
     </section>
