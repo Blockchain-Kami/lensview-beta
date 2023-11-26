@@ -6,6 +6,7 @@ import {
   LimitType
 } from "../../gql/graphql";
 import { PUBLIC_SOURCE_APP_ID } from "$env/static/public";
+import type { ExplorePublicationsLensModel } from "../../models/lens/explore-publications.lens.model";
 
 const explorePublicationLensService = async () => {
   const result = await baseClientAuthenticationUtil
@@ -23,26 +24,7 @@ const explorePublicationLensService = async () => {
     })
     .toPromise();
 
-  return result.data?.explorePublications as {
-    __typename: "PaginatedExplorePublicationResult";
-    items: {
-      __typename: "Post";
-      id: string;
-      createdAt: string;
-      by: {
-        id: string;
-      };
-      stats: {
-        comments: number;
-        upvotes: number;
-        downvotes: number;
-      };
-      metadata: {
-        __typename: "LinkMetadataV3";
-        sharingLink: string;
-      };
-    }[];
-  };
+  return result.data?.explorePublications as ExplorePublicationsLensModel;
 };
 
 export default explorePublicationLensService;

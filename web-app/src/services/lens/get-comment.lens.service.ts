@@ -3,6 +3,7 @@ import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
 import authenticatedClientAuthenticationUtil from "../../utils/authentication/authenticated-client.authentication.util";
 import commentsPublicationQueryGraphql from "../../graphql/queries/comments-publication.query.graphql";
 import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
+import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
 
 const getCommentLensService = async (request: PublicationsRequest) => {
   console.log("getCommentLensService request", request);
@@ -25,44 +26,7 @@ const getCommentLensService = async (request: PublicationsRequest) => {
       .toPromise();
   }
 
-  return result?.data?.publications as {
-    __typename: "PaginatedPublicationsResult";
-    items: {
-      __typename: "Comment";
-      id: any;
-      createdAt: any;
-      by: {
-        id: any;
-        handle: {
-          fullHandle: string;
-        };
-        metadata: {
-          picture: {
-            __typename: "ImageSet";
-            optimized: {
-              uri: string;
-            };
-          };
-        };
-        ownedBy: {
-          address: string;
-        };
-      };
-      metadata: {
-        __typename: "TextOnlyMetadataV3";
-        content: string;
-      };
-      stats: {
-        comments: number;
-        upvotes: number;
-        downvotes: number;
-      };
-      operations: {
-        hasUpVoted: boolean;
-        hasDownVoted: boolean;
-      };
-    }[];
-  };
+  return result?.data?.publications as CommentsPublicationLensModel;
 };
 
 export default getCommentLensService;
