@@ -35,12 +35,14 @@
   import getImageCommentLensService from "../../services/lens/get-image-comment.lens.service";
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
   import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
+  import { AppReactionType } from "../../config/app-constants.config";
+  import getReactionBasedOnLoginStatusHelperUtil from "../../utils/helper/get-reaction-based-on-login-status.helper.util";
 
   const { addNotification } = getNotificationsContext();
   let mainPostPubId = $page.data.mainPostPubId;
   let relatedPostsActive = false;
   let showLoginModal = false;
-  let reaction: string | null = null;
+  let reaction = AppReactionType.NoReaction;
   let upVoteCount = 0;
   let downVoteCount = 0;
 
@@ -76,7 +78,10 @@
     });
   };
 
-  const callAddReaction = async (event: Event, passedReaction: string) => {
+  const callAddReaction = async (
+    event: Event,
+    passedReaction: AppReactionType
+  ) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -90,15 +95,19 @@
       openLoginNotification();
     } else {
       try {
-        if (reaction !== null) {
+        if (reaction !== AppReactionType.NoReaction) {
           await callRemoveReaction(event, reaction);
         }
 
         reaction = passedReaction;
         upVoteCount =
-          passedReaction === "UPVOTE" ? upVoteCount + 1 : upVoteCount;
+          passedReaction === AppReactionType.UpVote
+            ? upVoteCount + 1
+            : upVoteCount;
         downVoteCount =
-          passedReaction === "DOWNVOTE" ? downVoteCount + 1 : downVoteCount;
+          passedReaction === AppReactionType.DownVote
+            ? downVoteCount + 1
+            : downVoteCount;
 
         await addReactionToAPost(mainPostPubId, passedReaction);
       } catch (error) {
@@ -115,7 +124,10 @@
     }
   };
 
-  const callRemoveReaction = async (event: Event, passedReaction: string) => {
+  const callRemoveReaction = async (
+    event: Event,
+    passedReaction: AppReactionType
+  ) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -129,11 +141,15 @@
       openLoginNotification();
     } else {
       try {
-        reaction = null;
+        reaction = AppReactionType.NoReaction;
         upVoteCount =
-          passedReaction === "UPVOTE" ? upVoteCount - 1 : upVoteCount;
+          passedReaction === AppReactionType.UpVote
+            ? upVoteCount - 1
+            : upVoteCount;
         downVoteCount =
-          passedReaction === "DOWNVOTE" ? downVoteCount - 1 : downVoteCount;
+          passedReaction === AppReactionType.DownVote
+            ? downVoteCount - 1
+            : downVoteCount;
 
         await removeReactionFromAPost(mainPostPubId, passedReaction);
       } catch (error) {
@@ -171,24 +187,10 @@
     passedUpVoteCount: number,
     passedDownVoteCount: number
   ) => {
-    let isUserLoggedIn = false;
-    const unsub = isLoggedInUserStore.subscribe((status) => {
-      isUserLoggedIn = status;
-    });
-    unsub();
-
-    if (!isUserLoggedIn) {
-      reaction = null;
-    } else {
-      if (passedUpVoteStatus) {
-        reaction = "UPVOTE";
-      } else if (passedDownVoteStatus) {
-        reaction = "DOWNVOTE";
-      } else {
-        reaction = null;
-      }
-    }
-
+    reaction = getReactionBasedOnLoginStatusHelperUtil(
+      passedUpVoteStatus,
+      passedDownVoteStatus
+    );
     upVoteCount = passedUpVoteCount;
     downVoteCount = passedDownVoteCount;
     return "";
@@ -267,9 +269,10 @@
                   mainPostPub?.stats?.upvotes,
                   mainPostPub?.stats?.downvotes
                 )}
-                {#if reaction === "UPVOTE"}
+                {#if reaction === AppReactionType.UpVote}
                   <button
-                    on:click={(event) => callRemoveReaction(event, "UPVOTE")}
+                    on:click={(event) =>
+                      callRemoveReaction(event, AppReactionType.UpVote)}
                     class="CenterRowFlex tablet__main-post__info__top__reaction__val"
                   >
                     <Icon d={thumbUp} />
@@ -277,7 +280,8 @@
                   </button>
                 {:else}
                   <button
-                    on:click={(event) => callAddReaction(event, "UPVOTE")}
+                    on:click={(event) =>
+                      callAddReaction(event, AppReactionType.UpVote)}
                     class="CenterRowFlex tablet__main-post__info__top__reaction__val"
                   >
                     <Icon d={thumbUpAlt} />
@@ -287,9 +291,10 @@
                 <div
                   class="tablet__main-post__info__top__reaction__vertical-line"
                 />
-                {#if reaction === "DOWNVOTE"}
+                {#if reaction === AppReactionType.DownVote}
                   <button
-                    on:click={(event) => callRemoveReaction(event, "DOWNVOTE")}
+                    on:click={(event) =>
+                      callRemoveReaction(event, AppReactionType.DownVote)}
                     class="CenterRowFlex tablet__main-post__info__top__reaction__val"
                   >
                     <Icon d={thumbDown} />
@@ -297,7 +302,8 @@
                   </button>
                 {:else}
                   <button
-                    on:click={(event) => callAddReaction(event, "DOWNVOTE")}
+                    on:click={(event) =>
+                      callAddReaction(event, AppReactionType.DownVote)}
                     class="CenterRowFlex tablet__main-post__info__top__reaction__val"
                   >
                     <Icon d={thumbDownAlt} />
@@ -409,9 +415,10 @@
                   mainPostPub?.stats?.upvotes,
                   mainPostPub?.stats?.downvotes
                 )}
-                {#if reaction === "UPVOTE"}
+                {#if reaction === AppReactionType.UpVote}
                   <button
-                    on:click={(event) => callRemoveReaction(event, "UPVOTE")}
+                    on:click={(event) =>
+                      callRemoveReaction(event, AppReactionType.UpVote)}
                     class="CenterRowFlex main-post__content__bottom__reaction__val"
                   >
                     <Icon d={thumbUp} />
@@ -419,7 +426,8 @@
                   </button>
                 {:else}
                   <button
-                    on:click={(event) => callAddReaction(event, "UPVOTE")}
+                    on:click={(event) =>
+                      callAddReaction(event, AppReactionType.UpVote)}
                     class="CenterRowFlex main-post__content__bottom__reaction__val"
                   >
                     <Icon d={thumbUpAlt} />
@@ -429,9 +437,10 @@
                 <div
                   class="main-post__content__bottom__reaction__vertical-line"
                 />
-                {#if reaction === "DOWNVOTE"}
+                {#if reaction === AppReactionType.DownVote}
                   <button
-                    on:click={(event) => callRemoveReaction(event, "DOWNVOTE")}
+                    on:click={(event) =>
+                      callRemoveReaction(event, AppReactionType.DownVote)}
                     class="CenterRowFlex main-post__content__bottom__reaction__val"
                   >
                     <Icon d={thumbDown} />
@@ -439,7 +448,8 @@
                   </button>
                 {:else}
                   <button
-                    on:click={(event) => callAddReaction(event, "DOWNVOTE")}
+                    on:click={(event) =>
+                      callAddReaction(event, AppReactionType.DownVote)}
                     class="CenterRowFlex main-post__content__bottom__reaction__val"
                   >
                     <Icon d={thumbDownAlt} />

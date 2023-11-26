@@ -2,15 +2,16 @@ import { CommentRankingFilterType, LimitType } from "../../gql/graphql";
 import type { PublicationsRequest } from "../../gql/graphql";
 
 import getCommentLensService from "../../services/lens/get-comment.lens.service";
+import { CommentFilterType } from "../../config/app-constants.config";
 
 const getCommentBasedOnParameterPublicationUtil = async (
   publicationId: string,
   limit: LimitType,
-  filterBy = "mostLiked"
+  filterBy = CommentFilterType.MostLikedComments
 ) => {
   try {
     let request: PublicationsRequest;
-    if (filterBy === "mostLikedComments") {
+    if (filterBy === CommentFilterType.MostLikedComments) {
       request = {
         limit: limit,
         where: {
@@ -22,7 +23,7 @@ const getCommentBasedOnParameterPublicationUtil = async (
           }
         }
       };
-    } else if (filterBy === "latestComments") {
+    } else if (filterBy === CommentFilterType.LatestComments) {
       request = {
         limit: limit,
         where: {
@@ -31,14 +32,14 @@ const getCommentBasedOnParameterPublicationUtil = async (
           }
         }
       };
-    } else if (filterBy === "commentsById") {
+    } else if (filterBy === CommentFilterType.CommentsById) {
       request = {
         limit: limit,
         where: {
           publicationIds: [publicationId]
         }
       };
-    } else if (filterBy === "firstMostRelevantComment") {
+    } else if (filterBy === CommentFilterType.FirstMostRelevantComments) {
       request = {
         limit: limit,
         where: {

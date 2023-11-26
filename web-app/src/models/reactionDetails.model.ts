@@ -1,9 +1,11 @@
+import type { AppReactionType } from "../config/app-constants.config";
+
 export interface ReactionDetailsModel {
-  id?: details;
+  [key: string]: details;
 }
 
 interface details {
-  reaction: string;
+  reaction: AppReactionType;
   upVoteCount: number;
   downVoteCount: number;
 }

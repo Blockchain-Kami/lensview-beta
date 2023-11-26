@@ -14,7 +14,6 @@
   } from "../../utils/frontend/appIcon";
   import Icon from "$lib/Icon.svelte";
   import { page } from "$app/stores";
-  import { getCommentOfPublication } from "../../utils/frontend/getCommentOfPublication";
   import getFormattedDate from "../../utils/frontend/getFormattedDate";
   import { totalPosts } from "../../services/totalPosts";
   import { totalComments } from "../../services/totalComments";
@@ -35,6 +34,12 @@
   import Autolinker from "autolinker";
   import getLinkPreviewHtml from "../../utils/frontend/getLinkPreviewHtml";
   import { metaTagsDescription } from "../../services/metaTags";
+  import getCommentBasedOnParameterPublicationUtil from "../../utils/publications/get-comment-based-on-parameter.publication.util";
+  import { LimitType } from "../../gql/graphql";
+  import {
+    AppReactionType,
+    CommentFilterType
+  } from "../../config/app-constants.config";
 
   type CommentMoreStatus = {
     [key: string]: boolean;
@@ -43,25 +48,28 @@
   const { addNotification } = getNotificationsContext();
   let commentPubId = $page.data.commentPubId;
   let isCommentMoreOpen: CommentMoreStatus = {};
-  let selectedFilterType = "mostLiked";
+  let selectedFilterType = CommentFilterType.MostLikedComments;
   let showLoginModal = false;
   let reactionDetails: ReactionDetailsModel = {};
 
-  let promiseOfGetComment = getCommentOfPublication(commentPubId, 50);
+  let promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
+    commentPubId,
+    LimitType.Fifty
+  );
 
   const updatedPromiseOfGetComment = () => {
-    promiseOfGetComment = getCommentOfPublication(
+    promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
       commentPubId,
-      50,
+      LimitType.Fifty,
       selectedFilterType
     );
   };
 
   $: if (commentPubId !== $page.data.commentPubId) {
     commentPubId = $page.data.commentPubId;
-    promiseOfGetComment = getCommentOfPublication(
+    promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
       commentPubId,
-      50,
+      LimitType.Fifty,
       selectedFilterType
     );
     console.log("Changed commentPubId : ", $page.data.commentPubId);
@@ -70,9 +78,9 @@
   onMount(() => {
     reloadCommentOfAPublication.subscribe((val) => {
       console.log("Reloaded comment of a publication" + val);
-      promiseOfGetComment = getCommentOfPublication(
+      promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
         commentPubId,
-        50,
+        LimitType.Fifty,
         selectedFilterType
       );
     });
@@ -102,7 +110,7 @@
   const callAddReaction = async (
     event: Event,
     pubID: string,
-    reaction: string
+    reaction: AppReactionType
   ) => {
     event.preventDefault();
     event.stopPropagation();
@@ -126,11 +134,11 @@
         }
 
         const localUpVoteCount =
-          reaction === "UPVOTE"
+          reaction === AppReactionType.UpVote
             ? reactionDetails[pubID]["upVoteCount"] + 1
             : reactionDetails[pubID]["upVoteCount"];
         const localDownVoteCount =
-          reaction === "DOWNVOTE"
+          reaction === AppReactionType.DownVote
             ? reactionDetails[pubID]["downVoteCount"] + 1
             : reactionDetails[pubID]["downVoteCount"];
         reactionDetails[pubID] = {
@@ -157,7 +165,7 @@
   const callRemoveReaction = async (
     event: Event,
     pubID: string,
-    reaction: string
+    reaction: AppReactionType
   ) => {
     event.preventDefault();
     event.stopPropagation();
@@ -173,15 +181,15 @@
     } else {
       try {
         const localUpVoteCount =
-          reaction === "UPVOTE"
+          reaction === AppReactionType.UpVote
             ? reactionDetails[pubID]["upVoteCount"] - 1
             : reactionDetails[pubID]["upVoteCount"];
         const localDownVoteCount =
-          reaction === "DOWNVOTE"
+          reaction === AppReactionType.DownVote
             ? reactionDetails[pubID]["downVoteCount"] - 1
             : reactionDetails[pubID]["downVoteCount"];
         reactionDetails[pubID] = {
-          reaction: null,
+          reaction: AppReactionType.NoReaction,
           upVoteCount: localUpVoteCount,
           downVoteCount: localDownVoteCount
         };
@@ -218,7 +226,7 @@
 
   const updateReactionDetails = (
     pubID: string,
-    reaction: string,
+    reaction: AppReactionType,
     upVoteCount: number,
     downVoteCount: number
   ) => {
@@ -245,8 +253,8 @@
         bind:value={selectedFilterType}
         on:change={updatedPromiseOfGetComment}
       >
-        <option value="mostLiked">Most liked</option>
-        <option value="latest">Latest</option>
+        <option value={CommentFilterType.MostLikedComments}>Most liked</option>
+        <option value={CommentFilterType.LatestComments}>Latest</option>
       </select>
     </div>
     <hr class="filter__line" />
@@ -343,10 +351,14 @@
                     comment?.stats?.totalUpvotes,
                     comment?.stats?.totalDownvotes
                   )}
-                  {#if reactionDetails[comment?.id]["reaction"] === "UPVOTE"}
+                  {#if reactionDetails[comment?.id]["reaction"] === AppReactionType.UpVote}
                     <button
                       on:click={() =>
-                        callRemoveReaction(event, comment?.id, "UPVOTE")}
+                        callRemoveReaction(
+                          event,
+                          comment?.id,
+                          AppReactionType.UpVote
+                        )}
                       class="CenterRowFlex comment__body__top__right__reaction__val"
                     >
                       <Icon d={thumbUp} />
@@ -355,7 +367,11 @@
                   {:else}
                     <button
                       on:click={() =>
-                        callAddReaction(event, comment?.id, "UPVOTE")}
+                        callAddReaction(
+                          event,
+                          comment?.id,
+                          AppReactionType.UpVote
+                        )}
                       class="CenterRowFlex comment__body__top__right__reaction__val"
                     >
                       <Icon d={thumbUpAlt} />
@@ -365,10 +381,14 @@
                   <div
                     class="comment__body__top__right__reaction__vertical-line"
                   />
-                  {#if reactionDetails[comment?.id]["reaction"] === "DOWNVOTE"}
+                  {#if reactionDetails[comment?.id]["reaction"] === AppReactionType.DownVote}
                     <button
                       on:click={() =>
-                        callRemoveReaction(event, comment?.id, "DOWNVOTE")}
+                        callRemoveReaction(
+                          event,
+                          comment?.id,
+                          AppReactionType.DownVote
+                        )}
                       class="CenterRowFlex comment__body__top__right__reaction__val"
                     >
                       <Icon d={thumbDown} />
@@ -377,7 +397,11 @@
                   {:else}
                     <button
                       on:click={() =>
-                        callAddReaction(event, comment?.id, "DOWNVOTE")}
+                        callAddReaction(
+                          event,
+                          comment?.id,
+                          AppReactionType.DownVote
+                        )}
                       class="CenterRowFlex comment__body__top__right__reaction__val"
                     >
                       <Icon d={thumbDownAlt} />

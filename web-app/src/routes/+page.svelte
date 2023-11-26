@@ -33,6 +33,7 @@
   import { LimitType } from "../gql/graphql";
   import getPictureURLUtil from "../utils/get-picture-URL.util";
   import getFormattedDateHelperUtil from "../utils/helper/get-formatted-date.helper.util";
+  import { CommentFilterType } from "../config/app-constants.config";
 
   type KeyStringValBoolean = {
     [key: string]: boolean;
@@ -169,7 +170,7 @@
                 </div>
               </div>
             </div>
-            {#await getCommentBasedOnParameterPublicationUtil(item?.id, LimitType.Ten, "firstMostRelevantComment")}
+            {#await getCommentBasedOnParameterPublicationUtil(item?.id, LimitType.Ten, CommentFilterType.FirstMostRelevantComments)}
               <div class="CenterRowFlex card__post">
                 <div class="card__post__user-pic-loader" />
                 <div class="card__post__info">
