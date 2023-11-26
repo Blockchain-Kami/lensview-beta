@@ -5,7 +5,7 @@
   import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
   import { page } from "$app/stores";
   import Loader from "$lib/Loader.svelte";
-  import { reloadCommentOfAPublication } from "../../services/reloadPublication";
+  import { reloadCommentOfAPublication } from "../../stores/reload-publication.store";
   import Login from "../Login.svelte";
   import postAPublication from "../../utils/frontend/postAPublication";
   import { goto } from "$app/navigation";

@@ -16,16 +16,11 @@
   } from "../../utils/app-icon.util";
   import RelatedPost from "./RelatedPost.svelte";
   import { page } from "$app/stores";
-  import { totalPosts } from "../../services/totalPosts";
   import { getNotificationsContext } from "svelte-notifications";
   import MediaQuery from "$lib/MediaQuery.svelte";
-  import {
-    addReactionToAPost,
-    removeReactionFromAPost
-  } from "../../utils/frontend/updateReactionForAPost";
   import Login from "../Login.svelte";
   import { onMount } from "svelte";
-  import { reloadMainPost } from "../../services/reloadPublication";
+  import { reloadMainPost } from "../../stores/reload-publication.store";
   import {
     metaTagsImageAlt,
     metaTagsImageUrl,
@@ -37,6 +32,9 @@
   import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
   import { AppReactionType } from "../../config/app-constants.config";
   import getReactionBasedOnLoginStatusHelperUtil from "../../utils/helper/get-reaction-based-on-login-status.helper.util";
+  import { totalPostsStore } from "../../stores/total-posts.store";
+  import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
+  import addReactionLensService from "../../services/lens/add-reaction.lens.service";
 
   const { addNotification } = getNotificationsContext();
   let mainPostPubId = $page.data.mainPostPubId;
@@ -61,7 +59,7 @@
   });
 
   const getTotalPosts = (fetchedTotalPosts: number) => {
-    totalPosts.setTotalPosts(fetchedTotalPosts);
+    totalPostsStore.setTotalPosts(fetchedTotalPosts);
     return fetchedTotalPosts;
   };
 
@@ -109,7 +107,7 @@
             ? downVoteCount + 1
             : downVoteCount;
 
-        await addReactionToAPost(mainPostPubId, passedReaction);
+        await addReactionLensService(mainPostPubId, passedReaction);
       } catch (error) {
         console.log("Error while reacting", error);
 
@@ -151,7 +149,7 @@
             ? downVoteCount - 1
             : downVoteCount;
 
-        await removeReactionFromAPost(mainPostPubId, passedReaction);
+        await removeReactionLensService(mainPostPubId, passedReaction);
       } catch (error) {
         console.log("Error while reacting", error);
 

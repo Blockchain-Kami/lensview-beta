@@ -15,7 +15,7 @@
     reloadAPublication,
     reloadCommentOfAPublication,
     reloadMainPost
-  } from "../services/reloadPublication";
+  } from "../stores/reload-publication.store";
   import retrieveAccessTokenAuthenticationUtil from "../utils/authentication/retrieve-access-token.authentication.util";
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
   import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";

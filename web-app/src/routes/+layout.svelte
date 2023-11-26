@@ -25,7 +25,7 @@
     reloadAPublication,
     reloadCommentOfAPublication,
     reloadMainPost
-  } from "../services/reloadPublication";
+  } from "../stores/reload-publication.store";
   import { MetaTags } from "svelte-meta-tags";
   import { metaTagsTitle } from "../services/metaTags";
 

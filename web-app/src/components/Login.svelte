@@ -10,7 +10,7 @@
     reloadAPublication,
     reloadCommentOfAPublication,
     reloadMainPost
-  } from "../services/reloadPublication";
+  } from "../stores/reload-publication.store";
   import getMetamaskAddressAuthenticationUtil from "../utils/authentication/get-metamask-address.authentication.util";
   import isValidAccessTokenPresentInLsForAddressAuthenticationUtil from "../utils/authentication/is-valid-access-token-present-in-ls-for-address.authentication.util";
   import { addressUserStore } from "../stores/user/address.user.store";

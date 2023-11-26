@@ -14,20 +14,13 @@
   } from "../../utils/app-icon.util";
   import Icon from "$lib/Icon.svelte";
   import { page } from "$app/stores";
-  import { totalPosts } from "../../services/totalPosts";
-  import { totalComments } from "../../services/totalComments";
-  import { reloadCommentOfAPublication } from "../../services/reloadPublication";
+  import { reloadCommentOfAPublication } from "../../stores/reload-publication.store";
   import { onMount } from "svelte";
   import DOMPurify from "dompurify";
   import { getNotificationsContext } from "svelte-notifications";
   import { PUBLIC_APP_LENS_ID } from "$env/static/public";
   import { Tooltip } from "@svelte-plugins/tooltips";
-  import {
-    addReactionToAPost,
-    removeReactionFromAPost
-  } from "../../utils/frontend/updateReactionForAPost";
   import Login from "../Login.svelte";
-  import { isSignedIn } from "../../services/signInStatus";
   import type { ReactionDetailsModel } from "../../models/reactionDetails.model";
   import Autolinker from "autolinker";
   import { metaTagsDescription } from "../../services/metaTags";
@@ -41,6 +34,11 @@
   import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
   import getPictureURLUtil from "../../utils/get-picture-URL.util";
   import getLinkPreviewHtmlHelperUtil from "../../utils/helper/get-link-preview-html.helper.util";
+  import { totalPostsStore } from "../../stores/total-posts.store";
+  import { totalCommentsStore } from "../../stores/total-comments.store";
+  import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  import addReactionLensService from "../../services/lens/add-reaction.lens.service";
+  import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
 
   type CommentMoreStatus = {
     [key: string]: boolean;
@@ -116,13 +114,13 @@
     event.preventDefault();
     event.stopPropagation();
 
-    let signedStatus;
-    const unsub = isSignedIn.subscribe((value) => {
-      signedStatus = value;
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
     });
     unsub();
 
-    if (!signedStatus) {
+    if (!isUserLoggedIn) {
       openLoginNotification();
     } else {
       try {
@@ -148,7 +146,7 @@
           downVoteCount: localDownVoteCount
         };
 
-        await addReactionToAPost(pubID, reaction);
+        await addReactionLensService(pubID, reaction);
       } catch (error) {
         console.log("Error while reacting", error);
 
@@ -171,13 +169,13 @@
     event.preventDefault();
     event.stopPropagation();
 
-    let signedStatus;
-    const unsub = isSignedIn.subscribe((value) => {
-      signedStatus = value;
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
     });
     unsub();
 
-    if (!signedStatus) {
+    if (!isUserLoggedIn) {
       openLoginNotification();
     } else {
       try {
@@ -195,7 +193,7 @@
           downVoteCount: localDownVoteCount
         };
 
-        await removeReactionFromAPost(pubID, reaction);
+        await removeReactionLensService(pubID, reaction);
       } catch (error) {
         console.log("Error while reacting", error);
 
@@ -265,9 +263,9 @@
     <hr class="filter__line" />
     <div class="filter__comment-count">
       {#if $page.data.postPubId === undefined}
-        {$totalPosts} &nbsp;Posts
+        {$totalPostsStore} &nbsp;Posts
       {:else}
-        {$totalComments} &nbsp;Comments
+        {$totalCommentsStore} &nbsp;Comments
       {/if}
     </div>
   </div>

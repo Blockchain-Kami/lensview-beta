@@ -16,13 +16,12 @@
   import { page } from "$app/stores";
   import getFormattedDate from "../../utils/frontend/getFormattedDate";
   import { getCommentOfPublication } from "../../utils/frontend/getCommentOfPublication";
-  import { totalComments } from "../../services/totalComments";
   import { getNotificationsContext } from "svelte-notifications";
   import DOMPurify from "dompurify";
   import { PUBLIC_APP_LENS_ID } from "$env/static/public";
   import { Tooltip } from "@svelte-plugins/tooltips";
   import { onMount } from "svelte";
-  import { reloadAPublication } from "../../services/reloadPublication";
+  import { reloadAPublication } from "../../stores/reload-publication.store";
   import { isSignedIn } from "../../services/signInStatus";
   import {
     addReactionToAPost,
@@ -30,6 +29,7 @@
   } from "../../utils/frontend/updateReactionForAPost";
   import Login from "../Login.svelte";
   import getPictureURL from "../../utils/frontend/getPictureURL";
+  import { totalCommentsStore } from "../../stores/total-comments.store";
 
   const { addNotification } = getNotificationsContext();
   let postPubId = $page.data.postPubId;
@@ -54,7 +54,7 @@
   });
 
   const getTotalComments = (fetchedTotalComments: number) => {
-    totalComments.setTotalComments(fetchedTotalComments);
+    totalCommentsStore.setTotalComments(fetchedTotalComments);
     return fetchedTotalComments;
   };
 
