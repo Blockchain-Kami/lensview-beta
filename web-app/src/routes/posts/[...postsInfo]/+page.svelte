@@ -1,7 +1,7 @@
 <script lang="ts">
   import MainPost from "../../../components/posts-page/MainPost.svelte";
   // import PostAPublication from "../../../components/posts-page/PostAPublication.svelte";
-  // import CommentsOfAPublication from "../../../components/posts-page/CommentsOfAPublication.svelte";
+  import CommentsOfAPublication from "../../../components/posts-page/CommentsOfAPublication.svelte";
   import Publication from "../../../components/posts-page/Publication.svelte";
   import { page } from "$app/stores";
   import MediaQuery from "$lib/MediaQuery.svelte";
@@ -23,7 +23,7 @@
         <Publication />
       {/if}
       <!--      <PostAPublication />-->
-      <!--      <CommentsOfAPublication />-->
+      <CommentsOfAPublication />
     </main>
   {:else}
     <main>
@@ -35,7 +35,7 @@
           <Publication />
         {/if}
         <!--        <PostAPublication />-->
-        <!--        <CommentsOfAPublication />-->
+        <CommentsOfAPublication />
       </div>
     </main>
   {/if}

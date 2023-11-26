@@ -16,6 +16,7 @@ export interface CommentsPublicationLensModel {
             uri: string;
           };
         };
+        displayName: string;
       };
       ownedBy: {
         address: string;

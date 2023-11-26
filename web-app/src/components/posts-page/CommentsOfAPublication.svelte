@@ -11,10 +11,9 @@
     thumbDownAlt,
     thumbUp,
     thumbUpAlt
-  } from "../../utils/frontend/appIcon";
+  } from "../../utils/app-icon.util";
   import Icon from "$lib/Icon.svelte";
   import { page } from "$app/stores";
-  import getFormattedDate from "../../utils/frontend/getFormattedDate";
   import { totalPosts } from "../../services/totalPosts";
   import { totalComments } from "../../services/totalComments";
   import { reloadCommentOfAPublication } from "../../services/reloadPublication";
@@ -30,9 +29,7 @@
   import Login from "../Login.svelte";
   import { isSignedIn } from "../../services/signInStatus";
   import type { ReactionDetailsModel } from "../../models/reactionDetails.model";
-  import getPictureURL from "../../utils/frontend/getPictureURL";
   import Autolinker from "autolinker";
-  import getLinkPreviewHtml from "../../utils/frontend/getLinkPreviewHtml";
   import { metaTagsDescription } from "../../services/metaTags";
   import getCommentBasedOnParameterPublicationUtil from "../../utils/publications/get-comment-based-on-parameter.publication.util";
   import { LimitType } from "../../gql/graphql";
@@ -40,6 +37,10 @@
     AppReactionType,
     CommentFilterType
   } from "../../config/app-constants.config";
+  import getReactionBasedOnLoginStatusHelperUtil from "../../utils/helper/get-reaction-based-on-login-status.helper.util";
+  import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
+  import getPictureURLUtil from "../../utils/get-picture-URL.util";
+  import getLinkPreviewHtmlHelperUtil from "../../utils/helper/get-link-preview-html.helper.util";
 
   type CommentMoreStatus = {
     [key: string]: boolean;
@@ -226,12 +227,16 @@
 
   const updateReactionDetails = (
     pubID: string,
-    reaction: AppReactionType,
+    passedUpVoteStatus: boolean,
+    passedDownVoteStatus: boolean,
     upVoteCount: number,
     downVoteCount: number
   ) => {
     reactionDetails[pubID] = {
-      reaction: reaction,
+      reaction: getReactionBasedOnLoginStatusHelperUtil(
+        passedUpVoteStatus,
+        passedDownVoteStatus
+      ),
       upVoteCount: upVoteCount,
       downVoteCount: downVoteCount
     };
@@ -299,16 +304,16 @@
         </div>
       </div>
     {:then commentsData}
-      {#each commentsData?.data?.publications?.items as comment, index}
+      {#each commentsData?.items as comment, index}
         <a
           href={`/posts/${$page.data.mainPostPubId}/${comment?.id}`}
           class="comment"
         >
           <div class="comment__pic">
             <img
-              src={getPictureURL(
-                comment?.profile?.picture?.original?.url,
-                comment?.profile?.ownedBy
+              src={getPictureURLUtil(
+                comment?.by?.metadata?.picture?.optimized?.uri,
+                comment?.by?.ownedBy?.address
               )}
               alt="avatar"
             />
@@ -316,16 +321,16 @@
           <div class="comment__body">
             <div class="CenterRowFlex comment__body__top">
               <div class="CenterRowFlex comment__body__top__left">
-                {#if comment?.profile?.name !== null}
+                {#if comment?.by?.metadata?.displayName !== undefined}
                   <div class="comment__body__top__left__name">
-                    {comment?.profile?.name}
+                    {comment?.by?.metadata?.displayName}
                   </div>
                   <div class="comment__body__top__left__dot" />
                 {/if}
                 <div class="comment__body__top__left__handle">
-                  {comment?.profile?.handle}
+                  {comment?.by?.handle?.fullHandle.substring(5)}
                 </div>
-                {#if comment?.profile?.id === PUBLIC_APP_LENS_ID}
+                {#if comment?.by?.id === PUBLIC_APP_LENS_ID}
                   <Tooltip
                     content="This post was made by an anonymous user!"
                     position="right"
@@ -347,13 +352,14 @@
                 <div class="CenterRowFlex comment__body__top__right__reaction">
                   {updateReactionDetails(
                     comment?.id,
-                    comment?.reaction,
-                    comment?.stats?.totalUpvotes,
-                    comment?.stats?.totalDownvotes
+                    comment?.operations?.hasUpVoted,
+                    comment?.operations?.hasDownVoted,
+                    comment?.stats?.upvotes,
+                    comment?.stats?.downvotes
                   )}
                   {#if reactionDetails[comment?.id]["reaction"] === AppReactionType.UpVote}
                     <button
-                      on:click={() =>
+                      on:click={(event) =>
                         callRemoveReaction(
                           event,
                           comment?.id,
@@ -366,7 +372,7 @@
                     </button>
                   {:else}
                     <button
-                      on:click={() =>
+                      on:click={(event) =>
                         callAddReaction(
                           event,
                           comment?.id,
@@ -383,7 +389,7 @@
                   />
                   {#if reactionDetails[comment?.id]["reaction"] === AppReactionType.DownVote}
                     <button
-                      on:click={() =>
+                      on:click={(event) =>
                         callRemoveReaction(
                           event,
                           comment?.id,
@@ -396,7 +402,7 @@
                     </button>
                   {:else}
                     <button
-                      on:click={() =>
+                      on:click={(event) =>
                         callAddReaction(
                           event,
                           comment?.id,
@@ -413,18 +419,19 @@
                   class="CenterRowFlex comment__body__top__right__posts-count"
                 >
                   <Icon d={modeComment} />
-                  {comment?.stats?.totalAmountOfComments}
+                  {comment?.stats?.comments}
                 </div>
                 <div class="comment__body__top__right__more">
                   <button
-                    on:click={() => openCloseCommentMore(event, comment?.id)}
+                    on:click={(event) =>
+                      openCloseCommentMore(event, comment?.id)}
                   >
                     <Icon d={moreVert} size="1.65em" />
                   </button>
                   {#if isCommentMoreOpen[comment?.id]}
                     <div class="CenterColumnFlex comment__body__more">
                       <button
-                        on:click={() => sharePost(event, comment?.id)}
+                        on:click={(event) => sharePost(event, comment?.id)}
                         class="CenterRowFlex comment__body__more__share"
                       >
                         <span
@@ -440,7 +447,7 @@
               </div>
             </div>
             <div class="comment__body__time">
-              {getFormattedDate(comment?.createdAt)}
+              {getFormattedDateHelperUtil(comment?.createdAt)}
             </div>
             <div class="comment__body__content">
               {#if index === 0}
@@ -459,7 +466,7 @@
                 data-theme="dark"
               >
                 <a
-                  href={`https://twitter.com/username/status/${getLinkPreviewHtml(
+                  href={`https://twitter.com/username/status/${getLinkPreviewHtmlHelperUtil(
                     DOMPurify.sanitize(comment?.metadata?.content)
                   )}`}>&nbsp;</a
                 >
