@@ -2,10 +2,10 @@ export interface CommentsPublicationLensModel {
   __typename: "PaginatedPublicationsResult";
   items: {
     __typename: "Comment";
-    id: any;
-    createdAt: any;
+    id: string;
+    createdAt: string;
     by: {
-      id: any;
+      id: string;
       handle: {
         fullHandle: string;
       };
