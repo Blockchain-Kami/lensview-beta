@@ -44,7 +44,8 @@
   import { profileUserStore } from "../stores/user/profile.user.store";
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
   import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
-  import commentOnChainPublicationUtil from "../utils/publications/comment-onchain.publication.util";
+  // import commentOnChainPublicationUtil from "../utils/publications/comment-onchain.publication.util";
+  import getPictureURLUtil from "../utils/get-picture-URL.util";
 
   let userEnteredUrlOrKeywords = "";
   let showJoinForUpdatesModal = false;
@@ -135,7 +136,7 @@
   };
 
   const commentTest = () => {
-    commentOnChainPublicationUtil();
+    // commentOnChainPublicationUtil();
   };
 
   const redirectToPostsOrSearchPage = async () => {
@@ -241,7 +242,10 @@
           <div class="CenterColumnFlex menu__user-box">
             <div class="menu__user-box__avatar">
               <img
-                src={`https://cdn.stamp.fyi/avatar/eth:${$profileUserStore?.ownedBy?.address}?s=300`}
+                src={getPictureURLUtil(
+                  $profileUserStore?.metadata?.picture?.optimized?.uri,
+                  $profileUserStore?.ownedBy?.address
+                )}
                 alt=""
               />
             </div>

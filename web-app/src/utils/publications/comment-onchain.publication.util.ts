@@ -10,8 +10,12 @@ import { waitUntilBroadcastTransactionIsComplete } from "../transaction/wait-unt
 import type { RelayError, RelaySuccess } from "../../gql/graphql";
 import { MetadataAttributeType, textOnly } from "@lens-protocol/metadata";
 import { PUBLIC_SOURCE_APP_ID } from "$env/static/public";
+import { profileUserStore } from "../../stores/user/profile.user.store";
 
-const commentOnChainPublicationUtil = async () => {
+const commentOnChainPublicationUtil = async (
+  parentPubId: string,
+  comment: string
+) => {
   //TODO: Check in production weather we need "@lens-protocol/metadata", if it works putting in
   // devDependencies then keep it or go with schema approach that there in "api-examples" repo
   // https://docs.lens.xyz/docs/publication-metadata#json-schemas
@@ -60,6 +64,13 @@ const commentOnChainPublicationUtil = async () => {
   //   // encryptedWith: PublicationMetadataLitEncryption,
   // });
 
+  let handle = "";
+  const unsub = profileUserStore.subscribe((_profile) => {
+    if (_profile === null) return;
+    handle = _profile?.handle?.fullHandle;
+  });
+  unsub();
+
   const metadata = textOnly({
     locale: "en-US",
     tags: ["0f89daeb0a63c7b73224315c5514c21ba0453985"], //userHash
@@ -68,12 +79,12 @@ const commentOnChainPublicationUtil = async () => {
       {
         key: "creator",
         type: MetadataAttributeType.STRING,
-        value: "anjaysahoodev"
+        value: handle
       },
       {
         key: "app",
         type: MetadataAttributeType.STRING,
-        value: "testlenviewcode"
+        value: PUBLIC_SOURCE_APP_ID
       },
       {
         key: "created on",
@@ -81,7 +92,7 @@ const commentOnChainPublicationUtil = async () => {
         value: Date.now().toString()
       }
     ],
-    content: "Setting up query for v2 test"
+    content: comment
     //TODO: Check for below fields usage
     // encryptedWith: PublicationMetadataLitEncryption,
     // hideFromFeed: false,
@@ -91,7 +102,7 @@ const commentOnChainPublicationUtil = async () => {
   console.log("post onchain: ipfs result uri", ipfsResultUri);
 
   const request: OnchainCommentRequest = {
-    commentOn: "0x2a-0x01",
+    commentOn: parentPubId,
     contentURI: ipfsResultUri
     // you can play around with open actions modules here all request
     // objects are in `publication-open-action-options.ts`

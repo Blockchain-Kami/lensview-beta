@@ -1,17 +1,16 @@
 <script lang="ts">
   import { cross, flightTakeoff, tick } from "../../utils/frontend/appIcon";
-  import { isSignedIn } from "../../services/signInStatus";
-  import { userProfile } from "../../services/profile";
-  import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
   import { page } from "$app/stores";
   import Loader from "$lib/Loader.svelte";
   import { reloadCommentOfAPublication } from "../../stores/reload-publication.store";
   import Login from "../Login.svelte";
-  import postAPublication from "../../utils/frontend/postAPublication";
   import { goto } from "$app/navigation";
   import { getNotificationsContext } from "svelte-notifications";
   import GetTestMatic from "../GetTestMatic.svelte";
-  import getPictureURL from "../../utils/frontend/getPictureURL";
+  import getPictureURLUtil from "../../utils/get-picture-URL.util";
+  import { profileUserStore } from "../../stores/user/profile.user.store";
+  import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  import commentOnChainPublicationUtil from "../../utils/publications/comment-onchain.publication.util";
 
   const { addNotification } = getNotificationsContext();
   let userEnteredContent = "";
@@ -91,15 +90,16 @@
   };
 
   let postThroughUser = async () => {
-    if (!checkIsSignedIn()) {
+    if (!checkIsLoggedIn()) {
       showLoginModal = true;
     } else {
       isPublishing = true;
       try {
-        const txPromise = postAPublication(userEnteredContent, pubId);
-        txPromise.then((tx) => {
-          checkUntilPubAdded(tx?.hash, Date.now());
-        });
+        await commentOnChainPublicationUtil(pubId, userEnteredContent);
+        isPublishing = false;
+        userEnteredContent = "";
+        reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
+        console.log("Post added to graph" + Date.now());
       } catch (err) {
         console.log("error: ", err);
         isPublishing = false;
@@ -107,35 +107,14 @@
     }
   };
 
-  const checkUntilPubAdded = async (txHash: string, startTime: number) => {
-    /** If post is not added to lens within 25 seconds, then stop checking */
-    if (Date.now() - startTime > 25000) {
-      isPublishing = false;
-      alert("Error adding post");
-      return;
-    }
-
-    const hasIndexedResponse = await checkTxHashBeenIndexed(txHash);
-
-    if (hasIndexedResponse?.data?.hasTxHashBeenIndexed?.indexed === false) {
-      console.log("Waiting for post to be added to graph");
-      setTimeout(() => checkUntilPubAdded(txHash, startTime), 100);
-    } else {
-      isPublishing = false;
-      userEnteredContent = "";
-      reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
-      console.log("Post added to graph" + Date.now());
-    }
-  };
-
-  const checkIsSignedIn = () => {
-    let isSignedInVal;
-    const unsubscribe = isSignedIn.subscribe((val) => {
-      isSignedInVal = val;
+  const checkIsLoggedIn = () => {
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
     });
-    unsubscribe();
+    unsub();
 
-    return isSignedInVal;
+    return isUserLoggedIn;
   };
 
   const postAnonymously = async () => {
@@ -211,11 +190,11 @@
 <section>
   <div class="CenterRowFlex body">
     <div class="body__user-pic">
-      {#if $isSignedIn}
+      {#if $isLoggedInUserStore}
         <img
-          src={getPictureURL(
-            $userProfile?.picture?.original?.url,
-            $userProfile?.ownedBy
+          src={getPictureURLUtil(
+            $profileUserStore?.metadata?.picture?.optimized?.uri,
+            $profileUserStore?.ownedBy?.address
           )}
           alt=""
         />

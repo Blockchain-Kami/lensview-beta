@@ -1,6 +1,6 @@
 <script lang="ts">
   import MainPost from "../../../components/posts-page/MainPost.svelte";
-  // import PostAPublication from "../../../components/posts-page/PostAPublication.svelte";
+  import PostAPublication from "../../../components/posts-page/PostAPublication.svelte";
   import CommentsOfAPublication from "../../../components/posts-page/CommentsOfAPublication.svelte";
   import Publication from "../../../components/posts-page/Publication.svelte";
   import { page } from "$app/stores";
@@ -22,7 +22,7 @@
       {#if postPubId !== undefined}
         <Publication />
       {/if}
-      <!--      <PostAPublication />-->
+      <PostAPublication />
       <CommentsOfAPublication />
     </main>
   {:else}
@@ -34,7 +34,7 @@
         {#if postPubId !== undefined}
           <Publication />
         {/if}
-        <!--        <PostAPublication />-->
+        <PostAPublication />
         <CommentsOfAPublication />
       </div>
     </main>
