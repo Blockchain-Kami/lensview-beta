@@ -51,13 +51,13 @@
   let showLoginModal = false;
   let reactionDetails: ReactionDetailsModel = {};
 
-  let promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
+  let promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
     commentPubId,
     LimitType.Fifty
   );
 
-  const updatedPromiseOfGetComment = () => {
-    promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
+  const updatedpromiseOfGetComments = () => {
+    promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
       commentPubId,
       LimitType.Fifty,
       selectedFilterType
@@ -66,7 +66,7 @@
 
   $: if (commentPubId !== $page.data.commentPubId) {
     commentPubId = $page.data.commentPubId;
-    promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
+    promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
       commentPubId,
       LimitType.Fifty,
       selectedFilterType
@@ -77,7 +77,7 @@
   onMount(() => {
     reloadCommentOfAPublication.subscribe((val) => {
       console.log("Reloaded comment of a publication" + val);
-      promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
+      promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
         commentPubId,
         LimitType.Fifty,
         selectedFilterType
@@ -254,7 +254,7 @@
     <div class="filter__type">
       <select
         bind:value={selectedFilterType}
-        on:change={updatedPromiseOfGetComment}
+        on:change={updatedpromiseOfGetComments}
       >
         <option value={CommentFilterType.MostLikedComments}>Most liked</option>
         <option value={CommentFilterType.LatestComments}>Latest</option>
@@ -270,7 +270,7 @@
     </div>
   </div>
   <div class="CenterColumnFlex body">
-    {#await promiseOfGetComment}
+    {#await promiseOfGetComments}
       <div class="comment">
         <div class="comment__pic__loader" />
         <div class="comment__body">
