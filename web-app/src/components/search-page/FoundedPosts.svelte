@@ -9,10 +9,6 @@
     thumbUp,
     trendingUp
   } from "../../utils/frontend/appIcon";
-  import { getPublicationByPubId } from "../../utils/frontend/getPublicationByPubId";
-  import getImageURLUsingParentPubId from "../../utils/frontend/getImageURLUsingParentPubId";
-  import getFormattedDate from "../../utils/frontend/getFormattedDate";
-  import { getCommentOfPublication } from "../../utils/frontend/getCommentOfPublication";
   import { searchInputDetails } from "../../services/searchInputDetails";
   import type { SearchInputDetailsModel } from "../../models/searchInputDetails.model";
   import DOMPurify from "dompurify";
@@ -21,7 +17,13 @@
   import MediaQuery from "$lib/MediaQuery.svelte";
   import type { ObserverEventDetails, Options } from "svelte-inview";
   import { inview } from "svelte-inview";
-  import getPictureURL from "../../utils/frontend/getPictureURL";
+  import getLinkPublicationLensService from "../../services/lens/get-link-publication.lens.service";
+  import getImageCommentLensService from "../../services/lens/get-image-comment.lens.service";
+  import getCommentBasedOnParameterPublicationUtil from "../../utils/publications/get-comment-based-on-parameter.publication.util";
+  import { LimitType } from "../../gql/graphql";
+  import { CommentFilterType } from "../../config/app-constants.config";
+  import getPictureURLUtil from "../../utils/get-picture-URL.util";
+  import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
 
   type KeyStringValBoolean = {
     [key: string]: boolean;
@@ -108,7 +110,7 @@
               on:inview_change={(event) => handleChange(event, mainPostPubId)}
               class="mobile__card"
             >
-              {#await getPublicationByPubId(mainPostPubId)}
+              {#await getLinkPublicationLensService(mainPostPubId)}
                 <div class="mobile__card__image-loader" />
                 <div class="mobile__card__info__loader" />
                 <div class="CenterRowFlex mobile__card__post">
@@ -121,7 +123,7 @@
                   </div>
                 </div>
               {:then mainPostPub}
-                {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
+                {#await getImageCommentLensService(mainPostPub?.id)}
                   <div class="mobile__card__image-loader" />
                 {:then imageUrl}
                   <div
@@ -143,39 +145,32 @@
                       class="CenterRowFlex mobile__card__info__reaction__val"
                     >
                       <Icon d={thumbUp} />
-                      {mainPostPub?.data?.publications?.items[0]?.stats
-                        ?.totalUpvotes}
+                      {mainPostPub?.stats?.upvotes}
                     </div>
                     <div class="mobile__card__info__reaction__vertical-line" />
                     <div
                       class="CenterRowFlex mobile__card__info__reaction__val"
                     >
                       <Icon d={thumbDown} />
-                      {mainPostPub?.data?.publications?.items[0]?.stats
-                        ?.totalDownvotes}
+                      {mainPostPub?.stats?.downvotes}
                     </div>
                   </div>
                   <div class="CenterRowFlex mobile__card__info__posts-count">
                     <Icon d={modeComment} />
-                    {mainPostPub?.data?.publications?.items[0]?.stats
-                      ?.totalAmountOfComments}
+                    {mainPostPub?.stats?.comments}
                   </div>
                   <a
-                    href={mainPostPub?.data?.publications?.items[0]?.metadata
-                      .content}
+                    href={mainPostPub?.metadata?.sharingLink}
                     target="_blank"
                     class="CenterRowFlex mobile__card__info__link"
                   >
                     <Icon
                       d={redirect}
-                    />{mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(
-                      0,
-                      15
-                    )}
+                    />{mainPostPub?.metadata?.sharingLink.substring(0, 15)}
                     ...
                   </a>
                 </div>
-                {#await getCommentOfPublication(mainPostPubId, 1, "imagePub")}
+                {#await getCommentBasedOnParameterPublicationUtil(mainPostPubId, LimitType.Ten, CommentFilterType.FirstMostRelevantComments)}
                   <div class="CenterRowFlex mobile__card__post">
                     <div class="mobile__card__post__user-pic-loader" />
                     <div class="mobile__card__post__info">
@@ -185,8 +180,8 @@
                       <div class="mobile__card__post__info__body-loader" />
                     </div>
                   </div>
-                {:then comment}
-                  {#if comment?.data?.publications?.items[0]?.profile?.handle === undefined}
+                {:then comments}
+                  {#if comments.items[0]?.by?.handle?.fullHandle === undefined}
                     <div class="CenterRowFlex mobile__card__post">
                       No Top Post
                     </div>
@@ -194,11 +189,10 @@
                     <div class="CenterRowFlex mobile__card__post">
                       <div class="mobile__card__post__user-pic">
                         <img
-                          src={getPictureURL(
-                            comment?.data?.publications?.items[0]?.profile
-                              ?.picture?.original?.url,
-                            comment?.data?.publications?.items[0]?.profile
-                              ?.ownedBy
+                          src={getPictureURLUtil(
+                            comments.items[0]?.by?.metadata?.picture?.optimized
+                              ?.uri,
+                            comments.items[0]?.by?.ownedBy?.address
                           )}
                           alt="avatar"
                         />
@@ -208,16 +202,16 @@
                           class="CenterRowFlex mobile__card__post__info__head"
                         >
                           <div class="mobile__card__post__info__head__username">
-                            {comment?.data?.publications?.items[0]?.profile?.handle.substring(
-                              0,
-                              12
+                            {comments.items[0]?.by?.handle?.fullHandle.substring(
+                              5,
+                              17
                             )}
-                            {comment?.data?.publications?.items[0]?.profile
-                              ?.handle.length > 12
+                            {comments.items[0]?.by?.handle?.fullHandle.length >
+                            12
                               ? "..."
                               : ""}
                           </div>
-                          {#if comment?.data?.publications?.items[0]?.profile?.id === PUBLIC_APP_LENS_ID}
+                          {#if comments.items[0]?.by?.id === PUBLIC_APP_LENS_ID}
                             <Tooltip
                               content="This post was made by an anonymous user!"
                               position="top"
@@ -245,24 +239,21 @@
                             <div
                               class="mobile__card__post__info__head__trend__count"
                             >
-                              {comment?.data?.publications?.items[0]?.stats
-                                ?.totalUpvotes === undefined
+                              {comments?.items[0]?.stats?.upvotes === undefined
                                 ? 0
-                                : comment?.data?.publications?.items[0]?.stats
-                                    ?.totalUpvotes}
+                                : comments?.items[0]?.stats?.upvotes}
                             </div>
                           </div>
                           <div class="mobile__card__post__info__head__time">
-                            {getFormattedDate(
-                              comment?.data?.publications?.items[0]?.createdAt
+                            {getFormattedDateHelperUtil(
+                              comments?.items[0]?.createdAt
                             )}
                           </div>
                         </div>
                         <div class="mobile__card__post__info__body">
                           <!--eslint-disable-next-line svelte/no-at-html-tags -->
                           {@html DOMPurify.sanitize(
-                            comment?.data?.publications?.items[0]?.metadata
-                              ?.content
+                            comments?.items[0]?.metadata?.content
                           ).substring(0, 70)}
                         </div>
                       </div>
@@ -309,14 +300,14 @@
         <div class="body">
           {#each foundedMainPostPubId as mainPostPubId}
             <a href={"/posts/" + mainPostPubId} class="card">
-              {#await getPublicationByPubId(mainPostPubId)}
+              {#await getLinkPublicationLensService(mainPostPubId)}
                 <div class="card__img-box__loader" />
                 <div class="card__body">
                   <div class="card__body__info__loader" />
                   <div class="card__body__post__loader" />
                 </div>
               {:then mainPostPub}
-                {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
+                {#await getImageCommentLensService(mainPostPub?.id)}
                   <div class="card__img-box__loader" />
                 {:then imageUrl}
                   <div class="card__img-box">
@@ -328,8 +319,7 @@
                         class="CenterRowFlex card__img-box__image__posts-count"
                       >
                         <Icon d={modeComment} />
-                        {mainPostPub?.data?.publications?.items[0]?.stats
-                          ?.totalAmountOfComments}
+                        {mainPostPub?.stats?.comments}
                       </div>
                     </div>
                   </div>
@@ -343,15 +333,11 @@
                         <Icon d={redirect} />&nbsp;
                       </div>
                       <a
-                        href={mainPostPub?.data?.publications?.items[0]
-                          ?.metadata.content}
+                        href={mainPostPub?.metadata?.sharingLink}
                         target="_blank"
                         class="card__body__info__head__url-val"
                       >
-                        {mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(
-                          0,
-                          30
-                        )}
+                        {mainPostPub?.metadata?.sharingLink.substring(0, 30)}
                         ...
                       </a>
                       <button class="card__body__info__head__more">
@@ -363,8 +349,7 @@
                         class="CenterRowFlex card__body__info__details__likes"
                       >
                         <Icon d={thumbUp} />&nbsp;
-                        {mainPostPub?.data?.publications?.items[0]?.stats
-                          ?.totalUpvotes} Likes
+                        {mainPostPub?.stats?.upvotes} Likes
                       </div>
                       <div class="dot" />
                       <div
@@ -381,21 +366,20 @@
                       </div>
                       <div class="dot" />
                       <div class="card__body__info__details__time">
-                        {getFormattedDate(
-                          mainPostPub?.data?.publications?.items[0]?.createdAt
-                        )}
+                        {getFormattedDateHelperUtil(mainPostPub?.createdAt)}
                       </div>
                     </div>
                   </div>
-                  {#await getCommentOfPublication(mainPostPubId, 1)}
+                  {#await getCommentBasedOnParameterPublicationUtil(mainPostPubId, LimitType.Ten, CommentFilterType.FirstMostRelevantComments)}
                     <div class="CenterRowFlex card__body__post__loader" />
-                  {:then comment}
+                  {:then comments}
                     <div class="CenterRowFlex card__body__post">
                       <div class="card__body__post__pic">
                         <img
-                          src={getPictureURL(
-                            comment?.data?.publications?.items[0]?.profile
-                              ?.picture?.original?.url
+                          src={getPictureURLUtil(
+                            comments.items[0]?.by?.metadata?.picture?.optimized
+                              ?.uri,
+                            comments.items[0]?.by?.ownedBy?.address
                           )}
                           alt="avatar"
                         />
@@ -403,10 +387,9 @@
                       <div class="card__body__post__info">
                         <div class="CenterRowFlex card__body__post__info__head">
                           <div class="card__body__post__info__head__handle">
-                            {comment?.data?.publications?.items[0]?.profile
-                              ?.handle}
+                            {comments.items[0]?.by?.handle?.fullHandle}
                           </div>
-                          {#if comment?.data?.publications?.items[0]?.profile?.id === PUBLIC_APP_LENS_ID}
+                          {#if comments.items[0]?.by?.id === PUBLIC_APP_LENS_ID}
                             <Tooltip
                               content="This post was made by an anonymous user!"
                               position="top"
@@ -434,25 +417,22 @@
                             <div
                               class="card__body__post__info__head__trend__count"
                             >
-                              {comment?.data?.publications?.items[0]?.stats
-                                ?.totalUpvotes === undefined
+                              {comments?.items[0]?.stats?.upvotes === undefined
                                 ? 0
-                                : comment?.data?.publications?.items[0]?.stats
-                                    ?.totalUpvotes}
+                                : comments?.items[0]?.stats?.upvotes}
                             </div>
                           </div>
                           <div class="dot" />
                           <div class="card__body__post__info__head__time">
-                            {getFormattedDate(
-                              comment?.data?.publications?.items[0]?.createdAt
+                            {getFormattedDateHelperUtil(
+                              comments?.items[0]?.createdAt
                             )}
                           </div>
                         </div>
                         <div class="card__body__post__info__content">
                           <!--eslint-disable-next-line svelte/no-at-html-tags -->
                           {@html DOMPurify.sanitize(
-                            comment?.data?.publications?.items[0]?.metadata
-                              ?.content
+                            comments?.items[0]?.metadata?.content
                           ).substring(0, 215)}
                         </div>
                       </div>
