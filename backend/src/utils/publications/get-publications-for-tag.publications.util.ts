@@ -1,4 +1,4 @@
-import { getRelatedParentPublicationsUtil } from "../related-parent-publications.util";
+import { getRelatedParentPublicationsService } from "../../services/related-parent-publications.util";
 import { FAILURE, SUCCESS } from "../../config/app-constants.config";
 
 /**
@@ -19,13 +19,13 @@ export const getPublicationsForTagPublicationsUtil = async (
       const keyword = keywords[i].trim();
 
       if (keyword != "") {
-        const res = await getRelatedParentPublicationsUtil(
+        const res = await getRelatedParentPublicationsService(
           keyword.toLowerCase()
         );
 
         const items = res?.items || [];
 
-        items.forEach((publication) => {
+        items.forEach((publication: any) => {
           if (publication.__typename === "Post")
             relatedPublications.push(publication?.id);
         });

@@ -1,6 +1,6 @@
 import { preprocessURLUtil } from "../preprocess-url.util";
 import { createHashUtil } from "../create-hash.util";
-import { getRelatedParentPublicationsUtil } from "../related-parent-publications.util";
+import { getRelatedParentPublicationsService } from "../../services/related-parent-publications.util";
 import { SUCCESS } from "../../config/app-constants.config";
 
 /**
@@ -16,11 +16,11 @@ export const getPublicationsForUrlPublicationsUtil = async (URL: string) => {
   if (hostname) {
     const tag = createHashUtil(hostname.toString());
 
-    const relatedPosts = await getRelatedParentPublicationsUtil(tag);
+    const relatedPosts = await getRelatedParentPublicationsService(tag);
 
     const items = relatedPosts?.items || [];
 
-    items.forEach((publication) => {
+    items.forEach((publication: any) => {
       if (publication.__typename === "Post")
         relatedPublications.push(publication?.id);
     });
