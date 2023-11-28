@@ -1,10 +1,10 @@
 FROM node:18-alpine AS builder
 WORKDIR /lensview-beta-docker
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm i
 COPY . .
 RUN npm run build
-RUN npm ci --omit dev
+RUN npm i --omit dev
 
 FROM node:18-alpine
 USER node:node
