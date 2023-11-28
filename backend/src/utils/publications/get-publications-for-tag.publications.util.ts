@@ -1,4 +1,4 @@
-import { getRelatedParentPublicationsService } from "../../services/related-parent-publications.util";
+import { getRelatedParentPublicationsService } from "../../services/lens/related-parent-publications.util";
 import { FAILURE, SUCCESS } from "../../config/app-constants.config";
 
 /**
