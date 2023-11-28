@@ -15,15 +15,14 @@ const removeReactionLensService = async (
       ? PublicationReactionType.Upvote
       : PublicationReactionType.Downvote;
 
-  const result = await authenticatedClientAuthenticationUtil().mutation(
-    removeReactionMutationGraphql,
-    {
+  const result = await authenticatedClientAuthenticationUtil()
+    .mutation(removeReactionMutationGraphql, {
       request: {
         for: publicationId,
         reaction: userReaction
       }
-    }
-  );
+    })
+    .toPromise();
 
   return result?.data?.removeReaction;
 };

@@ -2,12 +2,6 @@ import { addressUserStore } from "../../stores/user/address.user.store";
 import getUserIdsAndHandlesLensService from "../../services/lens/get-user-ids-and-handles.lens.service";
 import type { IdAndHandleModel } from "../../models/id-and-handle.model";
 import { idsAndHandlesUserStore } from "../../stores/user/ids-and-handles.user.store";
-import type { OperationResult } from "@urql/svelte";
-import type {
-  Exact,
-  ProfilesManagedQuery,
-  ProfilesManagedRequest
-} from "../../gql/graphql";
 import isValidAccessTokenPresentInLocalStorageAuthenticationUtil from "./is-valid-access-token-present-in-local-storage.authentication.util";
 
 /**
@@ -36,9 +30,8 @@ const isValidAccessTokenPresentInLsForAddressAuthenticationUtil = async () => {
   if (!address) return false;
 
   try {
-    const response = await getUserIdsAndHandlesLensService(address);
-
-    if (ableToStoreIDsAndHandles(response)) {
+    const isAbleToStoreIDsAndHandles = await ableToStoreIDsAndHandles(address);
+    if (isAbleToStoreIDsAndHandles) {
       console.log("able to store ids and handles");
       return isValidAccessTokenPresentInLocalStorageAuthenticationUtil();
     } else {
@@ -58,12 +51,8 @@ const isValidAccessTokenPresentInLsForAddressAuthenticationUtil = async () => {
 
 export default isValidAccessTokenPresentInLsForAddressAuthenticationUtil;
 
-const ableToStoreIDsAndHandles = (
-  response: OperationResult<
-    ProfilesManagedQuery,
-    Exact<{ request: ProfilesManagedRequest }>
-  >
-) => {
+const ableToStoreIDsAndHandles = async (address: string) => {
+  const response = await getUserIdsAndHandlesLensService(address);
   const profilesManagedItems = response?.data?.profilesManaged?.items;
 
   console.log("profilesManagedItems : " + JSON.stringify(profilesManagedItems));

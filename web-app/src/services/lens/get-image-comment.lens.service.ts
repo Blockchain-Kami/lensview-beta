@@ -3,9 +3,8 @@ import imageCommentPublicationQueryGraphql from "../../graphql/queries/image-com
 
 const getImageCommentLensService = async (id: string) => {
   console.log("getImageCommentLensService id", id);
-  const result = await baseClientAuthenticationUtil.query(
-    imageCommentPublicationQueryGraphql,
-    {
+  const result = await baseClientAuthenticationUtil
+    .query(imageCommentPublicationQueryGraphql, {
       request: {
         where: {
           commentOn: {
@@ -18,8 +17,8 @@ const getImageCommentLensService = async (id: string) => {
           }
         }
       }
-    }
-  );
+    })
+    .toPromise();
 
   const firstComment = result?.data?.publications?.items[0];
   if (

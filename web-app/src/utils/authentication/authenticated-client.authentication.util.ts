@@ -1,6 +1,5 @@
 import { PUBLIC_LENS_API_URL } from "$env/static/public";
 import { Client, createClient } from "@urql/core";
-import { cacheExchange, fetchExchange } from "@urql/svelte";
 import { profileUserStore } from "../../stores/user/profile.user.store";
 import isValidAccessTokenPresentInLocalStorageAuthenticationUtil from "./is-valid-access-token-present-in-local-storage.authentication.util";
 
@@ -33,7 +32,6 @@ const authenticatedClientAuthenticationUtil = () => {
 
   const authenticatedClient: Client = createClient({
     url: PUBLIC_LENS_API_URL,
-    exchanges: [cacheExchange, fetchExchange],
     requestPolicy: "cache-and-network",
     fetchOptions: {
       headers: {

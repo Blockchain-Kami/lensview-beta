@@ -13,15 +13,14 @@ const createProfileWithHandleLensService = async (handle: string) => {
   unsub();
   console.log("createProfileWithHandleLensService address", address);
 
-  return await baseClientAuthenticationUtil.mutation(
-    createProfileWithHandleMutationGraphql,
-    {
+  return await baseClientAuthenticationUtil
+    .mutation(createProfileWithHandleMutationGraphql, {
       request: {
         handle: handle,
         to: address
       }
-    }
-  );
+    })
+    .toPromise();
 };
 
 export default createProfileWithHandleLensService;

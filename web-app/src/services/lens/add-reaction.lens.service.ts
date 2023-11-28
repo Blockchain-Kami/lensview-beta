@@ -15,15 +15,14 @@ const addReactionLensService = async (
       ? PublicationReactionType.Upvote
       : PublicationReactionType.Downvote;
 
-  const result = await authenticatedClientAuthenticationUtil().mutation(
-    addReactionMutationGraphql,
-    {
+  const result = await authenticatedClientAuthenticationUtil()
+    .mutation(addReactionMutationGraphql, {
       request: {
         for: publicationId,
         reaction: userReaction
       }
-    }
-  );
+    })
+    .toPromise();
 
   return result?.data?.addReaction;
 };

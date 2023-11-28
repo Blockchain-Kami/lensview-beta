@@ -3,7 +3,7 @@
   import { goto } from "$app/navigation";
   import { searchInputDetails } from "../services/searchInputDetails";
   import { onMount } from "svelte";
-  import { PUBLIC_IS_PROD, PUBLIC_LENS_API_URL } from "$env/static/public";
+  import { PUBLIC_IS_PROD } from "$env/static/public";
   import {
     home,
     homeDualTone,
@@ -29,13 +29,6 @@
   import { MetaTags } from "svelte-meta-tags";
   import { metaTagsTitle } from "../services/metaTags";
 
-  import {
-    cacheExchange,
-    Client,
-    fetchExchange,
-    setContextClient
-  } from "@urql/svelte";
-
   import Login from "../components/Login.svelte";
   import getMetamaskAddressAuthenticationUtil from "../utils/authentication/get-metamask-address.authentication.util";
   import isValidAccessTokenPresentInLsForAddressAuthenticationUtil from "../utils/authentication/is-valid-access-token-present-in-ls-for-address.authentication.util";
@@ -53,13 +46,6 @@
   let isSearching = false;
   let showLoginModal = false;
   let onLoginIntialization: () => Promise<void>;
-
-  const client = new Client({
-    url: PUBLIC_LENS_API_URL,
-    exchanges: [cacheExchange, fetchExchange],
-    requestPolicy: "cache-and-network"
-  });
-  setContextClient(client);
 
   onMount(async () => {
     try {

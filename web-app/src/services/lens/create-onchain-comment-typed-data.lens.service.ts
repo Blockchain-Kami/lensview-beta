@@ -6,10 +6,9 @@ const createOnchainCommentTypedDataLensService = async (
   request: OnchainCommentRequest
 ) => {
   console.log("createOnchainCommentTypedDataLensService request", request);
-  const result = await authenticatedClientAuthenticationUtil().mutation(
-    createOnchainCommentTypedDataMutationGraphql,
-    { request }
-  );
+  const result = await authenticatedClientAuthenticationUtil()
+    .mutation(createOnchainCommentTypedDataMutationGraphql, { request })
+    .toPromise();
 
   return result.data?.createOnchainCommentTypedData;
 };

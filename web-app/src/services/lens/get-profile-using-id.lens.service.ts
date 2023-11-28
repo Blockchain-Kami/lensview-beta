@@ -4,9 +4,11 @@ import baseClientAuthenticationUtil from "../../utils/authentication/base-client
 const getProfileUsingIdLensService = async (id: string) => {
   console.log("getProfileUsingIdLensService id", id);
 
-  return await baseClientAuthenticationUtil.query(profileQueryGraphql, {
-    request: { forProfileId: id }
-  });
+  return await baseClientAuthenticationUtil
+    .query(profileQueryGraphql, {
+      request: { forProfileId: id }
+    })
+    .toPromise();
 };
 
 export default getProfileUsingIdLensService;

@@ -14,7 +14,7 @@
     thumbUpAlt,
     unfoldMore
   } from "../../utils/app-icon.util";
-  import RelatedPost from "./RelatedPost.svelte";
+  // import RelatedPost from "./RelatedPost.svelte";
   import { page } from "$app/stores";
   import { getNotificationsContext } from "svelte-notifications";
   import MediaQuery from "$lib/MediaQuery.svelte";
@@ -225,9 +225,9 @@
             </button>
           </div>
           <div class="related-posts-body">
-            <RelatedPost
-              userEnteredUrl={"https://www.youtube.com/watch?app=desktop&v=Fmr0auKkgbk&pp=ygUJdGVjaHdpc2Vy"}
-            />
+            <!--            <RelatedPost-->
+            <!--              userEnteredUrl={"https://www.youtube.com/watch?app=desktop&v=Fmr0auKkgbk&pp=ygUJdGVjaHdpc2Vy"}-->
+            <!--            />-->
           </div>
         {:else}
           <button
@@ -343,7 +343,7 @@
             </button>
           </div>
           <div class="related-posts-body">
-            <RelatedPost userEnteredUrl={mainPostPub?.metadata?.sharingLink} />
+            <!--            <RelatedPost userEnteredUrl={mainPostPub?.metadata?.sharingLink} />-->
           </div>
         {:else}
           <button
@@ -364,7 +364,7 @@
         </div>
         <div class="h2 related-posts-head">Related Posts</div>
         <div class="related-posts-body">
-          <RelatedPost userEnteredUrl={""} />
+          <!--          <RelatedPost userEnteredUrl={""} />-->
         </div>
       {:then mainPostPub}
         {#await getImageCommentLensService(mainPostPub?.id)}
@@ -481,7 +481,7 @@
         </div>
         <div class="h2 related-posts-head">Related Posts</div>
         <div class="related-posts-body">
-          <RelatedPost userEnteredUrl={mainPostPub?.metadata?.sharingLink} />
+          <!--          <RelatedPost userEnteredUrl={mainPostPub?.metadata?.sharingLink} />-->
         </div>
       {/await}
     </section>

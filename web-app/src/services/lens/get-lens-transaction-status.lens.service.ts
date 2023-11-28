@@ -13,23 +13,21 @@ const getLensTransactionStatusLensService = async (
   }
 
   if (txId) {
-    return await baseClientAuthenticationUtil.query(
-      lensTransactionStatusQueryGraphql,
-      {
+    return await baseClientAuthenticationUtil
+      .query(lensTransactionStatusQueryGraphql, {
         request: {
           forTxId: txId
         }
-      }
-    );
+      })
+      .toPromise();
   } else {
-    return await baseClientAuthenticationUtil.query(
-      lensTransactionStatusQueryGraphql,
-      {
+    return await baseClientAuthenticationUtil
+      .query(lensTransactionStatusQueryGraphql, {
         request: {
           forTxHash: txHash
         }
-      }
-    );
+      })
+      .toPromise();
   }
 };
 
