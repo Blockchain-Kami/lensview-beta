@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-export const PORT = 3000 as number;
+export const PORT = 3001 as number;
 export const PUBLIC_LENS_API_URL = process.env.PUBLIC_LENS_API_URL as string;
 export const PUBLIC_APP_LENS_ID = process.env.PUBLIC_APP_LENS_ID as string;
 export const APP_ADDRESS = process.env.APP_ADDRESS as string;

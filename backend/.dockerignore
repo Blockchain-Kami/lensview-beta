@@ -3,5 +3,5 @@ Dockerfile
 .dockerignore
 .gitignore
 build
-.svelte-kit
 .husky
+dist

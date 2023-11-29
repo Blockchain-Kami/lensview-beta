@@ -54,7 +54,7 @@
     if (userEnteredUrl !== "") {
       try {
         const result = await fetch(
-          "http://localhost:3000/publications/related?search_query=https://scottspence.com/posts/use-urql-with-sveltekit\\"
+          "http://localhost:3001/publications/related?search_query=https://scottspence.com/posts/use-urql-with-sveltekit\\"
         ).then((res) => {
           fetchingFoundedMainPostPubIds = false;
           if (res.ok) return res.json();
