@@ -54,29 +54,13 @@
     if (userEnteredUrl !== "") {
       try {
         const result = await fetch(
-          "http://localhost:3001/publications/related?search_query=https://scottspence.com/posts/use-urql-with-sveltekit\\"
+          "http://52.66.246.94:3001/publications/related?search_query=https://scottspence.com/posts/use-urql-with-sveltekit\\"
         ).then((res) => {
           fetchingFoundedMainPostPubIds = false;
           if (res.ok) return res.json();
           else throw new Error(res.statusText);
         });
         foundedMainPostPubIds = result?.relatedPubArray;
-
-        fetch(
-          "http://65.0.139.98:3001/publications/related?search_query=https://scottspence.com/posts/use-urql-with-sveltekit\\"
-        ).then((res) => {
-          console.log("result2", res);
-          if (res.ok) return res.json();
-          else throw new Error(res.statusText);
-        });
-
-        fetch(
-          "http://65.0.139.98/publications/related?search_query=https://scottspence.com/posts/use-urql-with-sveltekit\\"
-        ).then((res) => {
-          console.log("result3", res);
-          if (res.ok) return res.json();
-          else throw new Error(res.statusText);
-        });
 
         console.log("foundedMainPostPubIds", foundedMainPostPubIds);
       } catch (error) {
