@@ -33,7 +33,7 @@
   let isCardsMoreOpen = false;
   export let userEnteredUrl: string;
 
-  let foundedMainPostPubIds: string[] = ["0x2a-0x01"];
+  let foundedMainPostPubIds: string[] = [];
   let fetchingFoundedMainPostPubIds = false;
   const options: Options = {
     threshold: 1,
@@ -53,17 +53,15 @@
     console.log("userEnteredUrl", userEnteredUrl);
     if (userEnteredUrl !== "") {
       try {
-        foundedMainPostPubIds = await fetch("/api/related-pubs", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(userEnteredUrl)
-        }).then((res) => {
+        const result = await fetch(
+          "http://localhost:3000/publications/related?search_query=https://scottspence.com/posts/use-urql-with-sveltekit\\"
+        ).then((res) => {
           fetchingFoundedMainPostPubIds = false;
           if (res.ok) return res.json();
           else throw new Error(res.statusText);
         });
+
+        foundedMainPostPubIds = result?.relatedPubArray;
 
         console.log("foundedMainPostPubIds", foundedMainPostPubIds);
       } catch (error) {
@@ -100,7 +98,7 @@
         </div>
       </div>
     </section>
-  {:else if foundedMainPostPubIds.length > 1}
+  {:else if foundedMainPostPubIds.length > 0}
     <section>
       {#each foundedMainPostPubIds as mainPostPubId}
         {#if mainPostPubId !== $page.data.mainPostPubId}
