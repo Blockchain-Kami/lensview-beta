@@ -60,24 +60,23 @@
           if (res.ok) return res.json();
           else throw new Error(res.statusText);
         });
+        foundedMainPostPubIds = result?.relatedPubArray;
 
-        const result2 = await fetch(
+        fetch(
           "http://65.0.139.98:3001/publications/related?search_query=https://scottspence.com/posts/use-urql-with-sveltekit\\"
         ).then((res) => {
+          console.log("result2", res);
           if (res.ok) return res.json();
           else throw new Error(res.statusText);
         });
-        console.log("result2", result2);
 
-        const result3 = await fetch(
+        fetch(
           "http://65.0.139.98/publications/related?search_query=https://scottspence.com/posts/use-urql-with-sveltekit\\"
         ).then((res) => {
+          console.log("result3", res);
           if (res.ok) return res.json();
           else throw new Error(res.statusText);
         });
-        console.log("result3", result3);
-
-        foundedMainPostPubIds = result?.relatedPubArray;
 
         console.log("foundedMainPostPubIds", foundedMainPostPubIds);
       } catch (error) {
