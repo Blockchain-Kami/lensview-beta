@@ -8,6 +8,6 @@ export const ALLOWED_ORIGINS = {
     "https://lensview.io",
     "https://testnet.lensview.io",
     "http://localhost:4173",
-    "https://65.0.139.98/"
+    "https://65.0.139.98"
   ]
 };
