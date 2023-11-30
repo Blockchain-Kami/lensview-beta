@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import { RelatedPublicationsResponseModel } from "../models/request-bodies/related-publications.response-body.model";
 import { RelatedPublicationsRequestQueryModel } from "../models/request-queries/related-publications.request-query.model";
-import { isInputTypeURLUtil } from "../utils/is-input-url.util";
+import { isInputTypeURLUtil } from "../utils/helpers/is-input-url.helpers.util";
 import { getPublicationsForUrlPublicationsUtil } from "../utils/publications/get-publications-for-url-publications.util";
 import { getPublicationsForTagPublicationsUtil } from "../utils/publications/get-publications-for-tag.publications.util";
 import { SUCCESS, httpStatusCodes } from "../config/app-constants.config";

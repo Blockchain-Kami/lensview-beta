@@ -1,5 +1,7 @@
 import { URL } from "url";
-import { websiteSpecificCleaningUtil } from "./website-specific-cleaning.util";
+import { websiteSpecificCleaningUtil } from "./website-specific-cleaning.helpers.util";
+import { ClientError } from "../../errors/client-error.error";
+import { httpStatusCodes } from "../../config/app-constants.config";
 
 /**
  * Preprocess and clean the URL before storing.
@@ -26,7 +28,7 @@ import { websiteSpecificCleaningUtil } from "./website-specific-cleaning.util";
  * @returns An array containing the cleaned URL, hostname, domain, path, and query parameters.
  *          Returns null if the URL is invalid.
  */
-export const preprocessURLUtil = (url: string) => {
+export const preprocessURLUtil = (url: string): [string, string, string, string, URLSearchParams]=> {
   try {
     // convert the url to a URL object
     const parsedURL = new URL(url);
@@ -83,6 +85,6 @@ export const preprocessURLUtil = (url: string) => {
       query
     ];
   } catch (error) {
-    return null;
+    throw new ClientError("Error processing the URL", httpStatusCodes.BAD_REQUEST);
   }
 };

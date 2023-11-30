@@ -1,6 +1,9 @@
 import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
 import getRelatedPubsQuery from "../../graphql/queries/get-related-publications.query.graphql";
-import { PUBLIC_APP_LENS_ID, PUBLIC_SOURCE_APP_ID } from "../../config/env.config";
+import {
+  PUBLIC_APP_LENS_ID,
+  PUBLIC_SOURCE_APP_ID
+} from "../../config/env.config";
 import { InternalServerError } from "../../errors/internal-server-error.error";
 import {
   LimitType,
@@ -22,7 +25,7 @@ export const getRelatedParentPublicationsService = async (tag: string) => {
       tags: {
         oneOf: [tag]
       },
-      // publishedOn: [PUBLIC_SOURCE_APP_ID]
+      publishedOn: [PUBLIC_SOURCE_APP_ID]
     }
   };
   const publicationsRequest: PublicationsRequest = {

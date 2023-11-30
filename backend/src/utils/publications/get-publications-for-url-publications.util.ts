@@ -1,6 +1,6 @@
-import { preprocessURLUtil } from "../preprocess-url.util";
-import { createHashUtil } from "../create-hash.util";
-import { getRelatedParentPublicationsService } from "../../services/lens/related-parent-publications.util";
+import { preprocessURLUtil } from "../helpers/preprocess-url.helpers.util";
+import { createHashUtil } from "../helpers/create-hash.helpers.util";
+import { getRelatedParentPublicationsService } from "../../services/lens/related-parent-publications.lens.service";
 import { SUCCESS } from "../../config/app-constants.config";
 
 /**
