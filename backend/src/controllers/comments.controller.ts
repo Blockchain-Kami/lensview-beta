@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { isInputTypeURLUtil } from "../utils/helpers/is-input-url.helpers.util";
 import { httpStatusCodes } from "../config/app-constants.config";
-import { getRelatedParentPublicationsService } from "../services/lens/related-parent-publications.lens.service";
+import { getRelatedPublicationsService } from "../services/lens/related-parent-publications.lens.service";
 import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
 import { preprocessURLAndCreateMetadataObject } from "../utils/helpers/preprocess-url-and-create-metadata-object.helpers.util";
 
@@ -30,7 +30,7 @@ export const addUrlOrPostCommentController = async (req: Request, res: Response)
     }
 
     const urlObj = preprocessURLAndCreateMetadataObject(urlString, lensHandle, postContent, tags)
-    const publicationExists = await getRelatedParentPublicationsService(urlObj.hashedURL);
+    const publicationExists = await getRelatedPublicationsService([urlObj.hashedURL]);
 
     if (publicationExists && publicationExists.items.length > 0) {
       console.log(JSON.stringify(publicationExists));

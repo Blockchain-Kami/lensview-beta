@@ -17,21 +17,23 @@ import {
  * @param {string} tag - The tag used to search for related parent publications.
  * @returns {Promise<Array>} - A promise that resolves to an array of related parent publications, or null if an error occurs.
  */
-export const getRelatedParentPublicationsService = async (tag: string) => {
+export const getRelatedPublicationsService = async (tags: string[]) => {
   const publicationsWhere: PublicationsWhere = {
     from: [PUBLIC_APP_LENS_ID],
     publicationTypes: [PublicationType.Post],
     metadata: {
       tags: {
-        oneOf: [tag]
+        oneOf: tags
       },
       publishedOn: [PUBLIC_SOURCE_APP_ID]
     }
   };
+
   const publicationsRequest: PublicationsRequest = {
     limit: LimitType.Fifty,
     where: publicationsWhere
   };
+
   try {
     const posts = await baseClientAuthenticationUtil
       .query(getRelatedPubsQuery, {

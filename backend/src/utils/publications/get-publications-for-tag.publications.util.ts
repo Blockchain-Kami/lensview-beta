@@ -1,4 +1,4 @@
-import { getRelatedParentPublicationsService } from "../../services/lens/related-parent-publications.lens.service";
+import { getRelatedPublicationsService } from "../../services/lens/related-parent-publications.lens.service";
 import { FAILURE, SUCCESS } from "../../config/app-constants.config";
 
 /**
@@ -12,25 +12,27 @@ export const getPublicationsForTagPublicationsUtil = async (
   inputString: string
 ): Promise<{ relatedPublications: string[]; message: number }> => {
   try {
+    let tags: string[] = [];
     const relatedPublications: Array<string> = [];
     const keywords = inputString.trim().split(" ");
 
     for (let i = 0; i < keywords.length; i++) {
       const keyword = keywords[i].trim();
-
-      if (keyword != "") {
-        const res = await getRelatedParentPublicationsService(
-          keyword.toLowerCase()
-        );
-
-        const items = res?.items || [];
-
-        items.forEach((publication: any) => {
-          if (publication.__typename === "Post")
-            relatedPublications.push(publication?.id);
-        });
-      }
+      tags.push(keyword);
     }
+    if (tags.length > 0) {
+      const res = await getRelatedPublicationsService(
+        tags
+      );
+
+    const items = res?.items || [];
+
+    items.forEach((publication: any) => {
+      if (publication.__typename === "Post")
+        relatedPublications.push(publication?.id);
+    });
+    }
+
     return {
       relatedPublications,
       message: SUCCESS

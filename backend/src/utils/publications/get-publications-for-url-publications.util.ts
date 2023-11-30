@@ -1,6 +1,6 @@
 import { preprocessURLUtil } from "../helpers/preprocess-url.helpers.util";
 import { createHashUtil } from "../helpers/create-hash.helpers.util";
-import { getRelatedParentPublicationsService } from "../../services/lens/related-parent-publications.lens.service";
+import { getRelatedPublicationsService } from "../../services/lens/related-parent-publications.lens.service";
 import { SUCCESS } from "../../config/app-constants.config";
 
 /**
@@ -14,9 +14,9 @@ export const getPublicationsForUrlPublicationsUtil = async (URL: string) => {
   const urlObject = preprocessURLUtil(URL);
   const hostname = urlObject?.[1];
   if (hostname) {
-    const tag = createHashUtil(hostname.toString());
+    const tag = hostname.toString().toLowerCase();
 
-    const relatedPosts = await getRelatedParentPublicationsService(tag);
+    const relatedPosts = await getRelatedPublicationsService([tag]);
 
     const items = relatedPosts?.items || [];
 
