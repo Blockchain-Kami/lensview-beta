@@ -54,7 +54,7 @@
     if (userEnteredUrl !== "") {
       try {
         const result = await fetch(
-          "http://52.66.246.94:3001/publications/related?search_query=https://scottspence.com/posts/use-urql-with-sveltekit\\"
+          "https://api.lensview.io/publications/related?search_query=https://scottspence.com/posts/use-urql-with-sveltekit\\"
         ).then((res) => {
           fetchingFoundedMainPostPubIds = false;
           if (res.ok) return res.json();

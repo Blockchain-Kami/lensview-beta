@@ -13,18 +13,16 @@ app.use(bodyParser.json());
 console.log("Welcome!!");
 
 const allowedOrigins = ALLOWED_ORIGINS.DEV;
-console.log("Allowed Origins:",allowedOrigins);
-
-
+console.log("Allowed Origins:", allowedOrigins);
 
 app.use(
   cors({
     optionsSuccessStatus: 200,
     origin: (origin, callback) => {
-      if (!origin){
+      if (!origin) {
         console.log("no origin");
         return callback(null, true);
-      } 
+      }
       if (allowedOrigins.indexOf(origin) === -1) {
         const msg = "Not Allowed by CORS";
         console.log(msg);
