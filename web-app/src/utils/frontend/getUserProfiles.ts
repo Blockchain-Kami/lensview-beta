@@ -8,16 +8,17 @@ const getUserProfiles = async () => {
     const client = await createUserClient();
     let address;
     const unsubscribe = userAddress.subscribe((addr) => {
-        address = addr;
-      }
-    );
+      address = addr;
+    });
     unsubscribe();
-    const response = await client.query(profiles, {
-      "request": {
-        "ownedBy": address,
-        "limit": 10
-      }
-    }).toPromise();
+    const response = await client
+      .query(profiles, {
+        request: {
+          ownedBy: address,
+          limit: 10
+        }
+      })
+      .toPromise();
     return response.data.profiles.items;
   } catch (err) {
     console.log("error fetching user profile...: ", err);

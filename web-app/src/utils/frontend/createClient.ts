@@ -1,8 +1,7 @@
 import { refreshAuthToken } from "./accessTokenHelper";
 import baseClient from "./baseClient";
-import { createClient, Client } from '@urql/core';
-import { PUBLIC_LENS_API_URL } from '$env/static/public';
-
+import { Client, createClient } from "@urql/core";
+import { PUBLIC_LENS_API_URL } from "$env/static/public";
 
 const STORAGE_KEY = "LH_STORAGE_KEY";
 
@@ -26,15 +25,15 @@ export async function createUserClient() {
         url: PUBLIC_LENS_API_URL,
         fetchOptions: {
           headers: {
-            'x-access-token': `Bearer ${accessToken}`
-          },
-        },
-      })
-      return userClient
+            "x-access-token": `Bearer ${accessToken}`
+          }
+        }
+      });
+      return userClient;
     } catch (err) {
-      return baseClient
+      return baseClient;
     }
   } else {
-    return baseClient
+    return baseClient;
   }
 }

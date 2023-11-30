@@ -8,16 +8,17 @@ const createLensHandle = async (handle: string) => {
     const client = await createUserClient();
     let address;
     const unsubscribe = userAddress.subscribe((addr) => {
-        address = addr;
-      }
-    );
+      address = addr;
+    });
     unsubscribe();
 
     const request = {
-      "handle": handle,
-      "profilePictureUri": `https://cdn.stamp.fyi/avatar/eth:${address}?s=300`
+      handle: handle,
+      profilePictureUri: `https://cdn.stamp.fyi/avatar/eth:${address}?s=300`
     };
-    const response = await client.mutation(createProfile, { request }).toPromise();
+    const response = await client
+      .mutation(createProfile, { request })
+      .toPromise();
 
     console.log("Create Lens Handle Response: ", JSON.stringify(response));
     return response;

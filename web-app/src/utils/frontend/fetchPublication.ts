@@ -6,11 +6,13 @@ export const fetchPublication = async (publicationId: string) => {
     console.log("publicationId" + publicationId);
     const client = baseClient;
     const request = {
-      "publicationIds": [publicationId]
+      publicationIds: [publicationId]
     };
-    return await client.query(getPublication, {
-      request
-    }).toPromise();
+    return await client
+      .query(getPublication, {
+        request
+      })
+      .toPromise();
   } catch (err) {
     console.log(err);
     throw err;

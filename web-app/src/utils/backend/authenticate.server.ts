@@ -6,17 +6,22 @@ import { APP_ADDRESS } from "$env/static/private";
 import baseClient from "../frontend/baseClient";
 
 export const appAuthentication = async () => {
-  try{
+  try {
     const address = APP_ADDRESS;
-    const challengeInfo = await baseClient.query(challenge, {address}).toPromise();
+    const challengeInfo = await baseClient
+      .query(challenge, { address })
+      .toPromise();
     const signer = getSigner();
-    const signature = await signer.signMessage(challengeInfo.data.challenge.text);
-    const authData = await baseClient.mutation(authenticate, {address, signature}).toPromise();
+    const signature = await signer.signMessage(
+      challengeInfo.data.challenge.text
+    );
+    const authData = await baseClient
+      .mutation(authenticate, { address, signature })
+      .toPromise();
 
     return authData.data.authenticate.accessToken;
-  }
-  catch(err){
+  } catch (err) {
     console.log("Error in authenticating the app");
     throw err;
   }
-}
+};

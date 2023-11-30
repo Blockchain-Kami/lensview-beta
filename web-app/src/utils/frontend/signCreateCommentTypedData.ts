@@ -15,13 +15,19 @@ function signedTypeData(domain, types, value) {
 const signCreateCommentTypedData = async (request) => {
   const client = await createUserClient();
 
-  let result = await client.mutation(createCommentTypedData, {
-    request
-  }).toPromise();
+  let result = await client
+    .mutation(createCommentTypedData, {
+      request
+    })
+    .toPromise();
   result = result.data.createCommentTypedData;
   const typedData = result.typedData;
 
-  const signature = await signedTypeData(typedData.domain, typedData.types, typedData.value);
+  const signature = await signedTypeData(
+    typedData.domain,
+    typedData.types,
+    typedData.value
+  );
 
   return { result, signature };
 };

@@ -16,6 +16,6 @@ query DefaultProfile($address: EthereumAddress!) {
     ownedBy
   }
 }
-`
+`;
 
 export default getDefaultProfile;

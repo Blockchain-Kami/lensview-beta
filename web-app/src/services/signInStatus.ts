@@ -12,4 +12,3 @@ function manageSignInStatus() {
 }
 
 export const isSignedIn = manageSignInStatus();
-

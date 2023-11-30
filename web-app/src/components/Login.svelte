@@ -1,356 +1,222 @@
 <script lang="ts">
-    import Icon from "$lib/Icon.svelte";
-    import { close, cross, tick, wallet } from "../utils/frontend/appIcon";
-    import Loader from "$lib/Loader.svelte";
-    import { userAuthentication } from "../utils/frontend/authenticate";
-    import getUserProfiles from "../utils/frontend/getUserProfiles";
-    import getDefaultUserProfile from "../utils/frontend/getDefaultUserProfile";
-    import { userProfile } from "../services/profile";
-    import CreateLensHandle from "./CreateLensHandle.svelte";
-    import { isSignedIn } from "../services/signInStatus";
-    import { userAddress } from "../services/userAddress";
-    import { PUBLIC_IS_PROD } from "$env/static/public";
-    import { onMount } from "svelte";
-    import { fly } from "svelte/transition";
-    import { backInOut } from "svelte/easing";
-    import { getNotificationsContext } from "svelte-notifications";
-    import { reloadAPublication, reloadCommentOfAPublication, reloadMainPost } from "../services/reloadPublication";
+  import Icon from "$lib/Icon.svelte";
+  import { close, cross, tick } from "../utils/frontend/appIcon";
+  import Loader from "$lib/Loader.svelte";
+  import CreateLensProfile from "./CreateLensProfile.svelte";
+  import { fly } from "svelte/transition";
+  import { backInOut } from "svelte/easing";
+  import { getNotificationsContext } from "svelte-notifications";
+  import {
+    reloadAPublication,
+    reloadCommentOfAPublication,
+    reloadMainPost
+  } from "../stores/reload-publication.store";
+  import getMetamaskAddressAuthenticationUtil from "../utils/authentication/get-metamask-address.authentication.util";
+  import isValidAccessTokenPresentInLsForAddressAuthenticationUtil from "../utils/authentication/is-valid-access-token-present-in-ls-for-address.authentication.util";
+  import { addressUserStore } from "../stores/user/address.user.store";
+  import parseNotificationObjectWithFunctionUtil from "../utils/parse-notification-object-with-function.util";
+  import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
+  import { idsAndHandlesUserStore } from "../stores/user/ids-and-handles.user.store";
+  import retrieveAccessTokenAuthenticationUtil from "../utils/authentication/retrieve-access-token.authentication.util";
+  import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
 
+  const { addNotification } = getNotificationsContext();
+  export let showLoginModal: boolean;
+  let dialog: HTMLDialogElement;
+  $: if (dialog && showLoginModal) dialog.showModal();
 
-    const {addNotification} = getNotificationsContext();
-    export let showLoginModal: boolean;
-    let dialog: HTMLDialogElement;
-    $: if (dialog && showLoginModal) dialog.showModal();
+  let loggingIn = false;
+  let showCreateLensProfileModal = false;
 
-    let isConnected = false;
-    let signingIn = false;
-    let isHandleCreated = true;
-    let showCreateLensHandleModal = false;
-    let isThisConnectWalletAccountChange = false;
-    let chainIDToBeUsed: string;
-
-
-    onMount(async () => {
-
-        if (PUBLIC_IS_PROD === "false") {
-            chainIDToBeUsed = "0x13881";
-        } else {
-            chainIDToBeUsed = "0x89";
-        }
-
-        if (typeof window.ethereum === "undefined") {
-            // alert("Please install metamask to interact with this application, but you can still view the others posts");
-        }
-
-        window.ethereum.on("chainChanged", (chainId: string) => {
-            if (chainId !== chainIDToBeUsed) {
-                window.location.reload();
-            }
-        });
-
-        window.ethereum.on("accountsChanged", (switchedAddress: string) => {
-            if (!isThisConnectWalletAccountChange) {
-                window.location.reload();
-            } else {
-                isThisConnectWalletAccountChange = false;
-            }
-        });
-    });
-
-    /**TODO: 1. Check for chain and if it is not polygon testnet then do necessary changes
-     *       2. Check if there is any stored address in local storage if yes then do not ask for connect wallet
-     *       3. Check if refresh token is present in local storage and not expired, if yes then do not ask for sign in
-     *       4. Handle scenarios when user switches network
-     */
-    async function connect() {
-        if (typeof window.ethereum === "undefined") {
-            dialog.close();
-            addNotification({
-                position: 'top-right',
-                heading: 'Please install Metamask',
-                description: 'Please install metamask to post as yourself, you can still view others posts and post anonymously',
-                type: wallet,
-                removeAfter: 15000,
-                ctaBtnName: "Install Metamask",
-                ctaFunction: () => {
-                    window.open("https://metamask.io/", "_blank");
-                }
-            });
-        } else {
-            /* this allows the user to connect their wallet */
-            try {
-                await switchUserToCorrectChain();
-
-                isThisConnectWalletAccountChange = true;
-
-                const account = await window.ethereum.request({method: "eth_requestAccounts"});
-
-                isThisConnectWalletAccountChange = false;
-                if (account.length) {
-                    userAddress.setUserAddress(account[0]);
-                    isConnected = true;
-                } else {
-                    isConnected = false;
-                }
-                console.log("Account : " + JSON.stringify(account));
-                console.log("isConnected : " + isConnected);
-                console.log("")
-            } catch (error) {
-                isThisConnectWalletAccountChange = false;
-                console.log(error);
-                dialog.close();
-                addNotification({
-                    position: 'top-right',
-                    heading: 'Error while connecting wallet',
-                    description: 'Please try again to connect',
-                    type: cross,
-                    removeAfter: 3000
-                });
-            }
-        }
-    }
-
-    const switchUserToCorrectChain = async () => {
-        const chainId = await window.ethereum.request({method: "eth_chainId"});
-
-        console.log("Chain Id : " + chainId);
-
-        if (chainId !== chainIDToBeUsed) {
-            try {
-                await window.ethereum.request({
-                    method: "wallet_switchEthereumChain",
-                    params: [{chainId: chainIDToBeUsed}]
-                });
-
-            } catch (switchError) {
-                // This error code indicates that the chain has not been added to MetaMask.
-                if (switchError.code === 4902) {
-                    try {
-
-                        if (PUBLIC_IS_PROD === "false") {
-                            await window.ethereum.request({
-                                method: "wallet_addEthereumChain",
-                                params: [
-                                    {
-                                        chainId: "0x13881",
-                                        chainName: "Mumbai",
-                                        rpcUrls: ["https://rpc-mumbai.maticvigil.com"],
-                                        blockExplorerUrls: ["https://mumbai.polygonscan.com"],
-                                        nativeCurrency: {
-                                            name: "MATIC",
-                                            symbol: "MATIC",
-                                            decimals: 18
-                                        }
-                                    }
-                                ]
-                            });
-                        } else {
-                            await window.ethereum.request({
-                                method: "wallet_addEthereumChain",
-                                params: [
-                                    {
-                                        chainId: "0x89",
-                                        chainName: "Polygon",
-                                        rpcUrls: ["https://polygon-rpc.com"],
-                                        blockExplorerUrls: ["https://polygonscan.com"],
-                                        nativeCurrency: {
-                                            name: "MATIC",
-                                            symbol: "MATIC",
-                                            decimals: 18
-                                        }
-                                    }
-                                ]
-                            });
-                        }
-
-                    } catch (addError) {
-                        console.log("Error adding chain", addError);
-                        throw new Error(addError);
-                    }
-                } else {
-                    console.log("Error switching chain", switchError);
-                    throw new Error(switchError);
-                }
-            }
-        }
-    };
-
-    const signInWithLens = async () => {
-        /*** Authenticate **/
-        try {
-            signingIn = true;
-            await userAuthentication();
-            const fetchedProfiles = await getUserProfiles();
-
-            if (fetchedProfiles.length === 0) {
-                console.log("Fetched Profile : " + JSON.stringify(fetchedProfiles));
-                showCreateLensHandleModal = true;
-                signingIn = false;
-                isHandleCreated = false;
-                successfullySignInNotification();
-            } else {
-                isHandleCreated = true;
-                showCreateLensHandleModal = false;
-                const defaultProfile = await getDefaultUserProfile();
-
-                if (defaultProfile !== null) {
-                    userProfile.setUserProfile(defaultProfile);
-                } else {
-                    userProfile.setUserProfile(fetchedProfiles[0]);
-                }
-
-                reloadMainPost.setReloadMainPost(Date.now());
-                reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
-                reloadAPublication.setReloadAPublication(Date.now());
-                signingIn = false;
-                isSignedIn.setSignInStatus(true);
-                successfullySignInNotification();
-            }
-
-        } catch (error) {
-            console.log("Error authenticating user");
-            isSignedIn.setSignInStatus(false);
-            signingIn = false;
-            dialog.close();
-            addNotification({
-                position: 'top-right',
-                heading: 'Error while signing-in',
-                description: 'Please try again to sign-in',
-                type: cross,
-                removeAfter: 3000
-            });
-        }
-    };
-
-    const successfullySignInNotification = () => {
+  export const onLoginIntialization = async () => {
+    console.log("onLoginIntialization");
+    try {
+      await getMetamaskAddressAuthenticationUtil(true);
+      const isValidAccessTokenPresentInLocalStorage =
+        await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
+      console.log(
+        "isValidAccessTokenPresentInLocalStorage: " +
+          isValidAccessTokenPresentInLocalStorage
+      );
+      if (isValidAccessTokenPresentInLocalStorage) {
+        await setProfileAuthenticationUtil();
+        isLoggedInUserStore.setLoggedInStatus(true);
+        loggingIn = false;
         dialog.close();
         addNotification({
-            position: 'top-right',
-            heading: 'Successfully signed-in',
-            description: 'You have successfully signed-in to Lens Views',
-            type: tick,
-            removeAfter: 3000
+          position: "top-right",
+          heading: "Successfully logged in",
+          description: "You are now logged in",
+          type: tick,
+          removeAfter: 10000
         });
+      }
+    } catch (error) {
+      dialog.close();
+      console.log(error);
+      addNotification(
+        parseNotificationObjectWithFunctionUtil((error as Error).message)
+      );
     }
+  };
 
-    const openCreateLensHandleModal = () => {
-        showCreateLensHandleModal = true;
-        dialog.close();
+  const logInWithLens = async () => {
+    loggingIn = true;
+    try {
+      await retrieveAccessTokenAuthenticationUtil();
+      await setProfileAuthenticationUtil();
+
+      isLoggedInUserStore.setLoggedInStatus(true);
+      setReloadMethods();
+      loggingIn = false;
+      successfullySignInNotification();
+
+      console.log(
+        "Local Storage: " +
+          JSON.parse(localStorage.getItem("IDS_AUTH_DATA") as string)
+      );
+    } catch (error) {
+      loggingIn = false;
+      dialog.close();
+      console.log("error: " + error);
+      addNotification({
+        position: "top-right",
+        heading: "Error while logging in",
+        description: (error as Error).message + ". Please try again",
+        type: cross,
+        removeAfter: 10000
+      });
     }
+  };
 
-    const checkIsSignedIn = () => {
-        let isSignedInVal;
-        const unsubscribe = isSignedIn.subscribe((val) => {
-                isSignedInVal = val;
-            }
-        );
-        unsubscribe();
+  const setReloadMethods = () => {
+    reloadMainPost.setReloadMainPost(Date.now());
+    reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
+    reloadAPublication.setReloadAPublication(Date.now());
+  };
 
-        return isSignedInVal;
+  const connect = async () => {
+    try {
+      await getMetamaskAddressAuthenticationUtil(false);
+    } catch (error) {
+      console.log("connect error : ", error);
+      dialog.close();
+      addNotification(
+        parseNotificationObjectWithFunctionUtil((error as Error).message)
+      );
     }
+  };
 
-    const bodyMessage = () => {
-        if (!isConnected) {
-            return;
-        }
+  const successfullySignInNotification = () => {
+    dialog.close();
+    addNotification({
+      position: "top-right",
+      heading: "Successfully logged-in",
+      description: "You have successfully logged-in to Lens Views",
+      type: tick,
+      removeAfter: 3000
+    });
+  };
 
-        if (!checkIsSignedIn()) {
-            return
-        }
-
-        if (!isHandleCreated) {
-            return
-        }
-    }
-
-    $: if (isConnected !== isConnected ||
-        checkIsSignedIn() !== checkIsSignedIn() ||
-        isHandleCreated !== isHandleCreated
-    ) {
-        bodyMessage();
-    }
-
+  const openCreateLensProfileModal = () => {
+    showCreateLensProfileModal = true;
+    dialog.close();
+  };
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <dialog
-        bind:this={dialog}
-        on:close={() => (showLoginModal = false)}
-        on:click|self={() => dialog.close()}
+  bind:this={dialog}
+  on:close={() => (showLoginModal = false)}
+  on:click|self={() => dialog.close()}
 >
-    {#if showLoginModal}
-        <main on:click|stopPropagation transition:fly={{ y: 40, easing: backInOut, duration: 700 }}>
-            <div class="CenterRowFlex head">
-                <div class="h3">
-                    Login
-                </div>
-                <div class="head__close-btn">
-                    <button on:click={() => dialog.close()}>
-                        <Icon d={close}/>
-                    </button>
-                </div>
+  {#if showLoginModal}
+    <main
+      on:click|stopPropagation
+      transition:fly={{ y: 40, easing: backInOut, duration: 700 }}
+    >
+      <div class="CenterRowFlex head">
+        <div class="h3">Login</div>
+        <div class="head__close-btn">
+          <button on:click={() => dialog.close()}>
+            <Icon d={close} />
+          </button>
+        </div>
+      </div>
+
+      {#if !$addressUserStore}
+        <div class="body">Please connect your wallet to continue</div>
+        <div class="line" />
+        <div class="footer">
+          <button on:click={connect} class="btn"> Connect wallet</button>
+        </div>
+      {:else if !$isLoggedInUserStore}
+        {#if !loggingIn}
+          {#if $idsAndHandlesUserStore.length > 0}
+            <div class="body">
+              Please login with Lens
+              <br />
+              <br />
+              Handle linked to
+              <span class="body__address"
+                >{$addressUserStore.substring(0, 5) +
+                  "..." +
+                  $addressUserStore.slice(-5)}</span
+              >
+              is
+              <span class="body__handle"
+                >{$idsAndHandlesUserStore[0].handle.substring(5)}</span
+              >
             </div>
-
-            {#if !isConnected}
-                <div class="body">
-                    Please connect your wallet to continue
-                </div>
-                <div class="line"></div>
-                <div class="footer">
-                    <button on:click="{connect}"
-                            class="btn">
-                      Connect wallet
-                    </button>
-                </div>
-            {:else}
-                {#if !$isSignedIn}
-                    {#if !signingIn}
-                        {#if isHandleCreated}
-                            <div class="body">
-                                Please sign-in with Lens
-                            </div>
-                            <div class="line"></div>
-                            <div class="footer">
-                                <button on:click="{signInWithLens}"
-                                        class="btn">
-                                    Sign-In With Lens
-                                </button>
-                            </div>
-                        {:else}
-                            <div class="body">
-                                No Account found!
-                                <br>
-                                Please create lens handle to sign-up
-                            </div>
-                            <div class="line"></div>
-                            <div class="footer">
-                                <button on:click="{openCreateLensHandleModal}" class="btn">
-                                    Create Lens Handle
-                                </button>
-                            </div>
-                        {/if}
-                    {:else}
-                        <div class="body">
-                            Please sign-in with Lens
-                        </div>
-                        <div class="line"></div>
-                        <div class="footer">
-                            <button class="btn" disabled>
-                                Signing In &nbsp;
-                                <Loader/>
-                            </button>
-                        </div>
-                    {/if}
-                {/if}
-            {/if}
-
-        </main>
-    {/if}
-
+            <div class="line" />
+            <div class="footer">
+              <button on:click={logInWithLens} class="btn">
+                Login With Lens
+              </button>
+            </div>
+          {:else}
+            <div class="body">
+              No Account found!
+              <br />
+              Please create Lens Profile to continue
+            </div>
+            <div class="line" />
+            <div class="footer">
+              <button on:click={openCreateLensProfileModal} class="btn">
+                Create Lens Profile
+              </button>
+            </div>
+          {/if}
+        {:else}
+          <div class="body">
+            Please login with Lens
+            <br />
+            <br />
+            Handle linked to
+            <span class="body__address"
+              >{$addressUserStore.substring(0, 5) +
+                "..." +
+                $addressUserStore.slice(-5)}</span
+            >
+            is
+            <span class="body__handle"
+              >{$idsAndHandlesUserStore[0].handle.substring(5)}</span
+            >
+          </div>
+          <div class="line" />
+          <div class="footer">
+            <button class="btn" disabled>
+              Logging In &nbsp;
+              <Loader />
+            </button>
+          </div>
+        {/if}
+      {/if}
+    </main>
+  {/if}
 </dialog>
 
-<CreateLensHandle bind:showCreateLensHandleModal/>
-
+<CreateLensProfile bind:showCreateLensProfileModal />
 
 <style lang="scss">
   main {
@@ -375,6 +241,16 @@
     min-width: 25rem;
   }
 
+  .body__address {
+    font-style: italic;
+  }
+
+  .body__handle {
+    font-weight: var(--semi-medium-font-weight);
+    color: var(--primary);
+    font-size: var(--medium-font-size);
+  }
+
   .line {
     border: 0.5px solid #4b6c6d;
     width: 90%;
@@ -386,5 +262,4 @@
     margin-left: auto;
     padding: 1rem;
   }
-
 </style>

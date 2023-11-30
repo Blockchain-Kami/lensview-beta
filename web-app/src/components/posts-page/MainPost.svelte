@@ -1,429 +1,498 @@
 <script lang="ts">
-    import Icon from "$lib/Icon.svelte";
-    import {
-        copy,
-        cross,
-        login,
-        modeComment,
-        moreVert,
-        redirect,
-        share,
-        thumbDown,
-        thumbDownAlt,
-        thumbUp,
-        thumbUpAlt,
-        unfoldMore
-    } from "../../utils/frontend/appIcon";
-    import RelatedPost from "./RelatedPost.svelte";
-    import { page } from "$app/stores";
-    import { getPublicationByPubId } from "../../utils/frontend/getPublicationByPubId";
-    import getFormattedDate from "../../utils/frontend/getFormattedDate";
-    import getImageURLUsingParentPubId from "../../utils/frontend/getImageURLUsingParentPubId";
-    import { totalPosts } from "../../services/totalPosts";
-    import { getNotificationsContext } from "svelte-notifications";
-    import MediaQuery from "$lib/MediaQuery.svelte";
-    import { isSignedIn } from "../../services/signInStatus";
-    import { addReactionToAPost, removeReactionFromAPost } from "../../utils/frontend/updateReactionForAPost";
-    import Login from "../Login.svelte";
-    import { onMount } from "svelte";
-    import { reloadMainPost } from "../../services/reloadPublication";
-    import { metaTagsImageAlt, metaTagsImageUrl, metaTagsTitle } from "../../services/metaTags";
+  import Icon from "$lib/Icon.svelte";
+  import {
+    copy,
+    cross,
+    login,
+    modeComment,
+    moreVert,
+    redirect,
+    share,
+    thumbDown,
+    thumbDownAlt,
+    thumbUp,
+    thumbUpAlt,
+    unfoldMore
+  } from "../../utils/app-icon.util";
+  import RelatedPost from "./RelatedPost.svelte";
+  import { page } from "$app/stores";
+  import { getNotificationsContext } from "svelte-notifications";
+  import MediaQuery from "$lib/MediaQuery.svelte";
+  import Login from "../Login.svelte";
+  import { onMount } from "svelte";
+  import { reloadMainPost } from "../../stores/reload-publication.store";
+  import {
+    metaTagsImageAlt,
+    metaTagsImageUrl,
+    metaTagsTitle
+  } from "../../services/metaTags";
+  import getLinkPublicationLensService from "../../services/lens/get-link-publication.lens.service";
+  import getImageCommentLensService from "../../services/lens/get-image-comment.lens.service";
+  import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
+  import { AppReactionType } from "../../config/app-constants.config";
+  import getReactionBasedOnLoginStatusHelperUtil from "../../utils/helper/get-reaction-based-on-login-status.helper.util";
+  import { totalPostsStore } from "../../stores/total-posts.store";
+  import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
+  import addReactionLensService from "../../services/lens/add-reaction.lens.service";
 
+  const { addNotification } = getNotificationsContext();
+  let mainPostPubId = $page.data.mainPostPubId;
+  let relatedPostsActive = false;
+  let showLoginModal = false;
+  let reaction = AppReactionType.NoReaction;
+  let upVoteCount = 0;
+  let downVoteCount = 0;
 
-    const {addNotification} = getNotificationsContext();
-    let mainPostPubId = $page.data.mainPostPubId;
-    let relatedPostsActive = false;
-    let showLoginModal = false;
-    let reaction: string | null = null;
-    let upVoteCount = 0;
-    let downVoteCount = 0;
+  let promiseOfGetMainPost = getLinkPublicationLensService(mainPostPubId);
 
-    let promiseOfGetMainPost = getPublicationByPubId(mainPostPubId);
+  $: if (mainPostPubId !== $page.data.mainPostPubId) {
+    mainPostPubId = $page.data.mainPostPubId;
+    promiseOfGetMainPost = getLinkPublicationLensService(mainPostPubId);
+  }
 
-    $: if (mainPostPubId !== $page.data.mainPostPubId) {
-        mainPostPubId = $page.data.mainPostPubId;
-        promiseOfGetMainPost = getPublicationByPubId(mainPostPubId);
-    }
-
-    onMount(() => {
-        reloadMainPost.subscribe((val) => {
-            console.log("Reloaded main post" + val);
-            promiseOfGetMainPost = getPublicationByPubId(mainPostPubId);
-        });
+  onMount(() => {
+    reloadMainPost.subscribe((val) => {
+      console.log("Reloaded main post" + val);
+      promiseOfGetMainPost = getLinkPublicationLensService(mainPostPubId);
     });
+  });
 
-    const getTotalPosts = (fetchedTotalPosts: number) => {
-        totalPosts.setTotalPosts(fetchedTotalPosts);
-        return fetchedTotalPosts;
-    }
+  const getTotalPosts = (fetchedTotalPosts: number) => {
+    totalPostsStore.setTotalPosts(fetchedTotalPosts);
+    return fetchedTotalPosts;
+  };
 
-    const sharePost = (event: Event, id) => {
-        event.preventDefault();
-        event.stopPropagation();
-        navigator.clipboard.writeText(window.location.origin + "/posts/" + id);
-        addNotification({
-            position: 'top-right',
-            heading: 'Copied to clipboard',
-            description: 'The link to this post has been copied to your clipboard.',
-            type: copy,
-            removeAfter: 5000,
-        });
-    }
+  const sharePost = (event: Event, id: string) => {
+    event.preventDefault();
+    event.stopPropagation();
+    navigator.clipboard.writeText(window.location.origin + "/posts/" + id);
+    addNotification({
+      position: "top-right",
+      heading: "Copied to clipboard",
+      description: "The link to this post has been copied to your clipboard.",
+      type: copy,
+      removeAfter: 5000
+    });
+  };
 
-    const callAddReaction = async (event: Event, passedReaction: string) => {
-        event.preventDefault();
-        event.stopPropagation();
+  const callAddReaction = async (
+    event: Event,
+    passedReaction: AppReactionType
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
 
-        let signedStatus;
-        const unsub = isSignedIn.subscribe((value) => {
-            signedStatus = value;
-        });
-        unsub();
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
+    });
+    unsub();
 
-        if (!signedStatus) {
-            openLoginNotification();
-        } else {
-            try {
-                if (reaction !== null) {
-                    await callRemoveReaction(event, reaction);
-                }
-
-                reaction = passedReaction;
-                upVoteCount = passedReaction === "UPVOTE" ? upVoteCount + 1 : upVoteCount;
-                downVoteCount = passedReaction === "DOWNVOTE" ? downVoteCount + 1 : downVoteCount;
-
-                await addReactionToAPost(mainPostPubId, passedReaction);
-
-            } catch (error) {
-                console.log("Error while reacting", error);
-
-                addNotification({
-                    position: "top-right",
-                    heading: "Error while reacting",
-                    description: "Please try again .",
-                    type: cross,
-                    removeAfter: 4000
-                });
-            }
+    if (!isUserLoggedIn) {
+      openLoginNotification();
+    } else {
+      try {
+        if (reaction !== AppReactionType.NoReaction) {
+          await callRemoveReaction(event, reaction);
         }
 
-    };
-
-    const callRemoveReaction = async (event: Event, passedReaction: string) => {
-        event.preventDefault();
-        event.stopPropagation();
-
-        let signedStatus;
-        const unsub = isSignedIn.subscribe((value) => {
-            signedStatus = value;
-        });
-        unsub();
-
-        if (!signedStatus) {
-            openLoginNotification();
-        } else {
-            try {
-                reaction = null;
-                upVoteCount = passedReaction === "UPVOTE" ? upVoteCount - 1 : upVoteCount;
-                downVoteCount = passedReaction === "DOWNVOTE" ? downVoteCount - 1 : downVoteCount;
-
-                await removeReactionFromAPost(mainPostPubId, passedReaction);
-            } catch (error) {
-                console.log("Error while reacting", error);
-
-                addNotification({
-                    position: "top-right",
-                    heading: "Error removing",
-                    description: "Error while removing your reaction. Please try again .",
-                    type: cross,
-                    removeAfter: 4000
-                });
-            }
-        }
-
-    };
-
-    const openLoginNotification = () => {
-        addNotification({
-            position: "top-right",
-            heading: "Please Login",
-            description: "Kindly log-in to react to this post. Simply click on \"Login\" button to proceed with your login.",
-            type: login,
-            removeAfter: 10000,
-            ctaBtnName: "Login",
-            ctaFunction: () => {
-                showLoginModal = true;
-            }
-        });
-    };
-
-    const updateReactionDetails = (
-      passedReaction: string,
-      passedUpVoteCount: number,
-      passedDownVoteCount: number) => {
         reaction = passedReaction;
-        upVoteCount = passedUpVoteCount;
-        downVoteCount = passedDownVoteCount;
-        return "";
-    };
+        upVoteCount =
+          passedReaction === AppReactionType.UpVote
+            ? upVoteCount + 1
+            : upVoteCount;
+        downVoteCount =
+          passedReaction === AppReactionType.DownVote
+            ? downVoteCount + 1
+            : downVoteCount;
 
-    const updateMetaTagsTitle = (webPageUrl: string) => {
-        const domain = new URL(webPageUrl).hostname.replace("www.", "");
-        metaTagsTitle.setMetaTagsTitle(`${domain} | LensView`);
-        metaTagsImageAlt.setMetaTagsImageAlt(`${domain} webpage image`);
-        return "";
-    };
+        await addReactionLensService(mainPostPubId, passedReaction);
+      } catch (error) {
+        console.log("Error while reacting", error);
 
-    const updateMetaTagsImageUrl = (imageUrl: string) => {
-        metaTagsImageUrl.setMetaTagsImageUrl(imageUrl);
-        return "";
-    };
+        addNotification({
+          position: "top-right",
+          heading: "Error while reacting",
+          description: "Please try again .",
+          type: cross,
+          removeAfter: 4000
+        });
+      }
+    }
+  };
+
+  const callRemoveReaction = async (
+    event: Event,
+    passedReaction: AppReactionType
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
+    });
+    unsub();
+
+    if (!isUserLoggedIn) {
+      openLoginNotification();
+    } else {
+      try {
+        reaction = AppReactionType.NoReaction;
+        upVoteCount =
+          passedReaction === AppReactionType.UpVote
+            ? upVoteCount - 1
+            : upVoteCount;
+        downVoteCount =
+          passedReaction === AppReactionType.DownVote
+            ? downVoteCount - 1
+            : downVoteCount;
+
+        await removeReactionLensService(mainPostPubId, passedReaction);
+      } catch (error) {
+        console.log("Error while reacting", error);
+
+        addNotification({
+          position: "top-right",
+          heading: "Error removing",
+          description: "Error while removing your reaction. Please try again .",
+          type: cross,
+          removeAfter: 4000
+        });
+      }
+    }
+  };
+
+  const openLoginNotification = () => {
+    addNotification({
+      position: "top-right",
+      heading: "Please Login",
+      description:
+        'Kindly log-in to react to this post. Simply click on "Login" button to proceed with your login.',
+      type: login,
+      removeAfter: 10000,
+      ctaBtnName: "Login",
+      ctaFunction: () => {
+        showLoginModal = true;
+      }
+    });
+  };
+
+  const updateReactionDetails = (
+    passedUpVoteStatus: boolean,
+    passedDownVoteStatus: boolean,
+    passedUpVoteCount: number,
+    passedDownVoteCount: number
+  ) => {
+    reaction = getReactionBasedOnLoginStatusHelperUtil(
+      passedUpVoteStatus,
+      passedDownVoteStatus
+    );
+    upVoteCount = passedUpVoteCount;
+    downVoteCount = passedDownVoteCount;
+    return "";
+  };
+
+  const updateMetaTagsTitle = (webPageUrl: string) => {
+    const domain = new URL(webPageUrl).hostname.replace("www.", "");
+    metaTagsTitle.setMetaTagsTitle(`${domain} | LensView`);
+    metaTagsImageAlt.setMetaTagsImageAlt(`${domain} webpage image`);
+    return "";
+  };
+
+  const updateMetaTagsImageUrl = (imageUrl: string) => {
+    metaTagsImageUrl.setMetaTagsImageUrl(imageUrl);
+    return "";
+  };
 </script>
-
 
 <!----------------------------- HTML ----------------------------->
 <MediaQuery query="(max-width: 1024px)" let:matches>
-    {#if matches}
-        <section class="tablet">
-            {#await promiseOfGetMainPost}
-                <div class="CenterColumnFlex tablet__main-post__loader">
-                    <div class="tablet__main-post__image__loader"></div>
-                    <div class="CenterRowFlex tablet__main-post__url__loader"></div>
-                    <div class="tablet__main-post__info__loader"></div>
-                </div>
-                {#if relatedPostsActive}
-                    <div class="CenterRowFlex h3 tablet__related-posts">
-                        <div class="tablet__related-posts__title">
-                            Related Posts
-                        </div>
-                        <button on:click={() => relatedPostsActive = false}>
-                            <Icon d={cross}/>
-                        </button>
-                    </div>
-                    <div class="related-posts-body">
-                        <RelatedPost
-                                userEnteredUrl={'https://www.youtube.com/watch?app=desktop&v=Fmr0auKkgbk&pp=ygUJdGVjaHdpc2Vy'}/>
-                    </div>
+  {#if matches}
+    <section class="tablet">
+      {#await promiseOfGetMainPost}
+        <div class="CenterColumnFlex tablet__main-post__loader">
+          <div class="tablet__main-post__image__loader" />
+          <div class="CenterRowFlex tablet__main-post__url__loader" />
+          <div class="tablet__main-post__info__loader" />
+        </div>
+        {#if relatedPostsActive}
+          <div class="CenterRowFlex h3 tablet__related-posts">
+            <div class="tablet__related-posts__title">Related Posts</div>
+            <button on:click={() => (relatedPostsActive = false)}>
+              <Icon d={cross} />
+            </button>
+          </div>
+          <div class="related-posts-body">
+            <RelatedPost
+              userEnteredUrl={"https://www.youtube.com/watch?app=desktop&v=Fmr0auKkgbk&pp=ygUJdGVjaHdpc2Vy"}
+            />
+          </div>
+        {:else}
+          <button
+            on:click={() => (relatedPostsActive = true)}
+            class="tablet__related-posts-toggle"
+          >
+            Related Posts
+            <Icon d={unfoldMore} size="2em" />
+          </button>
+        {/if}
+      {:then mainPostPub}
+        <a href={`/posts/${mainPostPubId}`} class="tablet__main-post">
+          {#await getImageCommentLensService(mainPostPub?.id)}
+            <div class="tablet__main-post__image__loader" />
+          {:then imageUrl}
+            {updateMetaTagsImageUrl(imageUrl)}
+            <div class="tablet__main-post__image">
+              <img src={imageUrl} alt="" />
+            </div>
+          {/await}
+          <a
+            class="CenterRowFlex tablet__main-post__url"
+            href={mainPostPub?.metadata?.sharingLink}
+            target="_blank"
+          >
+            {updateMetaTagsTitle(mainPostPub?.metadata?.sharingLink)}
+            <Icon d={redirect} />
+            {mainPostPub?.metadata?.sharingLink.substring(0, 40)}
+            ...
+          </a>
+          <div class="tablet__main-post__info">
+            <div class="tablet__main-post__info__top">
+              <div class="CenterRowFlex tablet__main-post__info__top__reaction">
+                {updateReactionDetails(
+                  mainPostPub?.operations?.hasUpVoted,
+                  mainPostPub?.operations?.hasDownVoted,
+                  mainPostPub?.stats?.upvotes,
+                  mainPostPub?.stats?.downvotes
+                )}
+                {#if reaction === AppReactionType.UpVote}
+                  <button
+                    on:click={(event) =>
+                      callRemoveReaction(event, AppReactionType.UpVote)}
+                    class="CenterRowFlex tablet__main-post__info__top__reaction__val"
+                  >
+                    <Icon d={thumbUp} />
+                    {upVoteCount}
+                  </button>
                 {:else}
-                    <button on:click={() => relatedPostsActive = true}
-                            class="tablet__related-posts-toggle">
-                        Related Posts
-                        <Icon d={unfoldMore} size="2em"/>
-                    </button>
+                  <button
+                    on:click={(event) =>
+                      callAddReaction(event, AppReactionType.UpVote)}
+                    class="CenterRowFlex tablet__main-post__info__top__reaction__val"
+                  >
+                    <Icon d={thumbUpAlt} />
+                    {upVoteCount}
+                  </button>
                 {/if}
-            {:then mainPostPub}
-                <a href={`/posts/${mainPostPubId}`} class="tablet__main-post">
-                    {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
-                        <div class="tablet__main-post__image__loader"></div>
-                    {:then imageUrl}
-                        {updateMetaTagsImageUrl(imageUrl)}
-                        <div class="tablet__main-post__image">
-                            <img src={imageUrl} alt="">
-                        </div>
-                    {/await}
-                    <a class="CenterRowFlex tablet__main-post__url"
-                       href={mainPostPub?.data?.publications?.items[0]?.metadata.content}
-                       target="_blank"
-                    >
-                        {updateMetaTagsTitle(mainPostPub?.data?.publications?.items[0]?.metadata.content)}
-                        <Icon d={redirect}/>
-                        {mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(0, 40)}
-                        ...
-                    </a>
-                    <div class="tablet__main-post__info">
-                        <div class="tablet__main-post__info__top">
-                            <div class="CenterRowFlex tablet__main-post__info__top__reaction">
-                                {updateReactionDetails(
-                                  mainPostPub?.data?.publications?.items[0]?.reaction,
-                                  mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes,
-                                  mainPostPub?.data?.publications?.items[0]?.stats?.totalDownvotes
-                                )}
-                                {#if reaction === "UPVOTE"}
-                                    <button on:click={() => callRemoveReaction(event, "UPVOTE")}
-                                            class="CenterRowFlex tablet__main-post__info__top__reaction__val">
-                                        <Icon d={thumbUp} />
-                                        {upVoteCount}
-                                    </button>
-                                {:else}
-                                    <button on:click={() => callAddReaction(event, "UPVOTE")}
-                                            class="CenterRowFlex tablet__main-post__info__top__reaction__val">
-                                        <Icon d={thumbUpAlt} />
-                                        {upVoteCount}
-                                    </button>
-                                {/if}
-                                <div class="tablet__main-post__info__top__reaction__vertical-line"></div>
-                                {#if reaction === "DOWNVOTE"}
-                                    <button on:click={() => callRemoveReaction(event, "DOWNVOTE")}
-                                            class="CenterRowFlex tablet__main-post__info__top__reaction__val">
-                                        <Icon d={thumbDown} />
-                                        {downVoteCount}
-                                    </button>
-                                {:else}
-                                    <button on:click={() => callAddReaction(event, "DOWNVOTE")}
-                                            class="CenterRowFlex tablet__main-post__info__top__reaction__val">
-                                        <Icon d={thumbDownAlt} />
-                                        {downVoteCount}
-                                    </button>
-                                {/if}
-                            </div>
-                            <div class="CenterRowFlex tablet__main-post__info__top__posts-count">
-                                <Icon d={modeComment}/>
-                                {getTotalPosts(mainPostPub?.data?.publications?.items[0]?.stats?.totalAmountOfComments)}
-                            </div>
-                            <button on:click={() => sharePost(event, $page.data.mainPostPubId)}
-                                    class="CenterRowFlex main-post__content__bottom__share">
-                                <Icon d={share}/>
-                            </button>
-                        </div>
-                        <div class="tablet__main-post__info__bottom">
-                            <div class="tablet__main-post__info__bottom__label">
-                                Added by:
-                            </div>
-                            <div class="tablet__main-post__info__bottom__added-by__handle">
-                                {mainPostPub?.data?.publications?.items[0]?.metadata?.attributes[0]?.value}
-                            </div>
-                            <div class="tablet__main-post__info__bottom__time">
-                                {getFormattedDate(mainPostPub?.data?.publications?.items[0]?.createdAt)}
-                            </div>
-                        </div>
-                    </div>
-                </a>
-                {#if relatedPostsActive}
-                    <div class="CenterRowFlex h3 tablet__related-posts">
-                        <div class="tablet__related-posts__title">
-                            Related Posts
-                        </div>
-                        <button on:click={() => relatedPostsActive = false}>
-                            <Icon d={cross}/>
-                        </button>
-                    </div>
-                    <div class="related-posts-body">
-                        <RelatedPost
-                                userEnteredUrl={mainPostPub?.data?.publications?.items[0]?.metadata?.content}/>
-                    </div>
+                <div
+                  class="tablet__main-post__info__top__reaction__vertical-line"
+                />
+                {#if reaction === AppReactionType.DownVote}
+                  <button
+                    on:click={(event) =>
+                      callRemoveReaction(event, AppReactionType.DownVote)}
+                    class="CenterRowFlex tablet__main-post__info__top__reaction__val"
+                  >
+                    <Icon d={thumbDown} />
+                    {downVoteCount}
+                  </button>
                 {:else}
-                    <button on:click={() => relatedPostsActive = true}
-                            class="tablet__related-posts-toggle">
-                        Related Posts
-                        <Icon d={unfoldMore} size="2em"/>
-                    </button>
+                  <button
+                    on:click={(event) =>
+                      callAddReaction(event, AppReactionType.DownVote)}
+                    class="CenterRowFlex tablet__main-post__info__top__reaction__val"
+                  >
+                    <Icon d={thumbDownAlt} />
+                    {downVoteCount}
+                  </button>
                 {/if}
-            {/await}
-        </section>
-    {:else}
-        <section>
-            {#await promiseOfGetMainPost}
-                <div class="main-post">
-                    <div class="main-post__content__loader"></div>
+              </div>
+              <div
+                class="CenterRowFlex tablet__main-post__info__top__posts-count"
+              >
+                <Icon d={modeComment} />
+                {getTotalPosts(mainPostPub?.stats?.comments)}
+              </div>
+              <button
+                on:click={(event) => sharePost(event, $page.data.mainPostPubId)}
+                class="CenterRowFlex main-post__content__bottom__share"
+              >
+                <Icon d={share} />
+              </button>
+            </div>
+            <div class="tablet__main-post__info__bottom">
+              <div class="tablet__main-post__info__bottom__label">
+                Added by:
+              </div>
+              <div class="tablet__main-post__info__bottom__added-by__handle">
+                {mainPostPub?.metadata?.attributes[0]?.value}
+              </div>
+              <div class="tablet__main-post__info__bottom__time">
+                {getFormattedDateHelperUtil(mainPostPub?.createdAt)}
+              </div>
+            </div>
+          </div>
+        </a>
+        {#if relatedPostsActive}
+          <div class="CenterRowFlex h3 tablet__related-posts">
+            <div class="tablet__related-posts__title">Related Posts</div>
+            <button on:click={() => (relatedPostsActive = false)}>
+              <Icon d={cross} />
+            </button>
+          </div>
+          <div class="related-posts-body">
+            <RelatedPost userEnteredUrl={mainPostPub?.metadata?.sharingLink} />
+          </div>
+        {:else}
+          <button
+            on:click={() => (relatedPostsActive = true)}
+            class="tablet__related-posts-toggle"
+          >
+            Related Posts
+            <Icon d={unfoldMore} size="2em" />
+          </button>
+        {/if}
+      {/await}
+    </section>
+  {:else}
+    <section>
+      {#await promiseOfGetMainPost}
+        <div class="main-post">
+          <div class="main-post__content__loader" />
+        </div>
+        <div class="h2 related-posts-head">Related Posts</div>
+        <div class="related-posts-body">
+          <RelatedPost userEnteredUrl={""} />
+        </div>
+      {:then mainPostPub}
+        {#await getImageCommentLensService(mainPostPub?.id)}
+          <div class="image__loader" />
+        {:then imageUrl}
+          {updateMetaTagsImageUrl(imageUrl)}
+          <a href={`/posts/${mainPostPubId}`}>
+            <img src={imageUrl} alt="" />
+          </a>
+        {/await}
+        <div class="CenterColumnFlex main-post">
+          <a
+            href={`/posts/${mainPostPubId}`}
+            class="CenterColumnFlex main-post__content"
+          >
+            <div class="CenterRowFlex main-post__content__top">
+              <a
+                href={mainPostPub?.metadata?.sharingLink}
+                target="_blank"
+                class="CenterRowFlex"
+              >
+                {updateMetaTagsTitle(mainPostPub?.metadata?.sharingLink)}
+                <div class="CenterRowFlex main-post__content__top__redirect">
+                  <Icon d={redirect} />
                 </div>
-                <div class="h2 related-posts-head">
-                    Related Posts
+                <div class="main-post__content__top__url">
+                  &nbsp;&nbsp;{mainPostPub?.metadata?.sharingLink.substring(
+                    0,
+                    40
+                  )}
+                  ...
                 </div>
-                <div class="related-posts-body">
-                    <RelatedPost userEnteredUrl={""}/>
+              </a>
+              <div class="main-post__content__top__time">
+                {getFormattedDateHelperUtil(mainPostPub?.createdAt)}
+              </div>
+              <div class="CenterRowFlex main-post__content__top__more">
+                <Icon d={moreVert} />
+              </div>
+            </div>
+            <div class="CenterRowFlex main-post__content__bottom">
+              <div class="CenterRowFlex main-post__content__bottom__reaction">
+                {updateReactionDetails(
+                  mainPostPub?.operations?.hasUpVoted,
+                  mainPostPub?.operations?.hasDownVoted,
+                  mainPostPub?.stats?.upvotes,
+                  mainPostPub?.stats?.downvotes
+                )}
+                {#if reaction === AppReactionType.UpVote}
+                  <button
+                    on:click={(event) =>
+                      callRemoveReaction(event, AppReactionType.UpVote)}
+                    class="CenterRowFlex main-post__content__bottom__reaction__val"
+                  >
+                    <Icon d={thumbUp} />
+                    {upVoteCount}
+                  </button>
+                {:else}
+                  <button
+                    on:click={(event) =>
+                      callAddReaction(event, AppReactionType.UpVote)}
+                    class="CenterRowFlex main-post__content__bottom__reaction__val"
+                  >
+                    <Icon d={thumbUpAlt} />
+                    {upVoteCount}
+                  </button>
+                {/if}
+                <div
+                  class="main-post__content__bottom__reaction__vertical-line"
+                />
+                {#if reaction === AppReactionType.DownVote}
+                  <button
+                    on:click={(event) =>
+                      callRemoveReaction(event, AppReactionType.DownVote)}
+                    class="CenterRowFlex main-post__content__bottom__reaction__val"
+                  >
+                    <Icon d={thumbDown} />
+                    {downVoteCount}
+                  </button>
+                {:else}
+                  <button
+                    on:click={(event) =>
+                      callAddReaction(event, AppReactionType.DownVote)}
+                    class="CenterRowFlex main-post__content__bottom__reaction__val"
+                  >
+                    <Icon d={thumbDownAlt} />
+                    {downVoteCount}
+                  </button>
+                {/if}
+              </div>
+              <div
+                class="CenterRowFlex main-post__content__bottom__posts-count"
+              >
+                <Icon d={modeComment} />
+                {getTotalPosts(mainPostPub?.stats?.comments)}
+                &nbsp;Posts
+              </div>
+              <button
+                on:click={(event) => sharePost(event, $page.data.mainPostPubId)}
+                class="CenterRowFlex main-post__content__bottom__share"
+              >
+                <Icon d={share} />
+              </button>
+              <div class="CenterRowFlex main-post__content__bottom__added-by">
+                <div class="main-post__content__bottom__added-by__label">
+                  Added by:
                 </div>
-            {:then mainPostPub}
-                {#await getImageURLUsingParentPubId(mainPostPub?.data?.publications?.items[0]?.id)}
-                    <div class="image__loader"></div>
-                {:then imageUrl}
-                    {updateMetaTagsImageUrl(imageUrl)}
-                    <a href={`/posts/${mainPostPubId}`}>
-                        <img src={imageUrl} alt="">
-                    </a>
-                {/await}
-                <div class="CenterColumnFlex main-post">
-                    <a href={`/posts/${mainPostPubId}`}
-                       class="CenterColumnFlex main-post__content">
-                        <div class="CenterRowFlex main-post__content__top">
-                            <a href={mainPostPub?.data?.publications?.items[0]?.metadata.content}
-                               target="_blank"
-                               class="CenterRowFlex"
-                            >
-                                {updateMetaTagsTitle(mainPostPub?.data?.publications?.items[0]?.metadata.content)}
-                                <div class="CenterRowFlex main-post__content__top__redirect">
-                                    <Icon d={redirect}/>
-                                </div>
-                                <div class="main-post__content__top__url">
-                                    &nbsp;&nbsp;{mainPostPub?.data?.publications?.items[0]?.metadata.content.substring(0, 40)}
-                                    ...
-                                </div>
-                            </a>
-                            <div class="main-post__content__top__time">
-                                {getFormattedDate(mainPostPub?.data?.publications?.items[0]?.createdAt)}
-                            </div>
-                            <div class="CenterRowFlex main-post__content__top__more">
-                                <Icon d={moreVert}/>
-                            </div>
-                        </div>
-                        <div class="CenterRowFlex main-post__content__bottom">
-                            <div class="CenterRowFlex main-post__content__bottom__reaction">
-                                {updateReactionDetails(
-                                  mainPostPub?.data?.publications?.items[0]?.reaction,
-                                  mainPostPub?.data?.publications?.items[0]?.stats?.totalUpvotes,
-                                  mainPostPub?.data?.publications?.items[0]?.stats?.totalDownvotes
-                                )}
-                                {#if reaction === "UPVOTE"}
-                                    <button on:click={() => callRemoveReaction(event, "UPVOTE")}
-                                            class="CenterRowFlex main-post__content__bottom__reaction__val">
-                                        <Icon d={thumbUp} />
-                                        {upVoteCount}
-                                    </button>
-                                {:else}
-                                    <button on:click={() => callAddReaction(event, "UPVOTE")}
-                                            class="CenterRowFlex main-post__content__bottom__reaction__val">
-                                        <Icon d={thumbUpAlt} />
-                                        {upVoteCount}
-                                    </button>
-                                {/if}
-                                <div class="main-post__content__bottom__reaction__vertical-line"></div>
-                                {#if reaction === "DOWNVOTE"}
-                                    <button on:click={() => callRemoveReaction(event, "DOWNVOTE")}
-                                            class="CenterRowFlex main-post__content__bottom__reaction__val">
-                                        <Icon d={thumbDown} />
-                                        {downVoteCount}
-                                    </button>
-                                {:else}
-                                    <button on:click={() => callAddReaction(event, "DOWNVOTE")}
-                                            class="CenterRowFlex main-post__content__bottom__reaction__val">
-                                        <Icon d={thumbDownAlt} />
-                                        {downVoteCount}
-                                    </button>
-                                {/if}
-                            </div>
-                            <div class="CenterRowFlex main-post__content__bottom__posts-count">
-                                <Icon d={modeComment}/>
-                                {getTotalPosts(mainPostPub?.data?.publications?.items[0]?.stats?.totalAmountOfComments)}
-                                &nbsp;Posts
-                            </div>
-                            <button on:click={() => sharePost(event,$page.data.mainPostPubId)}
-                                    class="CenterRowFlex main-post__content__bottom__share">
-                                <Icon d={share}/>
-                            </button>
-                            <div class="CenterRowFlex main-post__content__bottom__added-by">
-                                <div class="main-post__content__bottom__added-by__label">
-                                    Added by:
-                                </div>
-                                <div class="main-post__content__bottom__added-by__handle">
-                                    {mainPostPub?.data?.publications?.items[0]?.metadata?.attributes[0]?.value}
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+                <div class="main-post__content__bottom__added-by__handle">
+                  {mainPostPub?.metadata?.attributes[0]?.value}
                 </div>
-                <div class="h2 related-posts-head">
-                    Related Posts
-                </div>
-                <div class="related-posts-body">
-                    <RelatedPost userEnteredUrl={mainPostPub?.data?.publications?.items[0]?.metadata?.content}/>
-                </div>
-            {/await}
-        </section>
-    {/if}
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="h2 related-posts-head">Related Posts</div>
+        <div class="related-posts-body">
+          <RelatedPost userEnteredUrl={mainPostPub?.metadata?.sharingLink} />
+        </div>
+      {/await}
+    </section>
+  {/if}
 </MediaQuery>
 
 <Login bind:showLoginModal />
-<!---------------------------------------------------------------->
 
+<!----------------------------------------------------------------->
+
+<!---------------------------------------------------------------->
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
@@ -502,7 +571,7 @@
   }
 
   .tablet__main-post__info__top__reaction__val {
-      padding: 0.5rem 0.7rem;
+    padding: 0.5rem 0.7rem;
     gap: 0.4rem;
   }
 
@@ -564,7 +633,6 @@
     margin-top: 1rem;
   }
 
-
   section {
     padding-top: 2rem;
   }
@@ -587,7 +655,7 @@
     top: 0;
     bottom: 0;
     margin: auto;
-    background: rgba(13, 23, 29, 0.50);
+    background: rgba(13, 23, 29, 0.5);
     backdrop-filter: blur(8.5px);
     padding: 1.3rem 2rem;
     z-index: 10;
@@ -611,7 +679,6 @@
     gap: 0.5rem;
     width: 100%;
     border-radius: 10px 10px 0 0;
-
   }
 
   .main-post__content__top__time {
@@ -635,7 +702,7 @@
   }
 
   .main-post__content__bottom__reaction__val {
-      padding: 0.5rem 0.7rem;
+    padding: 0.5rem 0.7rem;
     gap: 0.4rem;
   }
 
@@ -698,4 +765,3 @@
     animation: 1s shine linear infinite;
   }
 </style>
-<!----------------------------------------------------------------->

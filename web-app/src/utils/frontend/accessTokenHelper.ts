@@ -8,7 +8,6 @@ export function isTokenExpired(exp: number) {
   if (!exp) return true;
 
   return Date.now() < exp * 1000;
-
 }
 
 // 1. Reading the access token from storage
@@ -70,20 +69,22 @@ type accessToken = string;
 export async function refreshAuthToken(): Promise<accessToken | undefined> {
   const data = readAccessToken();
 
-  if (!data) return
+  if (!data) return;
   try {
-    const authData = await baseClient.mutation(refreshMutation, {
-      refreshToken: data.refreshToken
-    }).toPromise()
+    const authData = await baseClient
+      .mutation(refreshMutation, {
+        refreshToken: data.refreshToken
+      })
+      .toPromise();
 
-    if (!authData) return
+    if (!authData) return;
 
     const { accessToken, refreshToken } = authData.data.refresh;
 
     setAccessToken(accessToken, refreshToken);
 
-    return accessToken
+    return accessToken;
   } catch (err) {
-    console.log('error:', err)
+    console.log("error:", err);
   }
 }

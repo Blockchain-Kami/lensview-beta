@@ -1,20 +1,20 @@
 <script lang="ts">
-    import FoundedPosts from "../../components/search-page/FoundedPosts.svelte";
-    import CreateANewThread from "../../components/search-page/CreateANewThread.svelte";
-    import {searchInputDetails} from "../../services/searchInputDetails";
+  import FoundedPosts from "../../components/search-page/FoundedPosts.svelte";
+  import CreateANewThread from "../../components/search-page/CreateANewThread.svelte";
+  import { searchInputDetails } from "../../services/searchInputDetails";
 </script>
-
 
 <!----------------------------- HTML ----------------------------->
 <section>
-    {#if $searchInputDetails.isInputUrl}
-        <CreateANewThread/>
-    {/if}
-    <FoundedPosts/>
+  {#if $searchInputDetails.isInputUrl}
+    <CreateANewThread />
+  {/if}
+  <FoundedPosts />
 </section>
 
-<!---------------------------------------------------------------->
+<!----------------------------------------------------------------->
 
+<!---------------------------------------------------------------->
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
@@ -26,4 +26,3 @@
     padding: 2rem;
   }
 </style>
-<!----------------------------------------------------------------->
