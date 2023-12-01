@@ -10,4 +10,3 @@ const challengeQueryGraphql = graphql(`
 `);
 
 export default challengeQueryGraphql;
-

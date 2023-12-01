@@ -12,7 +12,7 @@ import type { LensTransactionStatusQuery } from "../../gql/graphql";
 export const waitUntilComplete: any = async (
   input: { forTxHash: string } | { forTxId: string },
   startTime: number
-): Promise<LensTransactionStatusQuery | undefined>  => {
+): Promise<LensTransactionStatusQuery | undefined> => {
   if (Date.now() - startTime > 45000) {
     throw new Error("Tx timeout");
   }

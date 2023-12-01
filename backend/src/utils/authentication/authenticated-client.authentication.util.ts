@@ -7,7 +7,11 @@ import {
 } from "../../config/env.config";
 import { signer } from "../helpers/get-alchemy-signer.helpers.util";
 import authenticateService from "../../services/lens/authenticate.lens.service";
-import { ChallengeRequest, SignedAuthChallenge, AuthenticationResult } from "../../gql/graphql";
+import {
+  ChallengeRequest,
+  SignedAuthChallenge,
+  AuthenticationResult
+} from "../../gql/graphql";
 import getChallengeInfoLensService from "../../services/lens/get-challenge-info.lens.service";
 
 /**
@@ -43,10 +47,9 @@ const getAuthenticatedClientUtil: () => Promise<Client> = async () => {
     };
 
     // Authenticate the user
-    const authData = await authenticateService(request)
+    const authData = await authenticateService(request);
 
     console.log("AUTH DATA", JSON.stringify(authData.data?.authenticate));
-      
 
     // Extract accessToken from authentication response
     const {

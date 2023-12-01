@@ -12,7 +12,7 @@ export const getPublicationsForTagPublicationsUtil = async (
   inputString: string
 ): Promise<{ relatedPublications: string[]; message: number }> => {
   try {
-    let tags: string[] = [];
+    const tags: string[] = [];
     const relatedPublications: Array<string> = [];
     const keywords = inputString.trim().split(" ");
 
@@ -21,16 +21,14 @@ export const getPublicationsForTagPublicationsUtil = async (
       tags.push(keyword);
     }
     if (tags.length > 0) {
-      const res = await getRelatedPublicationsService(
-        tags
-      );
+      const res = await getRelatedPublicationsService(tags);
 
-    const items = res?.items || [];
+      const items = res?.items || [];
 
-    items.forEach((publication: any) => {
-      if (publication.__typename === "Post")
-        relatedPublications.push(publication?.id);
-    });
+      items.forEach((publication: any) => {
+        if (publication.__typename === "Post")
+          relatedPublications.push(publication?.id);
+      });
     }
 
     return {
