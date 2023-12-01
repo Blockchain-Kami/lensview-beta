@@ -4,8 +4,6 @@ import { URLNewPubRouteMiddleware } from "../middlewares/url/validate-request.ur
 
 const router = express.Router();
 
-router.post("/new-pub",
-    URLNewPubRouteMiddleware,
-    postNewPublicationController);
+router.post("/new-pub", URLNewPubRouteMiddleware, postNewPublicationController);
 
 export default router;

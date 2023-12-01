@@ -25,7 +25,7 @@ export const getRelatedPublicationsController = async (
 
     if (URL) {
       response = await getPublicationsForUrlPublicationsUtil(URL);
-      isURL = true
+      isURL = true;
     } else {
       response = await getPublicationsForTagPublicationsUtil(inputString);
       isURL = false;
