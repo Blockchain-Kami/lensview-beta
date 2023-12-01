@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-
 import { PublicationsResponseModel } from "../models/response-bodies/publications.response-body.model";
 import { PublicationsRequestQueryModel } from "../models/request-queries/publications-request-query.model";
 import { isInputTypeURLUtil } from "../utils/helpers/is-input-url.helpers.util";

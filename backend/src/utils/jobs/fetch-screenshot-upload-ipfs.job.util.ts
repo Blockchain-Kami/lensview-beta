@@ -76,9 +76,11 @@ export const fetchScreenshotUploadIPFSUtil = async (url: string) => {
     const file = new File([screenshotBlob as BlobPart], imgName);
     const client = new Web3Storage({ token: PUBLIC_WEB3STORAGE_TOKEN });
     const imgCID = await client.put([file], { name: imgName });
-    console.log("Screenshot image stored: " + makeGatewayURLImage(imgCID, imgName))
+    console.log(
+      "Screenshot image stored: " + makeGatewayURLImage(imgCID, imgName)
+    );
     return makeGatewayURLImage(imgCID, imgName);
-  } catch ( error ) {
+  } catch (error) {
     throw new InternalServerError(
       "Error while uploading screenshot to IPFS: " + error,
       500,
