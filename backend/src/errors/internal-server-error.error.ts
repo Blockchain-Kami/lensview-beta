@@ -22,6 +22,5 @@ export class InternalServerError extends BaseError {
     this.name = name;
     this.statusCode = statusCode;
     this.description = description;
-    console.log("What the hell", description);
   }
 }

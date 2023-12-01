@@ -39,12 +39,12 @@ export const omit = (object: any, name: string) => {
  * @return {Array<string>} - The updated array of tags.
  */
 export const createTags = (tags: Array<string>, query: any): Array<string> => {
-    const keys = Array.from(query.keys());
-    console.log("keys", keys);
-    for ( let i = 0; i < keys.length; i++ ){
-        if( query.get(keys[i]).length < 50 ) {
-            tags.push(keys[i] + '=' + query.get(keys[i]));
-        }
+  const keys = Array.from(query.keys());
+  console.log("keys", keys);
+  for (let i = 0; i < keys.length; i++) {
+    if (query.get(keys[i]).length < 50) {
+      tags.push(keys[i] + "=" + query.get(keys[i]));
     }
-    return tags;
-}
+  }
+  return tags;
+};

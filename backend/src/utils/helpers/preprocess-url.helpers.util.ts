@@ -28,7 +28,9 @@ import { httpStatusCodes } from "../../config/app-constants.config";
  * @returns An array containing the cleaned URL, hostname, domain, path, and query parameters.
  *          Returns null if the URL is invalid.
  */
-export const preprocessURLUtil = (url: string): [string, string, string, string, URLSearchParams]=> {
+export const preprocessURLUtil = (
+  url: string
+): [string, string, string, string, URLSearchParams] => {
   try {
     // convert the url to a URL object
     const parsedURL = new URL(url);
@@ -85,6 +87,9 @@ export const preprocessURLUtil = (url: string): [string, string, string, string,
       query
     ];
   } catch (error) {
-    throw new ClientError("Error processing the URL", httpStatusCodes.BAD_REQUEST);
+    throw new ClientError(
+      "Error processing the URL",
+      httpStatusCodes.BAD_REQUEST
+    );
   }
 };

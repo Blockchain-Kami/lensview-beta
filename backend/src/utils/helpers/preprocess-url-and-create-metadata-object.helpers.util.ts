@@ -11,26 +11,29 @@ import { MetadataObjectModel } from "../../models/metadata-object.model";
  * @param {string[]} tags - An array of tags to associate with the metadata object.
  * @return {MetadataObjectModel} The generated metadata object.
  */
-export const preprocessURLAndCreateMetadataObject = (urlString: string, lensHandle: string, postContent: string, tags: string[]): MetadataObjectModel => {
-    const [url, hostname, domain, path, query] = preprocessURLUtil(urlString);
-    const hashedURL = createHashUtil(url);
-    const hashedHostname = createHashUtil(hostname);
-    const hashedPath = createHashUtil(path);
+export const preprocessURLAndCreateMetadataObject = (
+  urlString: string,
+  lensHandle: string,
+  postContent: string | null,
+  tags: string[]
+): MetadataObjectModel => {
+  const [url, hostname, domain, path, query] = preprocessURLUtil(urlString);
+  const hashedURL = createHashUtil(url);
+  const hashedHostname = createHashUtil(hostname);
+  const hashedPath = createHashUtil(path);
 
-    const urlObj: MetadataObjectModel = {
-      url,
-      hashedURL,
-      hostname,
-      hashedHostname,
-      domain,
-      path,
-      hashedPath,
-      query,
-      lensHandle,
-      postContent,
-      tags,
-      image: ""
-    };
-
-    return urlObj;
-}
+  return {
+    url,
+    hashedURL,
+    hostname,
+    hashedHostname,
+    domain,
+    path,
+    hashedPath,
+    query,
+    lensHandle,
+    postContent,
+    tags,
+    image: ""
+  };
+};

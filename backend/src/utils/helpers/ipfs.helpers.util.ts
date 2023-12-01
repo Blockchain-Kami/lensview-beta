@@ -1,7 +1,6 @@
 import { Web3Storage, File } from "web3.storage";
 import { PUBLIC_WEB3STORAGE_TOKEN } from "../../config/env.config";
 
-
 if (!PUBLIC_WEB3STORAGE_TOKEN) {
   throw new Error(
     "Must define PUBLIC_WEB3STORAGE_TOKEN in the .env to run this"

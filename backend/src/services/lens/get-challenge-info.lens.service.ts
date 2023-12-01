@@ -8,13 +8,8 @@ import { ChallengeRequest } from "../../gql/graphql";
  * @param {ChallengeRequest} request - The challenge request object.
  * @return {Promise<ReturnType>} - A promise that resolves to the result of the query.
  */
-const getChallengeInfoLensService = async (
-  request: ChallengeRequest
-) => {
-  console.log(
-    "getChallengeInfoLensService signedBy",
-    request.signedBy
-  );
+const getChallengeInfoLensService = async (request: ChallengeRequest) => {
+  console.log("getChallengeInfoLensService signedBy", request.signedBy);
   console.log("getChallengeInfoLensService for", request.for);
 
   return await baseClientAuthenticationUtil

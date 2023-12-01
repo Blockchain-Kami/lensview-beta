@@ -12,7 +12,10 @@ import { preprocessURLAndCreateMetadataObject } from "../utils/helpers/preproces
  * @param {Response} res - The response object to send back to the client.
  * @return {Promise<void>} A Promise that resolves when the URL or post comment is successfully added.
  */
-export const addUrlOrPostCommentController = async (req: Request, res: Response) => {
+export const addUrlOrPostCommentController = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const {
       userEnteredString,
@@ -29,8 +32,15 @@ export const addUrlOrPostCommentController = async (req: Request, res: Response)
       });
     }
 
-    const urlObj = preprocessURLAndCreateMetadataObject(urlString, lensHandle, postContent, tags)
-    const publicationExists = await getRelatedPublicationsService([urlObj.hashedURL]);
+    const urlObj = preprocessURLAndCreateMetadataObject(
+      urlString,
+      lensHandle,
+      postContent,
+      tags
+    );
+    const publicationExists = await getRelatedPublicationsService([
+      urlObj.hashedURL
+    ]);
 
     if (publicationExists && publicationExists.items.length > 0) {
       console.log(JSON.stringify(publicationExists));
