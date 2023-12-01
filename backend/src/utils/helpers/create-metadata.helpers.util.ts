@@ -1,4 +1,4 @@
-import { link, MetadataAttributeType } from "@lens-protocol/metadata";
+import { link, MetadataAttributeType, textOnly } from "@lens-protocol/metadata";
 import {
   PUBLIC_SOURCE_APP_ID,
   PUBLIC_APP_LENS_HANDLE
@@ -16,11 +16,7 @@ import { MetadataObjectModel } from "../../models/metadata-object.model";
 export const createMetaDataForUrl = (urlObj: MetadataObjectModel) => {
   let tags: string[] = [];
   const userTags = urlObj.tags;
-  const URLtags = [
-      urlObj.hashedURL,
-      urlObj.hostname,
-      urlObj.domain
-  ];
+  const URLtags = [urlObj.hashedURL, urlObj.hostname, urlObj.domain];
   const allTags = userTags ? userTags.concat(URLtags) : URLtags;
   tags = urlObj.query ? createTags(allTags, urlObj.query) : allTags;
   const lensHandle = urlObj.lensHandle
@@ -60,5 +56,34 @@ export const createMetaDataForUrl = (urlObj: MetadataObjectModel) => {
     // attachments: [PublicationMetadataMediaVideo],
     // "encryptedWith": PublicationMetadataLitEncryption,
     // "hideFromFeed": true,
+  });
+};
+
+export const createMetaDataForAnonymousComment = (comment: string) => {
+  return textOnly({
+    locale: "en-US",
+    tags: ["418f361f5cdc602c856956bf752c06a29c52e54a"], //anonymousHash
+    appId: PUBLIC_SOURCE_APP_ID,
+    attributes: [
+      {
+        key: "creator",
+        type: MetadataAttributeType.STRING,
+        value: PUBLIC_APP_LENS_HANDLE
+      },
+      {
+        key: "app",
+        type: MetadataAttributeType.STRING,
+        value: PUBLIC_SOURCE_APP_ID
+      },
+      {
+        key: "created on",
+        type: MetadataAttributeType.STRING,
+        value: Date.now().toString()
+      }
+    ],
+    content: comment
+    //TODO: Check for below fields usage
+    // encryptedWith: PublicationMetadataLitEncryption,
+    // hideFromFeed: false,
   });
 };

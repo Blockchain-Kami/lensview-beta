@@ -6,7 +6,7 @@ import { getRelatedPublicationsService } from "../services/lens/related-parent-p
 import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
 import { LinkPublicationLensModel } from "../models/lens-models/link-publication.lens.model";
 import { PublicationsResponseModel } from "../models/response-bodies/publications.response-body.model";
-import {imageQueue} from "../jobs/add-image-queue.job";
+import { imageQueue } from "../jobs/add-image-queue.job";
 
 /**
  * Handles the logic for posting a new publication.

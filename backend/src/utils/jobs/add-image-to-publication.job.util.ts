@@ -1,7 +1,7 @@
 import Queue from "bull";
 import { getRelatedPublicationsService } from "../../services/lens/related-parent-publications.lens.service";
 import { fetchScreenshotUploadIPFSUtil } from "./fetch-screenshot-upload-ipfs.job.util";
-import {InternalServerError} from "../../errors/internal-server-error.error";
+import { InternalServerError } from "../../errors/internal-server-error.error";
 
 /**
  * Adds an image to a publication.
@@ -19,8 +19,13 @@ export const addImageToPublicationUtil = async (job: Queue.Job<any>) => {
     const sourceURL = urlObj.url;
     console.log("Source URL to add image: " + sourceURL);
     urlObj.image = await fetchScreenshotUploadIPFSUtil(sourceURL);
-  } catch ( error ) {
+  } catch (error) {
     console.log(error);
-    throw new InternalServerError("Error while adding image to publication: " + error, 500, "Internal Server Error", false);
+    throw new InternalServerError(
+      "Error while adding image to publication: " + error,
+      500,
+      "Internal Server Error",
+      false
+    );
   }
 };
