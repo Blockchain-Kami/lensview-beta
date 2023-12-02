@@ -10,7 +10,7 @@ import { ClientError } from "../../errors/client-error.error";
  * @param {NextFunction} next - The next function.
  * @throws {Error} Throws an error if the request query parameter 'search_query' is not present.
  */
-export const validatePublicationsRelatedRouteRequestMiddleware = (
+export const validateRequestQueryParameterMiddleware = (
   req: Request<unknown, unknown, unknown, PublicationsRequestQueryModel>,
   res: Response,
   next: NextFunction

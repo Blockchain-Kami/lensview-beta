@@ -1,14 +1,13 @@
 import { uploadIpfs } from "../helpers/ipfs.helpers.util";
 import type {
   CreateOnchainCommentBroadcastItemResult,
-  OnchainCommentRequest,
+  OnchainCommentRequest
 } from "../../gql/graphql";
 import createOnchainCommentTypedDataLensService from "../../services/lens/create-onchain-comment-typed-data.lens.service";
 import { signedTypeDataForComment } from "../helpers/ethers.helpers.util";
 import broadcastOnchainRequestLensService from "../../services/lens/broadcast-onchain-request.lens.service";
 import { waitUntilBroadcastTransactionIsComplete } from "../transaction/wait-until-complete.transaction.util";
 import type { RelayError, RelaySuccess } from "../../gql/graphql";
-import { createMetaDataForAnonymousComment } from "../helpers/create-metadata.helpers.util";
 
 const commentOnChainPublicationUtil = async (
   parentPubId: string,
