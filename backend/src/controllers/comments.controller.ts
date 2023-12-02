@@ -8,6 +8,7 @@ import { putAnonymousCommentRequestBodyModel } from "../models/request-bodies/an
 import commentOnChainPublicationUtil from "../utils/publications/comment-onchain.publication.util";
 import { InternalServerError } from "../errors/internal-server-error.error";
 import { putAnonymousCommentResponseModel } from "../models/response-bodies/comment-anonymously.response-body.model.util";
+import { createMetaDataForAnonymousComment } from "../utils/helpers/create-metadata.helpers.util";
 
 /**
  * Adds a URL or a post comment to the system.
@@ -80,17 +81,17 @@ export const putAnonymousCommentController = async (
 ) => {
   try {
     const { pubId, content } = req.body;
-    await commentOnChainPublicationUtil(pubId, content);
+    const metadata = createMetaDataForAnonymousComment(content);
+    await commentOnChainPublicationUtil(pubId, metadata);
     res.status(httpStatusCodes.CREATED).send({
       pubId,
       message: "Comment added successfully"
     });
   } catch (error) {
     console.log(error);
-    throw new InternalServerError(
-      "Failed to add anonymous comment to LensView: " + error,
-      500,
-      "Internal Server Error"
-    );
+    res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
+      pubId: req.body.pubId,
+      message: "Failed to ADD ANONYMOUS COMMENT to LensView"
+    });
   }
 };

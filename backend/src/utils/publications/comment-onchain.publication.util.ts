@@ -1,7 +1,7 @@
 import { uploadIpfs } from "../helpers/ipfs.helpers.util";
 import type {
   CreateOnchainCommentBroadcastItemResult,
-  OnchainCommentRequest
+  OnchainCommentRequest,
 } from "../../gql/graphql";
 import createOnchainCommentTypedDataLensService from "../../services/lens/create-onchain-comment-typed-data.lens.service";
 import { signedTypeDataForComment } from "../helpers/ethers.helpers.util";
@@ -12,7 +12,7 @@ import { createMetaDataForAnonymousComment } from "../helpers/create-metadata.he
 
 const commentOnChainPublicationUtil = async (
   parentPubId: string,
-  comment: string
+  metadata: any
 ) => {
   //TODO: Check in production weather we need "@lens-protocol/metadata", if it works putting in
   // devDependencies then keep it or go with schema approach that there in "api-examples" repo
@@ -61,8 +61,6 @@ const commentOnChainPublicationUtil = async (
   //   // hideFromFeed: true,
   //   // encryptedWith: PublicationMetadataLitEncryption,
   // });
-
-  const metadata = createMetaDataForAnonymousComment(comment);
 
   const ipfsResultUri = await uploadIpfs(JSON.stringify(metadata));
   console.log("post onchain: ipfs result uri", ipfsResultUri);

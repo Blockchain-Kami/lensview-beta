@@ -2,6 +2,8 @@ import Queue from "bull";
 import { getRelatedPublicationsService } from "../../services/lens/related-parent-publications.lens.service";
 import { fetchScreenshotUploadIPFSUtil } from "./fetch-screenshot-upload-ipfs.job.util";
 import { InternalServerError } from "../../errors/internal-server-error.error";
+import commentOnchainPublicationUtil from "../publications/comment-onchain.publication.util";
+import { createMetaDataForImageComment } from "../helpers/create-metadata.helpers.util";
 
 /**
  * Adds an image to a publication.
@@ -19,6 +21,9 @@ export const addImageToPublicationUtil = async (job: Queue.Job<any>) => {
     const sourceURL = urlObj.url;
     console.log("Source URL to add image: " + sourceURL);
     urlObj.image = await fetchScreenshotUploadIPFSUtil(sourceURL);
+    const metadata = createMetaDataForImageComment(urlObj);
+    await commentOnchainPublicationUtil(parentPostID, metadata);
+    return;
   } catch (error) {
     console.log(error);
     throw new InternalServerError(
