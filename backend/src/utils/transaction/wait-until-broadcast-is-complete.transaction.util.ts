@@ -3,9 +3,9 @@ import type {
   RelayError,
   RelaySuccess
 } from "../../gql/graphql";
-import { waitUntilComplete } from "../indexer/has-transaction-been-indexed.indexer.util";
+import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util";
 
-export async function waitUntilBroadcastTransactionIsComplete(
+export async function waitUntilBroadcastIsCompleteTransactionUtil(
   broadcastResult: RelaySuccess | RelayError,
   broadcastName?: string // for logging e.g. 'create post'
 ) {
@@ -18,7 +18,7 @@ export async function waitUntilBroadcastTransactionIsComplete(
   }
 
   console.log(`${actionToBroadcast}: poll until indexed`);
-  const indexedResult = await waitUntilComplete(
+  const indexedResult = await hasTransactionBeenIndexedIndexerUtil(
     {
       forTxId: broadcastResult.txId
     },
@@ -41,7 +41,7 @@ export async function waitUntilLensManagerTransactionIsComplete(
   }
 
   console.log(`${result}: poll until indexed`);
-  const indexedResult = await waitUntilComplete(
+  const indexedResult = await hasTransactionBeenIndexedIndexerUtil(
     { forTxId: result.txId },
     Date.now()
   );

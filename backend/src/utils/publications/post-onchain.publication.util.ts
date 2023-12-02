@@ -4,12 +4,12 @@ import type {
   RelayError,
   RelaySuccess
 } from "../../gql/graphql";
-import { uploadIpfs } from "../helpers/ipfs.helpers.util";
+import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util";
 import createOnchainPostTypedDataLensService from "../../services/lens/create-onchain-post-typed-data.lens.service";
-import broadcastOnchainRequestLensService from "../../services/lens/broadcast-onchain-request.lens.service";
-import { waitUntilBroadcastTransactionIsComplete } from "../transaction/wait-until-complete.transaction.util";
-import { signedTypeData } from "../helpers/ethers.helpers.util";
-import { createMetaDataForUrl } from "../helpers/create-metadata.helpers.util";
+import broadcastOnchainRequestService from "../../services/lens/broadcast-onchain-request.lens.service";
+import { waitUntilBroadcastIsCompleteTransactionUtil } from "../transaction/wait-until-broadcast-is-complete.transaction.util";
+import { signedTypeDataForPostHelperUtil } from "../helpers/sign-type-data.helper.util";
+import { createMetaDataForUrlHelperUtil } from "../helpers/create-metadata.helper.util";
 import { MetadataObjectModel } from "../../models/metadata-object.model";
 
 const postOnChainPublicationUtil = async (urlObj: MetadataObjectModel) => {
@@ -18,9 +18,9 @@ const postOnChainPublicationUtil = async (urlObj: MetadataObjectModel) => {
   // https://docs.lens.xyz/docs/publication-metadata#json-schemas
 
   console.log(urlObj);
-  const metadata = createMetaDataForUrl(urlObj);
+  const metadata = createMetaDataForUrlHelperUtil(urlObj);
 
-  const ipfsResultUri = await uploadIpfs(JSON.stringify(metadata));
+  const ipfsResultUri = await uploadToIPFSHelperUtil(JSON.stringify(metadata));
   console.log("post onchain: ipfs result uri", ipfsResultUri);
 
   const request: OnchainPostRequest = {
@@ -41,7 +41,7 @@ const postOnChainPublicationUtil = async (urlObj: MetadataObjectModel) => {
 
   console.log("post onchain: typedData", typedData);
 
-  const signature = await signedTypeData(
+  const signature = await signedTypeDataForPostHelperUtil(
     typedData.domain,
     typedData.types,
     typedData.value
@@ -49,12 +49,12 @@ const postOnChainPublicationUtil = async (urlObj: MetadataObjectModel) => {
   console.log("post onchain: signature", signature);
 
   // if (USE_GASLESS) {
-  const broadcastResult = (await broadcastOnchainRequestLensService({
+  const broadcastResult = (await broadcastOnchainRequestService({
     id,
     signature
   })) as RelaySuccess | RelayError;
 
-  await waitUntilBroadcastTransactionIsComplete(broadcastResult, "post");
+  await waitUntilBroadcastIsCompleteTransactionUtil(broadcastResult, "post");
   // } else {
   //   const { v, r, s } = splitSignature(signature);
   //

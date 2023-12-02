@@ -1,14 +1,21 @@
 import express from "express";
-import { addUrlOrPostCommentController } from "../controllers/comments.controller";
+import { postAnonymousCommentController } from "../controllers/comments.controller";
 import { putAnonymousCommentController } from "../controllers/comments.controller";
-import { validateAnonymousCommentRequestMiddleware } from "../middlewares/comments/validate-request.comments.middleware";
+import {
+  validatePostAnonymousCommentRequestMiddleware,
+  validatePutAnonymousCommentRequestMiddleware
+} from "../middlewares/comments/validate-request.comments.middleware";
 
 const router = express.Router();
 
-router.post("/anonymous", addUrlOrPostCommentController);
+router.post(
+  "/anonymous",
+  validatePostAnonymousCommentRequestMiddleware,
+  postAnonymousCommentController
+);
 router.put(
   "/anonymous",
-  validateAnonymousCommentRequestMiddleware,
+  validatePutAnonymousCommentRequestMiddleware,
   putAnonymousCommentController
 );
 

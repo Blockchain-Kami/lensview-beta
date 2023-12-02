@@ -1,5 +1,5 @@
 import { URL } from "url";
-import { websiteSpecificCleaningUtil } from "./website-specific-cleaning.helpers.util";
+import { websiteSpecificCleaningHelperUtil } from "./website-specific-cleaning.helper.util";
 import { ClientError } from "../../errors/client-error.error";
 import { httpStatusCodes } from "../../config/app-constants.config";
 
@@ -28,7 +28,7 @@ import { httpStatusCodes } from "../../config/app-constants.config";
  * @returns An array containing the cleaned URL, hostname, domain, path, and query parameters.
  *          Returns null if the URL is invalid.
  */
-export const preprocessURLUtil = (
+export const preprocessURLHelperUtil = (
   url: string
 ): [string, string, string, string, URLSearchParams] => {
   try {
@@ -67,7 +67,7 @@ export const preprocessURLUtil = (
       url = parsedURL["href"];
     }
 
-    url = websiteSpecificCleaningUtil(url);
+    url = websiteSpecificCleaningHelperUtil(url);
 
     const processedURL = new URL(url);
     // extract the relevant pieces of the url

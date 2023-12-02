@@ -1,14 +1,16 @@
 import { Request, Response } from "express";
-import { isInputTypeURLUtil } from "../utils/helpers/is-input-url.helpers.util";
+import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util";
 import { httpStatusCodes } from "../config/app-constants.config";
 import { getRelatedPublicationsService } from "../services/lens/related-parent-publications.lens.service";
 import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
-import { preprocessURLAndCreateMetadataObject } from "../utils/helpers/preprocess-url-and-create-metadata-object.helpers.util";
-import { putAnonymousCommentRequestBodyModel } from "../models/request-bodies/anonymous-comment.request-body.model";
+import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
+import { putAnonymousCommentBodyRequestModel } from "../models/requests/body/put-anonymous-comment.body.request.model";
 import commentOnChainPublicationUtil from "../utils/publications/comment-onchain.publication.util";
-import { InternalServerError } from "../errors/internal-server-error.error";
-import { putAnonymousCommentResponseModel } from "../models/response-bodies/comment-anonymously.response-body.model.util";
-import { createMetaDataForAnonymousComment } from "../utils/helpers/create-metadata.helpers.util";
+import { createMetaDataForAnonymousCommentHelperUtil } from "../utils/helpers/create-metadata.helper.util";
+import { PUBLIC_APP_LENS_HANDLE } from "../config/env.config";
+import { PublicationResponseModel } from "../models/response/publication.response.model";
+import { imageQueue } from "../jobs/add-image-queue.job";
+import PostAnonymousCommentRequestBodyModel from "../models/requests/body/post-anonymous-comment.body.request.model";
 
 /**
  * Adds a URL or a post comment to the system.
@@ -17,31 +19,26 @@ import { createMetaDataForAnonymousComment } from "../utils/helpers/create-metad
  * @param {Response} res - The response object to send back to the client.
  * @return {Promise<void>} A Promise that resolves when the URL or post comment is successfully added.
  */
-export const addUrlOrPostCommentController = async (
-  req: Request,
-  res: Response
+export const postAnonymousCommentController = async (
+  req: Request<unknown, unknown, PostAnonymousCommentRequestBodyModel>,
+  res: Response<PublicationResponseModel>
 ) => {
   try {
-    const {
-      userEnteredString,
-      postContent,
-      lensHandle,
-      userTags: tags
-    } = req.body;
+    const { url, content, userTags: tags } = req.body;
 
-    const urlString = isInputTypeURLUtil(userEnteredString);
+    const urlString = isInputTypeURLHelperUtil(url);
     if (!urlString) {
       return res.status(httpStatusCodes.BAD_REQUEST).send({
-        isURL: false,
+        publicationID: null,
         message: "User entered a tag"
       });
     }
 
-    const urlObj = preprocessURLAndCreateMetadataObject(
+    const urlObj = preprocessURLAndCreateMetadataObjectHelperUtil(
       urlString,
-      lensHandle,
-      postContent,
-      tags
+      PUBLIC_APP_LENS_HANDLE,
+      content,
+      tags ? tags : []
     );
     const publicationExists = await getRelatedPublicationsService([
       urlObj.hashedURL
@@ -50,19 +47,37 @@ export const addUrlOrPostCommentController = async (
     if (publicationExists && publicationExists.items.length > 0) {
       console.log(JSON.stringify(publicationExists));
       return res.status(httpStatusCodes.OK).send({
+        publicationID: publicationExists.items[0]?.id,
         message: "Publication Found"
       });
     } else {
-      const trxHash = await postOnChainPublicationUtil(urlObj);
-      res.status(200).send({
-        url: urlObj.url,
-        tags,
-        trxHash
-      });
+      await postOnChainPublicationUtil(urlObj);
+      imageQueue.add({ urlObj });
+      const addedPublication = await getRelatedPublicationsService([
+        urlObj.hashedURL
+      ]);
+      if (addedPublication && addedPublication.items.length > 0) {
+        const newPublicationId = addedPublication.items[0]?.id;
+        console.log(
+          "Publication added and indexed on-chain: " + newPublicationId
+        );
+        const metadata = createMetaDataForAnonymousCommentHelperUtil(content);
+        await commentOnChainPublicationUtil(newPublicationId, metadata);
+        return res.status(httpStatusCodes.OK).send({
+          publicationID: addedPublication.items[0]?.id,
+          message: "Publication and Anonymous Comment Added"
+        });
+      } else {
+        return res.status(httpStatusCodes.SERVER_TIMEOUT).send({
+          publicationID: null,
+          message: "Timeout while adding URL OR POST COMMENT to LensView"
+        });
+      }
     }
   } catch (e) {
     console.log(e);
     return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
+      publicationID: null,
       message: "Failed to ADD URL OR POST COMMENT to LensView"
     });
   }
@@ -71,26 +86,26 @@ export const addUrlOrPostCommentController = async (
 /**
  * Handles the request to add an anonymous comment to a publication.
  *
- * @param {Request<unknown, unknown, putAnonymousCommentRequestBodyModel>} req - The request object containing the body with the publication ID and comment content.
+ * @param {Request<unknown, unknown, putAnonymousCommentBodyRequestModel>} req - The request object containing the body with the publication ID and comment content.
  * @param {Response<putAnonymousCommentResponseModel>} res - The response object used to send the success message and status code.
  * @return {Promise<void>} - A promise that resolves when the comment has been successfully added.
  */
 export const putAnonymousCommentController = async (
-  req: Request<unknown, unknown, putAnonymousCommentRequestBodyModel>,
-  res: Response<putAnonymousCommentResponseModel>
+  req: Request<unknown, unknown, putAnonymousCommentBodyRequestModel>,
+  res: Response<PublicationResponseModel>
 ) => {
   try {
     const { pubId, content } = req.body;
-    const metadata = createMetaDataForAnonymousComment(content);
+    const metadata = createMetaDataForAnonymousCommentHelperUtil(content);
     await commentOnChainPublicationUtil(pubId, metadata);
     res.status(httpStatusCodes.CREATED).send({
-      pubId,
+      publicationID: pubId,
       message: "Comment added successfully"
     });
   } catch (error) {
     console.log(error);
     res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
-      pubId: req.body.pubId,
+      publicationID: req.body.pubId,
       message: "Failed to ADD ANONYMOUS COMMENT to LensView"
     });
   }

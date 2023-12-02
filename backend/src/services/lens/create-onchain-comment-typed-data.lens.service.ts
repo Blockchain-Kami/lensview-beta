@@ -1,12 +1,12 @@
-import authenticatedClientAuthenticationUtil from "../../utils/authentication/authenticated-client.authentication.util";
+import { getAuthenticatedClientUtil } from "../../utils/authentication/get-authenticated-client.authentication.util";
 import createOnchainCommentTypedDataMutationGraphql from "../../graphql/mutations/create-onchain-comment-typed-data.mutation.graphql";
 import type { OnchainCommentRequest } from "../../gql/graphql";
 
-const createOnchainCommentTypedDataLensService = async (
+const createOnchainCommentTypedDataService = async (
   request: OnchainCommentRequest
 ) => {
   console.log("createOnchainCommentTypedDataLensService request", request);
-  const client = await authenticatedClientAuthenticationUtil();
+  const client = await getAuthenticatedClientUtil();
   const result = await client
     .mutation(createOnchainCommentTypedDataMutationGraphql, { request })
     .toPromise();
@@ -14,4 +14,4 @@ const createOnchainCommentTypedDataLensService = async (
   return result.data?.createOnchainCommentTypedData;
 };
 
-export default createOnchainCommentTypedDataLensService;
+export default createOnchainCommentTypedDataService;

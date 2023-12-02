@@ -1,4 +1,4 @@
-import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
+import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util";
 import getRelatedPubsQuery from "../../graphql/queries/get-related-publications.query.graphql";
 import {
   PUBLIC_APP_LENS_ID,
@@ -11,10 +11,11 @@ import {
   PublicationsWhere,
   PublicationType
 } from "../../gql/graphql";
+import { GetRelatedPubsLensModel } from "../../models/lens/get-related-pubs.lens.model";
 
 /**
  * Retrieves the related parent publications based on a given tag.
- * @param {string} tag - The tag used to search for related parent publications.
+ * @param {string[]} tags - The tag used to search for related parent publications.
  * @returns {Promise<Array>} - A promise that resolves to an array of related parent publications, or null if an error occurs.
  */
 export const getRelatedPublicationsService = async (tags: string[]) => {
@@ -35,12 +36,12 @@ export const getRelatedPublicationsService = async (tags: string[]) => {
   };
 
   try {
-    const posts = await baseClientAuthenticationUtil
+    const result = await getBaseClientHelperUtil
       .query(getRelatedPubsQuery, {
         request: publicationsRequest
       })
       .toPromise();
-    return posts?.data?.publications;
+    return result?.data?.publications as GetRelatedPubsLensModel;
   } catch (error) {
     throw new InternalServerError("Error Fetching Data From Lens API", 504);
   }

@@ -6,6 +6,6 @@ import crypto from "crypto";
  * @param {string} url - The URL to hash.
  * @returns {string} The SHA-1 hash of the URL.
  */
-export const createHashUtil = (url: string) => {
+export const createHashHelperUtil = (url: string) => {
   return crypto.createHash("sha1").update(url).digest("hex");
 };

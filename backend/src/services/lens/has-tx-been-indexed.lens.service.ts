@@ -3,7 +3,7 @@ import type {
   LensTransactionStatusQuery,
   LensTransactionStatusRequest
 } from "../../gql/graphql";
-import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
+import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util";
 
 /**
  * Checks if a transaction has been indexed in the Lens service.
@@ -16,7 +16,7 @@ const hasTxBeenIndexedLensService = async (
 ): Promise<LensTransactionStatusQuery | undefined> => {
   console.log("hasTxBeenIndexedLensService request", request);
 
-  const result = await baseClientAuthenticationUtil
+  const result = await getBaseClientHelperUtil
     .query(lensTransactionStatusQueryGraphql, { request })
     .toPromise();
 

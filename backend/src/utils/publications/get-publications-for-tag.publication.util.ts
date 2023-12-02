@@ -8,7 +8,7 @@ import { FAILURE, SUCCESS } from "../../config/app-constants.config";
  * @return {Promise<{ relatedPublications: string[], message: string }>} - An object containing an array
  *   of related publication IDs and a success/failure message.
  */
-export const getPublicationsForTagPublicationsUtil = async (
+export const getPublicationsForTagPublicationUtil = async (
   inputString: string
 ): Promise<{ relatedPublications: string[]; message: number }> => {
   try {

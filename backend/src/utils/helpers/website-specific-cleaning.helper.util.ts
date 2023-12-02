@@ -5,7 +5,7 @@
  * @param input - The input URL string
  * @returns The modified URL string
  */
-export const websiteSpecificCleaningUtil = (input: string): string => {
+export const websiteSpecificCleaningHelperUtil = (input: string): string => {
   // Parse the input URL
   const inputURL = new URL(input);
 
