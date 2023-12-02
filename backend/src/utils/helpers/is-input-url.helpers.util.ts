@@ -36,6 +36,12 @@ export const isInputTypeURLUtil = (url: string) => {
   return urlRequest;
 };
 
+/**
+ * Strips the "www" subdomain from a URL string.
+ *
+ * @param {string} s - The URL string to be processed.
+ * @return {string} The URL string with the "www" subdomain removed.
+ */
 const stripWww = (s: string) => {
   const regExp = /^(https?:\/\/)?(www\.)?(.*)/;
   const regExpArr = regExp.exec(s);
