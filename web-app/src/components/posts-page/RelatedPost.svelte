@@ -54,10 +54,10 @@
     console.log("searchLinkOrKeywords", searchLinkOrKeywords);
     if (searchLinkOrKeywords !== "") {
       try {
-        foundedMainPostPubIds = await getRelatedPostPubIdsAppService(
-          searchLinkOrKeywords
-        );
+        const resp = await getRelatedPostPubIdsAppService(searchLinkOrKeywords);
+        foundedMainPostPubIds = resp?.publications;
         console.log("foundedMainPostPubIds", foundedMainPostPubIds);
+        fetchingFoundedMainPostPubIds = false;
       } catch (error) {
         fetchingFoundedMainPostPubIds = false;
         console.log("error", error);

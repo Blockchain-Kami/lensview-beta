@@ -1,5 +1,6 @@
 import clientAxiosUtil from "../../utils/axios/client.axios.util";
 import type { RelatedPublicationsAppModel } from "../../models/app/related-publications.app.model";
+import type { AxiosResponse } from "axios";
 
 const getRelatedPostPubIdsAppService = async (searchLinkOrKeywords: string) => {
   console.log(
@@ -8,15 +9,26 @@ const getRelatedPostPubIdsAppService = async (searchLinkOrKeywords: string) => {
   );
 
   try {
-    const resp: RelatedPublicationsAppModel = await clientAxiosUtil.get(
-      "publications/related",
-      {
+    return await clientAxiosUtil
+      .get("publications/related", {
         params: {
           search_query: searchLinkOrKeywords
         }
-      }
-    );
-    return resp?.publications;
+      })
+      .then(
+        (
+          resp: AxiosResponse<RelatedPublicationsAppModel>
+        ): RelatedPublicationsAppModel => {
+          if (resp?.status === 204)
+            return {
+              isUrl: false,
+              publications: [],
+              message: "No publications found"
+            };
+
+          return resp.data;
+        }
+      );
   } catch (err) {
     // TODO: Handle error as mentioned in this article
     // https://www.builder.io/blog/safe-data-fetching
