@@ -7,11 +7,10 @@ imageQueue.process(async (job, done) => {
   try {
     await addImageToPublicationJobUtil(job);
     done();
-  } catch ( error ) {
+  } catch (error) {
     console.log("Error adding image to publication: ", error);
     done();
   }
-
 });
 
 imageQueue.on("completed", (job) => {
