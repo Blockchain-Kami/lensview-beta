@@ -21,8 +21,9 @@ export const addImageToPublicationJobUtil = async (job: Queue.Job<any>) => {
     const sourceURL = urlObj.url;
     console.log("Source URL to add image: " + sourceURL);
     urlObj.image = await fetchScreenshotAndUploadToIPFSJobUtil(sourceURL);
-    const metadata = createMetaDataForImageCommentHelperUtil(urlObj);
-    await commentOnchainPublicationUtil(parentPostID, metadata);
+    const imageMetadata = createMetaDataForImageCommentHelperUtil(urlObj);
+    await commentOnchainPublicationUtil(parentPostID, imageMetadata);
+    console.log("Image Comment Added: " + parentPostID);
     return;
   } catch (error) {
     console.log(error);

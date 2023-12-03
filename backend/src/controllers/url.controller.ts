@@ -11,6 +11,7 @@ import { getRelatedPublicationsService } from "../services/lens/related-parent-p
 import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
 import { preprocessURLHelperUtil } from "../utils/helpers/preprocess-url.helper.util";
 import { createHashHelperUtil } from "../utils/helpers/create-hash.helper.util";
+import { createMetaDataForUrlHelperUtil } from "../utils/helpers/create-metadata.helper.util";
 
 /**
  * Handles the logic for posting a new publication.
@@ -52,7 +53,8 @@ export const postNewPublicationController = async (
         message: "Publication Already Exists"
       });
     } else {
-      await postOnChainPublicationUtil(urlObj);
+      const postMetadata = createMetaDataForUrlHelperUtil(urlObj);
+      await postOnChainPublicationUtil(postMetadata);
       imageQueue.add({ urlObj });
       const newPublication = await getRelatedPublicationsService([
         urlObj.hashedURL

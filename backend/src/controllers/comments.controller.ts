@@ -6,7 +6,10 @@ import postOnChainPublicationUtil from "../utils/publications/post-onchain.publi
 import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
 import { putAnonymousCommentBodyRequestModel } from "../models/requests/body/put-anonymous-comment.body.request.model";
 import commentOnChainPublicationUtil from "../utils/publications/comment-onchain.publication.util";
-import { createMetaDataForAnonymousCommentHelperUtil } from "../utils/helpers/create-metadata.helper.util";
+import {
+  createMetaDataForAnonymousCommentHelperUtil,
+  createMetaDataForUrlHelperUtil
+} from "../utils/helpers/create-metadata.helper.util";
 import { PUBLIC_APP_LENS_HANDLE } from "../config/env.config";
 import { PublicationResponseModel } from "../models/response/publication.response.model";
 import { imageQueue } from "../jobs/add-image-queue.job";
@@ -45,13 +48,17 @@ export const postAnonymousCommentController = async (
     ]);
 
     if (publicationExists && publicationExists.items.length > 0) {
-      console.log(JSON.stringify(publicationExists));
-      return res.status(httpStatusCodes.OK).send({
-        publicationID: publicationExists.items[0]?.id,
-        message: "Publication Found"
+      const publicationId = publicationExists.items[0]?.id;
+      const commentMetadata =
+        createMetaDataForAnonymousCommentHelperUtil(content);
+      await commentOnChainPublicationUtil(publicationId, commentMetadata);
+      return res.status(httpStatusCodes.CREATED).send({
+        publicationID: publicationId,
+        message: "Publication Found and Anonymous Comment Added"
       });
     } else {
-      await postOnChainPublicationUtil(urlObj);
+      const postMetadata = createMetaDataForUrlHelperUtil(urlObj);
+      await postOnChainPublicationUtil(postMetadata);
       imageQueue.add({ urlObj });
       const addedPublication = await getRelatedPublicationsService([
         urlObj.hashedURL
@@ -61,9 +68,10 @@ export const postAnonymousCommentController = async (
         console.log(
           "Publication added and indexed on-chain: " + newPublicationId
         );
-        const metadata = createMetaDataForAnonymousCommentHelperUtil(content);
-        await commentOnChainPublicationUtil(newPublicationId, metadata);
-        return res.status(httpStatusCodes.OK).send({
+        const commentMetadata =
+          createMetaDataForAnonymousCommentHelperUtil(content);
+        await commentOnChainPublicationUtil(newPublicationId, commentMetadata);
+        return res.status(httpStatusCodes.CREATED).send({
           publicationID: addedPublication.items[0]?.id,
           message: "Publication and Anonymous Comment Added"
         });
