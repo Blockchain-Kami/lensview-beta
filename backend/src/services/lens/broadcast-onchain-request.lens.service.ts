@@ -1,6 +1,6 @@
 import broadcastOnchainMutationGraphql from "../../graphql/mutations/broadcast-onchain.mutation.graphql";
 import type { BroadcastRequest } from "../../gql/graphql";
-import { getAuthenticatedClientUtil } from "../../utils/authentication/get-authenticated-client.authentication.util";
+import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util";
 
 /**
  * Broadcasts the given request onchain using the lens service.
@@ -11,7 +11,7 @@ import { getAuthenticatedClientUtil } from "../../utils/authentication/get-authe
 const broadcastOnchainRequestService = async (request: BroadcastRequest) => {
   console.log("broadcastOnchainRequestLensService request", request);
 
-  const authenticateClient = await getAuthenticatedClientUtil();
+  const authenticateClient = await getAuthenticatedClientAuthenticationUtil();
   const result = await authenticateClient
     .mutation(broadcastOnchainMutationGraphql, { request })
     .toPromise();

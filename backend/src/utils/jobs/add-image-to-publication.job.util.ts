@@ -1,9 +1,6 @@
 import Queue from "bull";
-import { getRelatedPublicationsService } from "../../services/lens/related-parent-publications.lens.service";
-import { fetchScreenshotAndUploadToIPFSJobUtil } from "./fetch-screenshot-and-upload-to-ipfs.job.util";
 import { InternalServerError } from "../../errors/internal-server-error.error";
-import commentOnchainPublicationUtil from "../publications/comment-onchain.publication.util";
-import { createMetaDataForImageCommentHelperUtil } from "../helpers/create-metadata.helper.util";
+import { uploadScreenshotAndCommentWithImageJobUtil } from "./upload-screenshot-and-comment-with-image.job.util";
 
 /**
  * Adds an image to a publication.
@@ -14,16 +11,7 @@ import { createMetaDataForImageCommentHelperUtil } from "../helpers/create-metad
 export const addImageToPublicationJobUtil = async (job: Queue.Job<any>) => {
   try {
     const { urlObj } = job.data;
-    const hashedURL = urlObj.hashedURL;
-    const res = await getRelatedPublicationsService([hashedURL]);
-    const parentPostID = res?.items[0]?.id;
-    console.log("Adding image to: " + parentPostID);
-    const sourceURL = urlObj.url;
-    console.log("Source URL to add image: " + sourceURL);
-    urlObj.image = await fetchScreenshotAndUploadToIPFSJobUtil(sourceURL);
-    const imageMetadata = createMetaDataForImageCommentHelperUtil(urlObj);
-    await commentOnchainPublicationUtil(parentPostID, imageMetadata);
-    console.log("Image Comment Added: " + parentPostID);
+    await uploadScreenshotAndCommentWithImageJobUtil(urlObj);
     return;
   } catch (error) {
     console.log(error);
