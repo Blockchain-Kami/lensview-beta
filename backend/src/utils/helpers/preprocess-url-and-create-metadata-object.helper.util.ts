@@ -1,5 +1,5 @@
-import { preprocessURLUtil } from "./preprocess-url.helpers.util";
-import { createHashUtil } from "./create-hash.helpers.util";
+import { preprocessURLHelperUtil } from "./preprocess-url.helper.util";
+import { createHashHelperUtil } from "./create-hash.helper.util";
 import { MetadataObjectModel } from "../../models/metadata-object.model";
 
 /**
@@ -11,16 +11,17 @@ import { MetadataObjectModel } from "../../models/metadata-object.model";
  * @param {string[]} tags - An array of tags to associate with the metadata object.
  * @return {MetadataObjectModel} The generated metadata object.
  */
-export const preprocessURLAndCreateMetadataObject = (
+export const preprocessURLAndCreateMetadataObjectHelperUtil = (
   urlString: string,
   lensHandle: string,
   postContent: string | null,
-  tags: string[]
+  tags: string[] | []
 ): MetadataObjectModel => {
-  const [url, hostname, domain, path, query] = preprocessURLUtil(urlString);
-  const hashedURL = createHashUtil(url);
-  const hashedHostname = createHashUtil(hostname);
-  const hashedPath = createHashUtil(path);
+  const [url, hostname, domain, path, query] =
+    preprocessURLHelperUtil(urlString);
+  const hashedURL = createHashHelperUtil(url);
+  const hashedHostname = createHashHelperUtil(hostname);
+  const hashedPath = createHashHelperUtil(path);
 
   return {
     url,

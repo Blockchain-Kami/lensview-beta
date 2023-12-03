@@ -9,7 +9,7 @@ import type { LensTransactionStatusQuery } from "../../gql/graphql";
  * @param {number} startTime - The start time of the function execution.
  * @return {Promise<LensTransactionStatusQuery | undefined>} A promise that resolves to the transaction status query if the transaction is complete, or undefined if the transaction is not found.
  */
-export const waitUntilComplete: any = async (
+export const hasTransactionBeenIndexedIndexerUtil: any = async (
   input: { forTxHash: string } | { forTxId: string },
   startTime: number
 ): Promise<LensTransactionStatusQuery | undefined> => {
@@ -43,5 +43,5 @@ export const waitUntilComplete: any = async (
   // sleep for before trying again
   await new Promise((resolve) => setTimeout(resolve, 1500));
 
-  return await waitUntilComplete(input, startTime);
+  return await hasTransactionBeenIndexedIndexerUtil(input, startTime);
 };

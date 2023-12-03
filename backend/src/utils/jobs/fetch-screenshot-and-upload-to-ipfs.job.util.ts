@@ -6,6 +6,36 @@ import { minimal_args } from "../../config/puppetteer.config";
 import { InternalServerError } from "../../errors/internal-server-error.error";
 
 /**
+ * Fetches a screenshot from the given URL and uploads it to IPFS.
+ *
+ * @param {string} url - The URL of the website to take a screenshot of.
+ * @return {Promise<string>} - A promise that resolves to the URL of the uploaded image on IPFS.
+ */
+export const fetchScreenshotAndUploadToIPFSJobUtil = async (url: string) => {
+  const imgName = "image.jpg";
+
+  try {
+    const screenshot = await Screenshot(url);
+    console.log("Screenshot taken successfully");
+    const screenshotBlob = new Blob([screenshot]);
+    const file = new File([screenshotBlob as BlobPart], imgName);
+    const client = new Web3Storage({ token: PUBLIC_WEB3STORAGE_TOKEN });
+    const imgCID = await client.put([file], { name: imgName });
+    console.log(
+      "Screenshot image stored: " + makeGatewayURLImage(imgCID, imgName)
+    );
+    return makeGatewayURLImage(imgCID, imgName);
+  } catch (error) {
+    throw new InternalServerError(
+      "Error while uploading screenshot to IPFS: " + error,
+      500,
+      "Internal Server Error",
+      false
+    );
+  }
+};
+
+/**
  * Generates a gateway URL for an image based on the image CID and image name.
  *
  * @param {CIDString} imgCID - The CID of the image.
@@ -53,36 +83,6 @@ const Screenshot = async (url: string) => {
   } catch (error) {
     throw new InternalServerError(
       "Error while taking screenshot",
-      500,
-      "Internal Server Error",
-      false
-    );
-  }
-};
-
-/**
- * Fetches a screenshot from the given URL and uploads it to IPFS.
- *
- * @param {string} url - The URL of the website to take a screenshot of.
- * @return {Promise<string>} - A promise that resolves to the URL of the uploaded image on IPFS.
- */
-export const fetchScreenshotUploadIPFSUtil = async (url: string) => {
-  const imgName = "image.jpg";
-
-  try {
-    const screenshot = await Screenshot(url);
-    console.log("Screenshot taken successfully");
-    const screenshotBlob = new Blob([screenshot]);
-    const file = new File([screenshotBlob as BlobPart], imgName);
-    const client = new Web3Storage({ token: PUBLIC_WEB3STORAGE_TOKEN });
-    const imgCID = await client.put([file], { name: imgName });
-    console.log(
-      "Screenshot image stored: " + makeGatewayURLImage(imgCID, imgName)
-    );
-    return makeGatewayURLImage(imgCID, imgName);
-  } catch (error) {
-    throw new InternalServerError(
-      "Error while uploading screenshot to IPFS: " + error,
       500,
       "Internal Server Error",
       false

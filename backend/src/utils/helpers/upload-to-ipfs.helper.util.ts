@@ -1,6 +1,22 @@
 import { Web3Storage, File } from "web3.storage";
 import { PUBLIC_WEB3STORAGE_TOKEN } from "../../config/env.config";
 
+/**
+ * Uploads a file to IPFS and returns the URI of the uploaded file.
+ *
+ * @param {string} data - The data to be uploaded to IPFS.
+ * @return {string} The URI of the uploaded file.
+ */
+export const uploadToIPFSHelperUtil = async (data: string) => {
+  const client = makeStorageClient();
+  const cid = await client.put(makeFileObjects(data));
+  console.log("stored files with cid:", cid);
+  const uri = `https://${cid}.ipfs.w3s.link/metaData.json`;
+
+  console.log("URI : " + uri);
+  return uri;
+};
+
 if (!PUBLIC_WEB3STORAGE_TOKEN) {
   throw new Error(
     "Must define PUBLIC_WEB3STORAGE_TOKEN in the .env to run this"
@@ -36,19 +52,3 @@ function makeFileObjects(data: string) {
     new File([blob] as [BlobPart], "metaData.json")
   ];
 }
-
-/**
- * Uploads a file to IPFS and returns the URI of the uploaded file.
- *
- * @param {string} data - The data to be uploaded to IPFS.
- * @return {string} The URI of the uploaded file.
- */
-export const uploadIpfs = async (data: string) => {
-  const client = makeStorageClient();
-  const cid = await client.put(makeFileObjects(data));
-  console.log("stored files with cid:", cid);
-  const uri = `https://${cid}.ipfs.w3s.link/metaData.json`;
-
-  console.log("URI : " + uri);
-  return uri;
-};

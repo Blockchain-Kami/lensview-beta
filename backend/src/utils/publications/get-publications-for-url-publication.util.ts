@@ -1,5 +1,4 @@
-import { preprocessURLUtil } from "../helpers/preprocess-url.helpers.util";
-import { createHashUtil } from "../helpers/create-hash.helpers.util";
+import { preprocessURLHelperUtil } from "../helpers/preprocess-url.helper.util";
 import { getRelatedPublicationsService } from "../../services/lens/related-parent-publications.lens.service";
 import { SUCCESS } from "../../config/app-constants.config";
 
@@ -9,9 +8,9 @@ import { SUCCESS } from "../../config/app-constants.config";
  * @param {string} URL - The URL for which to retrieve related publications.
  * @return {Promise<{relatedPublications: string[], message: string}>} - The related publications and a success message.
  */
-export const getPublicationsForUrlPublicationsUtil = async (URL: string) => {
+export const getPublicationsForURLPublicationUtil = async (URL: string) => {
   const relatedPublications: Array<string> = [];
-  const urlObject = preprocessURLUtil(URL);
+  const urlObject = preprocessURLHelperUtil(URL);
   const hostname = urlObject?.[1];
   if (hostname) {
     const tag = hostname.toString().toLowerCase();

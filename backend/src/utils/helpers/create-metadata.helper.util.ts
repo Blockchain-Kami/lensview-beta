@@ -10,7 +10,7 @@ import {
   PUBLIC_SOURCE_APP_ID,
   PUBLIC_APP_LENS_HANDLE
 } from "../../config/env.config";
-import { createTags } from "./helpers.helpers.util";
+import { createTagsHelperUtil } from "./helpers.helpers.util";
 import { MetadataObjectModel } from "../../models/metadata-object.model";
 
 // TODO: Check size limit allowed for individual tags in Lens Docs and reject tags larger than the allowed size
@@ -20,12 +20,12 @@ import { MetadataObjectModel } from "../../models/metadata-object.model";
  * @param {MetadataObjectModel} urlObj - The URL object for which metadata needs to be generated.
  * @return {any} - The generated metadata.
  */
-export const createMetaDataForUrl = (urlObj: MetadataObjectModel) => {
-  let tags: string[] = [];
+export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
+  let tags: string[];
   const userTags = urlObj.tags;
   const URLtags = [urlObj.hashedURL, urlObj.hostname, urlObj.domain];
   const allTags = userTags ? userTags.concat(URLtags) : URLtags;
-  tags = urlObj.query ? createTags(allTags, urlObj.query) : allTags;
+  tags = urlObj.query ? createTagsHelperUtil(allTags, urlObj.query) : allTags;
   const lensHandle = urlObj.lensHandle
     ? `${urlObj.lensHandle}`
     : PUBLIC_APP_LENS_HANDLE;
@@ -66,7 +66,9 @@ export const createMetaDataForUrl = (urlObj: MetadataObjectModel) => {
   });
 };
 
-export const createMetaDataForAnonymousComment = (comment: string) => {
+export const createMetaDataForAnonymousCommentHelperUtil = (
+  comment: string | null
+) => {
   return textOnly({
     locale: "en-US",
     tags: ["418f361f5cdc602c856956bf752c06a29c52e54a"], //anonymousHash
@@ -88,14 +90,16 @@ export const createMetaDataForAnonymousComment = (comment: string) => {
         value: Date.now().toString()
       }
     ],
-    content: comment
+    content: comment ? comment : "Comment by @testlenviewcode"
     //TODO: Check for below fields usage
     // encryptedWith: PublicationMetadataLitEncryption,
     // hideFromFeed: false,
   });
 };
 
-export const createMetaDataForImageComment = (urlObj: MetadataObjectModel) => {
+export const createMetaDataForImageCommentHelperUtil = (
+  urlObj: MetadataObjectModel
+) => {
   return image({
     locale: "en-US",
     tags: ["dd472d3370b389eb8399ea7c795ca9e76ff0d4d7"], //imagePub

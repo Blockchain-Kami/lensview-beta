@@ -6,7 +6,7 @@ import { URL } from "url";
  * @param url - The input string to be checked.
  * @returns The input string if it is a valid URL, otherwise null.
  */
-export const isInputTypeURLUtil = (url: string) => {
+export const isInputTypeURLHelperUtil = (url: string) => {
   let urlRequest = url;
   try {
     // remove whitespaces and the fragment(#) part of the URL

@@ -1,12 +1,12 @@
-import { uploadIpfs } from "../helpers/ipfs.helpers.util";
+import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util";
 import type {
   CreateOnchainCommentBroadcastItemResult,
   OnchainCommentRequest
 } from "../../gql/graphql";
-import createOnchainCommentTypedDataLensService from "../../services/lens/create-onchain-comment-typed-data.lens.service";
-import { signedTypeDataForComment } from "../helpers/ethers.helpers.util";
-import broadcastOnchainRequestLensService from "../../services/lens/broadcast-onchain-request.lens.service";
-import { waitUntilBroadcastTransactionIsComplete } from "../transaction/wait-until-complete.transaction.util";
+import createOnchainCommentTypedDataService from "../../services/lens/create-onchain-comment-typed-data.lens.service";
+import { signedTypeDataForCommentHelperUtil } from "../helpers/sign-type-data.helper.util";
+import broadcastOnchainRequestService from "../../services/lens/broadcast-onchain-request.lens.service";
+import { waitUntilBroadcastIsCompleteTransactionUtil } from "../transaction/wait-until-broadcast-is-complete.transaction.util";
 import type { RelayError, RelaySuccess } from "../../gql/graphql";
 
 const commentOnChainPublicationUtil = async (
@@ -61,7 +61,7 @@ const commentOnChainPublicationUtil = async (
   //   // encryptedWith: PublicationMetadataLitEncryption,
   // });
 
-  const ipfsResultUri = await uploadIpfs(JSON.stringify(metadata));
+  const ipfsResultUri = await uploadToIPFSHelperUtil(JSON.stringify(metadata));
   console.log("post onchain: ipfs result uri", ipfsResultUri);
 
   const request: OnchainCommentRequest = {
@@ -76,14 +76,14 @@ const commentOnChainPublicationUtil = async (
     // referenceModule: referenceModuleFollowOnly,
   };
 
-  const { id, typedData } = (await createOnchainCommentTypedDataLensService(
+  const { id, typedData } = (await createOnchainCommentTypedDataService(
     request
   )) as CreateOnchainCommentBroadcastItemResult;
   console.log("comment onchain: result", { id, typedData });
 
   console.log("comment onchain: typedData", typedData);
 
-  const signature = await signedTypeDataForComment(
+  const signature = await signedTypeDataForCommentHelperUtil(
     typedData.domain,
     typedData.types,
     typedData.value
@@ -91,12 +91,12 @@ const commentOnChainPublicationUtil = async (
   console.log("comment onchain: signature", signature);
 
   // if (USE_GASLESS) {
-  const broadcastResult = (await broadcastOnchainRequestLensService({
+  const broadcastResult = (await broadcastOnchainRequestService({
     id,
     signature
   })) as RelaySuccess | RelayError;
 
-  await waitUntilBroadcastTransactionIsComplete(broadcastResult, "Comment");
+  await waitUntilBroadcastIsCompleteTransactionUtil(broadcastResult, "Comment");
   // } else {
   //   const { v, r, s } = splitSignature(signature);
   //

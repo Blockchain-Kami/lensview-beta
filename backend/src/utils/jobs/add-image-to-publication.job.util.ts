@@ -1,9 +1,9 @@
 import Queue from "bull";
 import { getRelatedPublicationsService } from "../../services/lens/related-parent-publications.lens.service";
-import { fetchScreenshotUploadIPFSUtil } from "./fetch-screenshot-upload-ipfs.job.util";
+import { fetchScreenshotAndUploadToIPFSJobUtil } from "./fetch-screenshot-and-upload-to-ipfs.job.util";
 import { InternalServerError } from "../../errors/internal-server-error.error";
 import commentOnchainPublicationUtil from "../publications/comment-onchain.publication.util";
-import { createMetaDataForImageComment } from "../helpers/create-metadata.helpers.util";
+import { createMetaDataForImageCommentHelperUtil } from "../helpers/create-metadata.helper.util";
 
 /**
  * Adds an image to a publication.
@@ -11,7 +11,7 @@ import { createMetaDataForImageComment } from "../helpers/create-metadata.helper
  * @param {Queue.Job<any>} job - The job containing the data needed to add the image.
  * @return {Promise<void>} - A promise that resolves when the image has been added successfully.
  */
-export const addImageToPublicationUtil = async (job: Queue.Job<any>) => {
+export const addImageToPublicationJobUtil = async (job: Queue.Job<any>) => {
   try {
     const { urlObj } = job.data;
     const hashedURL = urlObj.hashedURL;
@@ -20,8 +20,8 @@ export const addImageToPublicationUtil = async (job: Queue.Job<any>) => {
     console.log("Adding image to: " + parentPostID);
     const sourceURL = urlObj.url;
     console.log("Source URL to add image: " + sourceURL);
-    urlObj.image = await fetchScreenshotUploadIPFSUtil(sourceURL);
-    const metadata = createMetaDataForImageComment(urlObj);
+    urlObj.image = await fetchScreenshotAndUploadToIPFSJobUtil(sourceURL);
+    const metadata = createMetaDataForImageCommentHelperUtil(urlObj);
     await commentOnchainPublicationUtil(parentPostID, metadata);
     return;
   } catch (error) {

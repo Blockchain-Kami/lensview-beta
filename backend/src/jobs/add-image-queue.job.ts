@@ -1,11 +1,17 @@
 import Queue from "bull";
-import { addImageToPublicationUtil } from "../utils/jobs/add-image-to-publication.job.util";
+import { addImageToPublicationJobUtil } from "../utils/jobs/add-image-to-publication.job.util";
 
 export const imageQueue = new Queue("imageQueue");
 
 imageQueue.process(async (job, done) => {
-  await addImageToPublicationUtil(job);
-  done();
+  try {
+    await addImageToPublicationJobUtil(job);
+    done();
+  } catch ( error ) {
+    console.log("Error adding image to publication: ", error);
+    done();
+  }
+
 });
 
 imageQueue.on("completed", (job) => {

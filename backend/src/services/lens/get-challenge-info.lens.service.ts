@@ -1,4 +1,4 @@
-import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
+import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util";
 import challengeQueryGraphql from "../../graphql/queries/challenge.query.graphql";
 import { ChallengeRequest } from "../../gql/graphql";
 
@@ -12,7 +12,7 @@ const getChallengeInfoLensService = async (request: ChallengeRequest) => {
   console.log("getChallengeInfoLensService signedBy", request.signedBy);
   console.log("getChallengeInfoLensService for", request.for);
 
-  return await baseClientAuthenticationUtil
+  return await getBaseClientHelperUtil
     .query(challengeQueryGraphql, { request })
     .toPromise();
 };

@@ -1,6 +1,6 @@
 import type { TypedDataDomain } from "@ethersproject/abstract-signer";
 import { omit } from "./helpers.helpers.util";
-import { signer } from "./get-alchemy-signer.helpers.util";
+import { signer } from "./get-signer.helper.util";
 import {
   CreateOnchainPostEip712TypedDataTypes,
   CreateOnchainCommentEip712TypedDataTypes
@@ -15,7 +15,7 @@ export const getSigner = () => {
   return signer;
 };
 
-export const signedTypeData = async (
+export const signedTypeDataForPostHelperUtil = async (
   domain: TypedDataDomain,
   types: CreateOnchainPostEip712TypedDataTypes,
   value: Record<string, any>
@@ -29,7 +29,7 @@ export const signedTypeData = async (
   );
 };
 
-export const signedTypeDataForComment = async (
+export const signedTypeDataForCommentHelperUtil = async (
   domain: TypedDataDomain,
   types: CreateOnchainCommentEip712TypedDataTypes,
   value: Record<string, any>

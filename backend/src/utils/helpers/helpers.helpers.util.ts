@@ -38,7 +38,10 @@ export const omit = (object: any, name: string) => {
  * @param {any} query - The query object containing key-value pairs.
  * @return {Array<string>} - The updated array of tags.
  */
-export const createTags = (tags: Array<string>, query: any): Array<string> => {
+export const createTagsHelperUtil = (
+  tags: Array<string>,
+  query: any
+): Array<string> => {
   const keys = Array.from(query.keys());
   console.log("keys", keys);
   for (let i = 0; i < keys.length; i++) {
