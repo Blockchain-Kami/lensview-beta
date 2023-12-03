@@ -1,19 +1,22 @@
+import { profileUserStore } from "../../stores/user/profile.user.store";
 import clientAxiosUtil from "../../utils/axios/client.axios.util";
-import type { RelatedPublicationsAppModel } from "../../models/app/related-publications.app.model";
 import type { AxiosResponse } from "axios";
+import type { RelatedPublicationsAppModel } from "../../models/app/related-publications.app.model";
 
-const getRelatedPostPubIdsAppService = async (searchURLOrKeywords: string) => {
-  console.log(
-    "getRelatedPostPubIdsAppService searchURLOrKeywords:",
-    searchURLOrKeywords
-  );
+const addUrlAppService = async (url: string) => {
+  console.log("addUrlAppService url:", url);
+
+  let handle;
+  const unsub = profileUserStore.subscribe((profile) => {
+    handle = profile?.handle;
+  });
+  unsub();
 
   try {
     return await clientAxiosUtil
-      .get("publications/related", {
-        params: {
-          search_query: searchURLOrKeywords
-        }
+      .post("url/new-pub", {
+        url: url,
+        lensHandle: handle
       })
       .then(
         (
@@ -37,4 +40,4 @@ const getRelatedPostPubIdsAppService = async (searchURLOrKeywords: string) => {
   }
 };
 
-export default getRelatedPostPubIdsAppService;
+export default addUrlAppService;

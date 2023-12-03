@@ -32,7 +32,7 @@
   };
 
   let isCardsMoreOpen = false;
-  export let searchLinkOrKeywords: string;
+  export let searchURLOrKeywords: string;
 
   let foundedMainPostPubIds: string[] = [];
   let fetchingFoundedMainPostPubIds = false;
@@ -51,10 +51,10 @@
 
   onMount(async () => {
     fetchingFoundedMainPostPubIds = true;
-    console.log("searchLinkOrKeywords", searchLinkOrKeywords);
-    if (searchLinkOrKeywords !== "") {
+    console.log("searchURLOrKeywords", searchURLOrKeywords);
+    if (searchURLOrKeywords !== "") {
       try {
-        const resp = await getRelatedPostPubIdsAppService(searchLinkOrKeywords);
+        const resp = await getRelatedPostPubIdsAppService(searchURLOrKeywords);
         foundedMainPostPubIds = resp?.publications;
         console.log("foundedMainPostPubIds", foundedMainPostPubIds);
         fetchingFoundedMainPostPubIds = false;
