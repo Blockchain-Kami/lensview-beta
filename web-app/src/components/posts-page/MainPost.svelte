@@ -226,7 +226,7 @@
           </div>
           <div class="related-posts-body">
             <RelatedPost
-              userEnteredUrl={"https://www.youtube.com/watch?app=desktop&v=Fmr0auKkgbk&pp=ygUJdGVjaHdpc2Vy"}
+              searchURLOrKeywords={"https://www.youtube.com/watch?app=desktop&v=Fmr0auKkgbk&pp=ygUJdGVjaHdpc2Vy"}
             />
           </div>
         {:else}
@@ -343,7 +343,9 @@
             </button>
           </div>
           <div class="related-posts-body">
-            <RelatedPost userEnteredUrl={mainPostPub?.metadata?.sharingLink} />
+            <RelatedPost
+              searchURLOrKeywords={mainPostPub?.metadata?.sharingLink}
+            />
           </div>
         {:else}
           <button
@@ -364,7 +366,7 @@
         </div>
         <div class="h2 related-posts-head">Related Posts</div>
         <div class="related-posts-body">
-          <RelatedPost userEnteredUrl={""} />
+          <RelatedPost searchURLOrKeywords={""} />
         </div>
       {:then mainPostPub}
         {#await getImageCommentLensService(mainPostPub?.id)}
@@ -481,7 +483,9 @@
         </div>
         <div class="h2 related-posts-head">Related Posts</div>
         <div class="related-posts-body">
-          <RelatedPost userEnteredUrl={mainPostPub?.metadata?.sharingLink} />
+          <RelatedPost
+            searchURLOrKeywords={mainPostPub?.metadata?.sharingLink}
+          />
         </div>
       {/await}
     </section>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import AddNewPost from "../main-page/AddNewPost.svelte";
-  import { searchInputDetails } from "../../services/searchInputDetails";
+  import { page } from "$app/stores";
 
   let showAddNewPostModal = false;
 </script>
@@ -24,7 +24,7 @@
 </section>
 
 <AddNewPost
-  userEnteredUrl={$searchInputDetails.userEnteredUrlOrKeywords}
+  userEnteredUrl={$page.data.userEnteredUrlOrKeywords}
   bind:showAddNewPostModal
 />
 

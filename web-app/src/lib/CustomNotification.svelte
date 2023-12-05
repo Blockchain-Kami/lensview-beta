@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from "$lib/Icon.svelte";
-  import { close } from "../utils/frontend/appIcon";
+  import { close } from "../utils/app-icon.util";
   import type { CustomNotificationModel } from "../models/custom-notification.model";
   import { fly } from "svelte/transition";
 

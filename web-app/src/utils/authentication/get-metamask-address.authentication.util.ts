@@ -1,4 +1,4 @@
-import { cross, wallet } from "../frontend/appIcon";
+import { cross, wallet } from "../app-icon.util";
 import { addressUserStore } from "../../stores/user/address.user.store";
 import { PUBLIC_IS_PROD } from "$env/static/public";
 import stringifyNotificationObjectWithFunctionUtil from "../stringify-notification-object-with-function.util";

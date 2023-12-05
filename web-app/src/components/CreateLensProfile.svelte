@@ -1,11 +1,6 @@
 <script lang="ts">
   import Icon from "$lib/Icon.svelte";
-  import {
-    awesome,
-    close,
-    cross,
-    handleTaken
-  } from "../utils/frontend/appIcon";
+  import { awesome, close, cross, handleTaken } from "../utils/app-icon.util";
   import Loader from "$lib/Loader.svelte";
   import { fly } from "svelte/transition";
   import { backInOut } from "svelte/easing";

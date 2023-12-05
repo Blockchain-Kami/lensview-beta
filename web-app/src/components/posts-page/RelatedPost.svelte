@@ -9,7 +9,7 @@
     thumbDown,
     thumbUp,
     trendingUp
-  } from "../../utils/frontend/appIcon";
+  } from "../../utils/app-icon.util";
   import { onMount } from "svelte";
   import { page } from "$app/stores";
   import DOMPurify from "dompurify";
@@ -25,13 +25,14 @@
   import { LimitType } from "../../gql/graphql";
   import { CommentFilterType } from "../../config/app-constants.config";
   import getPictureURLUtil from "../../utils/get-picture-URL.util";
+  import getRelatedPostPubIdsAppService from "../../services/app/get-related-post-pub-ids.app.service";
 
   type KeyStringValBoolean = {
     [key: string]: boolean;
   };
 
   let isCardsMoreOpen = false;
-  export let userEnteredUrl: string;
+  export let searchURLOrKeywords: string;
 
   let foundedMainPostPubIds: string[] = [];
   let fetchingFoundedMainPostPubIds = false;
@@ -50,19 +51,13 @@
 
   onMount(async () => {
     fetchingFoundedMainPostPubIds = true;
-    console.log("userEnteredUrl", userEnteredUrl);
-    if (userEnteredUrl !== "") {
+    console.log("searchURLOrKeywords", searchURLOrKeywords);
+    if (searchURLOrKeywords !== "") {
       try {
-        const result = await fetch(
-          "https://api.lensview.io/publications/related?search_query=https://scottspence.com/posts/use-urql-with-sveltekit\\"
-        ).then((res) => {
-          fetchingFoundedMainPostPubIds = false;
-          if (res.ok) return res.json();
-          else throw new Error(res.statusText);
-        });
-        foundedMainPostPubIds = result?.relatedPubArray;
-
+        const resp = await getRelatedPostPubIdsAppService(searchURLOrKeywords);
+        foundedMainPostPubIds = resp?.publicationIDs;
         console.log("foundedMainPostPubIds", foundedMainPostPubIds);
+        fetchingFoundedMainPostPubIds = false;
       } catch (error) {
         fetchingFoundedMainPostPubIds = false;
         console.log("error", error);

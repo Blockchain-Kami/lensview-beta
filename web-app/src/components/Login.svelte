@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from "$lib/Icon.svelte";
-  import { close, cross, tick } from "../utils/frontend/appIcon";
+  import { close, cross, tick } from "../utils/app-icon.util";
   import Loader from "$lib/Loader.svelte";
   import CreateLensProfile from "./CreateLensProfile.svelte";
   import { fly } from "svelte/transition";
@@ -32,25 +32,7 @@
     console.log("onLoginIntialization");
     try {
       await getMetamaskAddressAuthenticationUtil(true);
-      const isValidAccessTokenPresentInLocalStorage =
-        await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
-      console.log(
-        "isValidAccessTokenPresentInLocalStorage: " +
-          isValidAccessTokenPresentInLocalStorage
-      );
-      if (isValidAccessTokenPresentInLocalStorage) {
-        await setProfileAuthenticationUtil();
-        isLoggedInUserStore.setLoggedInStatus(true);
-        loggingIn = false;
-        dialog.close();
-        addNotification({
-          position: "top-right",
-          heading: "Successfully logged in",
-          description: "You are now logged in",
-          type: tick,
-          removeAfter: 10000
-        });
-      }
+      await loggedUserInIfAccessTokenPresent();
     } catch (error) {
       dialog.close();
       console.log(error);
@@ -98,6 +80,7 @@
   const connect = async () => {
     try {
       await getMetamaskAddressAuthenticationUtil(false);
+      await loggedUserInIfAccessTokenPresent();
     } catch (error) {
       console.log("connect error : ", error);
       dialog.close();
@@ -121,6 +104,28 @@
   const openCreateLensProfileModal = () => {
     showCreateLensProfileModal = true;
     dialog.close();
+  };
+
+  const loggedUserInIfAccessTokenPresent = async () => {
+    const isValidAccessTokenPresentInLocalStorage =
+      await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
+    console.log(
+      "isValidAccessTokenPresentInLocalStorage: " +
+        isValidAccessTokenPresentInLocalStorage
+    );
+    if (isValidAccessTokenPresentInLocalStorage) {
+      await setProfileAuthenticationUtil();
+      isLoggedInUserStore.setLoggedInStatus(true);
+      loggingIn = false;
+      dialog.close();
+      addNotification({
+        position: "top-right",
+        heading: "Successfully logged in",
+        description: "You are now logged in",
+        type: tick,
+        removeAfter: 10000
+      });
+    }
   };
 </script>
 
