@@ -9,8 +9,6 @@
     thumbUp,
     trendingUp
   } from "../../utils/frontend/appIcon";
-  import { searchInputDetails } from "../../services/searchInputDetails";
-  import type { SearchInputDetailsModel } from "../../models/searchInputDetails.model";
   import DOMPurify from "dompurify";
   import { Tooltip } from "@svelte-plugins/tooltips";
   import { PUBLIC_APP_LENS_ID } from "$env/static/public";
@@ -24,13 +22,13 @@
   import { CommentFilterType } from "../../config/app-constants.config";
   import getPictureURLUtil from "../../utils/get-picture-URL.util";
   import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
+  import getRelatedPostPubIdsAppService from "../../services/app/get-related-post-pub-ids.app.service";
+  import { page } from "$app/stores";
 
   type KeyStringValBoolean = {
     [key: string]: boolean;
   };
 
-  let foundedMainPostPubId: string[] = [];
-  let fetchingMainPostPubId = false;
   const options: Options = {
     threshold: 1,
     rootMargin: "-10%"
@@ -43,38 +41,13 @@
   ) => {
     isInView[id] = event.detail.inView;
   };
-
-  searchInputDetails.subscribe(async (details: SearchInputDetailsModel) => {
-    const userEnteredUrlOrKeywords = details.userEnteredUrlOrKeywords;
-    fetchingMainPostPubId = true;
-    try {
-      foundedMainPostPubId = await fetch("/api/related-pubs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(userEnteredUrlOrKeywords)
-      }).then((res) => {
-        fetchingMainPostPubId = false;
-        if (res.ok) return res.json();
-        else throw new Error(res.statusText);
-      });
-    } catch (error) {
-      console.log("error", error);
-      foundedMainPostPubId = [];
-      fetchingMainPostPubId = false;
-    }
-  });
 </script>
 
 <!----------------------------- HTML ----------------------------->
 <MediaQuery query="(max-width: 825px)" let:matches>
   {#if matches}
     <section class="mobile">
-      {#if foundedMainPostPubId.length !== 0}
-        <div class="h3 heading">This is what we found</div>
-      {/if}
-      {#if fetchingMainPostPubId}
+      {#await getRelatedPostPubIdsAppService($page.data.userEnteredUrlOrKeywords)}
         <div class="mobile__card">
           <div class="mobile__card__image-loader" />
           <div class="mobile__card__info__loader" />
@@ -101,9 +74,12 @@
             </div>
           </div>
         </div>
-      {:else}
+      {:then result}
+        {#if result?.publicationIDs.length !== 0}
+          <div class="h3 heading">This is what we found</div>
+        {/if}
         <div class="mobile__body">
-          {#each foundedMainPostPubId as mainPostPubId}
+          {#each result?.publicationIDs as mainPostPubId}
             <a
               href={`/posts/${mainPostPubId}`}
               use:inview={options}
@@ -272,14 +248,11 @@
           Couldn’t find what you were looking for? Maybe you can try a different
           keyword?
         </div>
-      {/if}
+      {/await}
     </section>
   {:else}
     <section>
-      {#if foundedMainPostPubId.length !== 0}
-        <div class="h2 heading">This is what we found</div>
-      {/if}
-      {#if fetchingMainPostPubId}
+      {#await getRelatedPostPubIdsAppService($page.data.userEnteredUrlOrKeywords)}
         <div class="body">
           <div class="card">
             <div class="card__img-box__loader" />
@@ -296,9 +269,12 @@
             </div>
           </div>
         </div>
-      {:else}
+      {:then result}
+        {#if result?.publicationIDs.length !== 0}
+          <div class="h2 heading">This is what we found</div>
+        {/if}
         <div class="body">
-          {#each foundedMainPostPubId as mainPostPubId}
+          {#each result?.publicationIDs as mainPostPubId}
             <a href={"/posts/" + mainPostPubId} class="card">
               {#await getLinkPublicationLensService(mainPostPubId)}
                 <div class="card__img-box__loader" />
@@ -447,7 +423,7 @@
           Couldn’t find what you were looking for? Maybe you can try a different
           keyword?
         </div>
-      {/if}
+      {/await}
     </section>
   {/if}
 </MediaQuery>

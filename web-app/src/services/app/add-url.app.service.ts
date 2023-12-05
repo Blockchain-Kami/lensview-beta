@@ -1,7 +1,7 @@
 import { profileUserStore } from "../../stores/user/profile.user.store";
 import clientAxiosUtil from "../../utils/axios/client.axios.util";
 import type { AxiosResponse } from "axios";
-import type { PostCommentResponseAppModel } from "../../models/app/post-comment-response.app.model";
+import type { PostCommentResponseAppModel } from "../../models/app/responses/post-comment.response.app.model";
 
 const addUrlAppService = async (url: string) => {
   console.log("addUrlAppService url:", url);

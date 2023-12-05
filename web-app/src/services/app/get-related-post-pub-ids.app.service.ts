@@ -1,5 +1,5 @@
 import clientAxiosUtil from "../../utils/axios/client.axios.util";
-import type { RelatedPublicationsAppModel } from "../../models/app/related-publications.app.model";
+import type { RelatedPublicationsResponseAppModel } from "../../models/app/responses/related-publications.response.app.model";
 import type { AxiosResponse } from "axios";
 
 const getRelatedPostPubIdsAppService = async (searchURLOrKeywords: string) => {
@@ -17,8 +17,8 @@ const getRelatedPostPubIdsAppService = async (searchURLOrKeywords: string) => {
       })
       .then(
         (
-          resp: AxiosResponse<RelatedPublicationsAppModel>
-        ): RelatedPublicationsAppModel => {
+          resp: AxiosResponse<RelatedPublicationsResponseAppModel>
+        ): RelatedPublicationsResponseAppModel => {
           if (resp?.status === 204)
             return {
               publicationIDs: [],

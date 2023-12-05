@@ -1,7 +1,6 @@
 <script lang="ts">
   import "../global.scss";
   import { goto } from "$app/navigation";
-  import { searchInputDetails } from "../services/searchInputDetails";
   import { onMount } from "svelte";
   import { PUBLIC_IS_PROD } from "$env/static/public";
   import {
@@ -15,7 +14,6 @@
   import DualToneIcon from "$lib/DualToneIcon.svelte";
   import Loader from "$lib/Loader.svelte";
   import JoinForUpdates from "../components/main-page/JoinForUpdates.svelte";
-  import type { FetchedInfoForSearchedInputModel } from "../models/fetchedInfoForSearchedInput.model";
   import Notifications from "svelte-notifications";
   import CustomNotification from "$lib/CustomNotification.svelte";
   import { fly } from "svelte/transition";
@@ -37,8 +35,8 @@
   import { profileUserStore } from "../stores/user/profile.user.store";
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
   import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
-  // import commentOnChainPublicationUtil from "../utils/publications/comment-onchain.publication.util";
   import getPictureURLUtil from "../utils/get-picture-URL.util";
+  import searchPublicationAppService from "../services/app/search-publication.app.service";
 
   let userEnteredUrlOrKeywords = "";
   let showJoinForUpdatesModal = false;
@@ -130,33 +128,20 @@
     isSearching = true;
 
     try {
-      const fetchedInfoForSearchedInput: FetchedInfoForSearchedInputModel =
-        await fetch("/api/is-url-valid-get-parent-pubId", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(userEnteredUrlOrKeywords)
-        }).then((res) => {
-          if (res.ok) {
-            return res.json();
-          } else {
-            throw new Error("Error fetching info for searched input");
-          }
-        });
+      const fetchedInfoForSearchedInput = await searchPublicationAppService(
+        userEnteredUrlOrKeywords
+      );
 
       isSearching = false;
 
-      if (fetchedInfoForSearchedInput.parentPublicationID === null) {
-        console.log("No parent publication found for searched input");
-
-        searchInputDetails.setSearchInputDetails({
-          userEnteredUrlOrKeywords: userEnteredUrlOrKeywords,
-          isInputUrl: fetchedInfoForSearchedInput.isURL
-        });
-        await goto(`/search`);
+      if (fetchedInfoForSearchedInput.publicationID === null) {
+        await goto(
+          `/search?search_query=${encodeURI(userEnteredUrlOrKeywords)}&is_url=${
+            fetchedInfoForSearchedInput.isURL
+          }`
+        );
       } else {
-        await goto(`/posts/${fetchedInfoForSearchedInput.parentPublicationID}`);
+        await goto(`/posts/${fetchedInfoForSearchedInput.publicationID}`);
       }
     } catch (error) {
       console.log("Error fetching info for searched input");

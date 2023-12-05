@@ -1,6 +1,6 @@
 import clientAxiosUtil from "../../utils/axios/client.axios.util";
 import type { AxiosResponse } from "axios";
-import type { PostCommentResponseAppModel } from "../../models/app/post-comment-response.app.model";
+import type { PostCommentResponseAppModel } from "../../models/app/responses/post-comment.response.app.model";
 
 const createPostAnonymouslyAppService = async (
   url: string,
