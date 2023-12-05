@@ -1,7 +1,7 @@
 import { CIDString, Web3Storage, File } from "web3.storage";
 import { Blob } from "buffer";
 import puppeteer from "puppeteer";
-import { PUBLIC_WEB3STORAGE_TOKEN } from "../../config/env.config";
+import { WEB3STORAGE_TOKEN } from "../../config/env.config";
 import { minimal_args } from "../../config/puppetteer.config";
 import { InternalServerError } from "../../errors/internal-server-error.error";
 
@@ -19,7 +19,7 @@ export const fetchScreenshotAndUploadToIPFSJobUtil = async (url: string) => {
     console.log("Screenshot taken successfully");
     const screenshotBlob = new Blob([screenshot]);
     const file = new File([screenshotBlob as BlobPart], imgName);
-    const client = new Web3Storage({ token: PUBLIC_WEB3STORAGE_TOKEN });
+    const client = new Web3Storage({ token: WEB3STORAGE_TOKEN });
     const imgCID = await client.put([file], { name: imgName });
     console.log(
       "Screenshot image stored: " + makeGatewayURLImage(imgCID, imgName)
