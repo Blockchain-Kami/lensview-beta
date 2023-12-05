@@ -31,7 +31,7 @@
         <div class="h3 head__title">Join for updates</div>
       </div>
       <div class="CenterRowFlex body">
-        <a href="https://twitter.com/lensview_" target="_blank">
+        <a href="https://twitter.com/lensviewio" target="_blank">
           <img src={Twitter} alt="" />
         </a>
         <a href="https://discord.gg/ZB6snNmTnh" target="_blank">

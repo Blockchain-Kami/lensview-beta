@@ -1,5 +1,5 @@
 import { Web3Storage, File } from "web3.storage";
-import { PUBLIC_WEB3STORAGE_TOKEN } from "../../config/env.config";
+import { WEB3STORAGE_TOKEN } from "../../config/env.config";
 
 /**
  * Uploads a file to IPFS and returns the URI of the uploaded file.
@@ -17,10 +17,8 @@ export const uploadToIPFSHelperUtil = async (data: string) => {
   return uri;
 };
 
-if (!PUBLIC_WEB3STORAGE_TOKEN) {
-  throw new Error(
-    "Must define PUBLIC_WEB3STORAGE_TOKEN in the .env to run this"
-  );
+if (!WEB3STORAGE_TOKEN) {
+  throw new Error("Must define WEB3STORAGE_TOKEN in the .env to run this");
 }
 
 /**
@@ -29,7 +27,7 @@ if (!PUBLIC_WEB3STORAGE_TOKEN) {
  * @return {Web3Storage} A new instance of the StorageClient class.
  */
 function makeStorageClient() {
-  return new Web3Storage({ token: PUBLIC_WEB3STORAGE_TOKEN });
+  return new Web3Storage({ token: WEB3STORAGE_TOKEN });
 }
 
 /**
