@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { cross, flightTakeoff, tick } from "../../utils/frontend/appIcon";
+  import { cross, flightTakeoff, tick } from "../../utils/app-icon.util";
   import { page } from "$app/stores";
   import Loader from "$lib/Loader.svelte";
   import { reloadCommentOfAPublication } from "../../stores/reload-publication.store";
@@ -11,6 +11,7 @@
   import { profileUserStore } from "../../stores/user/profile.user.store";
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
   import commentOnChainPublicationUtil from "../../utils/publications/comment-onchain.publication.util";
+  import updateCommentAnonymouslyAppService from "../../services/app/update-comment-anonymously.app.service";
 
   const { addNotification } = getNotificationsContext();
   let userEnteredContent = "";
@@ -132,22 +133,7 @@
 
     try {
       const localPubBtnName = pubBtnName;
-      await fetch("/api/comment-anonymously", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          pubId:
-            $page.data.postPubId !== undefined
-              ? $page.data.postPubId
-              : $page.data.mainPostPubId,
-          commentContent: userEnteredContent
-        })
-      }).then((res) => {
-        if (res.ok) return res.json();
-        else throw new Error(res.statusText);
-      });
+      await updateCommentAnonymouslyAppService(pubId, userEnteredContent);
 
       console.log("successfully posted anonymously");
       userEnteredContent = "";

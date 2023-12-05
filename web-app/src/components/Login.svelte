@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from "$lib/Icon.svelte";
-  import { close, cross, tick } from "../utils/frontend/appIcon";
+  import { close, cross, tick } from "../utils/app-icon.util";
   import Loader from "$lib/Loader.svelte";
   import CreateLensProfile from "./CreateLensProfile.svelte";
   import { fly } from "svelte/transition";

@@ -9,7 +9,7 @@
     thumbDown,
     thumbUp,
     trendingUp
-  } from "../../utils/frontend/appIcon";
+  } from "../../utils/app-icon.util";
   import { onMount } from "svelte";
   import { page } from "$app/stores";
   import DOMPurify from "dompurify";

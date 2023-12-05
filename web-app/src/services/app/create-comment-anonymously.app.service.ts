@@ -2,7 +2,7 @@ import clientAxiosUtil from "../../utils/axios/client.axios.util";
 import type { AxiosResponse } from "axios";
 import type { PostCommentResponseAppModel } from "../../models/app/responses/post-comment.response.app.model";
 
-const createPostAnonymouslyAppService = async (
+const createCommentAnonymouslyAppService = async (
   url: string,
   userEnteredContent: string
 ) => {
@@ -29,4 +29,4 @@ const createPostAnonymouslyAppService = async (
   }
 };
 
-export default createPostAnonymouslyAppService;
+export default createCommentAnonymouslyAppService;

@@ -8,7 +8,7 @@
     thumbDown,
     thumbUp,
     trendingUp
-  } from "../../utils/frontend/appIcon";
+  } from "../../utils/app-icon.util";
   import DOMPurify from "dompurify";
   import { Tooltip } from "@svelte-plugins/tooltips";
   import { PUBLIC_APP_LENS_ID } from "$env/static/public";

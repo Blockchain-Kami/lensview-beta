@@ -16,7 +16,7 @@
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
   import addUrlAppService from "../../services/app/add-url.app.service";
   import commentOnChainPublicationUtil from "../../utils/publications/comment-onchain.publication.util";
-  import createPostAnonymouslyAppService from "../../services/app/create-post-anonymously.app.service";
+  import createCommentAnonymouslyAppService from "../../services/app/create-comment-anonymously.app.service";
 
   const { addNotification } = getNotificationsContext();
   export let showAddNewPostModal: boolean;
@@ -179,7 +179,7 @@
     dialog.close();
 
     try {
-      const pubId = await createPostAnonymouslyAppService(
+      const pubId = await createCommentAnonymouslyAppService(
         userEnteredUrl,
         userEnteredContent
       );

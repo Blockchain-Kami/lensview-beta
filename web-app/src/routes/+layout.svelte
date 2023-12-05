@@ -9,7 +9,7 @@
     menu,
     menuOpen,
     search
-  } from "../utils/frontend/appIcon";
+  } from "../utils/app-icon.util";
   import Icon from "$lib/Icon.svelte";
   import DualToneIcon from "$lib/DualToneIcon.svelte";
   import Loader from "$lib/Loader.svelte";
@@ -34,7 +34,6 @@
   import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
   import { profileUserStore } from "../stores/user/profile.user.store";
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
-  import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
   import getPictureURLUtil from "../utils/get-picture-URL.util";
   import searchPublicationAppService from "../services/app/search-publication.app.service";
 
@@ -113,14 +112,6 @@
   const openLoginModal = () => {
     showLoginModal = true;
     onLoginIntialization();
-  };
-
-  const postTest = () => {
-    postOnChainPublicationUtil();
-  };
-
-  const commentTest = () => {
-    // commentOnChainPublicationUtil();
   };
 
   const redirectToPostsOrSearchPage = async () => {
@@ -234,8 +225,6 @@
             </div>
           </div>
         {/if}
-        <button on:click={postTest} class="btn"> Test Post</button>
-        <button on:click={commentTest} class="btn"> Test Comment</button>
         <div class="menu__options">
           <a href="/" class="CenterRowFlex menu__options__item">
             <div class="menu__options__item__icon">
