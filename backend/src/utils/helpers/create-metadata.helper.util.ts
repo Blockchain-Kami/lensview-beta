@@ -31,8 +31,8 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
     : PUBLIC_APP_LENS_HANDLE;
 
   urlObj["lensHandle"]
-    ? tags.push("0f89daeb0a63c7b73224315c5514c21ba0453985")
-    : tags.push("418f361f5cdc602c856956bf752c06a29c52e54a");
+    ? tags.push("0f89daeb0a63c7b73224315c5514c21ba0453985") // userPub
+    : tags.push("418f361f5cdc602c856956bf752c06a29c52e54a"); // anonymousPub
 
   tags = [...new Set(tags)];
 
@@ -58,7 +58,7 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
       }
     ],
     sharingLink: urlObj.url,
-    content: "Post by @testlenviewcode"
+    content: `LensView Post by ${lensHandle}`
     //TODO: Check the fields below for potential usage in LensView
     // attachments: [PublicationMetadataMediaVideo],
     // "encryptedWith": PublicationMetadataLitEncryption,
@@ -67,11 +67,11 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
 };
 
 export const createMetaDataForAnonymousCommentHelperUtil = (
-  comment: string | null
+  comment: string
 ) => {
   return textOnly({
     locale: "en-US",
-    tags: ["418f361f5cdc602c856956bf752c06a29c52e54a"], //anonymousHash
+    tags: ["418f361f5cdc602c856956bf752c06a29c52e54a"], // anonymousPub
     appId: PUBLIC_SOURCE_APP_ID,
     attributes: [
       {
@@ -90,7 +90,7 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
         value: Date.now().toString()
       }
     ],
-    content: comment ? comment : "Comment by @testlenviewcode"
+    content: comment
     //TODO: Check for below fields usage
     // encryptedWith: PublicationMetadataLitEncryption,
     // hideFromFeed: false,
@@ -102,7 +102,7 @@ export const createMetaDataForImageCommentHelperUtil = (
 ) => {
   return image({
     locale: "en-US",
-    tags: ["dd472d3370b389eb8399ea7c795ca9e76ff0d4d7"], //imagePub
+    tags: ["dd472d3370b389eb8399ea7c795ca9e76ff0d4d7"], // imagePub
     appId: PUBLIC_SOURCE_APP_ID,
     attributes: [
       {
@@ -124,19 +124,19 @@ export const createMetaDataForImageCommentHelperUtil = (
     image: {
       item: `${urlObj.image}`,
       type: MediaImageMimeType.PNG,
-      altTag: "Me touching grass",
+      altTag: urlObj.hostname,
       license: MetadataLicenseType.CCO
     },
     attachments: [
       {
         item: `${urlObj.image}`,
         type: MediaImageMimeType.PNG,
-        altTag: "LensView Publication Image",
+        altTag: urlObj.hostname,
         license: MetadataLicenseType.CCO
       }
     ],
-    title: "Post by @testlenviewcode",
-    content: `Image link for the url: ${urlObj.image}`
+    title: `LensView Post by ${PUBLIC_APP_LENS_HANDLE}`,
+    content: `Image link for the LensView Publication: ${urlObj.image}`
     //TODO: Check for below fields usage
     // content: EncryptableMarkdown
     // attachments: [PublicationMetadataMediaVideo],
