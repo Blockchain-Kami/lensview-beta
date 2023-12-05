@@ -9,16 +9,11 @@ import createOnchainPostTypedDataLensService from "../../services/lens/create-on
 import broadcastOnchainRequestService from "../../services/lens/broadcast-onchain-request.lens.service";
 import { waitUntilBroadcastIsCompleteTransactionUtil } from "../transaction/wait-until-broadcast-is-complete.transaction.util";
 import { signedTypeDataForPostHelperUtil } from "../helpers/sign-type-data.helper.util";
-import { createMetaDataForUrlHelperUtil } from "../helpers/create-metadata.helper.util";
-import { MetadataObjectModel } from "../../models/metadata-object.model";
 
-const postOnChainPublicationUtil = async (urlObj: MetadataObjectModel) => {
+const postOnChainPublicationUtil = async (metadata: any) => {
   //TODO: Check in production weather we need "@lens-protocol/metadata", if it works putting in
   // devDependencies then keep it or go with schema approach that there in "api-examples" repo
   // https://docs.lens.xyz/docs/publication-metadata#json-schemas
-
-  console.log(urlObj);
-  const metadata = createMetaDataForUrlHelperUtil(urlObj);
 
   const ipfsResultUri = await uploadToIPFSHelperUtil(JSON.stringify(metadata));
   console.log("post onchain: ipfs result uri", ipfsResultUri);

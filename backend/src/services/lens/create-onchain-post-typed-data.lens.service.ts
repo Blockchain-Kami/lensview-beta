@@ -1,6 +1,6 @@
 import type { OnchainPostRequest } from "../../gql/graphql";
 import createOnchainPostTypedDataMutationGraphql from "../../graphql/mutations/create-onchain-post-typed-data.mutation.graphql";
-import { getAuthenticatedClientUtil } from "../../utils/authentication/get-authenticated-client.authentication.util";
+import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util";
 
 /**
  * Creates an on-chain post typed data lens service.
@@ -13,7 +13,7 @@ const createOnchainPostTypedDataLensService = async (
 ) => {
   console.log("createOnchainPostTypedDataLensService request", request);
 
-  const authenticateClient = await getAuthenticatedClientUtil();
+  const authenticateClient = await getAuthenticatedClientAuthenticationUtil();
   const result = await authenticateClient
     .mutation(createOnchainPostTypedDataMutationGraphql, {
       request
