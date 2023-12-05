@@ -24,6 +24,7 @@ export const signedTypeDataForPostHelperUtil = async (
   // remove the __typedname from the signature!
   return await signer.signTypedData(
     omit(domain, "__typename"),
+    // @ts-ignore
     omit(types, "__typename"),
     omit(value, "__typename")
   );
@@ -38,6 +39,7 @@ export const signedTypeDataForCommentHelperUtil = async (
   // remove the __typedname from the signature!
   return await signer.signTypedData(
     omit(domain, "__typename"),
+    // @ts-ignore
     omit(types, "__typename"),
     omit(value, "__typename")
   );
