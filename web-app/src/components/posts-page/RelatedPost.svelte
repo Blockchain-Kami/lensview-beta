@@ -55,7 +55,7 @@
     if (searchURLOrKeywords !== "") {
       try {
         const resp = await getRelatedPostPubIdsAppService(searchURLOrKeywords);
-        foundedMainPostPubIds = resp?.publications;
+        foundedMainPostPubIds = resp?.publicationIDs;
         console.log("foundedMainPostPubIds", foundedMainPostPubIds);
         fetchingFoundedMainPostPubIds = false;
       } catch (error) {

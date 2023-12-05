@@ -21,8 +21,7 @@ const getRelatedPostPubIdsAppService = async (searchURLOrKeywords: string) => {
         ): RelatedPublicationsAppModel => {
           if (resp?.status === 204)
             return {
-              isUrl: false,
-              publications: [],
+              publicationIDs: [],
               message: "No publications found"
             };
 

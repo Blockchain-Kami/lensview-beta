@@ -8,7 +8,7 @@ import {
 const clientAxiosUtil = axios.create({
   baseURL:
     PUBLIC_IS_PROD === "true" ? PUBLIC_APP_API_URL : PUBLIC_APP_DEV_API_URL,
-  timeout: 1000
+  timeout: 180000
 });
 
 export default clientAxiosUtil;

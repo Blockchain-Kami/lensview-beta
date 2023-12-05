@@ -1,23 +1,22 @@
 <script lang="ts">
   import Icon from "$lib/Icon.svelte";
   import {
-    awesome,
     close,
     cross,
     flightTakeoff,
     signature,
     tick
-  } from "../../utils/frontend/appIcon";
-  import { isSignedIn } from "../../services/signInStatus";
-  import checkTxHashBeenIndexed from "../../utils/checkTxHashBeenIndexed";
+  } from "../../utils/app-icon.util";
   import Login from "../Login.svelte";
-  import postAPublication from "../../utils/frontend/postAPublication";
-  import { userProfile } from "../../services/profile";
   import { getNotificationsContext } from "svelte-notifications";
   import { goto } from "$app/navigation";
   import { fly } from "svelte/transition";
   import { backInOut } from "svelte/easing";
   import GetTestMatic from "../GetTestMatic.svelte";
+  import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  import addUrlAppService from "../../services/app/add-url.app.service";
+  import commentOnChainPublicationUtil from "../../utils/publications/comment-onchain.publication.util";
+  import createPostAnonymouslyAppService from "../../services/app/create-post-anonymously.app.service";
 
   const { addNotification } = getNotificationsContext();
   export let showAddNewPostModal: boolean;
@@ -94,7 +93,7 @@
   };
 
   let postThroughUser = async () => {
-    if (!checkIsSignedIn()) {
+    if (!checkIsLoggedIn()) {
       showLoginModal = true;
     } else {
       dialog.close();
@@ -108,7 +107,7 @@
       });
 
       try {
-        const pubId = await addUrlAndGetPubId();
+        const pubId = await addUrlAppService(userEnteredUrl);
 
         addNotification({
           position: "top-right",
@@ -119,21 +118,19 @@
           removeAfter: 10000
         });
 
-        const txPromise = postAPublication(userEnteredContent, pubId);
-        txPromise.then(async (tx) => {
-          await checkUntilPubAdded(tx?.hash, Date.now());
-          addNotification({
-            position: "top-right",
-            heading: "Successfully Posted",
-            description:
-              'Your post was successfully posted anonymously. Click on "View Post" to see your post',
-            type: tick,
-            removeAfter: 12000,
-            ctaBtnName: "View Post",
-            ctaFunction: () => {
-              goto(`/posts/${pubId}`);
-            }
-          });
+        await commentOnChainPublicationUtil(pubId, userEnteredContent);
+
+        addNotification({
+          position: "top-right",
+          heading: "Successfully Posted",
+          description:
+            'Your post was successfully posted. Click on "View Post" to see your post',
+          type: tick,
+          removeAfter: 20000,
+          ctaBtnName: "View Post",
+          ctaFunction: () => {
+            goto(`/posts/${pubId}`);
+          }
         });
       } catch (err) {
         console.log("error: ", err);
@@ -141,31 +138,14 @@
     }
   };
 
-  const checkUntilPubAdded = async (txHash: string, startTime: number) => {
-    /** If post is not added to lens within 25 seconds, then stop checking */
-    if (Date.now() - startTime > 25000) {
-      alert("Error adding post");
-      return;
-    }
-
-    const hasIndexedResponse = await checkTxHashBeenIndexed(txHash);
-
-    if (hasIndexedResponse?.data?.hasTxHashBeenIndexed?.indexed === false) {
-      console.log("Waiting for post to be added to graph");
-      setTimeout(() => checkUntilPubAdded(txHash, startTime), 100);
-    } else {
-      userEnteredContent = "";
-    }
-  };
-
-  const checkIsSignedIn = () => {
-    let isSignedInVal;
-    const unsubscribe = isSignedIn.subscribe((val) => {
-      isSignedInVal = val;
+  const checkIsLoggedIn = () => {
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
     });
-    unsubscribe();
+    unsub();
 
-    return isSignedInVal;
+    return isUserLoggedIn;
   };
 
   const checkUrlIsValid = () => {
@@ -186,47 +166,6 @@
     return;
   };
 
-  const addUrlAndGetPubId = async () => {
-    let handle;
-    const unsub = userProfile.subscribe((val) => {
-      handle = val?.handle;
-    });
-    unsub();
-    try {
-      const response = await fetch("/api/add-url-or-post-comment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          enteredURL: userEnteredUrl,
-          lensHandle: handle,
-          postContent: "",
-          userTags: []
-        })
-      }).then((res) => {
-        if (res.ok) return res.json();
-        else throw new Error(res.statusText);
-      });
-
-      if (!response?.isUrlAlreadyAdded) {
-        addNotification({
-          position: "top-right",
-          heading: "New URL added to LensView",
-          description:
-            "Congratulations! Your new URL has been added to LensView",
-          type: awesome,
-          removeAfter: 10000
-        });
-      }
-
-      return response?.parentPubId;
-    } catch (error) {
-      console.log("error", error);
-      throw error;
-    }
-  };
-
   const postAnonymously = async () => {
     console.log("Post on its way!");
     addNotification({
@@ -240,45 +179,21 @@
     dialog.close();
 
     try {
-      const addedPostDetails = await fetch("/api/add-url-or-post-comment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          enteredURL: userEnteredUrl,
-          lensHandle: null,
-          postContent: userEnteredContent,
-          userTags: []
-        })
-      }).then((res) => {
-        if (res.ok) return res.json();
-        else throw new Error(res.statusText);
-      });
-
-      console.log("successfully posted anonymously");
-      userEnteredContent = "";
-      userEnteredUrl = "";
-
-      let notificationHeading = "Successfully Posted";
-      let notificationDescription =
-        'Your post was successfully posted anonymously. Click on "View Post" to see your post';
-
-      if (!addedPostDetails?.isUrlAlreadyAdded) {
-        notificationHeading = "New URL added, post successful";
-        notificationDescription =
-          "New URL added to LensView! Your anonymous post is live. Click 'View Post' to check it out.";
-      }
+      const pubId = await createPostAnonymouslyAppService(
+        userEnteredUrl,
+        userEnteredContent
+      );
 
       addNotification({
         position: "top-right",
-        heading: notificationHeading,
-        description: notificationDescription,
+        heading: "Successfully Posted",
+        description:
+          'Your post was successfully posted anonymously. Click on "View Post" to see your post',
         type: tick,
-        removeAfter: 12000,
+        removeAfter: 20000,
         ctaBtnName: "View Post",
         ctaFunction: () => {
-          goto(`/posts/${addedPostDetails?.parentPubId}`);
+          goto(`/posts/${pubId}`);
         }
       });
     } catch (error) {

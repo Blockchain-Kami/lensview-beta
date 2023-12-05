@@ -1,5 +1,4 @@
 export interface RelatedPublicationsAppModel {
-  isUrl?: boolean;
-  publications: string[];
+  publicationIDs: string[];
   message?: string;
 }
