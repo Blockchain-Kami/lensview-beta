@@ -43,7 +43,7 @@ export const getProfileCisDashboardController = async (
     const requestLensHandle = req.query.handle;
     const CISDashboardData =
       await CISDashboardDataProfileUtil(requestLensHandle);
-    res.status(500).send(CISDashboardData);
+    res.status(200).send(CISDashboardData);
   } catch (error) {
     res.status(500).send(error);
   }
