@@ -13,9 +13,9 @@ export const summaryProfileUtils = async (handle: string) => {
     const lensDetails = profileAirstackSummary.Wallet?.lensSocials;
     const farcasterDetails = profileAirstackSummary.Wallet?.farcasterSocials;
 
-    const lensHandle = lensDetails ? lensDetails[0]?.profileHandle : null;
-    const farcasterHandle = farcasterDetails
-      ? farcasterDetails[0]?.profileHandle
+    const lensProfileName = lensDetails ? lensDetails[0]?.profileName : null;
+    const farcasterProfileName = farcasterDetails
+      ? farcasterDetails[0]?.profileName
       : null;
 
     const lensJoinDate = lensDetails
@@ -46,20 +46,20 @@ export const summaryProfileUtils = async (handle: string) => {
     const CIS = 124.5;
 
     return {
-      lensHandle,
-      farcasterHandle,
-      lensJoinDate,
-      farcasterJoinDate,
-      reactions,
-      publications,
-      displayName,
-      bio,
-      displayImage,
-      coverImage: coverImage ? coverImage : null,
-      lensFollowers,
-      farcasterFollowers,
-      poapCount,
-      CIS
+      lensProfileName: lensProfileName ? lensProfileName : null,
+      farcasterProfileName: farcasterProfileName ? farcasterProfileName : null,
+      lensJoinDate: lensJoinDate ? lensJoinDate : null,
+      farcasterJoinDate: farcasterJoinDate ? farcasterJoinDate : null,
+      reactions: reactions ? reactions : 0,
+      publications: publications ? publications : 0,
+      displayName: displayName ? displayName : null,
+      bio: bio ? bio : null,
+      displayImage: displayImage ? displayImage : "https://i.postimg.cc/6QGt2nfj/leny.jpg",
+      coverImage: coverImage ? coverImage : "https://i.postimg.cc/3xq3xnm0/lens-protocol-cover.jpg",
+      lensFollowers: lensFollowers ? lensFollowers : 0,
+      farcasterFollowers: farcasterFollowers ? farcasterFollowers : 0,
+      poapCount: poapCount ? poapCount : 0,
+      CIS: CIS ? CIS : 0
     };
   } catch (error) {
     throw new InternalServerError("Error in profile summary: " + error, 500);

@@ -3,14 +3,14 @@ export default interface ProfileSummaryResponseModel {
   bio: string | null;
   displayImage: string | null;
   coverImage: string | null;
-  reactions: number | null;
-  publications: number | null;
-  poapCount: number | null;
-  lensHandle: string | null;
-  farcasterHandle: string | null;
+  reactions: number;
+  publications: number;
+  poapCount: number;
+  lensProfileName: string | null;
+  farcasterProfileName: string | null;
   lensJoinDate: string | null;
   farcasterJoinDate: string | null;
-  lensFollowers: number | null;
-  farcasterFollowers: number | null;
-  CIS: number | null;
+  lensFollowers: number;
+  farcasterFollowers: number;
+  CIS: number;
 }
