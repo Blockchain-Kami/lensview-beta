@@ -19,6 +19,7 @@ const documents = {
     "\n  mutation CreateOnchainPostTypedData($request: OnchainPostRequest!) {\n    createOnchainPostTypedData(request: $request) {\n      id\n      expiresAt\n      typedData {\n        types {\n          Post {\n            name\n            type\n          }\n        }\n        domain {\n          name\n          chainId\n          version\n          verifyingContract\n        }\n        value {\n          nonce\n          deadline\n          profileId\n          contentURI\n          actionModules\n          actionModulesInitDatas\n          referenceModule\n          referenceModuleInitData\n        }\n      }\n    }\n  }\n": types.CreateOnchainPostTypedDataDocument,
     "\n  query Challenge($request: ChallengeRequest!) {\n    challenge(request: $request) {\n      text\n      id\n    }\n  }\n": types.ChallengeDocument,
     "\n  query Publications($request: PublicationsRequest!) {\n    publications(request: $request) {\n      items {\n        ... on Post {\n          id\n        }\n      }\n    }\n  }\n": types.PublicationsDocument,
+    "\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      createdAt\n      handle {\n        fullHandle\n      }\n      id\n      stats {\n        comments\n        publications\n        reactions\n      }\n      metadata {\n        coverPicture {\n          optimized {\n            uri\n          }\n        }\n      }\n    }\n  }\n": types.ProfileDocument,
     "\n  query lensTransactionStatus($request: LensTransactionStatusRequest!) {\n    lensTransactionStatus(request: $request) {\n      status\n      txHash\n      reason\n      extraInfo\n    }\n  }\n": types.LensTransactionStatusDocument,
 };
 
@@ -60,6 +61,10 @@ export function graphql(source: "\n  query Challenge($request: ChallengeRequest!
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query Publications($request: PublicationsRequest!) {\n    publications(request: $request) {\n      items {\n        ... on Post {\n          id\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query Publications($request: PublicationsRequest!) {\n    publications(request: $request) {\n      items {\n        ... on Post {\n          id\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      createdAt\n      handle {\n        fullHandle\n      }\n      id\n      stats {\n        comments\n        publications\n        reactions\n      }\n      metadata {\n        coverPicture {\n          optimized {\n            uri\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      createdAt\n      handle {\n        fullHandle\n      }\n      id\n      stats {\n        comments\n        publications\n        reactions\n      }\n      metadata {\n        coverPicture {\n          optimized {\n            uri\n          }\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
