@@ -196,28 +196,40 @@
           </div>
         </div>
         <div class="CenterRowFlex profile-details__right__middle">
-          <div class="CenterRowFlex profile-details__right__middle__lens">
-            <div class="profile-details__right__middle__handle">
-              {profile.lensProfileName}
+          {#if profile.lensProfileName}
+            <div class="CenterRowFlex profile-details__right__middle__lens">
+              <div class="profile-details__right__middle__handle">
+                {profile.lensProfileName ? profile.lensProfileName : ""}
+              </div>
+              <div class="CenterRowFlex profile-details__right__middle__joined">
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <Icon d={clock} color="#a1a1a1" />
+                &nbsp; {profile.lensJoinDate ? profile.lensJoinDate : ""}
+              </div>
             </div>
-            <div class="CenterRowFlex profile-details__right__middle__joined">
-              <Icon d={clock} color="#a1a1a1" />
-              &nbsp; {profile.lensJoinDate}
+          {/if}
+          {#if profile.farcasterProfileName}
+            <div class="profile-details__right__middle__vertical-line" />
+            <div
+              class="CenterRowFlex profile-details__right__middle__farcaster"
+            >
+              <div class="profile-details__right__middle__handle">
+                {profile.farcasterProfileName
+                  ? profile.farcasterProfileName
+                  : ""}
+              </div>
+              <div class="CenterRowFlex profile-details__right__middle__joined">
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <Icon d={clock} color="#a1a1a1" />
+                &nbsp; {profile.farcasterJoinDate
+                  ? profile.farcasterJoinDate
+                  : ""}
+              </div>
             </div>
-          </div>
-          <div class="profile-details__right__middle__vertical-line" />
-          <div class="CenterRowFlex profile-details__right__middle__farcaster">
-            <div class="profile-details__right__middle__handle">
-              {profile.farcasterProfileName}
-            </div>
-            <div class="CenterRowFlex profile-details__right__middle__joined">
-              <Icon d={clock} color="#a1a1a1" />
-              &nbsp; {profile.farcasterJoinDate}
-            </div>
-          </div>
+          {/if}
         </div>
         <div class="profile-details__right__bottom">
-          {profile.bio}
+          {profile.bio ? profile.bio : ""}
         </div>
       </div>
     </div>
