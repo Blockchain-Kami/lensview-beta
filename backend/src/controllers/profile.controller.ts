@@ -23,7 +23,8 @@ export const getProfileDetailsController = async (
     farcasterJoinDate: null,
     lensFollowers: 0,
     farcasterFollowers: 0,
-    CIS: 0
+    CIS: 0,
+    isXMTPEnabled: false,
   };
   try {
     const requestLensHandle = req.query.handle;

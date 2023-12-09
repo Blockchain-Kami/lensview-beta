@@ -13,4 +13,5 @@ export default interface ProfileSummaryResponseModel {
   lensFollowers: number;
   farcasterFollowers: number;
   CIS: number;
+  isXMTPEnabled: boolean;
 }

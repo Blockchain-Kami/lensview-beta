@@ -33,16 +33,21 @@ export const summaryProfileUtils = async (handle: string) => {
     const publications = profileLensSummary.data?.profile
       ? profileLensSummary.data?.profile?.stats?.publications
       : null;
-    const displayName = profileLensSummary.data
-      ? profileLensSummary.data.profile?.metadata?.displayName
-      : null;
-    const bio = lensDetails[0]?.bio;
+    // @ts-ignore
+    const displayName = profileLensSummary?.data.profile?.metadata?.displayName ?
+            profileLensSummary.data.profile?.metadata?.displayName
+            : lensDetails[0].profileDisplayName;
+
+    // @ts-ignore
+    const bio = lensDetails[0]?.profileBio ? lensDetails[0]?.profileBio : profileLensSummary?.data.profile?.metadata?.bio;
     const displayImage = lensDetails[0]?.profileImageContentValue
       ? lensDetails[0]?.profileImageContentValue?.image?.large
       : null;
     const coverImage = profileLensSummary.data
       ? profileLensSummary.data?.profile?.metadata?.coverPicture?.optimized?.uri
       : null;
+
+    const isXMTPEnabled = profileAirstackSummary.Wallet?.xmtp[0].isXMTPEnabled;
 
     const lensFollowers = calculateFollowers(lensDetails);
     const farcasterFollowers = calculateFollowers(farcasterDetails);
@@ -77,7 +82,8 @@ export const summaryProfileUtils = async (handle: string) => {
       lensFollowers: lensFollowers ? lensFollowers : 0,
       farcasterFollowers: farcasterFollowers ? farcasterFollowers : 0,
       poapCount: poapCount ? poapCount : 0,
-      CIS: CIS.CIS
+      CIS: CIS.CIS,
+      isXMTPEnabled: isXMTPEnabled ? true : false
     };
   } catch (error) {
     throw new InternalServerError("Error in profile summary: " + error, 500);
