@@ -22,6 +22,9 @@
   import { getNotificationsContext } from "svelte-notifications";
   import { isLoggedInUserStore } from "../../../stores/user/is-logged-in.user.store";
   import Login from "../../../components/Login.svelte";
+  import type { SimilarityResponseAppModel } from "../../../models/app/responses/similarity.response.app.model";
+  import similarityAppService from "../../../services/app/similarity.app.service";
+  import getFormattedDateHelperUtil from "../../../utils/helper/get-formatted-date.helper.util";
 
   let handle = $page.data.handleInfo;
   const { addNotification } = getNotificationsContext();
@@ -31,16 +34,12 @@
   }
 
   let activeTab = "posts";
-  let cisBreakdownData: CisDashboardResponseAppModel = {
-    followerScore: null,
-    postScore: null,
-    reactionScore: null,
-    poapScore: null,
-    CIS: null
-  };
+  let cisBreakdownData: CisDashboardResponseAppModel;
   let isFetchingCisBreakdownData = false;
   let showLoginModal = false;
   let onLoginIntialization: () => Promise<void>;
+  let exploreSimilarityData: SimilarityResponseAppModel;
+  let isFetchingExploreSimilarityData = false;
 
   const fetchCisBreakdownData = async () => {
     isFetchingCisBreakdownData = true;
@@ -52,6 +51,26 @@
     } catch (error) {
       isFetchingCisBreakdownData = false;
       console.log("fetchCisBreakdownData error", error);
+      addNotification({
+        position: "top-right",
+        heading: "Error occurred",
+        description: "Something went wrong, please try again",
+        type: cross,
+        removeAfter: 10000
+      });
+    }
+  };
+
+  const fetchExploreSimilarityData = async () => {
+    isFetchingExploreSimilarityData = true;
+    activeTab = "exploreSimilarity";
+    try {
+      exploreSimilarityData = await similarityAppService(handle);
+      console.log("exploreSimilarityData", exploreSimilarityData);
+      isFetchingExploreSimilarityData = false;
+    } catch (error) {
+      isFetchingExploreSimilarityData = false;
+      console.log("fetchExploreSimilarityData error", error);
       addNotification({
         position: "top-right",
         heading: "Error occurred",
@@ -327,7 +346,7 @@
         </div>
       {:else}
         <button
-          on:click={() => (activeTab = "exploreSimilarity")}
+          on:click={() => fetchExploreSimilarityData()}
           class="CenterRowFlex menu__item__inactive"
         >
           <Icon d={similarity} color="#a1a1a1" />
@@ -450,173 +469,248 @@
     {:else if activeTab === "exploreSimilarity"}
       <div class="CenterColumnFlex explore-similarity">
         {#if $isLoggedInUserStore}
-          <div class="CenterRowFlex explore-similarity__details">
-            <div class="CenterRowFlex explore-similarity__details__box">
-              <div class="explore-similarity__details__box__icon">
-                <Icon d={poap} color="#1f2e33" size="1.7em" />
-              </div>
-              <div class="explore-similarity__details__box__info">
-                <div class="explore-similarity__details__box__info__title">
-                  Similarity Score
+          {#if isFetchingExploreSimilarityData}
+            <div class="CenterRowFlex explore-similarity__details">
+              <div class="CenterRowFlex explore-similarity__details__box">
+                <div class="explore-similarity__details__box__icon">
+                  <Icon d={poap} color="#1f2e33" size="1.7em" />
                 </div>
-                <div class="explore-similarity__details__box__info__value">
-                  50%
+                <div class="explore-similarity__details__box__info-loader">
+                </div>
+              </div>
+              <div class="large-vertical-line" />
+              <div class="CenterRowFlex explore-similarity__details__box">
+                <div class="explore-similarity__details__box__logo">
+                  <img src={LensLogo} alt="lens-logo" />
+                </div>
+                <div class="explore-similarity__details__box__info-loader" />
+              </div>
+              <div class="large-vertical-line" />
+              <div class="CenterRowFlex explore-similarity__details__box">
+                <div class="explore-similarity__details__box__logo">
+                  <img src={FarcasterLogo} alt="lens-logo" />
+                </div>
+                <div class="explore-similarity__details__box__info-loader" />
+              </div>
+              <div class="large-vertical-line" />
+              <div class="CenterRowFlex explore-similarity__details__box">
+                <div class="explore-similarity__details__box__logo">
+                  <img src={ENSLogo} alt="lens-logo" />
+                </div>
+                <div class="explore-similarity__details__box__info-loader">
                 </div>
               </div>
             </div>
-            <div class="large-vertical-line" />
-            <div class="CenterRowFlex explore-similarity__details__box">
-              <div class="explore-similarity__details__box__logo">
-                <img src={LensLogo} alt="lens-logo" />
-              </div>
-              <div class="explore-similarity__details__box__info">
-                Both have Lens profile
-              </div>
-            </div>
-            <div class="large-vertical-line" />
-            <div class="CenterRowFlex explore-similarity__details__box">
-              <div class="explore-similarity__details__box__logo">
-                <img src={FarcasterLogo} alt="lens-logo" />
-              </div>
-              <div class="explore-similarity__details__box__info">
-                Both have Farcaster
-              </div>
-            </div>
-            <div class="large-vertical-line" />
-            <div class="CenterRowFlex explore-similarity__details__box">
-              <div class="explore-similarity__details__box__logo">
-                <img src={ENSLogo} alt="lens-logo" />
-              </div>
-              <div class="explore-similarity__details__box__info">
-                Both have ENS
-              </div>
-            </div>
-          </div>
-          <div class="explore-similarity__poaps">
-            <div class="CenterRowFlex explore-similarity__poaps__head">
-              <div class="explore-similarity__poaps__head__title">
-                Total similar POAPs
-              </div>
-              <div class="explore-similarity__poaps__head__value">57</div>
-              <div class="explore-similarity__poaps__head__logo">
-                <img src={GnosisLogo} alt="gnosis logo" />
-              </div>
-            </div>
-            <div class="explore-similarity__poaps__body">
-              <div
-                class="CenterColumnFlex explore-similarity__poaps__body__card"
-              >
-                <div class="explore-similarity__poaps__body__card__details">
-                  <div
-                    class="explore-similarity__poaps__body__card__details__date-location"
-                  >
-                    Dec 2, 2022 (Bangalore)
-                  </div>
-                  <div
-                    class="explore-similarity__poaps__body__card__details__name"
-                  >
-                    Push at ETHIndia 2022
-                  </div>
+            <div class="explore-similarity__poaps">
+              <div class="CenterRowFlex explore-similarity__poaps__head">
+                <div class="explore-similarity__poaps__head__title">
+                  Total similar POAPs
+                </div>
+                <div class="explore-similarity__poaps__head__value-loader"></div>
+                <div class="explore-similarity__poaps__head__logo">
+                  <img src={GnosisLogo} alt="gnosis logo" />
                 </div>
               </div>
-              <div
-                class="CenterColumnFlex explore-similarity__poaps__body__card"
-              >
-                <div class="explore-similarity__poaps__body__card__details">
-                  <div
-                    class="explore-similarity__poaps__body__card__details__date-location"
-                  >
-                    Dec 2, 2022 (Bangalore)
-                  </div>
-                  <div
-                    class="explore-similarity__poaps__body__card__details__name"
-                  >
-                    Push at ETHIndia 2022
-                  </div>
-                </div>
-              </div>
-              <div
-                class="CenterColumnFlex explore-similarity__poaps__body__card"
-              >
-                <div class="explore-similarity__poaps__body__card__details">
-                  <div
-                    class="explore-similarity__poaps__body__card__details__date-location"
-                  >
-                    Dec 2, 2022 (Bangalore)
-                  </div>
-                  <div
-                    class="explore-similarity__poaps__body__card__details__name"
-                  >
-                    Push at ETHIndia 2022
+              <div class="explore-similarity__poaps__body">
+                <div
+                  class="CenterColumnFlex explore-similarity__poaps__body__card"
+                >
+                  <div class="explore-similarity__poaps__body__card__details">
+                    <div
+                      class="explore-similarity__poaps__body__card__details__date-location"
+                    >
+                      Dec 2, 2022 (Bangalore)
+                    </div>
+                    <div
+                      class="explore-similarity__poaps__body__card__details__name"
+                    >
+                      Push at ETHIndia 2022
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div
-                class="CenterColumnFlex explore-similarity__poaps__body__card"
-              >
-                <div class="explore-similarity__poaps__body__card__details">
-                  <div
-                    class="explore-similarity__poaps__body__card__details__date-location"
-                  >
-                    Dec 2, 2022 (Bangalore)
-                  </div>
-                  <div
-                    class="explore-similarity__poaps__body__card__details__name"
-                  >
-                    Push at ETHIndia 2022
-                  </div>
-                </div>
-              </div>
-              <div
-                class="CenterColumnFlex explore-similarity__poaps__body__card"
-              >
-                <div class="explore-similarity__poaps__body__card__details">
-                  <div
-                    class="explore-similarity__poaps__body__card__details__date-location"
-                  >
-                    Dec 2, 2022 (Bangalore)
-                  </div>
-                  <div
-                    class="explore-similarity__poaps__body__card__details__name"
-                  >
-                    Push at ETHIndia 2022
+                <div
+                  class="CenterColumnFlex explore-similarity__poaps__body__card"
+                >
+                  <div class="explore-similarity__poaps__body__card__details">
+                    <div
+                      class="explore-similarity__poaps__body__card__details__date-location"
+                    >
+                      Dec 2, 2022 (Bangalore)
+                    </div>
+                    <div
+                      class="explore-similarity__poaps__body__card__details__name"
+                    >
+                      Push at ETHIndia 2022
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div
-                class="CenterColumnFlex explore-similarity__poaps__body__card"
-              >
-                <div class="explore-similarity__poaps__body__card__details">
-                  <div
-                    class="explore-similarity__poaps__body__card__details__date-location"
-                  >
-                    Dec 2, 2022 (Bangalore)
-                  </div>
-                  <div
-                    class="explore-similarity__poaps__body__card__details__name"
-                  >
-                    Push at ETHIndia 2022
+                <div
+                  class="CenterColumnFlex explore-similarity__poaps__body__card"
+                >
+                  <div class="explore-similarity__poaps__body__card__details">
+                    <div
+                      class="explore-similarity__poaps__body__card__details__date-location"
+                    >
+                      Dec 2, 2022 (Bangalore)
+                    </div>
+                    <div
+                      class="explore-similarity__poaps__body__card__details__name"
+                    >
+                      Push at ETHIndia 2022
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div
-                class="CenterColumnFlex explore-similarity__poaps__body__card"
-              >
-                <div class="explore-similarity__poaps__body__card__details">
-                  <div
-                    class="explore-similarity__poaps__body__card__details__date-location"
-                  >
-                    Dec 2, 2022 (Bangalore)
+                <div
+                  class="CenterColumnFlex explore-similarity__poaps__body__card"
+                >
+                  <div class="explore-similarity__poaps__body__card__details">
+                    <div
+                      class="explore-similarity__poaps__body__card__details__date-location"
+                    >
+                      Dec 2, 2022 (Bangalore)
+                    </div>
+                    <div
+                      class="explore-similarity__poaps__body__card__details__name"
+                    >
+                      Push at ETHIndia 2022
+                    </div>
                   </div>
-                  <div
-                    class="explore-similarity__poaps__body__card__details__name"
-                  >
-                    Push at ETHIndia 2022
+                </div>
+                <div
+                  class="CenterColumnFlex explore-similarity__poaps__body__card"
+                >
+                  <div class="explore-similarity__poaps__body__card__details">
+                    <div
+                      class="explore-similarity__poaps__body__card__details__date-location"
+                    >
+                      Dec 2, 2022 (Bangalore)
+                    </div>
+                    <div
+                      class="explore-similarity__poaps__body__card__details__name"
+                    >
+                      Push at ETHIndia 2022
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="CenterColumnFlex explore-similarity__poaps__body__card"
+                >
+                  <div class="explore-similarity__poaps__body__card__details">
+                    <div
+                      class="explore-similarity__poaps__body__card__details__date-location"
+                    >
+                      Dec 2, 2022 (Bangalore)
+                    </div>
+                    <div
+                      class="explore-similarity__poaps__body__card__details__name"
+                    >
+                      Push at ETHIndia 2022
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="CenterColumnFlex explore-similarity__poaps__body__card"
+                >
+                  <div class="explore-similarity__poaps__body__card__details">
+                    <div
+                      class="explore-similarity__poaps__body__card__details__date-location"
+                    >
+                      Dec 2, 2022 (Bangalore)
+                    </div>
+                    <div
+                      class="explore-similarity__poaps__body__card__details__name"
+                    >
+                      Push at ETHIndia 2022
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          {:else}
+            <div class="CenterRowFlex explore-similarity__details">
+              <div class="CenterRowFlex explore-similarity__details__box">
+                <div class="explore-similarity__details__box__icon">
+                  <Icon d={poap} color="#1f2e33" size="1.7em" />
+                </div>
+                <div class="explore-similarity__details__box__info">
+                  <div class="explore-similarity__details__box__info__title">
+                    Similarity Score
+                  </div>
+                  <div class="explore-similarity__details__box__info__value">
+                    {exploreSimilarityData.similarityScore}
+                  </div>
+                </div>
+              </div>
+              {#if exploreSimilarityData.haveLens}
+                <div class="large-vertical-line" />
+                <div class="CenterRowFlex explore-similarity__details__box">
+                  <div class="explore-similarity__details__box__logo">
+                    <img src={LensLogo} alt="lens-logo" />
+                  </div>
+                  <div class="explore-similarity__details__box__info">
+                    Both have Lens profile
+                  </div>
+                </div>
+              {/if}
+              {#if exploreSimilarityData.haveFarcaster}
+                <div class="large-vertical-line" />
+                <div class="CenterRowFlex explore-similarity__details__box">
+                  <div class="explore-similarity__details__box__logo">
+                    <img src={FarcasterLogo} alt="lens-logo" />
+                  </div>
+                  <div class="explore-similarity__details__box__info">
+                    Both have Farcaster
+                  </div>
+                </div>
+              {/if}
+              {#if exploreSimilarityData.haveENS}
+                <div class="large-vertical-line" />
+                <div class="CenterRowFlex explore-similarity__details__box">
+                  <div class="explore-similarity__details__box__logo">
+                    <img src={ENSLogo} alt="lens-logo" />
+                  </div>
+                  <div class="explore-similarity__details__box__info">
+                    Both have ENS
+                  </div>
+                </div>
+              {/if}
+            </div>
+            <div class="explore-similarity__poaps">
+              <div class="CenterRowFlex explore-similarity__poaps__head">
+                <div class="explore-similarity__poaps__head__title">
+                  Total similar POAPs
+                </div>
+                <div class="explore-similarity__poaps__head__value">
+                  {exploreSimilarityData.poapCount}
+                </div>
+                <div class="explore-similarity__poaps__head__logo">
+                  <img src={GnosisLogo} alt="gnosis logo" />
+                </div>
+              </div>
+              <div class="explore-similarity__poaps__body">
+                {#each exploreSimilarityData.poapDetails.Poap as poap}
+                  <div
+                    style="background-image: url({poap.poapEvent.logo.image
+                      .medium})"
+                    class="CenterColumnFlex explore-similarity__poaps__body__card"
+                  >
+                    <div class="explore-similarity__poaps__body__card__details">
+                      <div
+                        class="explore-similarity__poaps__body__card__details__date-location"
+                      >
+                        {getFormattedDateHelperUtil(poap.poapEvent.startDate)}
+                      </div>
+                      <div
+                        class="explore-similarity__poaps__body__card__details__name"
+                      >
+                        {poap.poapEvent.eventName}
+                      </div>
+                    </div>
+                  </div>
+                {/each}
+              </div>
+            </div>
+          {/if}
         {:else}
           <div class="explore-similarity__request-msg">
             Please login to explore similarity
@@ -939,8 +1033,20 @@
     justify-content: center;
   }
 
+  .explore-similarity__details__box__info-loader {
+    width: 10rem;
+    height: 2rem;
+    border-radius: 5px;
+  }
+
   .explore-similarity__details__box__info__value {
     font-size: var(--semi-large-font-size);
+  }
+
+  .explore-similarity__poaps__head__value-loader{
+    width: 2rem;
+    height: 1rem;
+    border-radius: 5px;
   }
 
   .explore-similarity__poaps {
@@ -978,7 +1084,6 @@
 
   .explore-similarity__poaps__body__card {
     min-height: 100%;
-    background-image: url("https://assets.airstack.xyz/image/nft/HQJ0b65y0YbkXlWFD05vSTP8uZzP4/Sbs44TZTU3fjAu0R6AQZVUzaN5hGhSTEbM/medium.png");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
@@ -987,6 +1092,7 @@
     border-radius: 10px;
     color: black;
     justify-content: flex-end;
+    background-color: #0d7377;
   }
 
   .explore-similarity__poaps__body__card__details {
@@ -1025,7 +1131,9 @@
   .profile-details__right__bottom-loader,
   .stats__box__right__value-loader,
   .cis-breakdown__score-loader,
-  .cis-breakdown__details__box__value-loader {
+  .cis-breakdown__details__box__value-loader,
+  .explore-similarity__details__box__info-loader,
+  .explore-similarity__poaps__head__value-loader{
     background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);
     background-size: 200% 100%;
     animation: 1s shine linear infinite;
