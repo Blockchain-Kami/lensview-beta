@@ -1,5 +1,5 @@
 import express from "express";
-import { getProfilePoapController } from "../controllers/profile.controller";
+import { getSimilarProfilePoapController } from "../controllers/profile.controller";
 import {
   getProfileDetailsController,
   getProfileCisDashboardController
@@ -9,6 +9,6 @@ const router = express.Router();
 
 router.get("/", getProfileDetailsController);
 router.get("/cis-dashboard", getProfileCisDashboardController);
-router.get("/poap", getProfilePoapController);
+router.post("/poap", getSimilarProfilePoapController);
 
 export default router;
