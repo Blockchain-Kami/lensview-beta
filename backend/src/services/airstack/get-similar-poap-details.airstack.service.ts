@@ -16,7 +16,6 @@ export const getSimilarPoapDetailsAirstackService = async (
       similarPoapDetailsAirstackQueryGraphql,
       request
     );
-    console.log(poaps.Poaps);
     return poaps?.Poaps;
   } catch (error) {
     throw new InternalServerError(
