@@ -6,8 +6,8 @@ export default interface ProfileSummaryResponseModel {
   reactions: number;
   publications: number;
   poapCount: number;
-  lensHandle: string | null;
-  farcasterHandle: string | null;
+  lensProfileName: string | null;
+  farcasterProfileName: string | null;
   lensJoinDate: string | null;
   farcasterJoinDate: string | null;
   lensFollowers: number;
