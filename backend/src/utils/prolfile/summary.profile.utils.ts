@@ -13,9 +13,9 @@ export const summaryProfileUtils = async (handle: string) => {
     const lensDetails = profileAirstackSummary.Wallet?.lensSocials;
     const farcasterDetails = profileAirstackSummary.Wallet?.farcasterSocials;
 
-    const lensHandle = lensDetails ? lensDetails[0]?.profileHandle : null;
-    const farcasterHandle = farcasterDetails
-      ? farcasterDetails[0]?.profileHandle
+    const lensProfileName = lensDetails ? lensDetails[0]?.profileName : null;
+    const farcasterProfileName = farcasterDetails
+      ? farcasterDetails[0]?.profileName
       : null;
 
     const lensJoinDate = lensDetails
@@ -46,8 +46,8 @@ export const summaryProfileUtils = async (handle: string) => {
     const CIS = 124.5;
 
     return {
-      lensHandle: lensHandle ? lensHandle : null,
-      farcasterHandle: farcasterHandle ? farcasterHandle : null,
+      lensProfileName: lensProfileName ? lensProfileName : null,
+      farcasterProfileName: farcasterProfileName ? farcasterProfileName : null,
       lensJoinDate: lensJoinDate ? lensJoinDate : null,
       farcasterJoinDate: farcasterJoinDate ? farcasterJoinDate : null,
       reactions: reactions ? reactions : 0,
