@@ -8,7 +8,8 @@
     poap,
     similarity,
     target,
-    star, cross
+    star,
+    cross
   } from "../../../utils/app-icon.util";
   import Icon from "$lib/Icon.svelte";
   import LensLogo from "$lib/assets/lens-logo.jpg";
@@ -16,9 +17,9 @@
   import ENSLogo from "$lib/assets/ens-logo.jpg";
   import GnosisLogo from "$lib/assets/gnosis-logo.jpg";
   import profileInfoAppService from "../../../services/app/profile-info.app.service";
-  import type {CisDashboardResponseAppModel} from "../../../models/app/responses/cis-dashboard.response.app.model";
+  import type { CisDashboardResponseAppModel } from "../../../models/app/responses/cis-dashboard.response.app.model";
   import cisDashboardAppService from "../../../services/app/cis-dashboard.app.service";
-  import {getNotificationsContext} from "svelte-notifications";
+  import { getNotificationsContext } from "svelte-notifications";
 
   let handle = $page.data.handleInfo;
   const { addNotification } = getNotificationsContext();
@@ -29,21 +30,21 @@
 
   let activeTab = "posts";
   let cisBreakdownData: CisDashboardResponseAppModel = {
-    "followerScore": null,
-    "postScore": null,
-    "reactionScore": null,
-    "poapScore": null,
-    "CIS": null
-  }
+    followerScore: null,
+    postScore: null,
+    reactionScore: null,
+    poapScore: null,
+    CIS: null
+  };
   let isFetchingCisBreakdownData = false;
 
   const fetchCisBreakdownData = async () => {
     isFetchingCisBreakdownData = true;
     activeTab = "cisBreakdown";
-    try{
-    cisBreakdownData = await cisDashboardAppService(handle);
+    try {
+      cisBreakdownData = await cisDashboardAppService(handle);
       console.log("cisBreakdownData", cisBreakdownData);
-    isFetchingCisBreakdownData = false;
+      isFetchingCisBreakdownData = false;
     } catch (error) {
       isFetchingCisBreakdownData = false;
       console.log("fetchCisBreakdownData error", error);
@@ -55,7 +56,7 @@
         removeAfter: 10000
       });
     }
-  }
+  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -120,6 +121,51 @@
         </div>
       </div>
     </div>
+    <div class="menu">
+      {#if activeTab === "posts"}
+        <div class="CenterRowFlex menu__item__active">
+          <Icon d={feather} color="black" />
+          &nbsp;&nbsp;Posts
+        </div>
+      {:else}
+        <button
+          on:click={() => (activeTab = "posts")}
+          class="CenterRowFlex menu__item__inactive"
+        >
+          <Icon d={feather} color="#a1a1a1" />
+          &nbsp;&nbsp;Posts
+        </button>
+      {/if}
+      {#if activeTab === "cisBreakdown"}
+        <div class="CenterRowFlex menu__item__active">
+          <Icon d={target} color="black" />
+          &nbsp;&nbsp;CIS Breakdown
+        </div>
+      {:else}
+        <button
+          on:click={() => fetchCisBreakdownData()}
+          class="CenterRowFlex menu__item__inactive"
+        >
+          <Icon d={target} color="#a1a1a1" />
+          &nbsp;&nbsp;CIS Breakdown
+        </button>
+      {/if}
+      {#if activeTab === "exploreSimilarity"}
+        <div class="CenterRowFlex menu__item__active">
+          <Icon d={similarity} color="black" />
+          &nbsp;&nbsp;Explore Similarity
+        </div>
+      {:else}
+        <button
+          on:click={() => (activeTab = "exploreSimilarity")}
+          class="CenterRowFlex menu__item__inactive"
+        >
+          <Icon d={similarity} color="#a1a1a1" />
+          &nbsp;&nbsp;Explore Similarity
+        </button>
+      {/if}
+    </div>
+    <div class="coming-soon-posts" />
   {:then profile}
     <div
       class="cover-image"
@@ -224,281 +270,317 @@
         </div>
       </div>
     </div>
-  {/await}
-  <div class="menu">
-    {#if activeTab === "posts"}
-      <div class="CenterRowFlex menu__item__active">
-        <Icon d={feather} color="black" />
-        &nbsp;&nbsp;Posts
-      </div>
-    {:else}
-      <button
-        on:click={() => (activeTab = "posts")}
-        class="CenterRowFlex menu__item__inactive"
-      >
-        <Icon d={feather} color="#a1a1a1" />
-        &nbsp;&nbsp;Posts
-      </button>
-    {/if}
-    {#if activeTab === "cisBreakdown"}
-      <div class="CenterRowFlex menu__item__active">
-        <Icon d={target} color="black" />
-        &nbsp;&nbsp;CIS Breakdown
-      </div>
-    {:else}
-      <button
-        on:click={() => fetchCisBreakdownData()}
-        class="CenterRowFlex menu__item__inactive"
-      >
-        <Icon d={target} color="#a1a1a1" />
-        &nbsp;&nbsp;CIS Breakdown
-      </button>
-    {/if}
-    {#if activeTab === "exploreSimilarity"}
-      <div class="CenterRowFlex menu__item__active">
-        <Icon d={similarity} color="black" />
-        &nbsp;&nbsp;Explore Similarity
-      </div>
-    {:else}
-      <button
-        on:click={() => (activeTab = "exploreSimilarity")}
-        class="CenterRowFlex menu__item__inactive"
-      >
-        <Icon d={similarity} color="#a1a1a1" />
-        &nbsp;&nbsp;Explore Similarity
-      </button>
-    {/if}
-  </div>
-  {#if activeTab === "posts"}
-    <div class="coming-soon-posts" />
-  {:else if activeTab === "cisBreakdown"}
-    <div class="CenterColumnFlex cis-breakdown">
-      {#if isFetchingCisBreakdownData}
-        <div class="CenterRowFlex cis-breakdown__score">
-          <div class="cis-breakdown__score__title">
-            Nader's Community Impact Score is
-          </div>
-          <div class="cis-breakdown__score__value">100</div>
-        </div>
-        <div class="CenterRowFlex cis-breakdown__details">
-          <div class="CenterColumnFlex cis-breakdown__details__col">
-            <div class="CenterRowFlex cis-breakdown__details__box">
-              <div class="cis-breakdown__details__box__value">30</div>
-              <div class="cis-breakdown__details__box__title">Follower Score</div>
-              <div class="cis-breakdown__details__box__icon">
-                <Icon d={followers} color="#1f2e33" size="4em" />
-              </div>
-            </div>
-            <div class="CenterRowFlex cis-breakdown__details__box">
-              <div class="cis-breakdown__details__box__value">30</div>
-              <div class="cis-breakdown__details__box__title">Reaction Score</div>
-              <div class="cis-breakdown__details__box__icon">
-                <Icon d={star} color="#1f2e33" size="4em" />
-              </div>
-            </div>
-          </div>
-          <div class="CenterColumnFlex cis-breakdown__details__col">
-            <div class="CenterRowFlex cis-breakdown__details__box">
-              <div class="cis-breakdown__details__box__value">30</div>
-              <div class="cis-breakdown__details__box__title">Post Score</div>
-              <div class="cis-breakdown__details__box__icon">
-                <Icon d={feather} color="#1f2e33" size="4em" />
-              </div>
-            </div>
-            <div class="CenterRowFlex cis-breakdown__details__box">
-              <div class="cis-breakdown__details__box__value">30</div>
-              <div class="cis-breakdown__details__box__title">POAP Score</div>
-              <div class="cis-breakdown__details__box__icon">
-                <Icon d={poap} color="#1f2e33" size="4em" />
-              </div>
-            </div>
-          </div>
+    <div class="menu">
+      {#if activeTab === "posts"}
+        <div class="CenterRowFlex menu__item__active">
+          <Icon d={feather} color="black" />
+          &nbsp;&nbsp;Posts
         </div>
       {:else}
-        <div class="CenterRowFlex cis-breakdown__score">
-          <div class="cis-breakdown__score__title">
-            Nader's Community Impact Score is
-          </div>
-          <div class="cis-breakdown__score__value">{cisBreakdownData.CIS}</div>
-        </div>
-        <div class="CenterRowFlex cis-breakdown__details">
-          <div class="CenterColumnFlex cis-breakdown__details__col">
-            <div class="CenterRowFlex cis-breakdown__details__box">
-              <div class="cis-breakdown__details__box__value">{cisBreakdownData.followerScore}</div>
-              <div class="cis-breakdown__details__box__title">Follower Score</div>
-              <div class="cis-breakdown__details__box__icon">
-                <Icon d={followers} color="#1f2e33" size="4em" />
-              </div>
-            </div>
-            <div class="CenterRowFlex cis-breakdown__details__box">
-              <div class="cis-breakdown__details__box__value">{cisBreakdownData.reactionScore}</div>
-              <div class="cis-breakdown__details__box__title">Reaction Score</div>
-              <div class="cis-breakdown__details__box__icon">
-                <Icon d={star} color="#1f2e33" size="4em" />
-              </div>
-            </div>
-          </div>
-          <div class="CenterColumnFlex cis-breakdown__details__col">
-            <div class="CenterRowFlex cis-breakdown__details__box">
-              <div class="cis-breakdown__details__box__value">{cisBreakdownData.postScore}</div>
-              <div class="cis-breakdown__details__box__title">Post Score</div>
-              <div class="cis-breakdown__details__box__icon">
-                <Icon d={feather} color="#1f2e33" size="4em" />
-              </div>
-            </div>
-            <div class="CenterRowFlex cis-breakdown__details__box">
-              <div class="cis-breakdown__details__box__value">{cisBreakdownData.poapScore}</div>
-              <div class="cis-breakdown__details__box__title">POAP Score</div>
-              <div class="cis-breakdown__details__box__icon">
-                <Icon d={poap} color="#1f2e33" size="4em" />
-              </div>
-            </div>
-          </div>
-        </div>
+        <button
+          on:click={() => (activeTab = "posts")}
+          class="CenterRowFlex menu__item__inactive"
+        >
+          <Icon d={feather} color="#a1a1a1" />
+          &nbsp;&nbsp;Posts
+        </button>
       {/if}
-
+      {#if activeTab === "cisBreakdown"}
+        <div class="CenterRowFlex menu__item__active">
+          <Icon d={target} color="black" />
+          &nbsp;&nbsp;CIS Breakdown
+        </div>
+      {:else}
+        <button
+          on:click={() => fetchCisBreakdownData()}
+          class="CenterRowFlex menu__item__inactive"
+        >
+          <Icon d={target} color="#a1a1a1" />
+          &nbsp;&nbsp;CIS Breakdown
+        </button>
+      {/if}
+      {#if activeTab === "exploreSimilarity"}
+        <div class="CenterRowFlex menu__item__active">
+          <Icon d={similarity} color="black" />
+          &nbsp;&nbsp;Explore Similarity
+        </div>
+      {:else}
+        <button
+          on:click={() => (activeTab = "exploreSimilarity")}
+          class="CenterRowFlex menu__item__inactive"
+        >
+          <Icon d={similarity} color="#a1a1a1" />
+          &nbsp;&nbsp;Explore Similarity
+        </button>
+      {/if}
     </div>
-  {:else if activeTab === "exploreSimilarity"}
-    <div class="CenterColumnFlex explore-similarity">
-      <div class="CenterRowFlex explore-similarity__details">
-        <div class="CenterRowFlex explore-similarity__details__box">
-          <div class="explore-similarity__details__box__icon">
-            <Icon d={poap} color="#1f2e33" size="1.7em" />
-          </div>
-          <div class="explore-similarity__details__box__info">
-            <div class="explore-similarity__details__box__info__title">
-              Similarity Score
+    {#if activeTab === "posts"}
+      <div class="coming-soon-posts" />
+    {:else if activeTab === "cisBreakdown"}
+      <div class="CenterColumnFlex cis-breakdown">
+        {#if isFetchingCisBreakdownData}
+          <div class="CenterRowFlex cis-breakdown__score-loader" />
+          <div class="CenterRowFlex cis-breakdown__details">
+            <div class="CenterColumnFlex cis-breakdown__details__col">
+              <div class="CenterRowFlex cis-breakdown__details__box">
+                <div class="cis-breakdown__details__box__value-loader" />
+                <div class="cis-breakdown__details__box__title">
+                  Follower Score
+                </div>
+                <div class="cis-breakdown__details__box__icon">
+                  <Icon d={followers} color="#1f2e33" size="4em" />
+                </div>
+              </div>
+              <div class="CenterRowFlex cis-breakdown__details__box">
+                <div class="cis-breakdown__details__box__value-loader" />
+                <div class="cis-breakdown__details__box__title">
+                  Reaction Score
+                </div>
+                <div class="cis-breakdown__details__box__icon">
+                  <Icon d={star} color="#1f2e33" size="4em" />
+                </div>
+              </div>
             </div>
-            <div class="explore-similarity__details__box__info__value">50%</div>
+            <div class="CenterColumnFlex cis-breakdown__details__col">
+              <div class="CenterRowFlex cis-breakdown__details__box">
+                <div class="cis-breakdown__details__box__value-loader" />
+                <div class="cis-breakdown__details__box__title">Post Score</div>
+                <div class="cis-breakdown__details__box__icon">
+                  <Icon d={feather} color="#1f2e33" size="4em" />
+                </div>
+              </div>
+              <div class="CenterRowFlex cis-breakdown__details__box">
+                <div class="cis-breakdown__details__box__value-loader" />
+                <div class="cis-breakdown__details__box__title">POAP Score</div>
+                <div class="cis-breakdown__details__box__icon">
+                  <Icon d={poap} color="#1f2e33" size="4em" />
+                </div>
+              </div>
+            </div>
+          </div>
+        {:else}
+          <div class="CenterRowFlex cis-breakdown__score">
+            <div class="cis-breakdown__score__title">
+              {profile.displayName.split(" ")[0]}'s Community Impact Score is
+            </div>
+            <div class="cis-breakdown__score__value">
+              {cisBreakdownData.CIS}
+            </div>
+          </div>
+          <div class="CenterRowFlex cis-breakdown__details">
+            <div class="CenterColumnFlex cis-breakdown__details__col">
+              <div class="CenterRowFlex cis-breakdown__details__box">
+                <div
+                  class="CenterColumnFlex cis-breakdown__details__box__value"
+                >
+                  {cisBreakdownData.followerScore}
+                </div>
+                <div class="cis-breakdown__details__box__title">
+                  Follower Score
+                </div>
+                <div class="cis-breakdown__details__box__icon">
+                  <Icon d={followers} color="#1f2e33" size="4em" />
+                </div>
+              </div>
+              <div class="CenterRowFlex cis-breakdown__details__box">
+                <div
+                  class="CenterColumnFlex cis-breakdown__details__box__value"
+                >
+                  {cisBreakdownData.reactionScore}
+                </div>
+                <div class="cis-breakdown__details__box__title">
+                  Reaction Score
+                </div>
+                <div class="cis-breakdown__details__box__icon">
+                  <Icon d={star} color="#1f2e33" size="4em" />
+                </div>
+              </div>
+            </div>
+            <div class="CenterColumnFlex cis-breakdown__details__col">
+              <div class="CenterRowFlex cis-breakdown__details__box">
+                <div
+                  class="CenterColumnFlex cis-breakdown__details__box__value"
+                >
+                  {cisBreakdownData.postScore}
+                </div>
+                <div class="cis-breakdown__details__box__title">Post Score</div>
+                <div class="cis-breakdown__details__box__icon">
+                  <Icon d={feather} color="#1f2e33" size="4em" />
+                </div>
+              </div>
+              <div class="CenterRowFlex cis-breakdown__details__box">
+                <div
+                  class="CenterColumnFlex cis-breakdown__details__box__value"
+                >
+                  {cisBreakdownData.poapScore}
+                </div>
+                <div class="cis-breakdown__details__box__title">POAP Score</div>
+                <div class="cis-breakdown__details__box__icon">
+                  <Icon d={poap} color="#1f2e33" size="4em" />
+                </div>
+              </div>
+            </div>
+          </div>
+        {/if}
+      </div>
+    {:else if activeTab === "exploreSimilarity"}
+      <div class="CenterColumnFlex explore-similarity">
+        <div class="CenterRowFlex explore-similarity__details">
+          <div class="CenterRowFlex explore-similarity__details__box">
+            <div class="explore-similarity__details__box__icon">
+              <Icon d={poap} color="#1f2e33" size="1.7em" />
+            </div>
+            <div class="explore-similarity__details__box__info">
+              <div class="explore-similarity__details__box__info__title">
+                Similarity Score
+              </div>
+              <div class="explore-similarity__details__box__info__value">
+                50%
+              </div>
+            </div>
+          </div>
+          <div class="large-vertical-line" />
+          <div class="CenterRowFlex explore-similarity__details__box">
+            <div class="explore-similarity__details__box__logo">
+              <img src={LensLogo} alt="lens-logo" />
+            </div>
+            <div class="explore-similarity__details__box__info">
+              Both have Lens profile
+            </div>
+          </div>
+          <div class="large-vertical-line" />
+          <div class="CenterRowFlex explore-similarity__details__box">
+            <div class="explore-similarity__details__box__logo">
+              <img src={FarcasterLogo} alt="lens-logo" />
+            </div>
+            <div class="explore-similarity__details__box__info">
+              Both have Farcaster
+            </div>
+          </div>
+          <div class="large-vertical-line" />
+          <div class="CenterRowFlex explore-similarity__details__box">
+            <div class="explore-similarity__details__box__logo">
+              <img src={ENSLogo} alt="lens-logo" />
+            </div>
+            <div class="explore-similarity__details__box__info">
+              Both have ENS
+            </div>
           </div>
         </div>
-        <div class="large-vertical-line" />
-        <div class="CenterRowFlex explore-similarity__details__box">
-          <div class="explore-similarity__details__box__logo">
-            <img src={LensLogo} alt="lens-logo" />
+        <div class="explore-similarity__poaps">
+          <div class="CenterRowFlex explore-similarity__poaps__head">
+            <div class="explore-similarity__poaps__head__title">
+              Total similar POAPs
+            </div>
+            <div class="explore-similarity__poaps__head__value">57</div>
+            <div class="explore-similarity__poaps__head__logo">
+              <img src={GnosisLogo} alt="gnosis logo" />
+            </div>
           </div>
-          <div class="explore-similarity__details__box__info">
-            Both have Lens profile
-          </div>
-        </div>
-        <div class="large-vertical-line" />
-        <div class="CenterRowFlex explore-similarity__details__box">
-          <div class="explore-similarity__details__box__logo">
-            <img src={FarcasterLogo} alt="lens-logo" />
-          </div>
-          <div class="explore-similarity__details__box__info">
-            Both have Farcaster
-          </div>
-        </div>
-        <div class="large-vertical-line" />
-        <div class="CenterRowFlex explore-similarity__details__box">
-          <div class="explore-similarity__details__box__logo">
-            <img src={ENSLogo} alt="lens-logo" />
-          </div>
-          <div class="explore-similarity__details__box__info">
-            Both have ENS
+          <div class="explore-similarity__poaps__body">
+            <div class="CenterColumnFlex explore-similarity__poaps__body__card">
+              <div class="explore-similarity__poaps__body__card__details">
+                <div
+                  class="explore-similarity__poaps__body__card__details__date-location"
+                >
+                  Dec 2, 2022 (Bangalore)
+                </div>
+                <div
+                  class="explore-similarity__poaps__body__card__details__name"
+                >
+                  Push at ETHIndia 2022
+                </div>
+              </div>
+            </div>
+            <div class="CenterColumnFlex explore-similarity__poaps__body__card">
+              <div class="explore-similarity__poaps__body__card__details">
+                <div
+                  class="explore-similarity__poaps__body__card__details__date-location"
+                >
+                  Dec 2, 2022 (Bangalore)
+                </div>
+                <div
+                  class="explore-similarity__poaps__body__card__details__name"
+                >
+                  Push at ETHIndia 2022
+                </div>
+              </div>
+            </div>
+            <div class="CenterColumnFlex explore-similarity__poaps__body__card">
+              <div class="explore-similarity__poaps__body__card__details">
+                <div
+                  class="explore-similarity__poaps__body__card__details__date-location"
+                >
+                  Dec 2, 2022 (Bangalore)
+                </div>
+                <div
+                  class="explore-similarity__poaps__body__card__details__name"
+                >
+                  Push at ETHIndia 2022
+                </div>
+              </div>
+            </div>
+            <div class="CenterColumnFlex explore-similarity__poaps__body__card">
+              <div class="explore-similarity__poaps__body__card__details">
+                <div
+                  class="explore-similarity__poaps__body__card__details__date-location"
+                >
+                  Dec 2, 2022 (Bangalore)
+                </div>
+                <div
+                  class="explore-similarity__poaps__body__card__details__name"
+                >
+                  Push at ETHIndia 2022
+                </div>
+              </div>
+            </div>
+            <div class="CenterColumnFlex explore-similarity__poaps__body__card">
+              <div class="explore-similarity__poaps__body__card__details">
+                <div
+                  class="explore-similarity__poaps__body__card__details__date-location"
+                >
+                  Dec 2, 2022 (Bangalore)
+                </div>
+                <div
+                  class="explore-similarity__poaps__body__card__details__name"
+                >
+                  Push at ETHIndia 2022
+                </div>
+              </div>
+            </div>
+            <div class="CenterColumnFlex explore-similarity__poaps__body__card">
+              <div class="explore-similarity__poaps__body__card__details">
+                <div
+                  class="explore-similarity__poaps__body__card__details__date-location"
+                >
+                  Dec 2, 2022 (Bangalore)
+                </div>
+                <div
+                  class="explore-similarity__poaps__body__card__details__name"
+                >
+                  Push at ETHIndia 2022
+                </div>
+              </div>
+            </div>
+            <div class="CenterColumnFlex explore-similarity__poaps__body__card">
+              <div class="explore-similarity__poaps__body__card__details">
+                <div
+                  class="explore-similarity__poaps__body__card__details__date-location"
+                >
+                  Dec 2, 2022 (Bangalore)
+                </div>
+                <div
+                  class="explore-similarity__poaps__body__card__details__name"
+                >
+                  Push at ETHIndia 2022
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="explore-similarity__poaps">
-        <div class="CenterRowFlex explore-similarity__poaps__head">
-          <div class="explore-similarity__poaps__head__title">
-            Total similar POAPs
-          </div>
-          <div class="explore-similarity__poaps__head__value">57</div>
-          <div class="explore-similarity__poaps__head__logo">
-            <img src={GnosisLogo} alt="gnosis logo" />
-          </div>
-        </div>
-        <div class="explore-similarity__poaps__body">
-          <div class="CenterColumnFlex explore-similarity__poaps__body__card">
-            <div class="explore-similarity__poaps__body__card__details">
-              <div
-                class="explore-similarity__poaps__body__card__details__date-location"
-              >
-                Dec 2, 2022 (Bangalore)
-              </div>
-              <div class="explore-similarity__poaps__body__card__details__name">
-                Push at ETHIndia 2022
-              </div>
-            </div>
-          </div>
-          <div class="CenterColumnFlex explore-similarity__poaps__body__card">
-            <div class="explore-similarity__poaps__body__card__details">
-              <div
-                class="explore-similarity__poaps__body__card__details__date-location"
-              >
-                Dec 2, 2022 (Bangalore)
-              </div>
-              <div class="explore-similarity__poaps__body__card__details__name">
-                Push at ETHIndia 2022
-              </div>
-            </div>
-          </div>
-          <div class="CenterColumnFlex explore-similarity__poaps__body__card">
-            <div class="explore-similarity__poaps__body__card__details">
-              <div
-                class="explore-similarity__poaps__body__card__details__date-location"
-              >
-                Dec 2, 2022 (Bangalore)
-              </div>
-              <div class="explore-similarity__poaps__body__card__details__name">
-                Push at ETHIndia 2022
-              </div>
-            </div>
-          </div>
-          <div class="CenterColumnFlex explore-similarity__poaps__body__card">
-            <div class="explore-similarity__poaps__body__card__details">
-              <div
-                class="explore-similarity__poaps__body__card__details__date-location"
-              >
-                Dec 2, 2022 (Bangalore)
-              </div>
-              <div class="explore-similarity__poaps__body__card__details__name">
-                Push at ETHIndia 2022
-              </div>
-            </div>
-          </div>
-          <div class="CenterColumnFlex explore-similarity__poaps__body__card">
-            <div class="explore-similarity__poaps__body__card__details">
-              <div
-                class="explore-similarity__poaps__body__card__details__date-location"
-              >
-                Dec 2, 2022 (Bangalore)
-              </div>
-              <div class="explore-similarity__poaps__body__card__details__name">
-                Push at ETHIndia 2022
-              </div>
-            </div>
-          </div>
-          <div class="CenterColumnFlex explore-similarity__poaps__body__card">
-            <div class="explore-similarity__poaps__body__card__details">
-              <div
-                class="explore-similarity__poaps__body__card__details__date-location"
-              >
-                Dec 2, 2022 (Bangalore)
-              </div>
-              <div class="explore-similarity__poaps__body__card__details__name">
-                Push at ETHIndia 2022
-              </div>
-            </div>
-          </div>
-          <div class="CenterColumnFlex explore-similarity__poaps__body__card">
-            <div class="explore-similarity__poaps__body__card__details">
-              <div
-                class="explore-similarity__poaps__body__card__details__date-location"
-              >
-                Dec 2, 2022 (Bangalore)
-              </div>
-              <div class="explore-similarity__poaps__body__card__details__name">
-                Push at ETHIndia 2022
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  {/if}
+    {/if}
+  {/await}
 </main>
 
 <!----------------------------------------------------------------->
@@ -723,6 +805,12 @@
     justify-content: space-between;
   }
 
+  .cis-breakdown__score-loader {
+    width: 100%;
+    height: 4.5rem;
+    border-radius: 10px;
+  }
+
   .cis-breakdown__details {
     gap: 2rem;
     width: 100%;
@@ -744,9 +832,16 @@
   .cis-breakdown__details__box__value {
     border-radius: 50%;
     background: var(--primary);
-    padding: 1rem;
+    width: 3rem;
+    height: 3rem;
     color: black;
     font-weight: var(--medium-font-weight);
+  }
+
+  .cis-breakdown__details__box__value-loader {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
   }
 
   .cis-breakdown__details__box__icon {
@@ -874,7 +969,9 @@
   .profile-details__right__top-loader,
   .profile-details__right__middle-loader,
   .profile-details__right__bottom-loader,
-  .stats__box__right__value-loader {
+  .stats__box__right__value-loader,
+  .cis-breakdown__score-loader,
+  .cis-breakdown__details__box__value-loader {
     background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);
     background-size: 200% 100%;
     animation: 1s shine linear infinite;
