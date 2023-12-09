@@ -8,7 +8,7 @@
     poap,
     similarity,
     target,
-    star
+    star, cross
   } from "../../../utils/app-icon.util";
   import Icon from "$lib/Icon.svelte";
   import LensLogo from "$lib/assets/lens-logo.jpg";
@@ -16,19 +16,51 @@
   import ENSLogo from "$lib/assets/ens-logo.jpg";
   import GnosisLogo from "$lib/assets/gnosis-logo.jpg";
   import profileInfoAppService from "../../../services/app/profile-info.app.service";
+  import type {CisDashboardResponseAppModel} from "../../../models/app/responses/cis-dashboard.response.app.model";
+  import cisDashboardAppService from "../../../services/app/cis-dashboard.app.service";
+  import {getNotificationsContext} from "svelte-notifications";
 
   let handle = $page.data.handleInfo;
+  const { addNotification } = getNotificationsContext();
 
   $: if (handle !== $page.data.handleInfo) {
     handle = $page.data.handleInfo;
   }
 
   let activeTab = "posts";
+  let cisBreakdownData: CisDashboardResponseAppModel = {
+    "followerScore": null,
+    "postScore": null,
+    "reactionScore": null,
+    "poapScore": null,
+    "CIS": null
+  }
+  let isFetchingCisBreakdownData = false;
+
+  const fetchCisBreakdownData = async () => {
+    isFetchingCisBreakdownData = true;
+    activeTab = "cisBreakdown";
+    try{
+    cisBreakdownData = await cisDashboardAppService(handle);
+      console.log("cisBreakdownData", cisBreakdownData);
+    isFetchingCisBreakdownData = false;
+    } catch (error) {
+      isFetchingCisBreakdownData = false;
+      console.log("fetchCisBreakdownData error", error);
+      addNotification({
+        position: "top-right",
+        heading: "Error occurred",
+        description: "Something went wrong, please try again",
+        type: cross,
+        removeAfter: 10000
+      });
+    }
+  }
 </script>
 
 <!----------------------------- HTML ----------------------------->
 <main>
-  {#await profileInfoAppService("vitalik")}
+  {#await profileInfoAppService(handle)}
     <div class="cover-image-loader" />
     <div class="profile-details">
       <div class="CenterColumnFlex profile-details__left">
@@ -215,7 +247,7 @@
       </div>
     {:else}
       <button
-        on:click={() => (activeTab = "cisBreakdown")}
+        on:click={() => fetchCisBreakdownData()}
         class="CenterRowFlex menu__item__inactive"
       >
         <Icon d={target} color="#a1a1a1" />
@@ -241,46 +273,90 @@
     <div class="coming-soon-posts" />
   {:else if activeTab === "cisBreakdown"}
     <div class="CenterColumnFlex cis-breakdown">
-      <div class="CenterRowFlex cis-breakdown__score">
-        <div class="cis-breakdown__score__title">
-          Nader's Community Impact Score is
+      {#if isFetchingCisBreakdownData}
+        <div class="CenterRowFlex cis-breakdown__score">
+          <div class="cis-breakdown__score__title">
+            Nader's Community Impact Score is
+          </div>
+          <div class="cis-breakdown__score__value">100</div>
         </div>
-        <div class="cis-breakdown__score__value">100</div>
-      </div>
-      <div class="CenterRowFlex cis-breakdown__details">
-        <div class="CenterColumnFlex cis-breakdown__details__col">
-          <div class="CenterRowFlex cis-breakdown__details__box">
-            <div class="cis-breakdown__details__box__value">30</div>
-            <div class="cis-breakdown__details__box__title">Follower Score</div>
-            <div class="cis-breakdown__details__box__icon">
-              <Icon d={followers} color="#1f2e33" size="4em" />
+        <div class="CenterRowFlex cis-breakdown__details">
+          <div class="CenterColumnFlex cis-breakdown__details__col">
+            <div class="CenterRowFlex cis-breakdown__details__box">
+              <div class="cis-breakdown__details__box__value">30</div>
+              <div class="cis-breakdown__details__box__title">Follower Score</div>
+              <div class="cis-breakdown__details__box__icon">
+                <Icon d={followers} color="#1f2e33" size="4em" />
+              </div>
+            </div>
+            <div class="CenterRowFlex cis-breakdown__details__box">
+              <div class="cis-breakdown__details__box__value">30</div>
+              <div class="cis-breakdown__details__box__title">Reaction Score</div>
+              <div class="cis-breakdown__details__box__icon">
+                <Icon d={star} color="#1f2e33" size="4em" />
+              </div>
             </div>
           </div>
-          <div class="CenterRowFlex cis-breakdown__details__box">
-            <div class="cis-breakdown__details__box__value">30</div>
-            <div class="cis-breakdown__details__box__title">Reaction Score</div>
-            <div class="cis-breakdown__details__box__icon">
-              <Icon d={star} color="#1f2e33" size="4em" />
+          <div class="CenterColumnFlex cis-breakdown__details__col">
+            <div class="CenterRowFlex cis-breakdown__details__box">
+              <div class="cis-breakdown__details__box__value">30</div>
+              <div class="cis-breakdown__details__box__title">Post Score</div>
+              <div class="cis-breakdown__details__box__icon">
+                <Icon d={feather} color="#1f2e33" size="4em" />
+              </div>
+            </div>
+            <div class="CenterRowFlex cis-breakdown__details__box">
+              <div class="cis-breakdown__details__box__value">30</div>
+              <div class="cis-breakdown__details__box__title">POAP Score</div>
+              <div class="cis-breakdown__details__box__icon">
+                <Icon d={poap} color="#1f2e33" size="4em" />
+              </div>
             </div>
           </div>
         </div>
-        <div class="CenterColumnFlex cis-breakdown__details__col">
-          <div class="CenterRowFlex cis-breakdown__details__box">
-            <div class="cis-breakdown__details__box__value">30</div>
-            <div class="cis-breakdown__details__box__title">Post Score</div>
-            <div class="cis-breakdown__details__box__icon">
-              <Icon d={feather} color="#1f2e33" size="4em" />
+      {:else}
+        <div class="CenterRowFlex cis-breakdown__score">
+          <div class="cis-breakdown__score__title">
+            Nader's Community Impact Score is
+          </div>
+          <div class="cis-breakdown__score__value">{cisBreakdownData.CIS}</div>
+        </div>
+        <div class="CenterRowFlex cis-breakdown__details">
+          <div class="CenterColumnFlex cis-breakdown__details__col">
+            <div class="CenterRowFlex cis-breakdown__details__box">
+              <div class="cis-breakdown__details__box__value">{cisBreakdownData.followerScore}</div>
+              <div class="cis-breakdown__details__box__title">Follower Score</div>
+              <div class="cis-breakdown__details__box__icon">
+                <Icon d={followers} color="#1f2e33" size="4em" />
+              </div>
+            </div>
+            <div class="CenterRowFlex cis-breakdown__details__box">
+              <div class="cis-breakdown__details__box__value">{cisBreakdownData.reactionScore}</div>
+              <div class="cis-breakdown__details__box__title">Reaction Score</div>
+              <div class="cis-breakdown__details__box__icon">
+                <Icon d={star} color="#1f2e33" size="4em" />
+              </div>
             </div>
           </div>
-          <div class="CenterRowFlex cis-breakdown__details__box">
-            <div class="cis-breakdown__details__box__value">30</div>
-            <div class="cis-breakdown__details__box__title">POAP Score</div>
-            <div class="cis-breakdown__details__box__icon">
-              <Icon d={poap} color="#1f2e33" size="4em" />
+          <div class="CenterColumnFlex cis-breakdown__details__col">
+            <div class="CenterRowFlex cis-breakdown__details__box">
+              <div class="cis-breakdown__details__box__value">{cisBreakdownData.postScore}</div>
+              <div class="cis-breakdown__details__box__title">Post Score</div>
+              <div class="cis-breakdown__details__box__icon">
+                <Icon d={feather} color="#1f2e33" size="4em" />
+              </div>
+            </div>
+            <div class="CenterRowFlex cis-breakdown__details__box">
+              <div class="cis-breakdown__details__box__value">{cisBreakdownData.poapScore}</div>
+              <div class="cis-breakdown__details__box__title">POAP Score</div>
+              <div class="cis-breakdown__details__box__icon">
+                <Icon d={poap} color="#1f2e33" size="4em" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      {/if}
+
     </div>
   {:else if activeTab === "exploreSimilarity"}
     <div class="CenterColumnFlex explore-similarity">
