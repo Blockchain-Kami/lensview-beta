@@ -23,7 +23,8 @@ export const getProfileDetailsController = async (
     farcasterJoinDate: null,
     lensFollowers: 0,
     farcasterFollowers: 0,
-    CIS: 0
+    CIS: 0,
+    isXMTPEnabled: false,
   };
   try {
     const requestLensHandle = req.query.handle;
@@ -69,7 +70,7 @@ export const getSimilarityProfileController = async (
       handle1,
       handle2
     );
-    const poapCount = poapDetails.Poap.length;
+    const poapCount = poapDetails.Poap ? poapDetails.Poap?.length : 0;
     const commonSocials = await getSocialOverlapProfileUtil(handle1, handle2);
     const haveENS = commonSocials.ens ? true : false;
     const haveLens = commonSocials.lens ? true : false;
@@ -85,7 +86,7 @@ export const getSimilarityProfileController = async (
         poapCount / 100) /
       6;
     res.status(200).send({
-      similarityScore: similarityScore * 100,
+      similarityScore: Math.round((similarityScore * 100 + Number.EPSILON) * 100) / 100,
       haveENS,
       haveLens,
       haveFarcaster,
