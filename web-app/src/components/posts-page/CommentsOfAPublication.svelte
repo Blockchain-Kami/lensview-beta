@@ -308,13 +308,15 @@
           class="comment"
         >
           <div class="comment__pic">
-            <img
-              src={getPictureURLUtil(
+            <a href={"/profile/" +comment?.by?.handle?.fullHandle.substring(5)}>
+              <img
+                      src={getPictureURLUtil(
                 comment?.by?.metadata?.picture?.optimized?.uri,
                 comment?.by?.ownedBy?.address
               )}
-              alt="avatar"
-            />
+                      alt="avatar"
+              />
+            </a>
           </div>
           <div class="comment__body">
             <div class="CenterRowFlex comment__body__top">
@@ -326,7 +328,9 @@
                   <div class="comment__body__top__left__dot" />
                 {/if}
                 <div class="comment__body__top__left__handle">
-                  {comment?.by?.handle?.fullHandle.substring(5)}
+                  <a href={"/profile/" +comment?.by?.handle?.fullHandle.substring(5)}>
+                    {comment?.by?.handle?.fullHandle.substring(5)}
+                  </a>
                 </div>
                 {#if comment?.by?.id === PUBLIC_APP_LENS_ID}
                   <Tooltip

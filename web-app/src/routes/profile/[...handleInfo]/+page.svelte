@@ -242,7 +242,7 @@
               class="CenterRowFlex profile-details__right__middle__farcaster"
             >
               <div class="profile-details__right__middle__handle">
-                {profile.farcasterProfileName
+                farcaster/{profile.farcasterProfileName
                   ? profile.farcasterProfileName
                   : ""}
               </div>

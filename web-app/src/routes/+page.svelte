@@ -184,25 +184,29 @@
               {:else}
                 <div class="CenterRowFlex card__post">
                   <div class="card__post__user-pic">
-                    <img
-                      src={getPictureURLUtil(
+                    <a href={"/profile/" +comments.items[0]?.by?.handle?.fullHandle.substring(5)}>
+                      <img
+                              src={getPictureURLUtil(
                         comments.items[0]?.by?.metadata?.picture?.optimized
                           ?.uri,
                         comments.items[0]?.by?.ownedBy?.address
                       )}
-                      alt="avatar"
-                    />
+                              alt="avatar"
+                      />
+                    </a>
                   </div>
                   <div class="card__post__info">
                     <div class="CenterRowFlex card__post__info__head">
                       <div class="card__post__info__head__username">
-                        {comments.items[0]?.by?.handle?.fullHandle.substring(
-                          5,
-                          17
-                        )}
-                        {comments.items[0]?.by?.handle?.fullHandle.length > 17
-                          ? "..."
-                          : ""}
+                        <a href={"/profile/" +comments.items[0]?.by?.handle?.fullHandle.substring(5)}>
+                          {comments.items[0]?.by?.handle?.fullHandle.substring(
+                                  5,
+                                  17
+                          )}
+                          {comments.items[0]?.by?.handle?.fullHandle.length > 17
+                                  ? "..."
+                                  : ""}
+                        </a>
                       </div>
                       {#if comments.items[0]?.by?.id === PUBLIC_APP_LENS_ID}
                         <Tooltip
