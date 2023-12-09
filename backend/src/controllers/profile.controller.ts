@@ -50,21 +50,28 @@ export const getProfileCisDashboardController = async (
 };
 
 export const getSimilarProfilePoapController = async (
-  req: Request<unknown, unknown, {
-    handle1: string
-    handle2: string
-  }, unknown>,
+  req: Request<
+    unknown,
+    unknown,
+    {
+      handle1: string;
+      handle2: string;
+    },
+    unknown
+  >,
   res: Response
 ) => {
   try {
     const handle1 = req.body.handle1;
     const handle2 = req.body.handle2;
-    const poapDetails = await getSimilarPoapDetailsAirstackService(handle1, handle2);
+    const poapDetails = await getSimilarPoapDetailsAirstackService(
+      handle1,
+      handle2
+    );
     res.status(200).send({
       poapCount: poapDetails.Poap.length,
       poapDetails
-        }
-    );
+    });
   } catch (error) {
     res.status(500).send("Something went wrong: " + error);
   }
