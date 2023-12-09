@@ -14,7 +14,7 @@ export const summaryProfileUtils = async (handle: string) => {
     const lensDetails = profileAirstackSummary.Wallet?.lensSocials;
     const farcasterDetails = profileAirstackSummary.Wallet?.farcasterSocials;
 
-    const lensProfileName = lensDetails ? lensDetails[0]?.profileName : null;
+    const lensProfileName = profileLensSummary?.data?.profile?.handle?.fullHandle;
     const farcasterProfileName = farcasterDetails
       ? farcasterDetails[0]?.profileName
       : null;
@@ -32,7 +32,7 @@ export const summaryProfileUtils = async (handle: string) => {
     const publications = profileLensSummary.data?.profile
       ? profileLensSummary.data?.profile?.stats?.publications
       : null;
-    const displayName = lensDetails[0]?.profileDisplayName;
+    const displayName = profileLensSummary.data ? profileLensSummary.data.profile?.metadata?.displayName : null;
     const bio = lensDetails[0]?.bio;
     const displayImage = lensDetails[0]?.profileImageContentValue
       ? lensDetails[0]?.profileImageContentValue?.image?.large
