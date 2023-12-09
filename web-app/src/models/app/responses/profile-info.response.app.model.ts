@@ -1,6 +1,6 @@
 export interface ProfileInfoResponseAppModel {
-  lensHandle: string;
-  farcasterHandle: string;
+  lensProfileName: string;
+  farcasterProfileName: string;
   lensJoinDate: string;
   farcasterJoinDate: string;
   reactions: number;

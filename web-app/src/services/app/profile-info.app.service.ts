@@ -1,15 +1,8 @@
-import { profileUserStore } from "../../stores/user/profile.user.store";
 import clientAxiosUtil from "../../utils/axios/client.axios.util";
 import type { AxiosResponse } from "axios";
 import type { ProfileInfoResponseAppModel } from "../../models/app/responses/profile-info.response.app.model";
 
-const profileInfoAppService = async () => {
-  let handle;
-  const unsub = profileUserStore.subscribe((profile) => {
-    handle = profile?.handle?.fullHandle.split("/")[1];
-  });
-  unsub();
-
+const profileInfoAppService = async (handle: string) => {
   try {
     return await clientAxiosUtil
       .get("profile", {

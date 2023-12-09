@@ -28,8 +28,66 @@
 
 <!----------------------------- HTML ----------------------------->
 <main>
-  {#await profileInfoAppService()}
-    dfdsfs
+  {#await profileInfoAppService("vitalik")}
+    <div class="cover-image-loader" />
+    <div class="profile-details">
+      <div class="CenterColumnFlex profile-details__left">
+        <div class="profile-details__left__picture-loader" />
+        <div class="CenterRowFlex profile-details__left__score-loader" />
+      </div>
+      <div class="profile-details__right">
+        <div class="CenterRowFlex profile-details__right__top-loader" />
+        <div class="CenterRowFlex profile-details__right__middle-loader" />
+        <div class="profile-details__right__bottom-loader" />
+      </div>
+    </div>
+    <div class="stats">
+      <div class="CenterRowFlex stats__box stats__lens-followers">
+        <div class="CenterColumnFlex stats__box__icon">
+          <Icon d={followers} color="black" size="1.7em" />
+        </div>
+        <div class="CenterRowFlex stats__box__right">
+          <div class="stats__box__right__title">Lens followers</div>
+          <div class="stats__box__right__value-loader" />
+        </div>
+      </div>
+      <div class="CenterRowFlex stats__box stats__lens-followers">
+        <div class="stats__box__icon">
+          <Icon d={followers} color="black" size="1.7em" />
+        </div>
+        <div class="CenterColumnFlex stats__box__right">
+          <div class="stats__box__right__title">Farcaster followers</div>
+          <div class="stats__box__right__value-loader" />
+        </div>
+      </div>
+      <div class="CenterRowFlex stats__box stats__posts">
+        <div class="stats__box__icon">
+          <Icon d={feather} color="black" size="1.7em" />
+        </div>
+        <div class="CenterColumnFlex stats__box__right">
+          <div class="stats__box__right__title">Number of posts</div>
+          <div class="stats__box__right__value-loader" />
+        </div>
+      </div>
+      <div class="CenterRowFlex stats__box stats__reactions">
+        <div class="stats__box__icon">
+          <Icon d={star} color="black" size="1.7em" />
+        </div>
+        <div class="CenterColumnFlex stats__box__right">
+          <div class="stats__box__right__title">Reaction count</div>
+          <div class="stats__box__right__value-loader" />
+        </div>
+      </div>
+      <div class="CenterRowFlex stats__box stats__poaps">
+        <div class="stats__box__icon">
+          <Icon d={poap} color="black" size="1.7em" />
+        </div>
+        <div class="CenterColumnFlex stats__box__right">
+          <div class="stats__box__right__title">POAP count</div>
+          <div class="stats__box__right__value-loader" />
+        </div>
+      </div>
+    </div>
   {:then profile}
     <div
       class="cover-image"
@@ -44,7 +102,7 @@
           <div class="profile-details__left__score__title">
             Community Impact Score
           </div>
-          <div class="profile-details__left__score__value">1224</div>
+          <div class="profile-details__left__score__value">{profile.CIS}</div>
         </div>
       </div>
       <div class="profile-details__right">
@@ -62,7 +120,7 @@
         <div class="CenterRowFlex profile-details__right__middle">
           <div class="CenterRowFlex profile-details__right__middle__lens">
             <div class="profile-details__right__middle__handle">
-              {profile.lensHandle}
+              {profile.lensProfileName}
             </div>
             <div class="CenterRowFlex profile-details__right__middle__joined">
               <Icon d={clock} color="#a1a1a1" />
@@ -72,7 +130,7 @@
           <div class="profile-details__right__middle__vertical-line" />
           <div class="CenterRowFlex profile-details__right__middle__farcaster">
             <div class="profile-details__right__middle__handle">
-              {profile.farcasterHandle}
+              {profile.farcasterProfileName}
             </div>
             <div class="CenterRowFlex profile-details__right__middle__joined">
               <Icon d={clock} color="#a1a1a1" />
@@ -380,6 +438,11 @@
     background-position: center;
   }
 
+  .cover-image-loader {
+    width: 100%;
+    height: 13rem;
+  }
+
   .profile-details {
     display: flex;
     flex-direction: row;
@@ -395,6 +458,13 @@
     margin-top: -5rem;
   }
 
+  .profile-details__left__picture-loader {
+    width: 15rem;
+    height: 15rem;
+    border-radius: 50%;
+    margin-top: -5rem;
+  }
+
   .profile-details__left__score {
     border-radius: 5px;
     background: #234554;
@@ -405,6 +475,14 @@
     min-width: 10rem;
     max-width: 12rem;
     font-weight: var(--medium-font-weight);
+  }
+
+  .profile-details__left__score-loader {
+    border-radius: 5px;
+    margin-top: -3rem;
+    position: relative;
+    width: 12rem;
+    height: 3.5rem;
   }
 
   .profile-details__left__score__title {
@@ -428,6 +506,12 @@
     gap: 3rem;
   }
 
+  .profile-details__right__top-loader {
+    width: 25rem;
+    height: 2rem;
+    border-radius: 10px;
+  }
+
   .profile-details__right__top__name {
     font-size: var(--semi-large-font-size);
     font-weight: var(--semi-medium-font-weight);
@@ -436,6 +520,12 @@
 
   .profile-details__right__middle {
     gap: 1rem;
+  }
+
+  .profile-details__right__middle-loader {
+    width: 25rem;
+    height: 1rem;
+    border-radius: 10px;
   }
 
   .profile-details__right__middle__vertical-line {
@@ -459,6 +549,12 @@
     max-width: 50rem;
   }
 
+  .profile-details__right__bottom-loader {
+    width: 40rem;
+    height: 1.5rem;
+    border-radius: 10px;
+  }
+
   .stats {
     display: flex;
     flex-direction: row;
@@ -472,6 +568,12 @@
 
   .stats__box {
     gap: 1rem;
+  }
+
+  .stats__box__right__value-loader {
+    width: 4rem;
+    height: 1.5rem;
+    border-radius: 5px;
   }
 
   .stats__box__icon {
@@ -682,5 +784,23 @@
   .large-vertical-line {
     border-left: 2px solid #ffffff45;
     height: 41px;
+  }
+
+  @keyframes shine {
+    to {
+      background-position-x: -200%;
+    }
+  }
+
+  .cover-image-loader,
+  .profile-details__left__picture-loader,
+  .profile-details__left__score-loader,
+  .profile-details__right__top-loader,
+  .profile-details__right__middle-loader,
+  .profile-details__right__bottom-loader,
+  .stats__box__right__value-loader {
+    background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);
+    background-size: 200% 100%;
+    animation: 1s shine linear infinite;
   }
 </style>
