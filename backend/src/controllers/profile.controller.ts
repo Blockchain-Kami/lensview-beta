@@ -11,16 +11,16 @@ export const getProfileDetailsController = async (
     bio: null,
     displayImage: null,
     coverImage: null,
-    reactions: null,
-    publications: null,
-    poapCount: null,
+    reactions: 0,
+    publications: 0,
+    poapCount: 0,
     lensHandle: null,
     farcasterHandle: null,
     lensJoinDate: null,
     farcasterJoinDate: null,
-    lensFollowers: null,
-    farcasterFollowers: null,
-    CIS: null
+    lensFollowers: 0,
+    farcasterFollowers: 0,
+    CIS: 0
   };
   try {
     const requestLensHandle = req.query.handle;

@@ -50,16 +50,16 @@ export const summaryProfileUtils = async (handle: string) => {
       farcasterHandle: farcasterHandle ? farcasterHandle : null,
       lensJoinDate: lensJoinDate ? lensJoinDate : null,
       farcasterJoinDate: farcasterJoinDate ? farcasterJoinDate : null,
-      reactions: reactions ? reactions : null,
-      publications: publications ? publications : null,
+      reactions: reactions ? reactions : 0,
+      publications: publications ? publications : 0,
       displayName: displayName ? displayName : null,
       bio: bio ? bio : null,
       displayImage: displayImage ? displayImage : null,
       coverImage: coverImage ? coverImage : null,
-      lensFollowers: lensFollowers ? lensFollowers : null,
-      farcasterFollowers: farcasterFollowers ? farcasterFollowers : null,
-      poapCount: poapCount ? poapCount : null,
-      CIS: CIS ? CIS : null
+      lensFollowers: lensFollowers ? lensFollowers : 0,
+      farcasterFollowers: farcasterFollowers ? farcasterFollowers : 0,
+      poapCount: poapCount ? poapCount : 0,
+      CIS: CIS ? CIS : 0
     };
   } catch (error) {
     throw new InternalServerError("Error in profile summary: " + error, 500);
