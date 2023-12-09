@@ -25,7 +25,7 @@ const documents = {
     types.ChallengeDocument,
   "\n  query Publications($request: PublicationsRequest!) {\n    publications(request: $request) {\n      items {\n        ... on Post {\n          id\n        }\n      }\n    }\n  }\n":
     types.PublicationsDocument,
-  "\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      createdAt\n      handle {\n        fullHandle\n      }\n      id\n      stats {\n        comments\n        publications\n        reactions\n      }\n      metadata {\n        coverPicture {\n          optimized {\n            uri\n          }\n        }\n      }\n    }\n  }\n":
+  "\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      createdAt\n      handle {\n        fullHandle\n      }\n      id\n      stats {\n        comments\n        publications\n        reactions\n      }\n      metadata {\n        coverPicture {\n          optimized {\n            uri\n          }\n        }\n        displayName\n      }\n    }\n  }\n":
     types.ProfileDocument,
   "\n  query lensTransactionStatus($request: LensTransactionStatusRequest!) {\n    lensTransactionStatus(request: $request) {\n      status\n      txHash\n      reason\n      extraInfo\n    }\n  }\n":
     types.LensTransactionStatusDocument
@@ -85,8 +85,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      createdAt\n      handle {\n        fullHandle\n      }\n      id\n      stats {\n        comments\n        publications\n        reactions\n      }\n      metadata {\n        coverPicture {\n          optimized {\n            uri\n          }\n        }\n      }\n    }\n  }\n"
-): (typeof documents)["\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      createdAt\n      handle {\n        fullHandle\n      }\n      id\n      stats {\n        comments\n        publications\n        reactions\n      }\n      metadata {\n        coverPicture {\n          optimized {\n            uri\n          }\n        }\n      }\n    }\n  }\n"];
+  source: "\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      createdAt\n      handle {\n        fullHandle\n      }\n      id\n      stats {\n        comments\n        publications\n        reactions\n      }\n      metadata {\n        coverPicture {\n          optimized {\n            uri\n          }\n        }\n        displayName\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      createdAt\n      handle {\n        fullHandle\n      }\n      id\n      stats {\n        comments\n        publications\n        reactions\n      }\n      metadata {\n        coverPicture {\n          optimized {\n            uri\n          }\n        }\n        displayName\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

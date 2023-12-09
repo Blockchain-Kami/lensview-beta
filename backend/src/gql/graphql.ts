@@ -5418,6 +5418,7 @@ export type ProfileQuery = {
     };
     metadata?: {
       __typename?: "ProfileMetadata";
+      displayName?: string | null;
       coverPicture?: {
         __typename?: "ImageSet";
         optimized?: { __typename?: "Image"; uri: any } | null;
@@ -6169,6 +6170,10 @@ export const ProfileDocument = {
                             }
                           ]
                         }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "displayName" }
                       }
                     ]
                   }

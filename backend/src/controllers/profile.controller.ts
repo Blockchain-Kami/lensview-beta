@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import { summaryProfileUtils } from "../utils/prolfile/summary.profile.utils";
 import ProfileSummaryResponseModel from "../models/response/profile-summary-response.model";
 import { CISDashboardDataProfileUtil } from "../utils/prolfile/cis-dashboard-data.profile.util";
-import { getPoapDetailsAirstackService } from "../services/airstack/get-poap-details.airstack.service";
+import { getSimilarPoapDetailsAirstackService } from "../services/airstack/get-similar-poap-details.airstack.service";
+import { getSocialOverlapProfileUtil } from "../utils/prolfile/get-social-overlap.profile.util";
 
 export const getProfileDetailsController = async (
   req: Request<unknown, unknown, unknown, { handle: string }>,
@@ -49,14 +50,49 @@ export const getProfileCisDashboardController = async (
   }
 };
 
-export const getProfilePoapController = async (
-  req: Request<unknown, unknown, unknown, { handle: string }>,
+export const getSimilarityProfileController = async (
+  req: Request<
+    unknown,
+    unknown,
+    {
+      handle1: string;
+      handle2: string;
+    },
+    unknown
+  >,
   res: Response
 ) => {
   try {
-    const requestLensHandle = req.query.handle;
-    const poapDetails = await getPoapDetailsAirstackService(requestLensHandle);
-    res.status(200).send(poapDetails);
+    const handle1 = req.body.handle1;
+    const handle2 = req.body.handle2;
+    const poapDetails = await getSimilarPoapDetailsAirstackService(
+      handle1,
+      handle2
+    );
+    const poapCount = poapDetails.Poap.length;
+    const commonSocials = await getSocialOverlapProfileUtil(handle1, handle2);
+    const haveENS = commonSocials.ens ? true : false;
+    const haveLens = commonSocials.lens ? true : false;
+    const haveFarcaster = commonSocials.farcaster ? true : false;
+    const haveXMPT = commonSocials.xmtp ? true : false;
+
+    const similarityScore =
+      (Number(haveENS) +
+        Number(haveLens) +
+        Number(haveFarcaster) +
+        Number(haveXMPT) +
+        Number(haveXMPT) +
+        poapCount / 100) /
+      6;
+    res.status(200).send({
+      similarityScore: similarityScore * 100,
+      haveENS,
+      haveLens,
+      haveFarcaster,
+      haveXMPT,
+      poapCount,
+      poapDetails
+    });
   } catch (error) {
     res.status(500).send("Something went wrong: " + error);
   }

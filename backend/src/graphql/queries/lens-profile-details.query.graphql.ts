@@ -19,6 +19,7 @@ const lensProfileDetailsQueryGraphql = graphql(`
             uri
           }
         }
+        displayName
       }
     }
   }
