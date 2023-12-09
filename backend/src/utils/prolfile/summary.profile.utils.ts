@@ -46,20 +46,20 @@ export const summaryProfileUtils = async (handle: string) => {
     const CIS = 124.5;
 
     return {
-      lensHandle,
-      farcasterHandle,
-      lensJoinDate,
-      farcasterJoinDate,
-      reactions,
-      publications,
-      displayName,
-      bio,
-      displayImage,
+      lensHandle: lensHandle ? lensHandle : null,
+      farcasterHandle: farcasterHandle ? farcasterHandle : null,
+      lensJoinDate: lensJoinDate ? lensJoinDate : null,
+      farcasterJoinDate: farcasterJoinDate ? farcasterJoinDate : null,
+      reactions: reactions ? reactions : null,
+      publications: publications ? publications : null,
+      displayName: displayName ? displayName : null,
+      bio: bio ? bio : null,
+      displayImage: displayImage ? displayImage : null,
       coverImage: coverImage ? coverImage : null,
-      lensFollowers,
-      farcasterFollowers,
-      poapCount,
-      CIS
+      lensFollowers: lensFollowers ? lensFollowers : null,
+      farcasterFollowers: farcasterFollowers ? farcasterFollowers : null,
+      poapCount: poapCount ? poapCount : null,
+      CIS: CIS ? CIS : null
     };
   } catch (error) {
     throw new InternalServerError("Error in profile summary: " + error, 500);
