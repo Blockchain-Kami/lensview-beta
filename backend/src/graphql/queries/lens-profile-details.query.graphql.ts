@@ -18,7 +18,7 @@ const lensProfileDetailsQueryGraphql = graphql(`
           optimized {
             uri
           }
-        },
+        }
         displayName
       }
     }
