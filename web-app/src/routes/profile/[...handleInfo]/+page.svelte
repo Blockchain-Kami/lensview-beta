@@ -9,7 +9,8 @@
     similarity,
     target,
     star,
-    cross
+    cross,
+    message
   } from "../../../utils/app-icon.util";
   import Icon from "$lib/Icon.svelte";
   import LensLogo from "$lib/assets/lens-logo.jpg";
@@ -25,6 +26,7 @@
   import type { SimilarityResponseAppModel } from "../../../models/app/responses/similarity.response.app.model";
   import similarityAppService from "../../../services/app/similarity.app.service";
   import getFormattedDateHelperUtil from "../../../utils/helper/get-formatted-date.helper.util";
+  import Messages from "../../../components/Messages.svelte";
 
   let handle = $page.data.handleInfo;
   const { addNotification } = getNotificationsContext();
@@ -40,6 +42,9 @@
   let onLoginIntialization: () => Promise<void>;
   let exploreSimilarityData: SimilarityResponseAppModel;
   let isFetchingExploreSimilarityData = false;
+  let displayName = "";
+  let profilePicUrl = "";
+  let showMessageModal = false;
 
   const fetchCisBreakdownData = async () => {
     isFetchingCisBreakdownData = true;
@@ -84,6 +89,12 @@
   const openLoginModal = () => {
     showLoginModal = true;
     onLoginIntialization();
+  };
+
+  const openMessageModal = (_displayName: string, _profilePicUrl: string) => {
+    showMessageModal = true;
+    displayName = _displayName;
+    profilePicUrl = _profilePicUrl;
   };
 </script>
 
@@ -220,6 +231,13 @@
             <button class="CenterRowFlex btn">
               <Icon d={personAdd} color="black" />
               &nbsp; &nbsp;Follow
+            </button>
+          </div>
+          <div class="profile-details__right__top__msg">
+            <button on:click={() => openMessageModal(profile.displayName, profile.displayImage)}
+                    class="CenterRowFlex btn">
+              <Icon d={message} color="black" />
+              &nbsp; &nbsp;Messsage
             </button>
           </div>
         </div>
@@ -475,8 +493,7 @@
                 <div class="explore-similarity__details__box__icon">
                   <Icon d={poap} color="#1f2e33" size="1.7em" />
                 </div>
-                <div class="explore-similarity__details__box__info-loader">
-                </div>
+                <div class="explore-similarity__details__box__info-loader" />
               </div>
               <div class="large-vertical-line" />
               <div class="CenterRowFlex explore-similarity__details__box">
@@ -497,8 +514,7 @@
                 <div class="explore-similarity__details__box__logo">
                   <img src={ENSLogo} alt="lens-logo" />
                 </div>
-                <div class="explore-similarity__details__box__info-loader">
-                </div>
+                <div class="explore-similarity__details__box__info-loader" />
               </div>
             </div>
             <div class="explore-similarity__poaps">
@@ -506,7 +522,7 @@
                 <div class="explore-similarity__poaps__head__title">
                   Total similar POAPs
                 </div>
-                <div class="explore-similarity__poaps__head__value-loader"></div>
+                <div class="explore-similarity__poaps__head__value-loader" />
                 <div class="explore-similarity__poaps__head__logo">
                   <img src={GnosisLogo} alt="gnosis logo" />
                 </div>
@@ -690,20 +706,20 @@
               <div class="explore-similarity__poaps__body">
                 {#each exploreSimilarityData.poapDetails.Poap as poap}
                   <div
-                    style="background-image: url({poap.poapEvent.logo.image
-                      .medium})"
+                    style="background-image: url({poap?.poapEvent?.logo?.image
+                      ?.medium})"
                     class="CenterColumnFlex explore-similarity__poaps__body__card"
                   >
                     <div class="explore-similarity__poaps__body__card__details">
                       <div
                         class="explore-similarity__poaps__body__card__details__date-location"
                       >
-                        {getFormattedDateHelperUtil(poap.poapEvent.startDate)}
+                        {getFormattedDateHelperUtil(poap?.poapEvent?.startDate)}
                       </div>
                       <div
                         class="explore-similarity__poaps__body__card__details__name"
                       >
-                        {poap.poapEvent.eventName}
+                        {poap?.poapEvent?.eventName}
                       </div>
                     </div>
                   </div>
@@ -725,6 +741,7 @@
 </main>
 
 <Login bind:showLoginModal bind:onLoginIntialization />
+<Messages bind:displayName bind:profilePicUrl  bind:showMessageModal />
 
 <!----------------------------------------------------------------->
 
@@ -801,10 +818,12 @@
     flex-direction: column;
     align-items: flex-start;
     padding: 2rem;
+    width: 100%;
   }
 
   .profile-details__right__top {
     gap: 3rem;
+    width: 100%;
   }
 
   .profile-details__right__top-loader {
@@ -817,6 +836,10 @@
     font-size: var(--semi-large-font-size);
     font-weight: var(--semi-medium-font-weight);
     font-family: var(--special-font);
+  }
+
+  .profile-details__right__top__msg{
+    margin-left: auto;
   }
 
   .profile-details__right__middle {
@@ -1043,7 +1066,7 @@
     font-size: var(--semi-large-font-size);
   }
 
-  .explore-similarity__poaps__head__value-loader{
+  .explore-similarity__poaps__head__value-loader {
     width: 2rem;
     height: 1rem;
     border-radius: 5px;
@@ -1133,7 +1156,7 @@
   .cis-breakdown__score-loader,
   .cis-breakdown__details__box__value-loader,
   .explore-similarity__details__box__info-loader,
-  .explore-similarity__poaps__head__value-loader{
+  .explore-similarity__poaps__head__value-loader {
     background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);
     background-size: 200% 100%;
     animation: 1s shine linear infinite;
