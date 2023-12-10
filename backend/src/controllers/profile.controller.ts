@@ -4,6 +4,7 @@ import ProfileSummaryResponseModel from "../models/response/profile-summary-resp
 import { CISDashboardDataProfileUtil } from "../utils/prolfile/cis-dashboard-data.profile.util";
 import { getSimilarPoapDetailsAirstackService } from "../services/airstack/get-similar-poap-details.airstack.service";
 import { getSocialOverlapProfileUtil } from "../utils/prolfile/get-social-overlap.profile.util";
+import { checkHandleIsXMTPEnabledUtil } from "../utils/prolfile/check-handle-is-xmtp-enabled.profile.util";
 
 export const getProfileDetailsController = async (
   req: Request<unknown, unknown, unknown, { handle: string }>,
@@ -24,7 +25,7 @@ export const getProfileDetailsController = async (
     lensFollowers: 0,
     farcasterFollowers: 0,
     CIS: 0,
-    isXMTPEnabled: false,
+    isXMTPEnabled: false
   };
   try {
     const requestLensHandle = req.query.handle;
@@ -86,7 +87,8 @@ export const getSimilarityProfileController = async (
         poapCount / 100) /
       6;
     res.status(200).send({
-      similarityScore: Math.round((similarityScore * 100 + Number.EPSILON) * 100) / 100,
+      similarityScore:
+        Math.round((similarityScore * 100 + Number.EPSILON) * 100) / 100 + "%",
       haveENS,
       haveLens,
       haveFarcaster,
@@ -96,5 +98,22 @@ export const getSimilarityProfileController = async (
     });
   } catch (error) {
     res.status(500).send("Something went wrong: " + error);
+  }
+};
+
+export const checkHandleIsXMTPEnabledController = async (
+  req: Request<unknown, unknown, { handle: string }>,
+  res: Response
+): Promise<void> => {
+  try {
+    const handle = req.body.handle;
+    const isXMTPEnabled = await checkHandleIsXMTPEnabledUtil(handle);
+    res.status(200).send({
+      isXMTPEnabled
+    });
+  } catch {
+    res.status(500).send({
+      isXMTPEnabled: false
+    });
   }
 };

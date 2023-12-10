@@ -20,6 +20,7 @@ const lensProfileDetailsQueryGraphql = graphql(`
           }
         }
         displayName
+        bio
       }
     }
   }
