@@ -16,10 +16,16 @@ const checkCommonSocials = (socialOverlap: any) => {
     if (socialOverlap.wallet1.domains && socialOverlap.wallet2.domains) {
       ens = true;
     }
-    if (socialOverlap.wallet1.farcasterSocials && socialOverlap.wallet2.farcasterSocials) {
+    if (
+      socialOverlap.wallet1.farcasterSocials &&
+      socialOverlap.wallet2.farcasterSocials
+    ) {
       farcaster = true;
     }
-    if (socialOverlap.wallet1.lensSocials && socialOverlap.wallet2.lensSocials) {
+    if (
+      socialOverlap.wallet1.lensSocials &&
+      socialOverlap.wallet2.lensSocials
+    ) {
       lens = true;
     }
     if (socialOverlap.wallet1.xmtp && socialOverlap.wallet2.xmtp) {
