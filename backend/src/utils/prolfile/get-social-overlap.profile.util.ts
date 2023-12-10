@@ -4,7 +4,6 @@ export const getSocialOverlapProfileUtil = async (
   handle2: string
 ) => {
   const socialOverlap = await getSocialOverlapAirstackService(handle1, handle2);
-  console.log("ssss", socialOverlap);
   return checkCommonSocials(socialOverlap);
 };
 
@@ -14,16 +13,22 @@ const checkCommonSocials = (socialOverlap: any) => {
     farcaster,
     xmtp: boolean = false;
   if (socialOverlap.wallet1 && socialOverlap.wallet2) {
-    if (socialOverlap.wallet1.domains) {
+    if (socialOverlap.wallet1.domains && socialOverlap.wallet2.domains) {
       ens = true;
     }
-    if (socialOverlap.wallet1.farcasterSocials) {
+    if (
+      socialOverlap.wallet1.farcasterSocials &&
+      socialOverlap.wallet2.farcasterSocials
+    ) {
       farcaster = true;
     }
-    if (socialOverlap.wallet1.lensSocials) {
+    if (
+      socialOverlap.wallet1.lensSocials &&
+      socialOverlap.wallet2.lensSocials
+    ) {
       lens = true;
     }
-    if (socialOverlap.wallet1.xmtp) {
+    if (socialOverlap.wallet1.xmtp && socialOverlap.wallet2.xmtp) {
       xmtp = true;
     }
   }
