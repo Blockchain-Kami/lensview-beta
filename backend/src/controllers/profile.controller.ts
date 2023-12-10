@@ -71,7 +71,14 @@ export const getSimilarityProfileController = async (
       handle1,
       handle2
     );
-    const poapCount = poapDetails.Poap ? poapDetails.Poap?.length : 0;
+    const allPoaps = poapDetails.Poap;
+    let commonPoaps: any[] = [];
+    if (allPoaps || allPoaps.length > 0) {
+      commonPoaps = getCommonPoap(allPoaps);
+    } else {
+      commonPoaps = [];
+    }
+    const poapCount = commonPoaps.length;
     const commonSocials = await getSocialOverlapProfileUtil(handle1, handle2);
     const haveENS = commonSocials.ens ? true : false;
     const haveLens = commonSocials.lens ? true : false;
@@ -92,7 +99,7 @@ export const getSimilarityProfileController = async (
       haveFarcaster,
       haveXMPT,
       poapCount,
-      poapDetails
+      commonPoaps
     });
   } catch (error) {
     res.status(500).send("Something went wrong: " + error);
@@ -115,3 +122,16 @@ export const checkHandleIsXMTPEnabledController = async (
     });
   }
 };
+
+const getCommonPoap = (poapDetails: any) => {
+  const map = new Map();
+  const duplicatePoaps: any[] = [];
+  poapDetails.forEach((poap: any) => {
+    if (map.has(poap.poapEvent.eventName)) {
+      duplicatePoaps.push(poap);
+    } else {
+      map.set(poap.poapEvent.eventName, 1);
+    }
+  });
+  return duplicatePoaps;
+}
