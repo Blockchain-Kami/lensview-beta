@@ -11,3 +11,6 @@ export const PUBLIC_SOURCE_APP_ID = process.env.PUBLIC_SOURCE_APP_ID as string;
 export const WEB3STORAGE_TOKEN = process.env.WEB3STORAGE_TOKEN as string;
 export const PUBLIC_APP_LENS_HANDLE = process.env
   .PUBLIC_APP_LENS_HANDLE as string;
+export const PUBLIC_AIRSTACK_API_URL = process.env
+  .PUBLIC_AIRSTACK_API_URL as string;
+export const AIRSTACK_API_KEY = process.env.AIRSTACK_API_KEY as string;

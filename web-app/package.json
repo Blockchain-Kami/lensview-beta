@@ -15,7 +15,7 @@
     "codegen": "graphql-codegen --watch"
   },
   "dependencies": {
-    "@lens-protocol/metadata": "^1.0.5",
+    "@lens-protocol/metadata": "^1.1.2",
     "@svelte-plugins/tooltips": "^0.1.6",
     "@urql/svelte": "^3.0.1",
     "autolinker": "^4.0.0",
