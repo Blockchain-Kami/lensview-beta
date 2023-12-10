@@ -864,7 +864,7 @@
     margin: 1rem 5rem;
     background: #0c151a;
     border-radius: 15px;
-    justify-content: space-around;
+    justify-content: space-evenly;
   }
 
   .stats__box {
@@ -1009,7 +1009,7 @@
     background: linear-gradient(180deg, #0d171d 35.38%, #22454b 101.83%);
     width: 100%;
     border-radius: 10px;
-    justify-content: space-between;
+    justify-content: space-around;
   }
 
   .explore-similarity__details__box {
