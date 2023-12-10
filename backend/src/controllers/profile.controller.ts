@@ -79,16 +79,14 @@ export const getSimilarityProfileController = async (
     const haveXMPT = commonSocials.xmtp ? true : false;
 
     const similarityScore =
-      (Number(haveENS) +
+      ((Number(haveENS) +
         Number(haveLens) +
         Number(haveFarcaster) +
         Number(haveXMPT) +
-        Number(haveXMPT) +
-        poapCount / 100) /
-      6;
+        Number(haveXMPT)) / 5) + (poapCount * 0.0001);
     res.status(200).send({
       similarityScore:
-        Math.round((similarityScore * 100 + Number.EPSILON) * 100) / 100 + "%",
+        Math.round((similarityScore * 100 + Number.EPSILON) * 100) / 100,
       haveENS,
       haveLens,
       haveFarcaster,
