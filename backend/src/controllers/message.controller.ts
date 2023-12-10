@@ -58,7 +58,7 @@ async function check_if_an_address_is_on_the_network() {
   //Message this XMTP message bot to get an immediate automated reply:
   //gm.xmtp.eth (0x937C0d4a6294cdfa575de17382c7076b579DC176) env:production
   //
-  WALLET_TO = "0x6588A930Ed24e5Cee498AAc0b5Fa6567ca914FAa";
+  WALLET_TO = "0xa03dbDA93D960BBDa97B9a2F74729de186C22638";
   if (xmtp) {
     const isOnDevNetwork = await xmtp.canMessage(WALLET_TO);
     console.log(`Can message: ${isOnDevNetwork}`);

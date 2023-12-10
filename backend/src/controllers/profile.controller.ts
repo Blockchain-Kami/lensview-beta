@@ -73,7 +73,7 @@ export const getSimilarityProfileController = async (
     );
     const allPoaps = poapDetails.Poap;
     let commonPoaps = getCommonPoap(allPoaps);
-    const poapCount = commonPoaps.length;
+    const poapCount = commonPoaps ? commonPoaps.length : 0;
     const commonSocials = await getSocialOverlapProfileUtil(handle1, handle2);
     const haveENS = commonSocials.ens ? true : false;
     const haveLens = commonSocials.lens ? true : false;
@@ -122,12 +122,14 @@ export const checkHandleIsXMTPEnabledController = async (
 
 const getCommonPoap = (allPoaps: any) => {
   let commonPoap: any[] = [];
-  if (allPoaps.length > 0) {
+  console.log("Common", allPoaps);
+  if (allPoaps) {
     allPoaps.forEach((poap: any) => {
       if (poap.poapEvent.poaps) {
         commonPoap.push(poap);
       }
     });
   }
+
   return commonPoap;
 };

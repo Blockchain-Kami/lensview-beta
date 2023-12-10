@@ -704,7 +704,7 @@
                 </div>
               </div>
               <div class="explore-similarity__poaps__body">
-                {#each exploreSimilarityData.poapDetails.Poap as poap}
+                {#each exploreSimilarityData.commonPoaps as poap}
                   <div
                     style="background-image: url({poap?.poapEvent?.logo?.image
                       ?.medium})"

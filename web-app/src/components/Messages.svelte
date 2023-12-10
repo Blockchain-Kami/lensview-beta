@@ -5,6 +5,7 @@
   import { backInOut } from "svelte/easing";
   import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
   import Login from "./Login.svelte";
+  import profileMessageAppService from "../services/app/profile-message.app.service";
 
   export let showMessageModal: boolean;
   let dialog: HTMLDialogElement;
@@ -20,6 +21,14 @@
     showLoginModal = true;
     onLoginIntialization();
   };
+
+  const sendMessage = async () => {
+    try {
+        await profileMessageAppService(userEnteredContent)
+    } catch (error) {
+        console.log("sendMessage error", error);
+    }
+  }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -52,21 +61,21 @@
       {#if $isLoggedInUserStore}
         <div class="body">
           <div class="CenterColumnFlex body__msg-area">
-              <div class="body__msg-area__placeholder">
-                  You could always start with a hi!
-              </div>
+            <div class="body__msg-area__placeholder">
+              You could always start with a hi!
+            </div>
           </div>
           <div class="CenterRowFlex body__msg-box">
-                  <div
-                          contenteditable="true"
-                          placeholder="Type your message"
-                          class="body__msg-box__input"
-                          id="editableDiv"
-                          bind:innerHTML={userEnteredContent}
-                  />
-              <div class="body__msg-box__button">
-                  <button class="btn">Send</button>
-              </div>
+            <div
+              contenteditable="true"
+              placeholder="Type your message"
+              class="body__msg-box__input"
+              id="editableDiv"
+              bind:innerHTML={userEnteredContent}
+            />
+            <div class="body__msg-box__button">
+              <button class="btn" on:click={() => sendMessage()}>Send</button>
+            </div>
           </div>
         </div>
       {:else}
@@ -77,7 +86,9 @@
         </div>
         <div class="line" />
         <div class="footer">
-          <button on:click={openLoginModal} class="btn footer-login-btn"> Login </button>
+          <button on:click={openLoginModal} class="btn footer-login-btn">
+            Login
+          </button>
         </div>
       {/if}
     </main>
@@ -109,53 +120,53 @@
     min-width: 25rem;
   }
 
-  .body__msg-area{
+  .body__msg-area {
     width: 35rem;
     height: 15rem;
   }
 
-  .body__msg-area__placeholder{
+  .body__msg-area__placeholder {
     font-size: var(--medium-font-size);
     font-weight: var(--medium-font-weight);
-    color:var(--text-accent);
+    color: var(--text-accent);
   }
 
-  .body__msg-box{
+  .body__msg-box {
     padding: 0.5rem;
     gap: 1rem;
     background-color: #1b393a;
     border-radius: 10px;
   }
 
-  .body__msg-box__input{
+  .body__msg-box__input {
     content: attr(placeholder);
     width: 100%;
     border-radius: 0.75rem;
     background: linear-gradient(
-                    172deg,
-                    rgba(50, 249, 255, 0.15) 33.55%,
-                    rgba(236, 254, 255, 0.15) 100%
+      172deg,
+      rgba(50, 249, 255, 0.15) 33.55%,
+      rgba(236, 254, 255, 0.15) 100%
     );
     padding: 1rem;
     overflow-wrap: anywhere;
   }
 
-  .body__login__msg{
+  .body__login__msg {
     padding: 1rem;
   }
 
-  .head__user{
+  .head__user {
     gap: 1rem;
   }
 
-  .head__user__pic img{
+  .head__user__pic img {
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
     //border: 2px solid #32f9ff;
   }
 
-  .head__user__name{
+  .head__user__name {
     font-size: var(--medium-font-size);
     color: white;
   }
@@ -171,7 +182,7 @@
     padding: 1rem;
   }
 
-  .footer-login-btn{
+  .footer-login-btn {
     margin-left: auto;
   }
 </style>
