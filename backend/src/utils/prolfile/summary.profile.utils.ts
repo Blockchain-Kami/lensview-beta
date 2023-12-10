@@ -33,13 +33,14 @@ export const summaryProfileUtils = async (handle: string) => {
     const publications = profileLensSummary.data?.profile
       ? profileLensSummary.data?.profile?.stats?.publications
       : null;
-    // @ts-ignore
-    const displayName = profileLensSummary?.data.profile?.metadata?.displayName ?
-            profileLensSummary.data.profile?.metadata?.displayName
-            : lensDetails[0].profileDisplayName;
 
-    // @ts-ignore
-    const bio = lensDetails[0]?.profileBio ? lensDetails[0]?.profileBio : profileLensSummary?.data.profile?.metadata?.bio;
+    const displayName = profileLensSummary?.data?.profile?.metadata?.displayName
+      ? profileLensSummary.data.profile?.metadata?.displayName
+      : lensDetails[0].profileDisplayName;
+
+    const bio = lensDetails[0]?.profileBio
+      ? lensDetails[0]?.profileBio
+      : profileLensSummary?.data?.profile?.metadata?.bio;
     const displayImage = lensDetails[0]?.profileImageContentValue
       ? lensDetails[0]?.profileImageContentValue?.image?.large
       : null;
