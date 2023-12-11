@@ -12,7 +12,7 @@ LensView is revolutionizing the way people interact with the internet by creatin
 
 Lensview has garnered an impressive following among <b>notable individuals on twitter</b>
 
-[![My Skills](https://skillicons.dev/icons?i=twitter)](https://twitter.com/lensview_)
+[![My Skills](https://skillicons.dev/icons?i=twitter)](https://twitter.com/lensviewio)
 [![My Skills](https://skillicons.dev/icons?i=linkedin)](https://www.linkedin.com/company/lensviewio/)
 [![My Skills](https://skillicons.dev/icons?i=discord)](https://discord.com/invite/nVBN9JMj)
 [![My Skills](https://skillicons.dev/icons?i=instagram)](https://www.instagram.com/lensview.lens/)
