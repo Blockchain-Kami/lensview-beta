@@ -14,7 +14,7 @@ Lensview has garnered an impressive following among <b>notable individuals on tw
 
 [![My Skills](https://skillicons.dev/icons?i=twitter)](https://twitter.com/lensviewio)
 [![My Skills](https://skillicons.dev/icons?i=linkedin)](https://www.linkedin.com/company/lensviewio/)
-[![My Skills](https://skillicons.dev/icons?i=discord)](https://discord.com/invite/nVBN9JMj)
+[![My Skills](https://skillicons.dev/icons?i=discord)](https://discord.com/invite/ZB6snNmTnh)
 [![My Skills](https://skillicons.dev/icons?i=instagram)](https://www.instagram.com/lensview.lens/)
 
 ## 💪 Powered By
