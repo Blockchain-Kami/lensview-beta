@@ -17,13 +17,12 @@ export const validateSecretAdminMiddleware = (
   next: NextFunction
 ) => {
   const { secretKey, url } = req.body;
-  if (
-    url &&
-    secretKey
-  ) {
-    if ( createHashHelperUtil(secretKey) ===
-        "5757c384c37f705ef28f68ed0e5932830c0a3393" )
-    next();
+  if (url && secretKey) {
+    if (
+      createHashHelperUtil(secretKey) ===
+      "5757c384c37f705ef28f68ed0e5932830c0a3393"
+    )
+      next();
     else {
       throw new ClientError(
         "Check the request body: incorrect secretKey supplied",

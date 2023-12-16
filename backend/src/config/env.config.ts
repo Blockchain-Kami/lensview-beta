@@ -11,3 +11,6 @@ export const PUBLIC_SOURCE_APP_ID = process.env.PUBLIC_SOURCE_APP_ID as string;
 export const WEB3STORAGE_TOKEN = process.env.WEB3STORAGE_TOKEN as string;
 export const PUBLIC_APP_LENS_HANDLE = process.env
   .PUBLIC_APP_LENS_HANDLE as string;
+export const PUBLIC_USE_GASLESS: boolean = false;
+export const PUBLIC_LENS_HUB_CONTRACT_ADDRESS = process.env
+  .PUBLIC_LENS_HUB_CONTRACT_ADDRESS as string;
