@@ -18,6 +18,7 @@ import { signedTypeDataForPostHelperUtil } from "../helpers/sign-type-data.helpe
 import { splitSignatureHelperUtil } from "../helpers/split-signature.helper.utils";
 import { createContractHelperUtils } from "../helpers/create-contract.helper.utils";
 import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util";
+import { getPolygonGasPriceHelperUtil } from "../helpers/get-polygon-gas-price.helper.utils";
 
 const postOnChainPublicationUtil = async (metadata: any) => {
   //TODO: Check in production weather we need "@lens-protocol/metadata", if it works putting in
@@ -61,6 +62,7 @@ const postOnChainPublicationUtil = async (metadata: any) => {
     await waitUntilBroadcastIsCompleteTransactionUtil(broadcastResult, "post");
   } else {
     console.log("post onchain: not using gasless");
+    const polygonGasFee = await getPolygonGasPriceHelperUtil();
     const { v, r, s } = splitSignatureHelperUtil(signature);
 
     const lensHub = createContractHelperUtils(
@@ -85,8 +87,8 @@ const postOnChainPublicationUtil = async (metadata: any) => {
         deadline: typedData.value.deadline
       },
       {
-        maxFeePerGas: 7000000000,
-        maxPriorityFeePerGas: 7000000000
+        maxFeePerGas: polygonGasFee.maxFeePerGas,
+        maxPriorityFeePerGas: polygonGasFee.maxPriorityFeePerGas
       }
     );
     console.log("post onchain: tx", tx);
