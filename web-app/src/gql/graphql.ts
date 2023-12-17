@@ -1,6 +1,5 @@
 /* eslint-disable */
-/* eslint-disable */
-import type {TypedDocumentNode as DocumentNode} from '@graphql-typed-document-node/core';
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -15,6 +14,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** The ABI json string */
+  ABIJson: { input: any; output: any; }
   /** The app id */
   AppId: { input: any; output: any; }
   /** Blockchain data */
@@ -1415,7 +1416,7 @@ export type ExploreProfilesRequest = {
 
 export type ExploreProfilesWhere = {
   /** Array of custom filters for exploring profiles */
-  customFilters?: Array<CustomFiltersType>;
+  customFilters?: InputMaybe<Array<CustomFiltersType>>;
   /** Filter profiles created since the specified timestamp */
   since?: InputMaybe<Scalars['UnixTimestamp']['input']>;
 };
@@ -1440,7 +1441,8 @@ export enum ExplorePublicationsOrderByType {
   TopCollectedOpenAction = 'TOP_COLLECTED_OPEN_ACTION',
   TopCommented = 'TOP_COMMENTED',
   TopMirrored = 'TOP_MIRRORED',
-  TopQuoted = 'TOP_QUOTED'
+  TopQuoted = 'TOP_QUOTED',
+  TopReacted = 'TOP_REACTED'
 }
 
 export type ExplorePublicationsWhere = {
@@ -1541,7 +1543,7 @@ export type FollowLensManager = {
   profileId: Scalars['ProfileId']['input'];
 };
 
-/** The lens manager will only support FREE follow modules, if you want your unknown module allowed to be signless please contact us */
+/** The lens manager will only support follow modules which are verified here - https://github.com/lens-protocol/verified-modules/blob/master/follow-modules.json */
 export type FollowLensManagerModuleRedeemInput = {
   unknownFollowModule?: InputMaybe<UnknownFollowModuleRedeemInput>;
 };
@@ -1580,6 +1582,12 @@ export type FollowOnlyReferenceModuleSettings = {
   __typename?: 'FollowOnlyReferenceModuleSettings';
   contract: NetworkAddress;
   type: ReferenceModuleType;
+};
+
+export type FollowPaidAction = {
+  __typename?: 'FollowPaidAction';
+  followed: Profile;
+  latestActed: Array<LatestActed>;
 };
 
 export type FollowRequest = {
@@ -1650,11 +1658,23 @@ export type GeoLocation = {
   rawURI: Scalars['EncryptableURI']['output'];
 };
 
+export type GetModuleMetadataResult = {
+  __typename?: 'GetModuleMetadataResult';
+  metadata: ModuleMetadata;
+  moduleType: ModuleType;
+  /** True if the module can be signedless and use lens manager without a signature */
+  signlessApproved: Scalars['Boolean']['output'];
+  /** True if the module can be sponsored through gasless so the user does not need to pay for gas */
+  sponsoredApproved: Scalars['Boolean']['output'];
+  /** True if the module is deemed as safe */
+  verified: Scalars['Boolean']['output'];
+};
+
 export type GetProfileMetadataArgs = {
   /** The app id to query the profile's metadata */
   appId?: InputMaybe<Scalars['AppId']['input']>;
   /** If true, will fallback to global profile metadata, if there is no metadata set for that specific app id */
-  useFallback?: Scalars['Boolean']['input'];
+  useFallback?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type HandleInfo = {
@@ -1746,11 +1766,11 @@ export type ImageSetTransformedArgs = {
 
 export type ImageTransform = {
   /** Set the transformed image's height */
-  height?: Scalars['ImageSizeTransform']['input'];
+  height?: InputMaybe<Scalars['ImageSizeTransform']['input']>;
   /** Set if you want to keep the image's original aspect ratio. True by default. If explicitly set to false, the image will stretch based on the width and height values. */
-  keepAspectRatio?: Scalars['Boolean']['input'];
+  keepAspectRatio?: InputMaybe<Scalars['Boolean']['input']>;
   /** Set the transformed image's width */
-  width?: Scalars['ImageSizeTransform']['input'];
+  width?: InputMaybe<Scalars['ImageSizeTransform']['input']>;
 };
 
 export type InternalAddCuratedTagRequest = {
@@ -1830,6 +1850,14 @@ export type InternalRemoveCuratedTagRequest = {
   ttt: Scalars['String']['input'];
 };
 
+export type InternalUpdateModuleOptionsRequest = {
+  i: Scalars['EvmAddress']['input'];
+  lma?: InputMaybe<Scalars['Boolean']['input']>;
+  secret: Scalars['String']['input'];
+  t: ModuleType;
+  v?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type InternalUpdateProfileStatusRequest = {
   dd: Scalars['Boolean']['input'];
   hhh: Scalars['String']['input'];
@@ -1866,6 +1894,19 @@ export type KnownSupportedModule = {
 
 export type LastLoggedInProfileRequest = {
   for: Scalars['EvmAddress']['input'];
+};
+
+export type LatestActed = {
+  __typename?: 'LatestActed';
+  actedAt: Scalars['DateTime']['output'];
+  profile: Profile;
+  txHash: Scalars['TxHash']['output'];
+};
+
+export type LatestPaidActionsResult = {
+  __typename?: 'LatestPaidActionsResult';
+  items: Array<PaidAction>;
+  pageInfo: PaginatedResultInfo;
 };
 
 export type LegacyAaveFeeCollectModuleSettings = {
@@ -2260,6 +2301,28 @@ export type ModuleInfo = {
   type: Scalars['String']['output'];
 };
 
+export type ModuleMetadata = {
+  __typename?: 'ModuleMetadata';
+  attributes: Array<MetadataAttribute>;
+  authors: Array<Scalars['String']['output']>;
+  description: Scalars['String']['output'];
+  initializeCalldataABI: Scalars['ABIJson']['output'];
+  initializeResultDataABI?: Maybe<Scalars['ABIJson']['output']>;
+  name: Scalars['String']['output'];
+  processCalldataABI: Scalars['ABIJson']['output'];
+  title: Scalars['String']['output'];
+};
+
+export type ModuleMetadataRequest = {
+  implementation: Scalars['EvmAddress']['input'];
+};
+
+export enum ModuleType {
+  Follow = 'FOLLOW',
+  OpenAction = 'OPEN_ACTION',
+  Reference = 'REFERENCE'
+}
+
 export type MomokaCommentRequest = {
   commentOn: Scalars['PublicationId']['input'];
   contentURI: Scalars['URI']['input'];
@@ -2414,7 +2477,7 @@ export type MultirecipientFeeCollectModuleInput = {
   endsAt?: InputMaybe<Scalars['DateTime']['input']>;
   followerOnly: Scalars['Boolean']['input'];
   recipients: Array<RecipientDataInput>;
-  referralFee?: Scalars['Float']['input'];
+  referralFee?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type MultirecipientFeeCollectOpenActionSettings = {
@@ -2486,6 +2549,7 @@ export type Mutation = {
   internalNftIndex?: Maybe<Scalars['Void']['output']>;
   internalNftVerify?: Maybe<Scalars['Void']['output']>;
   internalRemoveCuratedTag?: Maybe<Scalars['Void']['output']>;
+  internalUpdateModuleOptions?: Maybe<Scalars['Void']['output']>;
   internalUpdateProfileStatus?: Maybe<Scalars['Void']['output']>;
   invite?: Maybe<Scalars['Void']['output']>;
   legacyCollect: LensProfileManagerRelayResult;
@@ -2502,6 +2566,7 @@ export type Mutation = {
   removeProfileInterests?: Maybe<Scalars['Void']['output']>;
   removePublicationBookmark?: Maybe<Scalars['Void']['output']>;
   removeReaction?: Maybe<Scalars['Void']['output']>;
+  reportProfile?: Maybe<Scalars['Void']['output']>;
   reportPublication?: Maybe<Scalars['Void']['output']>;
   revokeAuthentication?: Maybe<Scalars['Void']['output']>;
   setDefaultProfile?: Maybe<Scalars['Void']['output']>;
@@ -2768,6 +2833,11 @@ export type MutationInternalRemoveCuratedTagArgs = {
 };
 
 
+export type MutationInternalUpdateModuleOptionsArgs = {
+  request: InternalUpdateModuleOptionsRequest;
+};
+
+
 export type MutationInternalUpdateProfileStatusArgs = {
   request: InternalUpdateProfileStatusRequest;
 };
@@ -2845,6 +2915,11 @@ export type MutationRemovePublicationBookmarkArgs = {
 
 export type MutationRemoveReactionArgs = {
   request: ReactionRequest;
+};
+
+
+export type MutationReportProfileArgs = {
+  request: ReportProfileRequest;
 };
 
 
@@ -3241,6 +3316,12 @@ export enum OpenActionModuleType {
   UnknownOpenActionModule = 'UnknownOpenActionModule'
 }
 
+export type OpenActionPaidAction = {
+  __typename?: 'OpenActionPaidAction';
+  actedOn: PrimaryPublication;
+  latestActed: Array<LatestActed>;
+};
+
 export type OpenActionProfileActed = {
   __typename?: 'OpenActionProfileActed';
   actedAt: Scalars['DateTime']['output'];
@@ -3400,6 +3481,11 @@ export type PaginatedPublicationsTagsResult = {
   pageInfo: PaginatedResultInfo;
 };
 
+export type PaginatedRequest = {
+  cursor?: InputMaybe<Scalars['Cursor']['input']>;
+  limit?: InputMaybe<LimitType>;
+};
+
 /** The paginated result info */
 export type PaginatedResultInfo = {
   __typename?: 'PaginatedResultInfo';
@@ -3426,6 +3512,8 @@ export type PaginatedWhoReactedResult = {
   items: Array<ProfileWhoReactedResult>;
   pageInfo: PaginatedResultInfo;
 };
+
+export type PaidAction = FollowPaidAction | OpenActionPaidAction;
 
 export type PhysicalAddress = {
   __typename?: 'PhysicalAddress';
@@ -3455,13 +3543,13 @@ export type PoapEvent = {
   eventUrl?: Maybe<Scalars['URL']['output']>;
   expiryDate?: Maybe<Scalars['DateTime']['output']>;
   fancyId?: Maybe<Scalars['String']['output']>;
-  fromAdmin: Scalars['Boolean']['output'];
+  fromAdmin?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['PoapEventId']['output'];
   imageUrl?: Maybe<Scalars['URL']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-  privateEvent: Scalars['Boolean']['output'];
+  privateEvent?: Maybe<Scalars['Boolean']['output']>;
   startDate?: Maybe<Scalars['DateTime']['output']>;
-  virtualEvent: Scalars['Boolean']['output'];
+  virtualEvent?: Maybe<Scalars['Boolean']['output']>;
   year?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -3625,6 +3713,11 @@ export enum ProfileActionHistoryType {
   Unfollow = 'UNFOLLOW',
   UnlinkHandle = 'UNLINK_HANDLE'
 }
+
+export type ProfileFraudReasonInput = {
+  reason: ProfileReportingReason;
+  subreason: ProfileReportingFraudSubreason;
+};
 
 export type ProfileGuardianResult = {
   __typename?: 'ProfileGuardianResult';
@@ -3793,13 +3886,33 @@ export type ProfileReactionResult = {
 export type ProfileRecommendationsRequest = {
   cursor?: InputMaybe<Scalars['Cursor']['input']>;
   /** Disable machine learning recommendations (default: false) */
-  disableML?: Scalars['Boolean']['input'];
+  disableML?: InputMaybe<Scalars['Boolean']['input']>;
   /** Filter based on a specific profile ID */
   for: Scalars['ProfileId']['input'];
   limit?: InputMaybe<LimitType>;
   /** Shuffle the recommendations (default: false) */
-  shuffle?: Scalars['Boolean']['input'];
+  shuffle?: InputMaybe<Scalars['Boolean']['input']>;
 };
+
+export enum ProfileReportingFraudSubreason {
+  Impersonation = 'IMPERSONATION',
+  SomethingElse = 'SOMETHING_ELSE'
+}
+
+export enum ProfileReportingReason {
+  Fraud = 'FRAUD',
+  Spam = 'SPAM'
+}
+
+export type ProfileReportingReasonInput = {
+  fraudReason?: InputMaybe<ProfileFraudReasonInput>;
+  spamReason?: InputMaybe<ProfileSpamReasonInput>;
+};
+
+export enum ProfileReportingSpamSubreason {
+  Repetitive = 'REPETITIVE',
+  SomethingElse = 'SOMETHING_ELSE'
+}
 
 export type ProfileRequest = {
   /** The handle for profile you want to fetch - namespace/localname */
@@ -3820,6 +3933,11 @@ export type ProfileSearchRequest = {
 export type ProfileSearchWhere = {
   /** Array of custom filters for profile search */
   customFilters?: InputMaybe<Array<CustomFiltersType>>;
+};
+
+export type ProfileSpamReasonInput = {
+  reason: ProfileReportingReason;
+  subreason: ProfileReportingSpamSubreason;
 };
 
 /** The Profile Stats */
@@ -4007,6 +4125,7 @@ export enum PublicationMetadataLicenseType {
 export type PublicationMetadataLitEncryption = {
   __typename?: 'PublicationMetadataLitEncryption';
   accessCondition: RootCondition;
+  accessControlContract: NetworkAddress;
   encryptedPaths: Array<Scalars['EncryptedPath']['output']>;
   encryptionKey: Scalars['ContentEncryptionKey']['output'];
 };
@@ -4302,9 +4421,11 @@ export type Query = {
   internalProfileStatus: PrfResult;
   invitedProfiles: Array<InvitedResult>;
   lastLoggedInProfile?: Maybe<Profile>;
+  latestPaidActions: LatestPaidActionsResult;
   lensAPIOwnedEOAs: Array<Scalars['EvmAddress']['output']>;
   lensProtocolVersion: LensProtocolVersion;
   lensTransactionStatus?: Maybe<LensTransactionResult>;
+  moduleMetadata?: Maybe<GetModuleMetadataResult>;
   momokaSubmitters: MomokaSubmittersResult;
   momokaSummary: MomokaSummaryResult;
   momokaTransaction?: Maybe<MomokaTransaction>;
@@ -4470,8 +4591,18 @@ export type QueryLastLoggedInProfileArgs = {
 };
 
 
+export type QueryLatestPaidActionsArgs = {
+  request?: InputMaybe<PaginatedRequest>;
+};
+
+
 export type QueryLensTransactionStatusArgs = {
   request: LensTransactionStatusRequest;
+};
+
+
+export type QueryModuleMetadataArgs = {
+  request: ModuleMetadataRequest;
 };
 
 
@@ -4841,6 +4972,12 @@ export type RelaySuccess = {
   txId: Scalars['TxId']['output'];
 };
 
+export type ReportProfileRequest = {
+  additionalComments?: InputMaybe<Scalars['String']['input']>;
+  for: Scalars['ProfileId']['input'];
+  reason: ProfileReportingReasonInput;
+};
+
 export type ReportPublicationRequest = {
   additionalComments?: InputMaybe<Scalars['String']['input']>;
   for: Scalars['PublicationId']['input'];
@@ -4933,7 +5070,7 @@ export type SimpleCollectOpenActionModuleInput = {
   endsAt?: InputMaybe<Scalars['DateTime']['input']>;
   followerOnly: Scalars['Boolean']['input'];
   recipient?: InputMaybe<Scalars['EvmAddress']['input']>;
-  referralFee?: Scalars['Float']['input'];
+  referralFee?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type SimpleCollectOpenActionSettings = {
@@ -5045,8 +5182,9 @@ export type SupportedModule = KnownSupportedModule | UnknownSupportedModule;
 
 export type SupportedModulesRequest = {
   cursor?: InputMaybe<Scalars['Cursor']['input']>;
-  includeUnknown?: Scalars['Boolean']['input'];
+  includeUnknown?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<LimitType>;
+  onlyVerified?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type SybilDotOrgIdentity = {
@@ -5173,9 +5311,22 @@ export type UnknownFollowModuleRedeemInput = {
 export type UnknownFollowModuleSettings = {
   __typename?: 'UnknownFollowModuleSettings';
   contract: NetworkAddress;
-  /** The data used to setup the module which you can decode with your known ABI  */
+  /**
+   * The data used to setup the module which you can decode with your known ABI
+   * @deprecated Use initializeResultData instead
+   */
   followModuleReturnData?: Maybe<Scalars['BlockchainData']['output']>;
+  /** The data used to setup the module */
+  initializeCalldata?: Maybe<Scalars['BlockchainData']['output']>;
+  /** The data returned from the init module */
+  initializeResultData?: Maybe<Scalars['BlockchainData']['output']>;
+  /** True if the module can be signedless and use lens manager without a signature */
+  signlessApproved: Scalars['Boolean']['output'];
+  /** True if the module can be sponsored through gasless so the user does not need to pay for gas */
+  sponsoredApproved: Scalars['Boolean']['output'];
   type: FollowModuleType;
+  /** True if the module is deemed as safe */
+  verified: Scalars['Boolean']['output'];
 };
 
 export type UnknownOpenActionActRedeemInput = {
@@ -5193,9 +5344,22 @@ export type UnknownOpenActionModuleSettings = {
   /** The collect nft address - only deployed on first collect and if its a collectable open action */
   collectNft?: Maybe<Scalars['EvmAddress']['output']>;
   contract: NetworkAddress;
-  /** The data used to setup the module which you can decode with your known ABI  */
+  /** The data used to setup the module */
+  initializeCalldata?: Maybe<Scalars['BlockchainData']['output']>;
+  /** The data returned from the init module */
+  initializeResultData?: Maybe<Scalars['BlockchainData']['output']>;
+  /**
+   * The data returned from the init module
+   * @deprecated Use initializeResultData instead
+   */
   openActionModuleReturnData?: Maybe<Scalars['BlockchainData']['output']>;
+  /** True if the module can be signedless and use lens manager without a signature */
+  signlessApproved: Scalars['Boolean']['output'];
+  /** True if the module can be sponsored through gasless so the user does not need to pay for gas */
+  sponsoredApproved: Scalars['Boolean']['output'];
   type: OpenActionModuleType;
+  /** True if the module is deemed as safe */
+  verified: Scalars['Boolean']['output'];
 };
 
 export type UnknownOpenActionResult = {
@@ -5213,9 +5377,22 @@ export type UnknownReferenceModuleInput = {
 export type UnknownReferenceModuleSettings = {
   __typename?: 'UnknownReferenceModuleSettings';
   contract: NetworkAddress;
-  /** The data used to setup the module which you can decode with your known ABI  */
+  /** The data used to setup the module */
+  initializeCalldata?: Maybe<Scalars['BlockchainData']['output']>;
+  /** The data returned from the init module */
+  initializeResultData?: Maybe<Scalars['BlockchainData']['output']>;
+  /**
+   * The data used to setup the module which you can decode with your known ABI
+   * @deprecated Use initializeResultData instead
+   */
   referenceModuleReturnData?: Maybe<Scalars['BlockchainData']['output']>;
+  /** True if the module can be signedless and use lens manager without a signature */
+  signlessApproved: Scalars['Boolean']['output'];
+  /** True if the module can be sponsored through gasless so the user does not need to pay for gas */
+  sponsoredApproved: Scalars['Boolean']['output'];
   type: ReferenceModuleType;
+  /** True if the module is deemed as safe */
+  verified: Scalars['Boolean']['output'];
 };
 
 export type UnknownSupportedModule = {
