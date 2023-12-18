@@ -17,6 +17,7 @@ import { getPolygonGasPriceHelperUtil } from "../helpers/get-polygon-gas-price.h
 import { splitSignatureHelperUtil } from "../helpers/split-signature.helper.utils";
 import { createContractHelperUtils } from "../helpers/create-contract.helper.utils";
 import LENS_HUB_ABI from "../../abis/lens-hub-contract.abi.json";
+import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util";
 
 const commentOnChainPublicationUtil = async (
   parentPubId: string,
@@ -100,7 +101,13 @@ const commentOnChainPublicationUtil = async (
         maxPriorityFeePerGas: polygonGasFee.maxPriorityFeePerGas
       }
     );
-    console.log("comment onchain: tx hash", tx.hash);
+    await hasTransactionBeenIndexedIndexerUtil(
+      {
+        forTxHash: tx.hash
+      },
+      Date.now()
+    );
+    console.log("post onchain: tx hash", tx.hash);
   }
 };
 

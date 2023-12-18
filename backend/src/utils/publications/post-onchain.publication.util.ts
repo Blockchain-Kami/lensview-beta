@@ -91,7 +91,6 @@ const postOnChainPublicationUtil = async (metadata: any) => {
         maxPriorityFeePerGas: polygonGasFee.maxPriorityFeePerGas
       }
     );
-    console.log("post onchain: tx", tx);
     await hasTransactionBeenIndexedIndexerUtil(
       {
         forTxHash: tx.hash
