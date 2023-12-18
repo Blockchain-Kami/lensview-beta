@@ -1,8 +1,11 @@
 import { cross, wallet } from "../app-icon.util";
 import { addressUserStore } from "../../stores/user/address.user.store";
-import { PUBLIC_IS_PROD } from "$env/static/public";
 import stringifyNotificationObjectWithFunctionUtil from "../stringify-notification-object-with-function.util";
 import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+const { VITE_CHAIN_ID } = import.meta.env;
+const { VITE_CHAIN_NAME } = import.meta.env;
+const { VITE_RPC_URL } = import.meta.env;
+const { VITE_BLOCK_EXPLORER_URL } = import.meta.env;
 
 const getMetamaskAddressAuthenticationUtil = async (
   isStartUpSignedInCheck: boolean
@@ -88,7 +91,7 @@ const switchUserToCorrectChain = async (isStartUpSignedInCheck: boolean) => {
 
   console.log("Chain Id : " + chainId);
 
-  const chainIDToBeUsed = PUBLIC_IS_PROD === "false" ? "0x13881" : "0x89";
+  const chainIDToBeUsed = VITE_CHAIN_ID;
 
   if (chainId !== chainIDToBeUsed) {
     if (isStartUpSignedInCheck) {
@@ -96,30 +99,17 @@ const switchUserToCorrectChain = async (isStartUpSignedInCheck: boolean) => {
       return false;
     }
 
-    const chainParams =
-      PUBLIC_IS_PROD === "false"
-        ? {
-            chainId: "0x13881",
-            chainName: "Mumbai",
-            rpcUrls: ["https://rpc-mumbai.maticvigil.com"],
-            blockExplorerUrls: ["https://mumbai.polygonscan.com"],
-            nativeCurrency: {
-              name: "MATIC",
-              symbol: "MATIC",
-              decimals: 18
-            }
-          }
-        : {
-            chainId: "0x89",
-            chainName: "Polygon",
-            rpcUrls: ["https://polygon-rpc.com"],
-            blockExplorerUrls: ["https://polygonscan.com"],
-            nativeCurrency: {
-              name: "MATIC",
-              symbol: "MATIC",
-              decimals: 18
-            }
-          };
+    const chainParams = {
+      chainId: VITE_CHAIN_ID,
+      chainName: VITE_CHAIN_NAME,
+      rpcUrls: [VITE_RPC_URL],
+      blockExplorerUrls: [VITE_BLOCK_EXPLORER_URL],
+      nativeCurrency: {
+        name: "MATIC",
+        symbol: "MATIC",
+        decimals: 18
+      }
+    };
 
     try {
       await window.ethereum.request({

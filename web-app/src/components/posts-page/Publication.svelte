@@ -16,7 +16,6 @@
   import { page } from "$app/stores";
   import { getNotificationsContext } from "svelte-notifications";
   import DOMPurify from "dompurify";
-  import { PUBLIC_APP_LENS_ID } from "$env/static/public";
   import { Tooltip } from "@svelte-plugins/tooltips";
   import { onMount } from "svelte";
   import { reloadAPublication } from "../../stores/reload-publication.store";
@@ -36,6 +35,7 @@
   import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
   import getPictureURLUtil from "../../utils/get-picture-URL.util";
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  const { VITE_APP_LENS_ID } = import.meta.env;
 
   const { addNotification } = getNotificationsContext();
   let postPubId = $page.data.postPubId;
@@ -250,7 +250,7 @@
             <div class="comment__body__top__left__handle">
               {comments.items[0]?.by?.handle?.fullHandle.substring(5)}
             </div>
-            {#if comments.items[0]?.by?.id === PUBLIC_APP_LENS_ID}
+            {#if comments.items[0]?.by?.id === VITE_APP_LENS_ID}
               <Tooltip
                 content="This post was made by an anonymous user!"
                 position="right"

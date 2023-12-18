@@ -18,7 +18,6 @@
   import { onMount } from "svelte";
   import DOMPurify from "dompurify";
   import { getNotificationsContext } from "svelte-notifications";
-  import { PUBLIC_APP_LENS_ID } from "$env/static/public";
   import { Tooltip } from "@svelte-plugins/tooltips";
   import Login from "../Login.svelte";
   import type { ReactionDetailsModel } from "../../models/reactionDetails.model";
@@ -39,6 +38,7 @@
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
   import addReactionLensService from "../../services/lens/add-reaction.lens.service";
   import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
+  const { VITE_APP_LENS_ID } = import.meta.env;
 
   type CommentMoreStatus = {
     [key: string]: boolean;
@@ -328,7 +328,7 @@
                 <div class="comment__body__top__left__handle">
                   {comment?.by?.handle?.fullHandle.substring(5)}
                 </div>
-                {#if comment?.by?.id === PUBLIC_APP_LENS_ID}
+                {#if comment?.by?.id === VITE_APP_LENS_ID}
                   <Tooltip
                     content="This post was made by an anonymous user!"
                     position="right"

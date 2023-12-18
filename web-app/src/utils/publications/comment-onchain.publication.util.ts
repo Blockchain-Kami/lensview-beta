@@ -9,61 +9,13 @@ import broadcastOnchainRequestLensService from "../../services/lens/broadcast-on
 import { waitUntilBroadcastTransactionIsComplete } from "../transaction/wait-until-complete.transaction.util";
 import type { RelayError, RelaySuccess } from "../../gql/graphql";
 import { MetadataAttributeType, textOnly } from "@lens-protocol/metadata";
-import { PUBLIC_SOURCE_APP_ID } from "$env/static/public";
 import { profileUserStore } from "../../stores/user/profile.user.store";
+const { VITE_SOURCE_APP_ID } = import.meta.env;
 
 const commentOnChainPublicationUtil = async (
   parentPubId: string,
   comment: string
 ) => {
-  //TODO: Check in production weather we need "@lens-protocol/metadata", if it works putting in
-  // devDependencies then keep it or go with schema approach that there in "api-examples" repo
-  // https://docs.lens.xyz/docs/publication-metadata#json-schemas
-
-  // const metadata = image({
-  //   locale: "en-US",
-  //   tags: ["dd472d3370b389eb8399ea7c795ca9e76ff0d4d7"], //imagePub
-  //   appId: PUBLIC_SOURCE_APP_ID,
-  //   attributes: [
-  //     {
-  //       key: "creator",
-  //       type: MetadataAttributeType.STRING,
-  //       value: "testlenviewcode"
-  //     },
-  //     {
-  //       key: "app",
-  //       type: MetadataAttributeType.STRING,
-  //       value: "testlenviewcode"
-  //     },
-  //     {
-  //       key: "created on",
-  //       type: MetadataAttributeType.STRING,
-  //       value: Date.now().toString()
-  //     }
-  //   ],
-  //   image: {
-  //     item: "https://ik.imagekit.io/lens/media-snapshot/c5c43e9298b1eb8120e3963244387144132334c9aacddffc0b4900359642897c.jpg",
-  //     type: MediaImageMimeType.PNG,
-  //     altTag: "Me touching grass",
-  //     license: MetadataLicenseType.CCO
-  //   },
-  //   attachments: [
-  //     {
-  //       item: "https://ik.imagekit.io/lens/media-snapshot/c5c43e9298b1eb8120e3963244387144132334c9aacddffc0b4900359642897c.jpg",
-  //       type: MediaImageMimeType.PNG,
-  //       altTag: "Me touching grass",
-  //       license: MetadataLicenseType.CCO
-  //     }
-  //   ],
-  //   title: "Post by @testlenviewcode",
-  //   content: "Image link for the url: ${IPFSLink}"
-  //   //TODO: Check for below fields usage
-  //   // content: EncryptableMarkdown
-  //   // attachments: [PublicationMetadataMediaVideo],
-  //   // hideFromFeed: true,
-  //   // encryptedWith: PublicationMetadataLitEncryption,
-  // });
-
   let handle = "";
   const unsub = profileUserStore.subscribe((_profile) => {
     if (_profile === null) return;
@@ -74,7 +26,7 @@ const commentOnChainPublicationUtil = async (
   const metadata = textOnly({
     locale: "en-US",
     tags: ["0f89daeb0a63c7b73224315c5514c21ba0453985"], //userHash
-    appId: PUBLIC_SOURCE_APP_ID,
+    appId: VITE_SOURCE_APP_ID,
     attributes: [
       {
         key: "creator",
@@ -84,7 +36,7 @@ const commentOnChainPublicationUtil = async (
       {
         key: "app",
         type: MetadataAttributeType.STRING,
-        value: PUBLIC_SOURCE_APP_ID
+        value: VITE_SOURCE_APP_ID
       },
       {
         key: "created on",

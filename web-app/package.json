@@ -20,20 +20,15 @@
     "@urql/svelte": "^3.0.1",
     "autolinker": "^4.0.0",
     "axios": "^1.6.2",
-    "bull": "^4.10.4",
     "dompurify": "^3.0.5",
     "ethers": "^5.7.2",
     "graphql": "^16.6.0",
-    "lodash": "^4.17.21",
     "omit-deep": "^0.3.0",
-    "puppeteer": "^20.6.0",
     "svelte-inview": "^4.0.1",
     "svelte-meta-tags": "^3.0.3",
     "svelte-notifications": "^0.9.98",
-    "uuid": "^9.0.0",
     "web3.storage": "^3.1.0",
-    "winston": "^3.10.0",
-    "winston-daily-rotate-file": "^4.7.1"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",

@@ -1,8 +1,8 @@
 import { Client, createClient } from "@urql/core";
-import { PUBLIC_LENS_API_URL } from "$env/static/public";
+const { VITE_LENS_API_URL } = import.meta.env;
 
 const baseClientAuthenticationUtil: Client = createClient({
-  url: PUBLIC_LENS_API_URL,
+  url: VITE_LENS_API_URL,
   requestPolicy: "cache-and-network"
 });
 

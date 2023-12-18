@@ -11,7 +11,6 @@
   } from "../../utils/app-icon.util";
   import DOMPurify from "dompurify";
   import { Tooltip } from "@svelte-plugins/tooltips";
-  import { PUBLIC_APP_LENS_ID } from "$env/static/public";
   import MediaQuery from "$lib/MediaQuery.svelte";
   import type { ObserverEventDetails, Options } from "svelte-inview";
   import { inview } from "svelte-inview";
@@ -24,6 +23,7 @@
   import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
   import getRelatedPostPubIdsAppService from "../../services/app/get-related-post-pub-ids.app.service";
   import { page } from "$app/stores";
+  const { VITE_APP_LENS_ID } = import.meta.env;
 
   type KeyStringValBoolean = {
     [key: string]: boolean;
@@ -187,7 +187,7 @@
                               ? "..."
                               : ""}
                           </div>
-                          {#if comments.items[0]?.by?.id === PUBLIC_APP_LENS_ID}
+                          {#if comments.items[0]?.by?.id === VITE_APP_LENS_ID}
                             <Tooltip
                               content="This post was made by an anonymous user!"
                               position="top"
@@ -365,7 +365,7 @@
                           <div class="card__body__post__info__head__handle">
                             {comments.items[0]?.by?.handle?.fullHandle}
                           </div>
-                          {#if comments.items[0]?.by?.id === PUBLIC_APP_LENS_ID}
+                          {#if comments.items[0]?.by?.id === VITE_APP_LENS_ID}
                             <Tooltip
                               content="This post was made by an anonymous user!"
                               position="top"
