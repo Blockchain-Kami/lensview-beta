@@ -1,7 +1,7 @@
-import { PUBLIC_LENS_API_URL } from "$env/static/public";
 import { Client, createClient } from "@urql/core";
 import { profileUserStore } from "../../stores/user/profile.user.store";
 import isValidAccessTokenPresentInLocalStorageAuthenticationUtil from "./is-valid-access-token-present-in-local-storage.authentication.util";
+const { VITE_LENS_API_URL } = import.meta.env;
 
 const authenticatedClientAuthenticationUtil = () => {
   const ls = localStorage || window.localStorage;
@@ -31,7 +31,7 @@ const authenticatedClientAuthenticationUtil = () => {
   if (!accessToken) throw new Error("No access token found");
 
   const authenticatedClient: Client = createClient({
-    url: PUBLIC_LENS_API_URL,
+    url: VITE_LENS_API_URL,
     requestPolicy: "cache-and-network",
     fetchOptions: {
       headers: {

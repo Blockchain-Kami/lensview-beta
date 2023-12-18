@@ -11,7 +11,7 @@ import { waitUntilBroadcastTransactionIsComplete } from "../transaction/wait-unt
 import { signedTypeData } from "../ethers.util";
 import { link } from "@lens-protocol/metadata";
 import { MetadataAttributeType } from "@lens-protocol/metadata";
-import { PUBLIC_SOURCE_APP_ID } from "$env/static/public";
+const { VITE_SOURCE_APP_ID } = import.meta.env;
 
 const postOnChainPublicationUtil = async () => {
   //TODO: Check in production weather we need "@lens-protocol/metadata", if it works putting in
@@ -24,7 +24,7 @@ const postOnChainPublicationUtil = async () => {
       "418f361f5cdc602c856956bf752c06a29c52e54a", //anonymousPubHash
       "8a5bcce8dd20adda1873b5e74a77268851b32500" //URLHash
     ],
-    appId: PUBLIC_SOURCE_APP_ID,
+    appId: VITE_SOURCE_APP_ID,
     attributes: [
       {
         key: "creator",

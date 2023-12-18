@@ -13,7 +13,6 @@
   import { onMount } from "svelte";
   import { page } from "$app/stores";
   import DOMPurify from "dompurify";
-  import { PUBLIC_APP_LENS_ID } from "$env/static/public";
   import { Tooltip } from "@svelte-plugins/tooltips";
   import type { ObserverEventDetails, Options } from "svelte-inview";
   import { inview } from "svelte-inview";
@@ -26,6 +25,7 @@
   import { CommentFilterType } from "../../config/app-constants.config";
   import getPictureURLUtil from "../../utils/get-picture-URL.util";
   import getRelatedPostPubIdsAppService from "../../services/app/get-related-post-pub-ids.app.service";
+  const { VITE_APP_LENS_ID } = import.meta.env;
 
   type KeyStringValBoolean = {
     [key: string]: boolean;
@@ -216,7 +216,7 @@
                             ? "..."
                             : ""}
                         </div>
-                        {#if comments.items[0]?.by?.id === PUBLIC_APP_LENS_ID}
+                        {#if comments.items[0]?.by?.id === VITE_APP_LENS_ID}
                           <Tooltip
                             content="This post was made by an anonymous user!"
                             position="top"

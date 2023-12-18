@@ -1,9 +1,8 @@
 import { Web3Storage } from "web3.storage";
-import { PUBLIC_WEB3STORAGE_TOKEN } from "$env/static/public";
-if (!PUBLIC_WEB3STORAGE_TOKEN) {
-  throw new Error(
-    "Must define PUBLIC_WEB3STORAGE_TOKEN in the .env to run this"
-  );
+const { VITE_WEB3STORAGE_TOKEN } = import.meta.env;
+
+if (!VITE_WEB3STORAGE_TOKEN) {
+  throw new Error("Must define VITE_WEB3STORAGE_TOKEN in the .env to run this");
 }
 
 function makeFileObjects(data: string) {
@@ -22,7 +21,7 @@ function makeFileObjects(data: string) {
 }
 
 function makeStorageClient() {
-  return new Web3Storage({ token: PUBLIC_WEB3STORAGE_TOKEN });
+  return new Web3Storage({ token: VITE_WEB3STORAGE_TOKEN });
 }
 
 export const uploadIpfs = async (data: string) => {

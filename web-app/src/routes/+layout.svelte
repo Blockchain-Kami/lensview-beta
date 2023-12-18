@@ -2,7 +2,6 @@
   import "../global.scss";
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
-  import { PUBLIC_IS_PROD } from "$env/static/public";
   import {
     home,
     homeDualTone,
@@ -36,6 +35,7 @@
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
   import getPictureURLUtil from "../utils/get-picture-URL.util";
   import searchPublicationAppService from "../services/app/search-publication.app.service";
+  const { VITE_CHAIN_ID } = import.meta.env;
 
   let userEnteredUrlOrKeywords = "";
   let showJoinForUpdatesModal = false;
@@ -79,12 +79,7 @@
   });
 
   const accountAndChainChangedMethods = () => {
-    let chainIDToBeUsed: string;
-    if (PUBLIC_IS_PROD === "false") {
-      chainIDToBeUsed = "0x13881";
-    } else {
-      chainIDToBeUsed = "0x89";
-    }
+    let chainIDToBeUsed = VITE_CHAIN_ID;
 
     window.ethereum.on("chainChanged", (chainId: string) => {
       if (chainId !== chainIDToBeUsed) {
@@ -266,7 +261,7 @@
 
 <!--description={$metaTagsDescription}-->
 <!--openGraph={{-->
-<!--    url: `https://${PUBLIC_DOMAIN_NAME}`,-->
+<!--    url: `https://${VITE_DOMAIN_NAME}`,-->
 <!--    title: `${$metaTagsTitle}`,-->
 <!--    description: `${$metaTagsDescription}`,-->
 <!--    images: [-->
