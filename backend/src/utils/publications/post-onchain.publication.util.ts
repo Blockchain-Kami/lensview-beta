@@ -4,11 +4,21 @@ import type {
   RelayError,
   RelaySuccess
 } from "../../gql/graphql";
+import {
+  PUBLIC_USE_GASLESS,
+  APP_ADDRESS,
+  PUBLIC_LENS_HUB_CONTRACT_ADDRESS
+} from "../../config/env.config";
+import LENS_HUB_ABI from "../../abis/lens-hub-contract.abi.json";
 import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util";
 import createOnchainPostTypedDataLensService from "../../services/lens/create-onchain-post-typed-data.lens.service";
 import broadcastOnchainRequestService from "../../services/lens/broadcast-onchain-request.lens.service";
 import { waitUntilBroadcastIsCompleteTransactionUtil } from "../transaction/wait-until-broadcast-is-complete.transaction.util";
 import { signedTypeDataForPostHelperUtil } from "../helpers/sign-type-data.helper.util";
+import { splitSignatureHelperUtil } from "../helpers/split-signature.helper.utils";
+import { createContractHelperUtils } from "../helpers/create-contract.helper.utils";
+import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util";
+import { getPolygonGasPriceHelperUtil } from "../helpers/get-polygon-gas-price.helper.utils";
 
 const postOnChainPublicationUtil = async (metadata: any) => {
   //TODO: Check in production weather we need "@lens-protocol/metadata", if it works putting in
@@ -43,35 +53,52 @@ const postOnChainPublicationUtil = async (metadata: any) => {
   );
   console.log("post onchain: signature", signature);
 
-  // if (USE_GASLESS) {
-  const broadcastResult = (await broadcastOnchainRequestService({
-    id,
-    signature
-  })) as RelaySuccess | RelayError;
+  if (PUBLIC_USE_GASLESS) {
+    const broadcastResult = (await broadcastOnchainRequestService({
+      id,
+      signature
+    })) as RelaySuccess | RelayError;
 
-  await waitUntilBroadcastIsCompleteTransactionUtil(broadcastResult, "post");
-  // } else {
-  //   const { v, r, s } = splitSignature(signature);
-  //
-  //   const tx = await lensHub.postWithSig(
-  //     {
-  //       profileId: typedData.value.profileId,
-  //       contentURI: typedData.value.contentURI,
-  //       actionModules: typedData.value.actionModules,
-  //       actionModulesInitDatas: typedData.value.actionModulesInitDatas,
-  //       referenceModule: typedData.value.referenceModule,
-  //       referenceModuleInitData: typedData.value.referenceModuleInitData
-  //     },
-  //     {
-  //       signer: address,
-  //       v,
-  //       r,
-  //       s,
-  //       deadline: typedData.value.deadline
-  //     }
-  //   );
-  //   console.log("post onchain: tx hash", tx.hash);
-  // }
+    await waitUntilBroadcastIsCompleteTransactionUtil(broadcastResult, "post");
+  } else {
+    console.log("post onchain: not using gasless");
+    const polygonGasFee = await getPolygonGasPriceHelperUtil();
+    const { v, r, s } = splitSignatureHelperUtil(signature);
+
+    const lensHub = createContractHelperUtils(
+      PUBLIC_LENS_HUB_CONTRACT_ADDRESS,
+      LENS_HUB_ABI
+    );
+
+    const tx = await lensHub.postWithSig(
+      {
+        profileId: typedData.value.profileId,
+        contentURI: typedData.value.contentURI,
+        actionModules: typedData.value.actionModules,
+        actionModulesInitDatas: typedData.value.actionModulesInitDatas,
+        referenceModule: typedData.value.referenceModule,
+        referenceModuleInitData: typedData.value.referenceModuleInitData
+      },
+      {
+        signer: APP_ADDRESS,
+        v,
+        r,
+        s,
+        deadline: typedData.value.deadline
+      },
+      {
+        maxFeePerGas: polygonGasFee.maxFeePerGas,
+        maxPriorityFeePerGas: polygonGasFee.maxPriorityFeePerGas
+      }
+    );
+    await hasTransactionBeenIndexedIndexerUtil(
+      {
+        forTxHash: tx.hash
+      },
+      Date.now()
+    );
+    console.log("post onchain: tx hash", tx.hash);
+  }
 };
 
 export default postOnChainPublicationUtil;
