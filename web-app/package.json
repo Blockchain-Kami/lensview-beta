@@ -11,6 +11,7 @@
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
     "lint-and-fix": "eslint . --ext .ts --fix",
     "format": "prettier --plugin-search-dir . --write .",
+    "prepare": "cd .. && husky install web-app/.husky",
     "codegen": "graphql-codegen --watch"
   },
   "dependencies": {
