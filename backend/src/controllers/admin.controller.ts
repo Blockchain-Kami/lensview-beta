@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
-import { PUBLIC_APP_LENS_HANDLE } from "../config/env.config";
+import { APP_LENS_HANDLE } from "../config/env.config";
 import AddImageToPostAdminRouteBodyRequestModel from "../models/requests/body/admin-route.body.request.model";
 import { getRelatedPublicationsService } from "../services/lens/related-parent-publications.lens.service";
 import { httpStatusCodes } from "../config/app-constants.config";
@@ -23,7 +23,7 @@ export const addImageToPostAdminController = async (
   const urlString = isInputTypeURLHelperUtil(url);
   const urlObj = preprocessURLAndCreateMetadataObjectHelperUtil(
     urlString ? urlString : url,
-    PUBLIC_APP_LENS_HANDLE,
+    APP_LENS_HANDLE,
     null,
     []
   );
