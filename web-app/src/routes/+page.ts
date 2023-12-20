@@ -4,3 +4,5 @@ import explorePublicationLensService from "../services/lens/explore-publication.
 export const load = (async () => {
   return await explorePublicationLensService();
 }) satisfies PageLoad;
+
+export const ssr = false;

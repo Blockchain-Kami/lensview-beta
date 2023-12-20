@@ -4,22 +4,27 @@ import type {
   OnchainCommentRequest
 } from "../../gql/graphql";
 import createOnchainCommentTypedDataLensService from "../../services/lens/create-onchain-comment-typed-data.lens.service";
-import { signedTypeData } from "../ethers.util";
+import { signedTypeData, splitSignature } from "../ethers.util";
 import broadcastOnchainRequestLensService from "../../services/lens/broadcast-onchain-request.lens.service";
 import { waitUntilBroadcastTransactionIsComplete } from "../transaction/wait-until-complete.transaction.util";
 import type { RelayError, RelaySuccess } from "../../gql/graphql";
 import { MetadataAttributeType, textOnly } from "@lens-protocol/metadata";
 import { profileUserStore } from "../../stores/user/profile.user.store";
+import lensHubUtil from "../lens-hub.util";
+import { waitUntilComplete } from "../indexer/has-transaction-been-indexed.indexer.util";
 const { VITE_SOURCE_APP_ID } = import.meta.env;
+const { VITE_USE_GASLESS } = import.meta.env;
 
 const commentOnChainPublicationUtil = async (
   parentPubId: string,
   comment: string
 ) => {
   let handle = "";
+  let address = "";
   const unsub = profileUserStore.subscribe((_profile) => {
     if (_profile === null) return;
     handle = _profile?.handle?.fullHandle;
+    address = _profile?.ownedBy?.address;
   });
   unsub();
 
@@ -79,41 +84,43 @@ const commentOnChainPublicationUtil = async (
   );
   console.log("comment onchain: signature", signature);
 
-  // if (USE_GASLESS) {
-  const broadcastResult = (await broadcastOnchainRequestLensService({
-    id,
-    signature
-  })) as RelaySuccess | RelayError;
+  if (VITE_USE_GASLESS === "true") {
+    const broadcastResult = (await broadcastOnchainRequestLensService({
+      id,
+      signature
+    })) as RelaySuccess | RelayError;
 
-  await waitUntilBroadcastTransactionIsComplete(broadcastResult, "Comment");
-  // } else {
-  //   const { v, r, s } = splitSignature(signature);
-  //
-  //   const tx = await lensHub.commentWithSig(
-  //     {
-  //       profileId: typedData.value.profileId,
-  //       contentURI: typedData.value.contentURI,
-  //       pointedProfileId: typedData.value.pointedProfileId,
-  //       pointedPubId: typedData.value.pointedPubId,
-  //       referrerProfileIds: typedData.value.referrerProfileIds,
-  //       referrerPubIds: typedData.value.referrerPubIds,
-  //       referenceModuleData: typedData.value.referenceModuleData,
-  //       actionModules: typedData.value.actionModules,
-  //       actionModulesInitDatas: typedData.value.actionModulesInitDatas,
-  //       referenceModule: typedData.value.referenceModule,
-  //       referenceModuleInitData: typedData.value.referenceModuleInitData
-  //     },
-  //     {
-  //       signer: address,
-  //       v,
-  //       r,
-  //       s,
-  //       deadline: typedData.value.deadline
-  //     },
-  //     { gasLimit: 10000000 }
-  //   );
-  //   console.log("comment onchain: tx hash", tx.hash);
-  // }
+    await waitUntilBroadcastTransactionIsComplete(broadcastResult, "Comment");
+  } else {
+    const { v, r, s } = splitSignature(signature);
+
+    const tx = await lensHubUtil.commentWithSig(
+      {
+        profileId: typedData.value.profileId,
+        contentURI: typedData.value.contentURI,
+        pointedProfileId: typedData.value.pointedProfileId,
+        pointedPubId: typedData.value.pointedPubId,
+        referrerProfileIds: typedData.value.referrerProfileIds,
+        referrerPubIds: typedData.value.referrerPubIds,
+        referenceModuleData: typedData.value.referenceModuleData,
+        actionModules: typedData.value.actionModules,
+        actionModulesInitDatas: typedData.value.actionModulesInitDatas,
+        referenceModule: typedData.value.referenceModule,
+        referenceModuleInitData: typedData.value.referenceModuleInitData
+      },
+      {
+        signer: address,
+        v,
+        r,
+        s,
+        deadline: typedData.value.deadline
+      },
+      { gasLimit: 10000000 }
+    );
+    console.log("comment onchain: tx hash", tx.hash);
+
+    await waitUntilComplete({ forTxHash: tx.hash }, Date.now());
+  }
 };
 
 export default commentOnChainPublicationUtil;
