@@ -3,7 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import routes from "./routes/index.route";
 
-import { PORT } from "./config/env.config";
+import { IS_PROD, PORT } from "./config/env.config";
 import { ALLOWED_ORIGINS } from "./config/app-config.config";
 
 const app = express();
@@ -12,7 +12,9 @@ app.use(bodyParser.json());
 
 console.log("Welcome!!");
 
-const allowedOrigins = ALLOWED_ORIGINS.DEV;
+const allowedOrigins = IS_PROD
+  ? ALLOWED_ORIGINS.PRODUCTION
+  : ALLOWED_ORIGINS.DEVELOPMENT;
 console.log("Allowed Origins:", allowedOrigins);
 
 app.use(

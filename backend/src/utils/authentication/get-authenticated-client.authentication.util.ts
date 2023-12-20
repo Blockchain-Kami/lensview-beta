@@ -2,8 +2,8 @@ import { cacheExchange, Client, createClient, fetchExchange } from "@urql/core";
 import getBaseClientHelperUtil from "../helpers/get-base-client.helper.util";
 import {
   APP_ADDRESS,
-  PUBLIC_APP_LENS_ID,
-  PUBLIC_LENS_API_URL
+  APP_LENS_ID,
+  LENS_API_URL
 } from "../../config/env.config";
 import { signer } from "../helpers/get-signer.helper.util";
 import authenticateService from "../../services/lens/authenticate.lens.service";
@@ -18,7 +18,7 @@ export const getAuthenticatedClientAuthenticationUtil: () => Promise<Client> =
   async () => {
     try {
       const challengeRequest: ChallengeRequest = {
-        for: PUBLIC_APP_LENS_ID,
+        for: APP_LENS_ID,
         signedBy: APP_ADDRESS
       };
       // Query challenge info
@@ -57,7 +57,7 @@ export const getAuthenticatedClientAuthenticationUtil: () => Promise<Client> =
 
       // Create and return authenticated client
       return createClient({
-        url: PUBLIC_LENS_API_URL,
+        url: LENS_API_URL,
         exchanges: [cacheExchange, fetchExchange],
         requestPolicy: "cache-and-network",
         fetchOptions: {

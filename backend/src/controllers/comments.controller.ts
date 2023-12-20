@@ -10,7 +10,7 @@ import {
   createMetaDataForAnonymousCommentHelperUtil,
   createMetaDataForUrlHelperUtil
 } from "../utils/helpers/create-metadata.helper.util";
-import { PUBLIC_APP_LENS_HANDLE } from "../config/env.config";
+import { APP_LENS_HANDLE } from "../config/env.config";
 import { PublicationResponseModel } from "../models/response/publication.response.model";
 import { imageQueue } from "../jobs/add-image-queue.job";
 import PostAnonymousCommentRequestBodyModel from "../models/requests/body/post-anonymous-comment.body.request.model";
@@ -39,7 +39,7 @@ export const postAnonymousCommentController = async (
 
     const urlObj = preprocessURLAndCreateMetadataObjectHelperUtil(
       urlString,
-      PUBLIC_APP_LENS_HANDLE,
+      APP_LENS_HANDLE,
       content,
       tags ? tags : []
     );

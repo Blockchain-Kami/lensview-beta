@@ -6,10 +6,7 @@ import {
   MetadataLicenseType,
   textOnly
 } from "@lens-protocol/metadata";
-import {
-  PUBLIC_SOURCE_APP_ID,
-  PUBLIC_APP_LENS_HANDLE
-} from "../../config/env.config";
+import { SOURCE_APP_ID, APP_LENS_HANDLE } from "../../config/env.config";
 import { createTagsHelperUtil } from "./helpers.helpers.util";
 import { MetadataObjectModel } from "../../models/metadata-object.model";
 
@@ -28,7 +25,7 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
   tags = urlObj.query ? createTagsHelperUtil(allTags, urlObj.query) : allTags;
   const lensHandle = urlObj.lensHandle
     ? `${urlObj.lensHandle}`
-    : PUBLIC_APP_LENS_HANDLE;
+    : APP_LENS_HANDLE;
 
   urlObj["lensHandle"]
     ? tags.push("0f89daeb0a63c7b73224315c5514c21ba0453985") // userPub
@@ -39,7 +36,7 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
   return link({
     locale: "en-US",
     tags: tags,
-    appId: PUBLIC_SOURCE_APP_ID,
+    appId: SOURCE_APP_ID,
     attributes: [
       {
         key: "creator",
@@ -49,7 +46,7 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
       {
         key: "app",
         type: MetadataAttributeType.STRING,
-        value: PUBLIC_SOURCE_APP_ID
+        value: SOURCE_APP_ID
       },
       {
         key: "created on",
@@ -72,17 +69,17 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
   return textOnly({
     locale: "en-US",
     tags: ["418f361f5cdc602c856956bf752c06a29c52e54a"], // anonymousPub
-    appId: PUBLIC_SOURCE_APP_ID,
+    appId: SOURCE_APP_ID,
     attributes: [
       {
         key: "creator",
         type: MetadataAttributeType.STRING,
-        value: PUBLIC_APP_LENS_HANDLE
+        value: APP_LENS_HANDLE
       },
       {
         key: "app",
         type: MetadataAttributeType.STRING,
-        value: PUBLIC_SOURCE_APP_ID
+        value: SOURCE_APP_ID
       },
       {
         key: "created on",
@@ -103,17 +100,17 @@ export const createMetaDataForImageCommentHelperUtil = (
   return image({
     locale: "en-US",
     tags: ["dd472d3370b389eb8399ea7c795ca9e76ff0d4d7"], // imagePub
-    appId: PUBLIC_SOURCE_APP_ID,
+    appId: SOURCE_APP_ID,
     attributes: [
       {
         key: "creator",
         type: MetadataAttributeType.STRING,
-        value: PUBLIC_APP_LENS_HANDLE
+        value: APP_LENS_HANDLE
       },
       {
         key: "app",
         type: MetadataAttributeType.STRING,
-        value: PUBLIC_SOURCE_APP_ID
+        value: SOURCE_APP_ID
       },
       {
         key: "created on",
@@ -135,7 +132,7 @@ export const createMetaDataForImageCommentHelperUtil = (
         license: MetadataLicenseType.CCO
       }
     ],
-    title: `LensView Post by ${PUBLIC_APP_LENS_HANDLE}`,
+    title: `LensView Post by ${APP_LENS_HANDLE}`,
     content: `Image link for the LensView Publication: ${urlObj.image}`
     //TODO: Check for below fields usage
     // content: EncryptableMarkdown
