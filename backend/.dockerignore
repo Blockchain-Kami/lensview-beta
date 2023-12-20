@@ -5,3 +5,4 @@ Dockerfile
 build
 .husky
 dist
+.env.example

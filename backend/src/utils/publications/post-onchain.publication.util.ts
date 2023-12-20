@@ -5,7 +5,7 @@ import type {
   RelaySuccess
 } from "../../gql/graphql";
 import {
-  PUBLIC_USE_GASLESS,
+  USE_GASLESS,
   APP_ADDRESS,
   PUBLIC_LENS_HUB_CONTRACT_ADDRESS
 } from "../../config/env.config";
@@ -53,7 +53,7 @@ const postOnChainPublicationUtil = async (metadata: any) => {
   );
   console.log("post onchain: signature", signature);
 
-  if (PUBLIC_USE_GASLESS) {
+  if (USE_GASLESS) {
     const broadcastResult = (await broadcastOnchainRequestService({
       id,
       signature

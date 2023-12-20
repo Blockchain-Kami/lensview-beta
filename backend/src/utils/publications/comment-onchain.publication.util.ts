@@ -6,7 +6,7 @@ import type {
 import {
   APP_ADDRESS,
   PUBLIC_LENS_HUB_CONTRACT_ADDRESS,
-  PUBLIC_USE_GASLESS
+  USE_GASLESS
 } from "../../config/env.config";
 import createOnchainCommentTypedDataService from "../../services/lens/create-onchain-comment-typed-data.lens.service";
 import { signedTypeDataForCommentHelperUtil } from "../helpers/sign-type-data.helper.util";
@@ -56,7 +56,7 @@ const commentOnChainPublicationUtil = async (
   );
   console.log("comment onchain: signature", signature);
 
-  if (PUBLIC_USE_GASLESS) {
+  if (USE_GASLESS) {
     const broadcastResult = (await broadcastOnchainRequestService({
       id,
       signature
