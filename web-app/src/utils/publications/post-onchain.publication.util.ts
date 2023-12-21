@@ -12,6 +12,7 @@ import { signedTypeData } from "../ethers.util";
 import { link } from "@lens-protocol/metadata";
 import { MetadataAttributeType } from "@lens-protocol/metadata";
 const { VITE_SOURCE_APP_ID } = import.meta.env;
+const { VITE_ANONYMOUS_PUB } = import.meta.env;
 
 const postOnChainPublicationUtil = async () => {
   //TODO: Check in production weather we need "@lens-protocol/metadata", if it works putting in
@@ -21,7 +22,7 @@ const postOnChainPublicationUtil = async () => {
   const metadata = link({
     locale: "en-US",
     tags: [
-      "418f361f5cdc602c856956bf752c06a29c52e54a", //anonymousPubHash
+      VITE_ANONYMOUS_PUB, //anonymousPubHash
       "8a5bcce8dd20adda1873b5e74a77268851b32500" //URLHash
     ],
     appId: VITE_SOURCE_APP_ID,
@@ -37,7 +38,7 @@ const postOnChainPublicationUtil = async () => {
         value: "testlenviewcode"
       },
       {
-        key: "created on",
+        key: "createdOn",
         type: MetadataAttributeType.STRING,
         value: Date.now().toString()
       }

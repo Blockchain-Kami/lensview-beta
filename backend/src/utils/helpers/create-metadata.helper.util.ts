@@ -49,7 +49,7 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
         value: SOURCE_APP_ID
       },
       {
-        key: "created on",
+        key: "createdOn",
         type: MetadataAttributeType.STRING,
         value: `${new Date().toJSON().slice(0, 10)}`
       }
@@ -82,7 +82,7 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
         value: SOURCE_APP_ID
       },
       {
-        key: "created on",
+        key: "createdOn",
         type: MetadataAttributeType.STRING,
         value: Date.now().toString()
       }
@@ -113,7 +113,7 @@ export const createMetaDataForImageCommentHelperUtil = (
         value: SOURCE_APP_ID
       },
       {
-        key: "created on",
+        key: "createdOn",
         type: MetadataAttributeType.STRING,
         value: Date.now().toString()
       }

@@ -12,6 +12,9 @@
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
   import commentOnChainPublicationUtil from "../../utils/publications/comment-onchain.publication.util";
   import updateCommentAnonymouslyAppService from "../../services/app/update-comment-anonymously.app.service";
+  import { mainPostImageUrlStore } from "../../stores/main-post-image-url.store";
+  const { VITE_USER_COMMENT } = import.meta.env;
+  const { VITE_USER_POST } = import.meta.env;
 
   const { addNotification } = getNotificationsContext();
   let userEnteredContent = "";
@@ -96,7 +99,24 @@
     } else {
       isPublishing = true;
       try {
-        await commentOnChainPublicationUtil(pubId, userEnteredContent);
+        const postOrCommentHash = isThisComment
+          ? VITE_USER_COMMENT
+          : VITE_USER_POST;
+
+        let mainPostImageUrl = "";
+        const unsub = mainPostImageUrlStore.subscribe(
+          (storedMainPostImageUrl) => {
+            mainPostImageUrl = storedMainPostImageUrl;
+          }
+        );
+        unsub();
+
+        await commentOnChainPublicationUtil(
+          pubId,
+          userEnteredContent,
+          postOrCommentHash,
+          mainPostImageUrl
+        );
         isPublishing = false;
         userEnteredContent = "";
         reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
@@ -133,7 +153,21 @@
 
     try {
       const localPubBtnName = pubBtnName;
-      await updateCommentAnonymouslyAppService(pubId, userEnteredContent);
+
+      let mainPostImageUrl = "";
+      const unsub = mainPostImageUrlStore.subscribe(
+        (storedMainPostImageUrl) => {
+          mainPostImageUrl = storedMainPostImageUrl;
+        }
+      );
+      unsub();
+
+      await updateCommentAnonymouslyAppService(
+        pubId,
+        userEnteredContent,
+        isThisComment,
+        mainPostImageUrl
+      );
 
       console.log("successfully posted anonymously");
       userEnteredContent = "";
