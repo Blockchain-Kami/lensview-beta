@@ -3,6 +3,8 @@ import type { PublicationsRequest } from "../../gql/graphql";
 
 import getCommentLensService from "../../services/lens/get-comment.lens.service";
 import { CommentFilterType } from "../../config/app-constants.config";
+const { VITE_USER_PUB } = import.meta.env;
+const { VITE_ANONYMOUS_PUB } = import.meta.env;
 
 const getCommentBasedOnParameterPublicationUtil = async (
   publicationId: string,
@@ -52,8 +54,8 @@ const getCommentBasedOnParameterPublicationUtil = async (
           metadata: {
             tags: {
               oneOf: [
-                "0f89daeb0a63c7b73224315c5514c21ba0453985", //userPubHash
-                "418f361f5cdc602c856956bf752c06a29c52e54a" //anonymousPubHash
+                VITE_USER_PUB, //userPubHash
+                VITE_ANONYMOUS_PUB //anonymousPubHash
               ]
             }
           }

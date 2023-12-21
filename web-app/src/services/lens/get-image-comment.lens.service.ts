@@ -1,5 +1,6 @@
 import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
 import imageCommentPublicationQueryGraphql from "../../graphql/queries/image-comment-publication.query.graphql";
+const { VITE_IMAGE_PUB } = import.meta.env;
 
 const getImageCommentLensService = async (id: string) => {
   console.log("getImageCommentLensService id", id);
@@ -12,7 +13,7 @@ const getImageCommentLensService = async (id: string) => {
           },
           metadata: {
             tags: {
-              oneOf: ["dd472d3370b389eb8399ea7c795ca9e76ff0d4d7"]
+              oneOf: [VITE_IMAGE_PUB]
             }
           }
         }

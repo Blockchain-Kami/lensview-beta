@@ -35,6 +35,7 @@
   import { totalPostsStore } from "../../stores/total-posts.store";
   import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
   import addReactionLensService from "../../services/lens/add-reaction.lens.service";
+  import { mainPostImageUrlStore } from "../../stores/main-post-image-url.store";
 
   const { addNotification } = getNotificationsContext();
   let mainPostPubId = $page.data.mainPostPubId;
@@ -205,6 +206,11 @@
     metaTagsImageUrl.setMetaTagsImageUrl(imageUrl);
     return "";
   };
+
+  const updateMainPostImageUrlStore = (imageUrl: string) => {
+    mainPostImageUrlStore.setMainPostImageUrl(imageUrl);
+    return "";
+  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -243,6 +249,7 @@
           {#await getImageCommentLensService(mainPostPub?.id)}
             <div class="tablet__main-post__image__loader" />
           {:then imageUrl}
+            {updateMainPostImageUrlStore(imageUrl)}
             {updateMetaTagsImageUrl(imageUrl)}
             <div class="tablet__main-post__image">
               <img src={imageUrl} alt="" />
@@ -372,6 +379,7 @@
         {#await getImageCommentLensService(mainPostPub?.id)}
           <div class="image__loader" />
         {:then imageUrl}
+          {updateMainPostImageUrlStore(imageUrl)}
           {updateMetaTagsImageUrl(imageUrl)}
           <a href={`/posts/${mainPostPubId}`}>
             <img src={imageUrl} alt="" />

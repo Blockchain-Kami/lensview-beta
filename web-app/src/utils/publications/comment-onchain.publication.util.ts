@@ -14,10 +14,13 @@ import lensHubUtil from "../lens-hub.util";
 import { waitUntilComplete } from "../indexer/has-transaction-been-indexed.indexer.util";
 const { VITE_SOURCE_APP_ID } = import.meta.env;
 const { VITE_USE_GASLESS } = import.meta.env;
+const { VITE_USER_PUB } = import.meta.env;
 
 const commentOnChainPublicationUtil = async (
   parentPubId: string,
-  comment: string
+  comment: string,
+  postOrCommentHash: string,
+  mainPostImageUrl: string | null
 ) => {
   let handle = "";
   let address = "";
@@ -30,7 +33,10 @@ const commentOnChainPublicationUtil = async (
 
   const metadata = textOnly({
     locale: "en-US",
-    tags: ["0f89daeb0a63c7b73224315c5514c21ba0453985"], //userHash
+    tags: [
+      VITE_USER_PUB, //userHash
+      postOrCommentHash
+    ],
     appId: VITE_SOURCE_APP_ID,
     attributes: [
       {
@@ -44,9 +50,14 @@ const commentOnChainPublicationUtil = async (
         value: VITE_SOURCE_APP_ID
       },
       {
-        key: "created on",
+        key: "createdOn",
         type: MetadataAttributeType.STRING,
         value: Date.now().toString()
+      },
+      {
+        key: "mainPostImageUrl",
+        type: MetadataAttributeType.STRING,
+        value: mainPostImageUrl
       }
     ],
     content: comment

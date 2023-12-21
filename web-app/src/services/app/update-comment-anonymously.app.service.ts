@@ -4,7 +4,9 @@ import type { PostCommentResponseAppModel } from "../../models/app/responses/pos
 
 const updateCommentAnonymouslyAppService = async (
   pubId: string,
-  userEnteredContent: string
+  userEnteredContent: string,
+  isThisComment: boolean,
+  mainPostImageUrl: string
 ) => {
   console.log("createPostAnonymouslyAppService pubId:", pubId);
   console.log(
@@ -16,7 +18,9 @@ const updateCommentAnonymouslyAppService = async (
     return await clientAxiosUtil
       .put("comment/anonymous", {
         pubId: pubId,
-        content: userEnteredContent
+        content: userEnteredContent,
+        isThisComment: isThisComment,
+        mainPostImageUrl: mainPostImageUrl
       })
       .then((resp: AxiosResponse<PostCommentResponseAppModel>) => {
         return resp.data.publicationID;
