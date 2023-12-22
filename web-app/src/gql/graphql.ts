@@ -1702,6 +1702,11 @@ export type HandleLinkedTo = {
   nftTokenId: Scalars['TokenId']['output'];
 };
 
+export type HandleToAddressRequest = {
+  /** The full handle - namespace/localname */
+  handle: Scalars['Handle']['input'];
+};
+
 export type HidePublicationRequest = {
   for: Scalars['PublicationId']['input'];
 };
@@ -4413,6 +4418,7 @@ export type Query = {
   following: PaginatedProfileResult;
   /** note here if your using a wallet JWT token it will approve to the public proxy contract if its supported if not throw as profiles act not wallets */
   generateModuleCurrencyApprovalData: GenerateModuleCurrencyApprovalResult;
+  handleToAddress?: Maybe<Scalars['EvmAddress']['output']>;
   internalAllowedDomains: Array<Scalars['URI']['output']>;
   internalClaimStatus?: Maybe<Scalars['Void']['output']>;
   internalCuratedHandles: Array<Scalars['String']['output']>;
@@ -4553,6 +4559,11 @@ export type QueryFollowingArgs = {
 
 export type QueryGenerateModuleCurrencyApprovalDataArgs = {
   request: GenerateModuleCurrencyApprovalDataRequest;
+};
+
+
+export type QueryHandleToAddressArgs = {
+  request: HandleToAddressRequest;
 };
 
 
