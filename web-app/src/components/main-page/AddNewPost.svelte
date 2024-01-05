@@ -144,6 +144,7 @@
           }
         });
       } catch (err) {
+        removeNotification(userPostNotificationId);
         console.log("error: ", err);
       }
     }
