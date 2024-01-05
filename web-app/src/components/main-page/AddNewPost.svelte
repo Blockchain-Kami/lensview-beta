@@ -4,6 +4,7 @@
     close,
     cross,
     flightTakeoff,
+    sendClock,
     signature,
     tick
   } from "../../utils/app-icon.util";
@@ -17,9 +18,10 @@
   import addUrlAppService from "../../services/app/add-url.app.service";
   import commentOnChainPublicationUtil from "../../utils/publications/comment-onchain.publication.util";
   import createCommentAnonymouslyAppService from "../../services/app/create-comment-anonymously.app.service";
+  import getRandomIdHelperUtil from "../../utils/helper/get-random-id.helper.util";
   const { VITE_USER_POST } = import.meta.env;
 
-  const { addNotification } = getNotificationsContext();
+  const { addNotification, removeNotification } = getNotificationsContext();
   export let showAddNewPostModal: boolean;
 
   let dialog: HTMLDialogElement;
@@ -98,18 +100,21 @@
       showLoginModal = true;
     } else {
       dialog.close();
+
+      const userPostNotificationId = getRandomIdHelperUtil();
       addNotification({
+        id: userPostNotificationId,
         position: "top-right",
         heading: "Post on its way!",
         description:
-          "Your post is getting polished and will shine on the feed in just a moment! Thanks for your patience.",
-        type: flightTakeoff,
-        removeAfter: 7000
+          "Your post is getting polished and please wait for Metamask approval! Thanks for your patience.",
+        type: sendClock
       });
 
       try {
         const pubId = await addUrlAppService(userEnteredUrl);
 
+        removeNotification(userPostNotificationId);
         addNotification({
           position: "top-right",
           heading: "Metamask approval needed",
@@ -123,7 +128,7 @@
           pubId,
           userEnteredContent,
           VITE_USER_POST,
-          null
+          "empty"
         );
 
         addNotification({
