@@ -68,6 +68,7 @@ export const postAnonymousCommentController = async (
         console.log(
           "Publication added and indexed on-chain: " + newPublicationId
         );
+        // TODO: Can put a default image URL for mainPostImageUrl
         const commentMetadata =
           createMetaDataForAnonymousCommentHelperUtil(content, "");
         await commentOnChainPublicationUtil(newPublicationId, commentMetadata);
