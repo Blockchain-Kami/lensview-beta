@@ -64,7 +64,8 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
 };
 
 export const createMetaDataForAnonymousCommentHelperUtil = (
-  comment: string
+  comment: string,
+  mainPostImageUrl: string
 ) => {
   return textOnly({
     locale: "en-US",
@@ -85,6 +86,11 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
         key: "createdOn",
         type: MetadataAttributeType.STRING,
         value: Date.now().toString()
+      },
+      {
+        key: "mainPostImageUrl",
+        type: MetadataAttributeType.STRING,
+        value: mainPostImageUrl
       }
     ],
     content: comment

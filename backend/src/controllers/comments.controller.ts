@@ -50,7 +50,7 @@ export const postAnonymousCommentController = async (
     if (publicationExists && publicationExists.items.length > 0) {
       const publicationId = publicationExists.items[0]?.id;
       const commentMetadata =
-        createMetaDataForAnonymousCommentHelperUtil(content);
+        createMetaDataForAnonymousCommentHelperUtil(content, "");
       await commentOnChainPublicationUtil(publicationId, commentMetadata);
       return res.status(httpStatusCodes.CREATED).send({
         publicationID: publicationId,
@@ -69,7 +69,7 @@ export const postAnonymousCommentController = async (
           "Publication added and indexed on-chain: " + newPublicationId
         );
         const commentMetadata =
-          createMetaDataForAnonymousCommentHelperUtil(content);
+          createMetaDataForAnonymousCommentHelperUtil(content, "");
         await commentOnChainPublicationUtil(newPublicationId, commentMetadata);
         return res.status(httpStatusCodes.CREATED).send({
           publicationID: addedPublication.items[0]?.id,
@@ -103,8 +103,8 @@ export const putAnonymousCommentController = async (
   res: Response<PublicationResponseModel>
 ) => {
   try {
-    const { pubId, content } = req.body;
-    const metadata = createMetaDataForAnonymousCommentHelperUtil(content);
+    const { pubId, content , mainPostImageUrl} = req.body;
+    const metadata = createMetaDataForAnonymousCommentHelperUtil(content, mainPostImageUrl);
     await commentOnChainPublicationUtil(pubId, metadata);
     res.status(httpStatusCodes.CREATED).send({
       publicationID: pubId,
