@@ -50,7 +50,7 @@ export const postAnonymousCommentController = async (
     if (publicationExists && publicationExists.items.length > 0) {
       const publicationId = publicationExists.items[0]?.id;
       const commentMetadata =
-        createMetaDataForAnonymousCommentHelperUtil(content, "");
+        createMetaDataForAnonymousCommentHelperUtil(content, "empty");
       await commentOnChainPublicationUtil(publicationId, commentMetadata);
       return res.status(httpStatusCodes.CREATED).send({
         publicationID: publicationId,
@@ -70,7 +70,7 @@ export const postAnonymousCommentController = async (
         );
         // TODO: Can put a default image URL for mainPostImageUrl
         const commentMetadata =
-          createMetaDataForAnonymousCommentHelperUtil(content, "");
+          createMetaDataForAnonymousCommentHelperUtil(content, "empty");
         await commentOnChainPublicationUtil(newPublicationId, commentMetadata);
         return res.status(httpStatusCodes.CREATED).send({
           publicationID: addedPublication.items[0]?.id,
