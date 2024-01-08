@@ -246,12 +246,12 @@
       <!--                <Icon d={addPhoto}/>-->
       <!--                Photo-->
       <!--            </div>-->
-      <button
-        class="footer__insert__item__matic"
-        on:click={() => (showGetTestMaticModal = true)}
-      >
-        Get test MATIC
-      </button>
+      <!--      <button-->
+      <!--        class="footer__insert__item__matic"-->
+      <!--        on:click={() => (showGetTestMaticModal = true)}-->
+      <!--      >-->
+      <!--        Get test MATIC-->
+      <!--      </button>-->
     </div>
     <div class="CenterRowFlex footer__operations">
       <button

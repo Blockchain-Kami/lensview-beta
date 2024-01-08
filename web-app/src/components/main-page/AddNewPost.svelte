@@ -283,12 +283,12 @@
       <div class="line" />
       <div class="CenterRowFlex footer">
         <div class="footer__left">
-          <button
-            class="footer__left__matic"
-            on:click={() => (showGetTestMaticModal = true)}
-          >
-            Get test MATIC
-          </button>
+          <!--          <button-->
+          <!--            class="footer__left__matic"-->
+          <!--            on:click={() => (showGetTestMaticModal = true)}-->
+          <!--          >-->
+          <!--            Get test MATIC-->
+          <!--          </button>-->
         </div>
         <div class="CenterRowFlex footer__right">
           <button

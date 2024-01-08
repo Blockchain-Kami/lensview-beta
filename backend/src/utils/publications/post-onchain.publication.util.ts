@@ -7,7 +7,7 @@ import type {
 import {
   USE_GASLESS,
   APP_ADDRESS,
-  PUBLIC_LENS_HUB_CONTRACT_ADDRESS
+  LENS_HUB_CONTRACT_ADDRESS
 } from "../../config/env.config";
 import LENS_HUB_ABI from "../../abis/lens-hub-contract.abi.json";
 import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util";
@@ -66,7 +66,7 @@ const postOnChainPublicationUtil = async (metadata: any) => {
     const { v, r, s } = splitSignatureHelperUtil(signature);
 
     const lensHub = createContractHelperUtils(
-      PUBLIC_LENS_HUB_CONTRACT_ADDRESS,
+      LENS_HUB_CONTRACT_ADDRESS,
       LENS_HUB_ABI
     );
 
