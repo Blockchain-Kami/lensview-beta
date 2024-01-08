@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util";
 import { httpStatusCodes } from "../config/app-constants.config";
-import { getRelatedPublicationsService } from "../services/lens/related-parent-publications.lens.service";
+import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service";
 import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
 import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
 import { putAnonymousCommentBodyRequestModel } from "../models/requests/body/put-anonymous-comment.body.request.model";
@@ -11,7 +11,10 @@ import {
   createMetaDataForUrlHelperUtil
 } from "../utils/helpers/create-metadata.helper.util";
 import { APP_LENS_HANDLE } from "../config/env.config";
-import { PublicationResponseModel } from "../models/response/publication.response.model";
+import {
+  PublicationResponseModel,
+  PublicationResponseModelForPostAnonymousComment
+} from "../models/response/publication.response.model";
 import { imageQueue } from "../jobs/add-image-queue.job";
 import PostAnonymousCommentRequestBodyModel from "../models/requests/body/post-anonymous-comment.body.request.model";
 
@@ -24,7 +27,7 @@ import PostAnonymousCommentRequestBodyModel from "../models/requests/body/post-a
  */
 export const postAnonymousCommentController = async (
   req: Request<unknown, unknown, PostAnonymousCommentRequestBodyModel>,
-  res: Response<PublicationResponseModel>
+  res: Response<PublicationResponseModelForPostAnonymousComment>
 ) => {
   try {
     const { url, content, userTags: tags } = req.body;
@@ -33,6 +36,7 @@ export const postAnonymousCommentController = async (
     if (!urlString) {
       return res.status(httpStatusCodes.BAD_REQUEST).send({
         publicationID: null,
+        alreadyExists: false,
         message: "User entered a tag"
       });
     }
@@ -43,24 +47,27 @@ export const postAnonymousCommentController = async (
       content,
       tags ? tags : []
     );
-    const publicationExists = await getRelatedPublicationsService([
+    const publicationExists = await relatedParentPublicationsLensService([
       urlObj.hashedURL
     ]);
 
     if (publicationExists && publicationExists.items.length > 0) {
       const publicationId = publicationExists.items[0]?.id;
-      const commentMetadata =
-        createMetaDataForAnonymousCommentHelperUtil(content, "empty");
+      const commentMetadata = createMetaDataForAnonymousCommentHelperUtil(
+        content,
+        "empty"
+      );
       await commentOnChainPublicationUtil(publicationId, commentMetadata);
       return res.status(httpStatusCodes.CREATED).send({
         publicationID: publicationId,
+        alreadyExists: true,
         message: "Publication Found and Anonymous Comment Added"
       });
     } else {
       const postMetadata = createMetaDataForUrlHelperUtil(urlObj);
       await postOnChainPublicationUtil(postMetadata);
       imageQueue.add({ urlObj });
-      const addedPublication = await getRelatedPublicationsService([
+      const addedPublication = await relatedParentPublicationsLensService([
         urlObj.hashedURL
       ]);
       if (addedPublication && addedPublication.items.length > 0) {
@@ -69,16 +76,20 @@ export const postAnonymousCommentController = async (
           "Publication added and indexed on-chain: " + newPublicationId
         );
         // TODO: Can put a default image URL for mainPostImageUrl
-        const commentMetadata =
-          createMetaDataForAnonymousCommentHelperUtil(content, "empty");
+        const commentMetadata = createMetaDataForAnonymousCommentHelperUtil(
+          content,
+          "empty"
+        );
         await commentOnChainPublicationUtil(newPublicationId, commentMetadata);
         return res.status(httpStatusCodes.CREATED).send({
           publicationID: addedPublication.items[0]?.id,
+          alreadyExists: false,
           message: "Publication and Anonymous Comment Added"
         });
       } else {
         return res.status(httpStatusCodes.SERVER_TIMEOUT).send({
           publicationID: null,
+          alreadyExists: false,
           message: "Timeout while adding URL OR POST COMMENT to LensView"
         });
       }
@@ -87,6 +98,7 @@ export const postAnonymousCommentController = async (
     console.log(e);
     return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
       publicationID: null,
+      alreadyExists: false,
       message: "Failed to ADD URL OR POST COMMENT to LensView"
     });
   }
@@ -104,8 +116,11 @@ export const putAnonymousCommentController = async (
   res: Response<PublicationResponseModel>
 ) => {
   try {
-    const { pubId, content , mainPostImageUrl} = req.body;
-    const metadata = createMetaDataForAnonymousCommentHelperUtil(content, mainPostImageUrl);
+    const { pubId, content, mainPostImageUrl } = req.body;
+    const metadata = createMetaDataForAnonymousCommentHelperUtil(
+      content,
+      mainPostImageUrl
+    );
     await commentOnChainPublicationUtil(pubId, metadata);
     res.status(httpStatusCodes.CREATED).send({
       publicationID: pubId,

@@ -16,7 +16,12 @@ export const validatePutAnonymousCommentRequestMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  if (req.body && req.body.pubId && req.body.content && req.body.mainPostImageUrl) {
+  if (
+    req.body &&
+    req.body.pubId &&
+    req.body.content &&
+    req.body.mainPostImageUrl
+  ) {
     return next();
   } else {
     throw new ClientError(

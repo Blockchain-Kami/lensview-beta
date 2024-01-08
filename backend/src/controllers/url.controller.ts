@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PublicationResponseModel } from "../models/response/publication.response.model";
+import { PublicationResponseModelForNewPubURL } from "../models/response/publication.response.model";
 import { SearchQueryRequestModel } from "../models/requests/query/search.query.request.model";
 import { UrlExistsValidationResponseModel } from "../models/response/url-exists-validation.response.model";
 import PostNewPublicationBodyRequestModel from "../models/requests/body/post-new-publication.body.request.model";
@@ -7,11 +7,12 @@ import { httpStatusCodes } from "../config/app-constants.config";
 import { imageQueue } from "../jobs/add-image-queue.job";
 import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util";
 import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
-import { getRelatedPublicationsService } from "../services/lens/related-parent-publications.lens.service";
+import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service";
 import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
 import { preprocessURLHelperUtil } from "../utils/helpers/preprocess-url.helper.util";
 import { createHashHelperUtil } from "../utils/helpers/create-hash.helper.util";
 import { createMetaDataForUrlHelperUtil } from "../utils/helpers/create-metadata.helper.util";
+import {getMainPublicationImageLensService} from "../services/lens/get-main-publication-image.lens.service";
 
 /**
  * Handles the logic for posting a new publication.
@@ -22,7 +23,7 @@ import { createMetaDataForUrlHelperUtil } from "../utils/helpers/create-metadata
  */
 export const postNewPublicationController = async (
   req: Request<unknown, unknown, PostNewPublicationBodyRequestModel>,
-  res: Response<PublicationResponseModel>
+  res: Response<PublicationResponseModelForNewPubURL>
 ) => {
   try {
     const { url, lensHandle, userTags } = req.body;
@@ -31,6 +32,8 @@ export const postNewPublicationController = async (
     if (!urlString) {
       return res.status(httpStatusCodes.BAD_REQUEST).send({
         publicationID: null,
+        alreadyExists: false,
+        mainPostImageUrl: null,
         message: "User entered a tag"
       });
     }
@@ -42,32 +45,40 @@ export const postNewPublicationController = async (
       userTags ? userTags : []
     );
 
-    const publicationExists = await getRelatedPublicationsService([
+    const publicationExists = await relatedParentPublicationsLensService([
       urlObj.hashedURL
     ]);
 
     if (publicationExists && publicationExists.items.length > 0) {
-      console.log(JSON.stringify(publicationExists));
+      const publicationID = publicationExists.items[0].id;
+      const publicationImageDetails = await getMainPublicationImageLensService(publicationID);
       return res.status(httpStatusCodes.OK).send({
         publicationID: publicationExists.items[0].id,
+        alreadyExists: true,
+        mainPostImageUrl: publicationImageDetails.items[0].metadata.rawURI,
         message: "Publication Already Exists"
       });
     } else {
       const postMetadata = createMetaDataForUrlHelperUtil(urlObj);
       await postOnChainPublicationUtil(postMetadata);
       imageQueue.add({ urlObj });
-      const newPublication = await getRelatedPublicationsService([
+      const newPublication = await relatedParentPublicationsLensService([
         urlObj.hashedURL
       ]);
 
       if (newPublication && newPublication.items.length > 0) {
+        const publicationID = newPublication.items[0].id;
         return res.status(httpStatusCodes.OK).send({
-          publicationID: newPublication.items[0].id,
+          publicationID: publicationID,
+          alreadyExists: false,
+          mainPostImageUrl: null,
           message: "Publication Added to LensView"
         });
       } else {
         return res.status(httpStatusCodes.OK).send({
           publicationID: null,
+          alreadyExists: false,
+          mainPostImageUrl: null,
           message:
             "Timeout while waiting for Lens Protocol to add the publication"
         });
@@ -77,6 +88,8 @@ export const postNewPublicationController = async (
     console.error(e);
     return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
       publicationID: null,
+      alreadyExists: false,
+      mainPostImageUrl: null,
       message: "Internal Server Error while adding new URL"
     });
   }
@@ -99,7 +112,7 @@ export const urlExistsValidationController = async (
     if (isURL) {
       const [url, , , ,] = preprocessURLHelperUtil(searchQuery);
       const hashedURL = createHashHelperUtil(url);
-      const publicationExists = await getRelatedPublicationsService([
+      const publicationExists = await relatedParentPublicationsLensService([
         hashedURL
       ]);
       if (publicationExists && publicationExists.items.length > 0) {

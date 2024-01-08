@@ -1,4 +1,4 @@
-import { getRelatedPublicationsService } from "../../services/lens/related-parent-publications.lens.service";
+import { relatedParentPublicationsLensService } from "../../services/lens/related-parent-publications.lens.service";
 import { FAILURE, SUCCESS } from "../../config/app-constants.config";
 
 /**
@@ -21,7 +21,7 @@ export const getPublicationsForTagPublicationUtil = async (
       tags.push(keyword);
     }
     if (tags.length > 0) {
-      const res = await getRelatedPublicationsService(tags);
+      const res = await relatedParentPublicationsLensService(tags);
 
       const items = res?.items || [];
 
