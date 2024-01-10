@@ -7,16 +7,13 @@ const getMainPublicationImageQueryGraphql = graphql(/* GraphQL */ `
         ... on Comment {
           metadata {
             ... on ImageMetadataV3 {
-              attachments {
-                ... on PublicationMetadataMediaImage {
-                  image {
-                    optimized {
-                      uri
-                    }
+              asset {
+                image {
+                  optimized {
+                    uri
                   }
                 }
               }
-              rawURI
             }
           }
         }

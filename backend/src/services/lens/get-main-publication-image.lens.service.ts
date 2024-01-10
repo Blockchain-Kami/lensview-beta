@@ -6,7 +6,7 @@ import {
   PublicationsRequest,
   PublicationsWhere
 } from "../../gql/graphql";
-import {GetPublicationImageLensModel} from "../../models/lens/get-publication-image.lens.model";
+import { TAG_IMAGE_PUB } from "../../config/env.config";
 
 export const getMainPublicationImageLensService = async (
   publicationID: string
@@ -18,7 +18,7 @@ export const getMainPublicationImageLensService = async (
       },
       metadata: {
         tags: {
-          oneOf: ["dd472d3370b389eb8399ea7c795ca9e76ff0d4d7"]
+          oneOf: [TAG_IMAGE_PUB] //imagePub
         }
       }
     };
@@ -27,12 +27,24 @@ export const getMainPublicationImageLensService = async (
       limit: LimitType.Fifty,
       where: publicationsWhere
     };
+
     const result = await getBaseClientHelperUtil
       .query(getMainPublicationImageQueryGraphql, {
         request: publicationsRequest
       })
       .toPromise();
-    return result?.data?.publications as GetPublicationImageLensModel;
+    const imageComment = result?.data?.publications?.items[0];
+    if (
+      imageComment?.__typename === "Comment" &&
+      imageComment.metadata.__typename === "ImageMetadataV3"
+    ) {
+      if (
+        imageComment.metadata?.asset?.image?.__typename ===
+        "EncryptableImageSet"
+      ) {
+        return imageComment.metadata.asset.image.optimized?.uri;
+      }
+    }
   } catch (error) {
     throw new InternalServerError("Error Fetching Data From Lens API", 504);
   }

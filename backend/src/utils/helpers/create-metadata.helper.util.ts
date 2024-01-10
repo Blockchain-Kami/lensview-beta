@@ -6,7 +6,15 @@ import {
   MetadataLicenseType,
   textOnly
 } from "@lens-protocol/metadata";
-import { SOURCE_APP_ID, APP_LENS_HANDLE } from "../../config/env.config";
+import {
+  SOURCE_APP_ID,
+  APP_LENS_HANDLE,
+  TAG_IMAGE_PUB,
+  TAG_ANONYMOUS_PUB,
+  TAG_USER_COMMENT,
+  TAG_USER_POST,
+  TAG_USER_PUB
+} from "../../config/env.config";
 import { createTagsHelperUtil } from "./helpers.helpers.util";
 import { MetadataObjectModel } from "../../models/metadata-object.model";
 
@@ -28,8 +36,8 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
     : APP_LENS_HANDLE;
 
   urlObj["lensHandle"]
-    ? tags.push("0f89daeb0a63c7b73224315c5514c21ba0453985") // userPub
-    : tags.push("418f361f5cdc602c856956bf752c06a29c52e54a"); // anonymousPub
+    ? tags.push(TAG_USER_PUB) // userPub
+    : tags.push(TAG_ANONYMOUS_PUB); // anonymousPub
 
   tags = [...new Set(tags)];
 
@@ -65,11 +73,18 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
 
 export const createMetaDataForAnonymousCommentHelperUtil = (
   comment: string,
-  mainPostImageUrl: string
+  mainPostImageUrl: string,
+  isThisComment: boolean
 ) => {
+  const tags = [TAG_ANONYMOUS_PUB]; // anonymousPub
+  if (isThisComment) {
+    tags.push(TAG_USER_COMMENT); // userComment
+  } else {
+    tags.push(TAG_USER_POST); // userPost
+  }
   return textOnly({
     locale: "en-US",
-    tags: ["418f361f5cdc602c856956bf752c06a29c52e54a"], // anonymousPub
+    tags,
     appId: SOURCE_APP_ID,
     attributes: [
       {
@@ -105,7 +120,7 @@ export const createMetaDataForImageCommentHelperUtil = (
 ) => {
   return image({
     locale: "en-US",
-    tags: ["dd472d3370b389eb8399ea7c795ca9e76ff0d4d7"], // imagePub
+    tags: [TAG_IMAGE_PUB], // imagePub
     appId: SOURCE_APP_ID,
     attributes: [
       {

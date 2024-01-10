@@ -55,7 +55,8 @@ export const postAnonymousCommentController = async (
       const publicationId = publicationExists.items[0]?.id;
       const commentMetadata = createMetaDataForAnonymousCommentHelperUtil(
         content,
-        "empty"
+        "empty",
+        false
       );
       await commentOnChainPublicationUtil(publicationId, commentMetadata);
       return res.status(httpStatusCodes.CREATED).send({
@@ -78,7 +79,8 @@ export const postAnonymousCommentController = async (
         // TODO: Can put a default image URL for mainPostImageUrl
         const commentMetadata = createMetaDataForAnonymousCommentHelperUtil(
           content,
-          "empty"
+          "empty",
+          false
         );
         await commentOnChainPublicationUtil(newPublicationId, commentMetadata);
         return res.status(httpStatusCodes.CREATED).send({
@@ -116,10 +118,11 @@ export const putAnonymousCommentController = async (
   res: Response<PublicationResponseModel>
 ) => {
   try {
-    const { pubId, content, mainPostImageUrl } = req.body;
+    const { pubId, content, mainPostImageUrl, isThisComment } = req.body;
     const metadata = createMetaDataForAnonymousCommentHelperUtil(
       content,
-      mainPostImageUrl
+      mainPostImageUrl,
+      isThisComment
     );
     await commentOnChainPublicationUtil(pubId, metadata);
     res.status(httpStatusCodes.CREATED).send({

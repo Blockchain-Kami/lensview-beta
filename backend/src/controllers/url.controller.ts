@@ -12,7 +12,7 @@ import postOnChainPublicationUtil from "../utils/publications/post-onchain.publi
 import { preprocessURLHelperUtil } from "../utils/helpers/preprocess-url.helper.util";
 import { createHashHelperUtil } from "../utils/helpers/create-hash.helper.util";
 import { createMetaDataForUrlHelperUtil } from "../utils/helpers/create-metadata.helper.util";
-import {getMainPublicationImageLensService} from "../services/lens/get-main-publication-image.lens.service";
+import { getMainPublicationImageLensService } from "../services/lens/get-main-publication-image.lens.service";
 
 /**
  * Handles the logic for posting a new publication.
@@ -51,11 +51,11 @@ export const postNewPublicationController = async (
 
     if (publicationExists && publicationExists.items.length > 0) {
       const publicationID = publicationExists.items[0].id;
-      const publicationImageDetails = await getMainPublicationImageLensService(publicationID);
+      const imageURL = await getMainPublicationImageLensService(publicationID);
       return res.status(httpStatusCodes.OK).send({
         publicationID: publicationExists.items[0].id,
         alreadyExists: true,
-        mainPostImageUrl: publicationImageDetails.items[0].metadata.rawURI,
+        mainPostImageUrl: imageURL,
         message: "Publication Already Exists"
       });
     } else {
