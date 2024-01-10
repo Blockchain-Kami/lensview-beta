@@ -20,7 +20,7 @@ const commentOnChainPublicationUtil = async (
   parentPubId: string,
   comment: string,
   postOrCommentHash: string,
-  mainPostImageUrl: string | null
+  mainPostImageUrl: string
 ) => {
   let handle = "";
   let address = "";

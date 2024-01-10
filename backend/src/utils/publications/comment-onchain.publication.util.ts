@@ -5,7 +5,7 @@ import type {
 } from "../../gql/graphql";
 import {
   APP_ADDRESS,
-  PUBLIC_LENS_HUB_CONTRACT_ADDRESS,
+  LENS_HUB_CONTRACT_ADDRESS,
   USE_GASLESS
 } from "../../config/env.config";
 import createOnchainCommentTypedDataService from "../../services/lens/create-onchain-comment-typed-data.lens.service";
@@ -71,7 +71,7 @@ const commentOnChainPublicationUtil = async (
     const { v, r, s } = splitSignatureHelperUtil(signature);
 
     const lensHub = createContractHelperUtils(
-      PUBLIC_LENS_HUB_CONTRACT_ADDRESS,
+      LENS_HUB_CONTRACT_ADDRESS,
       LENS_HUB_ABI
     );
 
