@@ -1,5 +1,5 @@
 import { preprocessURLHelperUtil } from "../helpers/preprocess-url.helper.util";
-import { getRelatedPublicationsService } from "../../services/lens/related-parent-publications.lens.service";
+import { relatedParentPublicationsLensService } from "../../services/lens/related-parent-publications.lens.service";
 import { SUCCESS } from "../../config/app-constants.config";
 
 /**
@@ -15,7 +15,7 @@ export const getPublicationsForURLPublicationUtil = async (URL: string) => {
   if (hostname) {
     const tag = hostname.toString().toLowerCase();
 
-    const relatedPosts = await getRelatedPublicationsService([tag]);
+    const relatedPosts = await relatedParentPublicationsLensService([tag]);
 
     const items = relatedPosts?.items || [];
 

@@ -15,7 +15,7 @@ import { GetRelatedPubsLensModel } from "../../models/lens/get-related-pubs.lens
  * @param {string[]} tags - The tag used to search for related parent publications.
  * @returns {Promise<Array>} - A promise that resolves to an array of related parent publications, or null if an error occurs.
  */
-export const getRelatedPublicationsService = async (tags: string[]) => {
+export const relatedParentPublicationsLensService = async (tags: string[]) => {
   const publicationsWhere: PublicationsWhere = {
     from: [APP_LENS_ID],
     publicationTypes: [PublicationType.Post],

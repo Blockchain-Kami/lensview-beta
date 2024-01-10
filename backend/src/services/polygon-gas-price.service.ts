@@ -1,6 +1,7 @@
 import { PolygonGasPriceResponseModel } from "../models/response/polygon-gas-price.response.model";
 import axios from "axios";
 import { ethers } from "ethers";
+import { GASSTATION_URL } from "../config/env.config";
 
 export const polygonGasPriceService = async () => {
   let data: PolygonGasPriceResponseModel;
@@ -9,7 +10,7 @@ export const polygonGasPriceService = async () => {
   try {
     const response = await axios({
       method: "get",
-      url: "https://gasstation-testnet.polygon.technology/v2"
+      url: GASSTATION_URL
     });
     data = response.data;
     maxFeePerGas = ethers.parseUnits(Math.ceil(data.fast.maxFee) + "", "gwei");

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
 import { APP_LENS_HANDLE } from "../config/env.config";
 import AddImageToPostAdminRouteBodyRequestModel from "../models/requests/body/admin-route.body.request.model";
-import { getRelatedPublicationsService } from "../services/lens/related-parent-publications.lens.service";
+import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service";
 import { httpStatusCodes } from "../config/app-constants.config";
 import { PublicationResponseModel } from "../models/response/publication.response.model";
 import { uploadScreenshotAndCommentWithImageJobUtil } from "../utils/jobs/upload-screenshot-and-comment-with-image.job.util";
@@ -28,7 +28,7 @@ export const addImageToPostAdminController = async (
     []
   );
   console.log(JSON.stringify(urlObj));
-  const publicationExists = await getRelatedPublicationsService([
+  const publicationExists = await relatedParentPublicationsLensService([
     urlObj.hashedURL
   ]);
   console.log(JSON.stringify(publicationExists));

@@ -15,3 +15,10 @@ export const WEB3STORAGE_TOKEN = process.env.WEB3STORAGE_TOKEN as string;
 export const APP_LENS_HANDLE = process.env.APP_LENS_HANDLE as string;
 export const LENS_HUB_CONTRACT_ADDRESS = process.env
   .LENS_HUB_CONTRACT_ADDRESS as string;
+export const GASSTATION_URL = process.env.GASSTATION_URL as string;
+export const TAG_IMAGE_PUB = process.env.TAG_IMAGE_PUB as string;
+export const TAG_USER_PUB = process.env.TAG_USER_PUB as string;
+export const TAG_ANONYMOUS_PUB = process.env.TAG_ANONYMOUS_PUB as string;
+export const TAG_USER_POST = process.env.TAG_USER_POST as string;
+export const TAG_USER_COMMENT = process.env.TAG_USER_COMMENT as string;
+

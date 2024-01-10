@@ -1,14 +1,20 @@
 type Query {
   challenge(request: ChallengeRequest!): AuthChallengeResult!
   verify(request: VerifyRequest!): Boolean!
-  approvedAuthentications(request: ApprovedAuthenticationRequest!): PaginatedApprovedAuthenticationResult!
+  approvedAuthentications(
+    request: ApprovedAuthenticationRequest!
+  ): PaginatedApprovedAuthenticationResult!
   currentSession: ApprovedAuthentication!
   ownedHandles(request: OwnedHandlesRequest!): PaginatedHandlesResult!
 
-  """Get all enabled currencies"""
+  """
+  Get all enabled currencies
+  """
   currencies(request: PaginatedOffsetRequest!): PaginatedCurrenciesResult!
   feed(request: FeedRequest!): PaginatedFeedResult!
-  feedHighlights(request: FeedHighlightsRequest!): PaginatedFeedHighlightsResult!
+  feedHighlights(
+    request: FeedHighlightsRequest!
+  ): PaginatedFeedHighlightsResult!
   followers(request: FollowersRequest!): PaginatedProfileResult!
 
   """
@@ -16,7 +22,9 @@ type Query {
   """
   mutualFollowers(request: MutualFollowersRequest!): PaginatedProfileResult!
   following(request: FollowingRequest!): PaginatedProfileResult!
-  followStatusBulk(request: FollowStatusBulkRequest!): [FollowStatusBulkResult!]!
+  followStatusBulk(
+    request: FollowStatusBulkRequest!
+  ): [FollowStatusBulkResult!]!
   ping: String!
   internalClaimStatus(request: InternalClaimStatusRequest!): Void
   internalCuratedHandles(request: InternalCuratedHandlesRequest!): [String!]!
@@ -28,40 +36,64 @@ type Query {
   """
   note here if your using a wallet JWT token it will get the allowance of the public proxy contract if its supported if not throw as profiles act not wallets
   """
-  approvedModuleAllowanceAmount(request: ApprovedModuleAllowanceAmountRequest!): [ApprovedAllowanceAmountResult!]!
+  approvedModuleAllowanceAmount(
+    request: ApprovedModuleAllowanceAmountRequest!
+  ): [ApprovedAllowanceAmountResult!]!
 
   """
   note here if your using a wallet JWT token it will approve to the public proxy contract if its supported if not throw as profiles act not wallets
   """
-  generateModuleCurrencyApprovalData(request: GenerateModuleCurrencyApprovalDataRequest!): GenerateModuleCurrencyApprovalResult!
-  supportedOpenActionModules(request: SupportedModulesRequest!): PaginatedSupportedModules!
-  supportedReferenceModules(request: SupportedModulesRequest!): PaginatedSupportedModules!
-  supportedOpenActionCollectModules(request: SupportedModulesRequest!): PaginatedSupportedModules!
-  supportedFollowModules(request: SupportedModulesRequest!): PaginatedSupportedModules!
+  generateModuleCurrencyApprovalData(
+    request: GenerateModuleCurrencyApprovalDataRequest!
+  ): GenerateModuleCurrencyApprovalResult!
+  supportedOpenActionModules(
+    request: SupportedModulesRequest!
+  ): PaginatedSupportedModules!
+  supportedReferenceModules(
+    request: SupportedModulesRequest!
+  ): PaginatedSupportedModules!
+  supportedOpenActionCollectModules(
+    request: SupportedModulesRequest!
+  ): PaginatedSupportedModules!
+  supportedFollowModules(
+    request: SupportedModulesRequest!
+  ): PaginatedSupportedModules!
   moduleMetadata(request: ModuleMetadataRequest!): GetModuleMetadataResult
   momokaSubmitters: MomokaSubmittersResult!
   momokaSummary: MomokaSummaryResult!
-  momokaTransactions(request: MomokaTransactionsRequest!): MomokaTransactionsResult!
+  momokaTransactions(
+    request: MomokaTransactionsRequest!
+  ): MomokaTransactionsResult!
   momokaTransaction(request: MomokaTransactionRequest!): MomokaTransaction
   nfts(request: NftsRequest!): PaginatedNftsResult!
 
   """
   Get the NFT collections that the given wallet or profileId owns at least one NFT of. Only supports Ethereum and Polygon NFTs. Note excludeFollowers is set to true by default, so the result will not include Lens Follower NFTsunless explicitly requested.
   """
-  nftCollections(request: NftCollectionsRequest!): PaginatedNftCollectionsResult!
+  nftCollections(
+    request: NftCollectionsRequest!
+  ): PaginatedNftCollectionsResult!
 
   """
   Get the NFT collections that the given two profiles own at least one NFT of.
   """
-  mutualNftCollections(request: MutualNftCollectionsRequest!): PaginatedNftCollectionsResult!
+  mutualNftCollections(
+    request: MutualNftCollectionsRequest!
+  ): PaginatedNftCollectionsResult!
 
-  """Get the Lens Profiles that own NFTs from a given collection."""
-  nftCollectionOwners(request: NftCollectionOwnersRequest!): PaginatedProfileResult!
+  """
+  Get the Lens Profiles that own NFTs from a given collection.
+  """
+  nftCollectionOwners(
+    request: NftCollectionOwnersRequest!
+  ): PaginatedProfileResult!
 
   """
   Get the most popular NFT collections. Popularity is based on how many Lens Profiles own NFTs from a given collection.
   """
-  popularNftCollections(request: PopularNftCollectionsRequest!): PaginatedPopularNftCollectionsResult!
+  popularNftCollections(
+    request: PopularNftCollectionsRequest!
+  ): PaginatedPopularNftCollectionsResult!
   nftGalleries(request: NftGalleriesRequest!): PaginatedNftGalleriesResult!
   notifications(request: NotificationRequest): PaginatedNotificationResult!
   poaps(request: UserPoapsQueryRequest!): PaginatedPoapTokenResult!
@@ -70,12 +102,18 @@ type Query {
   poapEvent(request: PoapEventQueryRequest!): PoapEvent
   profiles(request: ProfilesRequest!): PaginatedProfileResult!
   profile(request: ProfileRequest!): Profile
-  whoActedOnPublication(request: WhoActedOnPublicationRequest!): PaginatedProfileResult!
+  whoActedOnPublication(
+    request: WhoActedOnPublicationRequest!
+  ): PaginatedProfileResult!
   profileInterestsOptions: [String!]!
 
-  """The list of profiles that the logged in profile has blocked"""
+  """
+  The list of profiles that the logged in profile has blocked
+  """
   whoHaveBlocked(request: WhoHaveBlockedRequest!): PaginatedProfileResult!
-  profileActionHistory(request: ProfileActionHistoryRequest!): PaginatedProfileActionHistoryResult!
+  profileActionHistory(
+    request: ProfileActionHistoryRequest!
+  ): PaginatedProfileActionHistoryResult!
   lastLoggedInProfile(request: LastLoggedInProfileRequest!): Profile
 
   """
@@ -88,9 +126,13 @@ type Query {
   exploreProfiles(request: ExploreProfilesRequest!): PaginatedProfileResult!
   invitedProfiles: [InvitedResult!]!
   profileAlreadyInvited(request: AlreadyInvitedCheckRequest!): Boolean!
-  profileManagers(request: ProfileManagersRequest!): PaginatedProfileManagersResult!
+  profileManagers(
+    request: ProfileManagersRequest!
+  ): PaginatedProfileManagersResult!
   profilesManaged(request: ProfilesManagedRequest!): PaginatedProfileResult!
-  profileRecommendations(request: ProfileRecommendationsRequest!): PaginatedProfileResult!
+  profileRecommendations(
+    request: ProfileRecommendationsRequest!
+  ): PaginatedProfileResult!
   followRevenues(request: FollowRevenueRequest!): FollowRevenueResult!
   latestPaidActions(request: PaginatedRequest): LatestPaidActionsResult!
   searchProfiles(request: ProfileSearchRequest!): PaginatedProfileResult!
@@ -98,28 +140,50 @@ type Query {
   lensProtocolVersion: LensProtocolVersion!
   publications(request: PublicationsRequest!): PaginatedPublicationsResult!
   publication(request: PublicationRequest!): AnyPublication
-  publicationsTags(request: PublicationsTagsRequest): PaginatedPublicationsTagsResult!
-  publicationBookmarks(request: PublicationBookmarksRequest): PaginatedPublicationsResult!
-  whoReactedPublication(request: WhoReactedPublicationRequest!): PaginatedWhoReactedResult!
-  explorePublications(request: ExplorePublicationRequest!): PaginatedExplorePublicationResult!
-  validatePublicationMetadata(request: ValidatePublicationMetadataRequest!): PublicationValidateMetadataResult!
-  revenueFromPublications(request: RevenueFromPublicationsRequest!): PaginatedRevenueFromPublicationsResult!
-  revenueFromPublication(request: RevenueFromPublicationRequest!): PublicationRevenue
-  searchPublications(request: PublicationSearchRequest!): PaginatedPublicationPrimaryResult!
+  publicationsTags(
+    request: PublicationsTagsRequest
+  ): PaginatedPublicationsTagsResult!
+  publicationBookmarks(
+    request: PublicationBookmarksRequest
+  ): PaginatedPublicationsResult!
+  whoReactedPublication(
+    request: WhoReactedPublicationRequest!
+  ): PaginatedWhoReactedResult!
+  explorePublications(
+    request: ExplorePublicationRequest!
+  ): PaginatedExplorePublicationResult!
+  validatePublicationMetadata(
+    request: ValidatePublicationMetadataRequest!
+  ): PublicationValidateMetadataResult!
+  revenueFromPublications(
+    request: RevenueFromPublicationsRequest!
+  ): PaginatedRevenueFromPublicationsResult!
+  revenueFromPublication(
+    request: RevenueFromPublicationRequest!
+  ): PublicationRevenue
+  searchPublications(
+    request: PublicationSearchRequest!
+  ): PaginatedPublicationPrimaryResult!
   relayQueues: [RelayQueueResult!]!
   lensAPIOwnedEOAs: [EvmAddress!]!
   txIdToTxHash(for: TxId!): TxHash
-  lensTransactionStatus(request: LensTransactionStatusRequest!): LensTransactionResult
+  lensTransactionStatus(
+    request: LensTransactionStatusRequest!
+  ): LensTransactionResult
 }
 
 type AuthChallengeResult {
   id: ChallengeId!
 
-  """The text that needs to be signed"""
+  """
+  The text that needs to be signed
+  """
   text: String!
 }
 
-"""The challenge id"""
+"""
+The challenge id
+"""
 scalar ChallengeId
 
 input ChallengeRequest {
@@ -128,22 +192,32 @@ input ChallengeRequest {
   """
   for: ProfileId
 
-  """The Ethereum address that will sign the challenge"""
+  """
+  The Ethereum address that will sign the challenge
+  """
   signedBy: EvmAddress!
 }
 
-"""ProfileId custom scalar type"""
+"""
+ProfileId custom scalar type
+"""
 scalar ProfileId
 
-"""evm address type"""
+"""
+evm address type
+"""
 scalar EvmAddress
 
 input VerifyRequest {
-  """The access token to verify"""
+  """
+  The access token to verify
+  """
   accessToken: Jwt!
 }
 
-"""The jwt token"""
+"""
+The jwt token
+"""
 scalar Jwt
 
 type PaginatedApprovedAuthenticationResult {
@@ -162,11 +236,13 @@ type ApprovedAuthentication {
   updatedAt: DateTime!
 }
 
-"""The guid uuid value"""
+"""
+The guid uuid value
+"""
 scalar UUID
 
 """
-The URI value not this can be used in it can be a https OR different aka ar:// and ipfs:// 
+The URI value not this can be used in it can be a https OR different aka ar:// and ipfs://
 """
 scalar URI
 
@@ -175,16 +251,24 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 """
 scalar DateTime
 
-"""The paginated result info"""
+"""
+The paginated result info
+"""
 type PaginatedResultInfo {
-  """Cursor to query the actual results"""
+  """
+  Cursor to query the actual results
+  """
   prev: Cursor
 
-  """Cursor to query next results"""
+  """
+  Cursor to query next results
+  """
   next: Cursor
 }
 
-"""Cursor custom scalar type"""
+"""
+Cursor custom scalar type
+"""
 scalar Cursor
 
 input ApprovedAuthenticationRequest {
@@ -204,16 +288,24 @@ type PaginatedHandlesResult {
 }
 
 type HandleInfo {
-  """The handle nft token id"""
+  """
+  The handle nft token id
+  """
   id: TokenId!
 
-  """The full handle - namespace/localname"""
+  """
+  The full handle - namespace/localname
+  """
   fullHandle: Handle!
 
-  """The namespace"""
+  """
+  The namespace
+  """
   namespace: String!
 
-  """The localname"""
+  """
+  The localname
+  """
   localName: String!
 
   """
@@ -221,12 +313,16 @@ type HandleInfo {
   """
   suggestedFormatted: SuggestedFormattedHandle!
 
-  """If null its not linked to anything"""
+  """
+  If null its not linked to anything
+  """
   linkedTo: HandleLinkedTo
   ownedBy: EvmAddress!
 }
 
-"""The NFT token id"""
+"""
+The NFT token id
+"""
 scalar TokenId
 
 """
@@ -235,18 +331,26 @@ The handle attached to a profile - note its it own NFT and always identified by 
 scalar Handle
 
 type SuggestedFormattedHandle {
-  """The full formatted handle - namespace/@localname"""
+  """
+  The full formatted handle - namespace/@localname
+  """
   full: String!
 
-  """The formatted handle - @localname"""
+  """
+  The formatted handle - @localname
+  """
   localName: String!
 }
 
 type HandleLinkedTo {
-  """The contract address it is linked to"""
+  """
+  The contract address it is linked to
+  """
   contract: NetworkAddress!
 
-  """The nft token id it is linked to (this can be the profile Id)"""
+  """
+  The nft token id it is linked to (this can be the profile Id)
+  """
   nftTokenId: TokenId!
 }
 
@@ -255,14 +359,18 @@ type NetworkAddress {
   chainId: ChainId!
 }
 
-"""The chain id"""
+"""
+The chain id
+"""
 scalar ChainId
 
 input OwnedHandlesRequest {
   limit: LimitType
   cursor: Cursor
 
-  """The Ethereum address for which to retrieve owned handles"""
+  """
+  The Ethereum address for which to retrieve owned handles
+  """
   for: EvmAddress!
 }
 
@@ -271,22 +379,34 @@ type PaginatedCurrenciesResult {
   pageInfo: PaginatedResultInfo!
 }
 
-"""The erc20 type"""
+"""
+The erc20 type
+"""
 type Erc20 {
-  """Name of the symbol"""
+  """
+  Name of the symbol
+  """
   name: String!
 
-  """Symbol for the token"""
+  """
+  Symbol for the token
+  """
   symbol: String!
 
-  """Decimal places for the token"""
+  """
+  Decimal places for the token
+  """
   decimals: Int!
 
-  """The erc20 address"""
+  """
+  The erc20 address
+  """
   contract: NetworkAddress!
 }
 
-"""Pagination with Offset fields """
+"""
+Pagination with Offset fields
+"""
 input PaginatedOffsetRequest {
   limit: LimitType
   cursor: Cursor
@@ -326,36 +446,52 @@ type Post {
   hashtagsMentioned: [String!]!
 }
 
-"""Publication id"""
+"""
+Publication id
+"""
 scalar PublicationId
 
 type App {
   id: AppId!
 }
 
-"""The app id"""
+"""
+The app id
+"""
 scalar AppId
 
 type MomokaInfo {
   proof: MomokaProof!
 }
 
-"""The momoka proof"""
+"""
+The momoka proof
+"""
 scalar MomokaProof
 
-"""The tx hash"""
+"""
+The tx hash
+"""
 scalar TxHash
 
-"""The Profile"""
+"""
+The Profile
+"""
 type Profile {
-  """The profile id"""
+  """
+  The profile id
+  """
   id: ProfileId!
 
-  """Who owns the profile"""
+  """
+  Who owns the profile
+  """
   ownedBy: NetworkAddress!
   txHash: TxHash!
 
-  """When the profile was created"""
+  """
+  When the profile was created
+  """
   createdAt: DateTime!
   stats(request: ProfileStatsArg): ProfileStats!
   operations: ProfileOperations!
@@ -363,27 +499,41 @@ type Profile {
   guardian: ProfileGuardianResult
   invitedBy: Profile
 
-  """The number of invites left"""
+  """
+  The number of invites left
+  """
   invitesLeft: Int!
 
-  """The on chain identity"""
+  """
+  The on chain identity
+  """
   onchainIdentity: ProfileOnchainIdentity!
 
-  """The profile follow nft address"""
+  """
+  The profile follow nft address
+  """
   followNftAddress: NetworkAddress
 
   """
-  The profile metadata. You can optionally query profile metadata by app id. 
+  The profile metadata. You can optionally query profile metadata by app id.
   """
-  metadata(request: GetProfileMetadataArgs = {useFallback: true}): ProfileMetadata
+  metadata(
+    request: GetProfileMetadataArgs = { useFallback: true }
+  ): ProfileMetadata
 
-  """The follow module"""
+  """
+  The follow module
+  """
   followModule: FollowModule
 
-  """The profile handle - a profile may not have one"""
+  """
+  The profile handle - a profile may not have one
+  """
   handle: HandleInfo
 
-  """If the profile has got signless enabled"""
+  """
+  If the profile has got signless enabled
+  """
   signless: Boolean!
 
   """
@@ -392,7 +542,9 @@ type Profile {
   sponsor: Boolean!
 }
 
-"""The Profile Stats"""
+"""
+The Profile Stats
+"""
 type ProfileStats {
   id: ProfileId!
   followers: Int!
@@ -408,7 +560,9 @@ type ProfileStats {
   """
   reactions(request: ProfileStatsReactionArgs): Int!
 
-  """How many times a profile has reacted on something"""
+  """
+  How many times a profile has reacted on something
+  """
   reacted(request: ProfileStatsReactionArgs): Int!
   countOpenActions(request: ProfileStatsCountOpenActionArgs): Int!
 }
@@ -490,29 +644,43 @@ type ProfileGuardianResult {
 }
 
 type ProfileOnchainIdentity {
-  """The POH status"""
+  """
+  The POH status
+  """
   proofOfHumanity: Boolean!
 
-  """The ens information"""
+  """
+  The ens information
+  """
   ens: EnsOnchainIdentity
 
-  """The sybil dot org information"""
+  """
+  The sybil dot org information
+  """
   sybilDotOrg: SybilDotOrgIdentity!
 
-  """The worldcoin identity"""
+  """
+  The worldcoin identity
+  """
   worldcoin: WorldcoinIdentity!
 }
 
 type EnsOnchainIdentity {
-  """The default ens mapped to this address"""
+  """
+  The default ens mapped to this address
+  """
   name: Ens
 }
 
-"""The ens name"""
+"""
+The ens name
+"""
 scalar Ens
 
 type SybilDotOrgIdentity {
-  """The sybil dot org status"""
+  """
+  The sybil dot org status
+  """
   verified: Boolean!
   source: SybilDotOrgIdentitySource
 }
@@ -526,34 +694,52 @@ type SybilDotOrgTwitterIdentity {
 }
 
 type WorldcoinIdentity {
-  """If the profile has verified as a user"""
+  """
+  If the profile has verified as a user
+  """
   isHuman: Boolean!
 }
 
 type ProfileMetadata {
-  """The display name for the profile"""
+  """
+  The display name for the profile
+  """
   displayName: String
 
-  """The bio for the profile"""
+  """
+  The bio for the profile
+  """
   bio: Markdown
 
-  """The raw uri for the which the profile metadata was set as"""
+  """
+  The raw uri for the which the profile metadata was set as
+  """
   rawURI: URI!
 
-  """The app that this metadata is displayed on"""
+  """
+  The app that this metadata is displayed on
+  """
   appId: AppId
 
-  """Profile Custom attributes"""
+  """
+  Profile Custom attributes
+  """
   attributes: [MetadataAttribute!]
 
-  """The picture for the profile"""
+  """
+  The picture for the profile
+  """
   picture: ProfilePicture
 
-  """The cover picture for the profile"""
+  """
+  The cover picture for the profile
+  """
   coverPicture: ImageSet
 }
 
-"""The markdown value"""
+"""
+The markdown value
+"""
 scalar Markdown
 
 type MetadataAttribute {
@@ -591,25 +777,37 @@ type ImageSet {
 }
 
 type Image {
-  """MIME type of the image"""
+  """
+  MIME type of the image
+  """
   mimeType: MimeType
 
-  """Width of the image"""
+  """
+  Width of the image
+  """
   width: Int
 
-  """Height of the image"""
+  """
+  Height of the image
+  """
   height: Int
   uri: URI!
 }
 
-"""Mimetype type"""
+"""
+Mimetype type
+"""
 scalar MimeType
 
 input ImageTransform {
-  """Set the transformed image's width"""
+  """
+  Set the transformed image's width
+  """
   width: ImageSizeTransform = "auto"
 
-  """Set the transformed image's height"""
+  """
+  Set the transformed image's height
+  """
   height: ImageSizeTransform = "auto"
 
   """
@@ -618,25 +816,37 @@ input ImageTransform {
   keepAspectRatio: Boolean = true
 }
 
-"""The image size transform"""
+"""
+The image size transform
+"""
 scalar ImageSizeTransform
 
 type NftImage {
-  """The contract address of the NFT collection"""
+  """
+  The contract address of the NFT collection
+  """
   collection: NetworkAddress!
 
-  """The token ID of the NFT"""
+  """
+  The token ID of the NFT
+  """
   tokenId: TokenId!
 
-  """The image set for the NFT"""
+  """
+  The image set for the NFT
+  """
   image: ImageSet!
 
-  """Indicates whether the NFT is from a verified collection or not"""
+  """
+  Indicates whether the NFT is from a verified collection or not
+  """
   verified: Boolean!
 }
 
 input GetProfileMetadataArgs {
-  """The app id to query the profile's metadata"""
+  """
+  The app id to query the profile's metadata
+  """
   appId: AppId
 
   """
@@ -645,16 +855,23 @@ input GetProfileMetadataArgs {
   useFallback: Boolean = true
 }
 
-union FollowModule = FeeFollowModuleSettings | RevertFollowModuleSettings | UnknownFollowModuleSettings
+union FollowModule =
+    FeeFollowModuleSettings
+  | RevertFollowModuleSettings
+  | UnknownFollowModuleSettings
 
 type FeeFollowModuleSettings {
   type: FollowModuleType!
   contract: NetworkAddress!
 
-  """The amount info"""
+  """
+  The amount info
+  """
   amount: Amount!
 
-  """The module recipient address"""
+  """
+  The module recipient address
+  """
   recipient: EvmAddress!
 }
 
@@ -665,7 +882,9 @@ enum FollowModuleType {
 }
 
 type Amount {
-  """The asset"""
+  """
+  The asset
+  """
   asset: Asset!
 
   """
@@ -704,13 +923,19 @@ type RevertFollowModuleSettings {
 }
 
 type UnknownFollowModuleSettings {
-  """The data used to setup the module"""
+  """
+  The data used to setup the module
+  """
   initializeCalldata: BlockchainData
 
-  """The data returned from the init module"""
+  """
+  The data returned from the init module
+  """
   initializeResultData: BlockchainData
 
-  """True if the module is deemed as safe"""
+  """
+  True if the module is deemed as safe
+  """
   verified: Boolean!
 
   """
@@ -726,12 +951,15 @@ type UnknownFollowModuleSettings {
   contract: NetworkAddress!
 
   """
-  The data used to setup the module which you can decode with your known ABI 
+  The data used to setup the module which you can decode with your known ABI
   """
-  followModuleReturnData: BlockchainData @deprecated(reason: "Use initializeResultData instead")
+  followModuleReturnData: BlockchainData
+    @deprecated(reason: "Use initializeResultData instead")
 }
 
-"""Blockchain data"""
+"""
+Blockchain data
+"""
 scalar BlockchainData
 
 type PublicationStats {
@@ -769,7 +997,9 @@ input PublicationMetadataFilters {
   publishedOn: [AppId!]
 }
 
-"""The locale"""
+"""
+The locale
+"""
 scalar Locale
 
 input PublicationMetadataContentWarningFilter {
@@ -882,7 +1112,22 @@ enum DecryptFailReasonType {
   UNSUPPORTED
 }
 
-union PublicationMetadata = VideoMetadataV3 | ImageMetadataV3 | AudioMetadataV3 | ArticleMetadataV3 | EventMetadataV3 | LinkMetadataV3 | EmbedMetadataV3 | CheckingInMetadataV3 | TextOnlyMetadataV3 | ThreeDMetadataV3 | StoryMetadataV3 | TransactionMetadataV3 | MintMetadataV3 | SpaceMetadataV3 | LiveStreamMetadataV3
+union PublicationMetadata =
+    VideoMetadataV3
+  | ImageMetadataV3
+  | AudioMetadataV3
+  | ArticleMetadataV3
+  | EventMetadataV3
+  | LinkMetadataV3
+  | EmbedMetadataV3
+  | CheckingInMetadataV3
+  | TextOnlyMetadataV3
+  | ThreeDMetadataV3
+  | StoryMetadataV3
+  | TransactionMetadataV3
+  | MintMetadataV3
+  | SpaceMetadataV3
+  | LiveStreamMetadataV3
 
 type VideoMetadataV3 {
   id: String!
@@ -899,10 +1144,14 @@ type VideoMetadataV3 {
   attachments: [PublicationMetadataMedia!]
   isShortVideo: Boolean!
 
-  """The title of the video. Empty if not set."""
+  """
+  The title of the video. Empty if not set.
+  """
   title: String!
 
-  """Optional content. Empty if not set."""
+  """
+  Optional content. Empty if not set.
+  """
   content: EncryptableMarkdown!
 }
 
@@ -915,7 +1164,9 @@ type MarketplaceMetadata {
   animationUrl: URI
 }
 
-"""The url value"""
+"""
+The url value
+"""
 scalar URL
 
 type PublicationMarketplaceMetadataAttribute {
@@ -939,14 +1190,25 @@ type PublicationMetadataLitEncryption {
   encryptedPaths: [EncryptedPath!]!
 }
 
-"""The content encryption key value"""
+"""
+The content encryption key value
+"""
 scalar ContentEncryptionKey
 
 type RootCondition {
   criteria: [SecondTierCondition!]!
 }
 
-union SecondTierCondition = NftOwnershipCondition | Erc20OwnershipCondition | EoaOwnershipCondition | ProfileOwnershipCondition | FollowCondition | CollectCondition | AdvancedContractCondition | AndCondition | OrCondition
+union SecondTierCondition =
+    NftOwnershipCondition
+  | Erc20OwnershipCondition
+  | EoaOwnershipCondition
+  | ProfileOwnershipCondition
+  | FollowCondition
+  | CollectCondition
+  | AdvancedContractCondition
+  | AndCondition
+  | OrCondition
 
 type NftOwnershipCondition {
   contract: NetworkAddress!
@@ -994,10 +1256,14 @@ type CollectCondition {
 Condition that checks if the given on-chain contract function returns true. It only supports view functions
 """
 type AdvancedContractCondition {
-  """The address and chain ID of the contract to call"""
+  """
+  The address and chain ID of the contract to call
+  """
   contract: NetworkAddress!
 
-  """The name of the function to call. Must be included in the provided abi"""
+  """
+  The name of the function to call. Must be included in the provided abi
+  """
   functionName: String!
 
   """
@@ -1025,7 +1291,14 @@ type AndCondition {
   criteria: [ThirdTierCondition!]!
 }
 
-union ThirdTierCondition = NftOwnershipCondition | Erc20OwnershipCondition | EoaOwnershipCondition | ProfileOwnershipCondition | AdvancedContractCondition | FollowCondition | CollectCondition
+union ThirdTierCondition =
+    NftOwnershipCondition
+  | Erc20OwnershipCondition
+  | EoaOwnershipCondition
+  | ProfileOwnershipCondition
+  | AdvancedContractCondition
+  | FollowCondition
+  | CollectCondition
 
 type OrCondition {
   criteria: [ThirdTierCondition!]!
@@ -1042,7 +1315,9 @@ type PublicationMetadataMediaVideo {
   duration: Int
   license: PublicationMetadataLicenseType
 
-  """Alternative text for the video"""
+  """
+  Alternative text for the video
+  """
   altTag: EncryptableString
   attributes: [MetadataAttribute!]
 }
@@ -1074,13 +1349,19 @@ type EncryptableImageSet {
 }
 
 type EncryptableImage {
-  """MIME type of the image"""
+  """
+  MIME type of the image
+  """
   mimeType: MimeType
 
-  """Width of the image"""
+  """
+  Width of the image
+  """
   width: Int
 
-  """Height of the image"""
+  """
+  Height of the image
+  """
   height: Int
   uri: EncryptableURI!
 }
@@ -1129,13 +1410,18 @@ A string that could also be encrypted in some circumstances. Check parent nodes 
 """
 scalar EncryptableString
 
-union PublicationMetadataMedia = PublicationMetadataMediaVideo | PublicationMetadataMediaImage | PublicationMetadataMediaAudio
+union PublicationMetadataMedia =
+    PublicationMetadataMediaVideo
+  | PublicationMetadataMediaImage
+  | PublicationMetadataMediaAudio
 
 type PublicationMetadataMediaImage {
   image: EncryptableImageSet!
   license: PublicationMetadataLicenseType
 
-  """Alternative text for the image"""
+  """
+  Alternative text for the image
+  """
   altTag: EncryptableString
   attributes: [MetadataAttribute!]
 }
@@ -1187,10 +1473,14 @@ type ImageMetadataV3 {
   asset: PublicationMetadataMediaImage!
   attachments: [PublicationMetadataMedia!]
 
-  """The title of the image. Empty if not set."""
+  """
+  The title of the image. Empty if not set.
+  """
   title: String!
 
-  """Optional content. Empty if not set."""
+  """
+  Optional content. Empty if not set.
+  """
   content: EncryptableMarkdown!
 }
 
@@ -1208,10 +1498,14 @@ type AudioMetadataV3 {
   asset: PublicationMetadataMediaAudio!
   attachments: [PublicationMetadataMedia!]
 
-  """The title of the audio. Empty if not set."""
+  """
+  The title of the audio. Empty if not set.
+  """
   title: String!
 
-  """Optional content. Empty if not set."""
+  """
+  Optional content. Empty if not set.
+  """
   content: EncryptableMarkdown!
 }
 
@@ -1228,7 +1522,9 @@ type ArticleMetadataV3 {
   encryptedWith: PublicationMetadataEncryptionStrategy
   content: EncryptableMarkdown!
 
-  """The title of the article. Empty if not set."""
+  """
+  The title of the article. Empty if not set.
+  """
   title: String!
   attachments: [PublicationMetadataMedia!]
 }
@@ -1252,10 +1548,14 @@ type EventMetadataV3 {
   location: EncryptableString!
   attachments: [PublicationMetadataMedia!]
 
-  """The optional title of the event. Empty if not set."""
+  """
+  The optional title of the event. Empty if not set.
+  """
   title: String!
 
-  """Optional content. Empty if not set."""
+  """
+  Optional content. Empty if not set.
+  """
   content: EncryptableMarkdown!
 }
 
@@ -1265,15 +1565,21 @@ type GeoLocation {
   """
   rawURI: EncryptableURI!
 
-  """`null` when `rawURI` is encrypted"""
+  """
+  `null` when `rawURI` is encrypted
+  """
   latitude: Float
 
-  """`null` when `rawURI` is encrypted"""
+  """
+  `null` when `rawURI` is encrypted
+  """
   longitude: Float
 }
 
 type PhysicalAddress {
-  """The full mailing address formatted for display."""
+  """
+  The full mailing address formatted for display.
+  """
   formatted: EncryptableString
 
   """
@@ -1281,16 +1587,24 @@ type PhysicalAddress {
   """
   streetAddress: EncryptableString
 
-  """The city or locality."""
+  """
+  The city or locality.
+  """
   locality: EncryptableString!
 
-  """The state or region."""
+  """
+  The state or region.
+  """
   region: EncryptableString
 
-  """The zip or postal code."""
+  """
+  The zip or postal code.
+  """
   postalCode: EncryptableString
 
-  """The country name component."""
+  """
+  The country name component.
+  """
   country: EncryptableString!
 }
 
@@ -1313,7 +1627,9 @@ type LinkMetadataV3 {
   sharingLink: EncryptableURI!
   attachments: [PublicationMetadataMedia!]
 
-  """Optional content. Empty if not set."""
+  """
+  Optional content. Empty if not set.
+  """
   content: EncryptableMarkdown!
 }
 
@@ -1331,7 +1647,9 @@ type EmbedMetadataV3 {
   embed: EncryptableURI!
   attachments: [PublicationMetadataMedia!]
 
-  """Optional content. Empty if not set."""
+  """
+  Optional content. Empty if not set.
+  """
   content: EncryptableMarkdown!
 }
 
@@ -1351,7 +1669,9 @@ type CheckingInMetadataV3 {
   address: PhysicalAddress
   attachments: [PublicationMetadataMedia!]
 
-  """Optional content. Empty if not set."""
+  """
+  Optional content. Empty if not set.
+  """
   content: EncryptableMarkdown!
 }
 
@@ -1383,7 +1703,9 @@ type ThreeDMetadataV3 {
   assets: [ThreeDMetadataV3Asset!]!
   attachments: [PublicationMetadataMedia!]
 
-  """Optional content. Empty if not set."""
+  """
+  Optional content. Empty if not set.
+  """
   content: EncryptableMarkdown!
 }
 
@@ -1408,7 +1730,9 @@ type StoryMetadataV3 {
   encryptedWith: PublicationMetadataEncryptionStrategy
   asset: PublicationMetadataMedia!
 
-  """Optional content. Empty if not set."""
+  """
+  Optional content. Empty if not set.
+  """
   content: EncryptableMarkdown!
 }
 
@@ -1428,7 +1752,9 @@ type TransactionMetadataV3 {
   chainId: ChainId!
   attachments: [PublicationMetadataMedia!]
 
-  """Optional content. Empty if not set."""
+  """
+  Optional content. Empty if not set.
+  """
   content: EncryptableMarkdown!
 }
 
@@ -1457,7 +1783,9 @@ type MintMetadataV3 {
   mintLink: EncryptableURI!
   attachments: [PublicationMetadataMedia!]
 
-  """Optional content. Empty if not set."""
+  """
+  Optional content. Empty if not set.
+  """
   content: EncryptableMarkdown!
 }
 
@@ -1477,7 +1805,9 @@ type SpaceMetadataV3 {
   startsAt: EncryptableDateTime!
   attachments: [PublicationMetadataMedia!]
 
-  """Optional content. Empty if not set."""
+  """
+  Optional content. Empty if not set.
+  """
   content: EncryptableMarkdown!
 }
 
@@ -1494,21 +1824,40 @@ type LiveStreamMetadataV3 {
   encryptedWith: PublicationMetadataEncryptionStrategy
   startsAt: EncryptableDateTime!
 
-  """Optional end time. Empty if not set."""
+  """
+  Optional end time. Empty if not set.
+  """
   endsAt: EncryptableDateTime!
   playbackURL: EncryptableURI!
   liveURL: EncryptableURI!
   checkLiveAPI: EncryptableURI
 
-  """The title of the live-stream. Empty if not set."""
+  """
+  The title of the live-stream. Empty if not set.
+  """
   title: String!
 
-  """Optional content. Empty if not set."""
+  """
+  Optional content. Empty if not set.
+  """
   content: EncryptableMarkdown!
   attachments: [PublicationMetadataMedia!]
 }
 
-union OpenActionModule = SimpleCollectOpenActionSettings | MultirecipientFeeCollectOpenActionSettings | LegacyFreeCollectModuleSettings | LegacyFeeCollectModuleSettings | LegacyLimitedFeeCollectModuleSettings | LegacyLimitedTimedFeeCollectModuleSettings | LegacyRevertCollectModuleSettings | LegacyTimedFeeCollectModuleSettings | LegacyMultirecipientFeeCollectModuleSettings | LegacySimpleCollectModuleSettings | LegacyERC4626FeeCollectModuleSettings | LegacyAaveFeeCollectModuleSettings | UnknownOpenActionModuleSettings
+union OpenActionModule =
+    SimpleCollectOpenActionSettings
+  | MultirecipientFeeCollectOpenActionSettings
+  | LegacyFreeCollectModuleSettings
+  | LegacyFeeCollectModuleSettings
+  | LegacyLimitedFeeCollectModuleSettings
+  | LegacyLimitedTimedFeeCollectModuleSettings
+  | LegacyRevertCollectModuleSettings
+  | LegacyTimedFeeCollectModuleSettings
+  | LegacyMultirecipientFeeCollectModuleSettings
+  | LegacySimpleCollectModuleSettings
+  | LegacyERC4626FeeCollectModuleSettings
+  | LegacyAaveFeeCollectModuleSettings
+  | UnknownOpenActionModuleSettings
 
 type SimpleCollectOpenActionSettings {
   type: OpenActionModuleType!
@@ -1519,22 +1868,34 @@ type SimpleCollectOpenActionSettings {
   """
   amount: Amount!
 
-  """The collect nft address - only deployed on first collect"""
+  """
+  The collect nft address - only deployed on first collect
+  """
   collectNft: EvmAddress
 
-  """The maximum number of collects for this publication."""
+  """
+  The maximum number of collects for this publication.
+  """
   collectLimit: String
 
-  """True if only followers of publisher may collect the post."""
+  """
+  True if only followers of publisher may collect the post.
+  """
   followerOnly: Boolean!
 
-  """The collect module recipient address"""
+  """
+  The collect module recipient address
+  """
   recipient: EvmAddress!
 
-  """The collect module referral fee"""
+  """
+  The collect module referral fee
+  """
   referralFee: Float!
 
-  """The end timestamp after which collecting is impossible."""
+  """
+  The end timestamp after which collecting is impossible.
+  """
   endsAt: DateTime
 }
 
@@ -1542,30 +1903,46 @@ type MultirecipientFeeCollectOpenActionSettings {
   type: OpenActionModuleType!
   contract: NetworkAddress!
 
-  """The collect module amount info"""
+  """
+  The collect module amount info
+  """
   amount: Amount!
 
-  """The collect nft address - only deployed on first collect"""
+  """
+  The collect nft address - only deployed on first collect
+  """
   collectNft: EvmAddress
 
-  """The maximum number of collects for this publication."""
+  """
+  The maximum number of collects for this publication.
+  """
   collectLimit: String
 
-  """The referral fee associated with this publication."""
+  """
+  The referral fee associated with this publication.
+  """
   referralFee: Float!
 
-  """True if only followers of publisher may collect the post."""
+  """
+  True if only followers of publisher may collect the post.
+  """
   followerOnly: Boolean!
 
-  """The end timestamp after which collecting is impossible."""
+  """
+  The end timestamp after which collecting is impossible.
+  """
   endsAt: DateTime
 
-  """Recipient of collect fees."""
+  """
+  Recipient of collect fees.
+  """
   recipients: [RecipientDataOutput!]!
 }
 
 type RecipientDataOutput {
-  """Recipient of collect fees."""
+  """
+  Recipient of collect fees.
+  """
   recipient: EvmAddress!
 
   """
@@ -1578,10 +1955,14 @@ type LegacyFreeCollectModuleSettings {
   type: OpenActionModuleType!
   contract: NetworkAddress!
 
-  """The collect nft address - only deployed on first collect"""
+  """
+  The collect nft address - only deployed on first collect
+  """
   collectNft: EvmAddress
 
-  """Follower only"""
+  """
+  Follower only
+  """
   followerOnly: Boolean!
 }
 
@@ -1589,19 +1970,29 @@ type LegacyFeeCollectModuleSettings {
   type: OpenActionModuleType!
   contract: NetworkAddress!
 
-  """The collect nft address - only deployed on first collect"""
+  """
+  The collect nft address - only deployed on first collect
+  """
   collectNft: EvmAddress
 
-  """The collect module amount info"""
+  """
+  The collect module amount info
+  """
   amount: Amount!
 
-  """The collect module recipient address"""
+  """
+  The collect module recipient address
+  """
   recipient: EvmAddress!
 
-  """The collect module referral fee"""
+  """
+  The collect module referral fee
+  """
   referralFee: Float!
 
-  """Follower only"""
+  """
+  Follower only
+  """
   followerOnly: Boolean!
 }
 
@@ -1609,22 +2000,34 @@ type LegacyLimitedFeeCollectModuleSettings {
   type: OpenActionModuleType!
   contract: NetworkAddress!
 
-  """The collect nft address - only deployed on first collect"""
+  """
+  The collect nft address - only deployed on first collect
+  """
   collectNft: EvmAddress
 
-  """The collect module limit."""
+  """
+  The collect module limit.
+  """
   collectLimit: String
 
-  """The collect module amount info"""
+  """
+  The collect module amount info
+  """
   amount: Amount!
 
-  """The collect module recipient address"""
+  """
+  The collect module recipient address
+  """
   recipient: EvmAddress!
 
-  """The collect module referral fee"""
+  """
+  The collect module referral fee
+  """
   referralFee: Float!
 
-  """Follower only"""
+  """
+  Follower only
+  """
   followerOnly: Boolean!
 }
 
@@ -1632,25 +2035,39 @@ type LegacyLimitedTimedFeeCollectModuleSettings {
   type: OpenActionModuleType!
   contract: NetworkAddress!
 
-  """The collect nft address - only deployed on first collect"""
+  """
+  The collect nft address - only deployed on first collect
+  """
   collectNft: EvmAddress
 
-  """The collect module limit"""
+  """
+  The collect module limit
+  """
   collectLimit: String
 
-  """The collect module amount info"""
+  """
+  The collect module amount info
+  """
   amount: Amount!
 
-  """The collect module recipient address"""
+  """
+  The collect module recipient address
+  """
   recipient: EvmAddress!
 
-  """The collect module referral fee"""
+  """
+  The collect module referral fee
+  """
   referralFee: Float!
 
-  """Follower only"""
+  """
+  Follower only
+  """
   followerOnly: Boolean!
 
-  """The collect module end timestamp"""
+  """
+  The collect module end timestamp
+  """
   endTimestamp: DateTime!
 }
 
@@ -1663,22 +2080,34 @@ type LegacyTimedFeeCollectModuleSettings {
   type: OpenActionModuleType!
   contract: NetworkAddress!
 
-  """The collect nft address - only deployed on first collect"""
+  """
+  The collect nft address - only deployed on first collect
+  """
   collectNft: EvmAddress
 
-  """The collect module amount info"""
+  """
+  The collect module amount info
+  """
   amount: Amount!
 
-  """The collect module recipient address"""
+  """
+  The collect module recipient address
+  """
   recipient: EvmAddress!
 
-  """The collect module referral fee"""
+  """
+  The collect module referral fee
+  """
   referralFee: Float!
 
-  """Follower only"""
+  """
+  Follower only
+  """
   followerOnly: Boolean!
 
-  """The collect module end timestamp"""
+  """
+  The collect module end timestamp
+  """
   endTimestamp: DateTime!
 }
 
@@ -1686,25 +2115,39 @@ type LegacyMultirecipientFeeCollectModuleSettings {
   type: OpenActionModuleType!
   contract: NetworkAddress!
 
-  """The collect nft address - only deployed on first collect"""
+  """
+  The collect nft address - only deployed on first collect
+  """
   collectNft: EvmAddress
 
-  """The collect module amount info"""
+  """
+  The collect module amount info
+  """
   amount: Amount!
 
-  """The maximum number of collects for this publication."""
+  """
+  The maximum number of collects for this publication.
+  """
   collectLimit: String
 
-  """The referral fee associated with this publication."""
+  """
+  The referral fee associated with this publication.
+  """
   referralFee: Float!
 
-  """True if only followers of publisher may collect the post."""
+  """
+  True if only followers of publisher may collect the post.
+  """
   followerOnly: Boolean!
 
-  """The end timestamp after which collecting is impossible."""
+  """
+  The end timestamp after which collecting is impossible.
+  """
   endsAt: DateTime
 
-  """Recipient of collect fees."""
+  """
+  Recipient of collect fees.
+  """
   recipients: [RecipientDataOutput!]!
 }
 
@@ -1712,7 +2155,9 @@ type LegacySimpleCollectModuleSettings {
   type: OpenActionModuleType!
   contract: NetworkAddress!
 
-  """The collect nft address - only deployed on first collect"""
+  """
+  The collect nft address - only deployed on first collect
+  """
   collectNft: EvmAddress
 
   """
@@ -1720,19 +2165,29 @@ type LegacySimpleCollectModuleSettings {
   """
   amount: Amount!
 
-  """The maximum number of collects for this publication."""
+  """
+  The maximum number of collects for this publication.
+  """
   collectLimit: String
 
-  """True if only followers of publisher may collect the post."""
+  """
+  True if only followers of publisher may collect the post.
+  """
   followerOnly: Boolean!
 
-  """The collect module recipient address"""
+  """
+  The collect module recipient address
+  """
   recipient: EvmAddress!
 
-  """The collect module referral fee"""
+  """
+  The collect module referral fee
+  """
   referralFee: Float!
 
-  """The end timestamp after which collecting is impossible."""
+  """
+  The end timestamp after which collecting is impossible.
+  """
   endsAt: DateTime
 }
 
@@ -1740,25 +2195,39 @@ type LegacyERC4626FeeCollectModuleSettings {
   type: OpenActionModuleType!
   contract: NetworkAddress!
 
-  """The ERC4626 vault address"""
+  """
+  The ERC4626 vault address
+  """
   vault: NetworkAddress!
 
-  """The collect module amount info"""
+  """
+  The collect module amount info
+  """
   amount: Amount!
 
-  """The recipient of the ERC4626 vault shares"""
+  """
+  The recipient of the ERC4626 vault shares
+  """
   recipient: EvmAddress!
 
-  """The maximum number of collects for this publication."""
+  """
+  The maximum number of collects for this publication.
+  """
   collectLimit: String
 
-  """The referral fee associated with this publication."""
+  """
+  The referral fee associated with this publication.
+  """
   referralFee: Float!
 
-  """True if only followers of publisher may collect the post."""
+  """
+  True if only followers of publisher may collect the post.
+  """
   followerOnly: Boolean!
 
-  """The end timestamp after which collecting is impossible."""
+  """
+  The end timestamp after which collecting is impossible.
+  """
   endsAt: DateTime
 }
 
@@ -1766,33 +2235,51 @@ type LegacyAaveFeeCollectModuleSettings {
   type: OpenActionModuleType!
   contract: NetworkAddress!
 
-  """The collect module amount info"""
+  """
+  The collect module amount info
+  """
   amount: Amount!
 
-  """The maximum number of collects for this publication."""
+  """
+  The maximum number of collects for this publication.
+  """
   collectLimit: String
 
-  """The referral fee associated with this publication."""
+  """
+  The referral fee associated with this publication.
+  """
   referralFee: Float!
 
-  """True if only followers of publisher may collect the post."""
+  """
+  True if only followers of publisher may collect the post.
+  """
   followerOnly: Boolean!
 
-  """The end timestamp after which collecting is impossible."""
+  """
+  The end timestamp after which collecting is impossible.
+  """
   endsAt: DateTime
 
-  """Recipient of collect fees."""
+  """
+  Recipient of collect fees.
+  """
   recipient: EvmAddress!
 }
 
 type UnknownOpenActionModuleSettings {
-  """The data used to setup the module"""
+  """
+  The data used to setup the module
+  """
   initializeCalldata: BlockchainData
 
-  """The data returned from the init module"""
+  """
+  The data returned from the init module
+  """
   initializeResultData: BlockchainData
 
-  """True if the module is deemed as safe"""
+  """
+  True if the module is deemed as safe
+  """
   verified: Boolean!
 
   """
@@ -1812,11 +2299,19 @@ type UnknownOpenActionModuleSettings {
   """
   collectNft: EvmAddress
 
-  """The data returned from the init module"""
-  openActionModuleReturnData: BlockchainData @deprecated(reason: "Use initializeResultData instead")
+  """
+  The data returned from the init module
+  """
+  openActionModuleReturnData: BlockchainData
+    @deprecated(reason: "Use initializeResultData instead")
 }
 
-union ReferenceModule = LegacyFollowOnlyReferenceModuleSettings | FollowOnlyReferenceModuleSettings | UnknownReferenceModuleSettings | LegacyDegreesOfSeparationReferenceModuleSettings | DegreesOfSeparationReferenceModuleSettings
+union ReferenceModule =
+    LegacyFollowOnlyReferenceModuleSettings
+  | FollowOnlyReferenceModuleSettings
+  | UnknownReferenceModuleSettings
+  | LegacyDegreesOfSeparationReferenceModuleSettings
+  | DegreesOfSeparationReferenceModuleSettings
 
 type LegacyFollowOnlyReferenceModuleSettings {
   type: ReferenceModuleType!
@@ -1837,13 +2332,19 @@ type FollowOnlyReferenceModuleSettings {
 }
 
 type UnknownReferenceModuleSettings {
-  """The data used to setup the module"""
+  """
+  The data used to setup the module
+  """
   initializeCalldata: BlockchainData
 
-  """The data returned from the init module"""
+  """
+  The data returned from the init module
+  """
   initializeResultData: BlockchainData
 
-  """True if the module is deemed as safe"""
+  """
+  True if the module is deemed as safe
+  """
   verified: Boolean!
 
   """
@@ -1859,22 +2360,29 @@ type UnknownReferenceModuleSettings {
   contract: NetworkAddress!
 
   """
-  The data used to setup the module which you can decode with your known ABI 
+  The data used to setup the module which you can decode with your known ABI
   """
-  referenceModuleReturnData: BlockchainData @deprecated(reason: "Use initializeResultData instead")
+  referenceModuleReturnData: BlockchainData
+    @deprecated(reason: "Use initializeResultData instead")
 }
 
 type LegacyDegreesOfSeparationReferenceModuleSettings {
   type: ReferenceModuleType!
   contract: NetworkAddress!
 
-  """Applied to comments"""
+  """
+  Applied to comments
+  """
   commentsRestricted: Boolean!
 
-  """Applied to mirrors"""
+  """
+  Applied to mirrors
+  """
   mirrorsRestricted: Boolean!
 
-  """Degrees of separation"""
+  """
+  Degrees of separation
+  """
   degreesOfSeparation: Int!
 }
 
@@ -1882,19 +2390,29 @@ type DegreesOfSeparationReferenceModuleSettings {
   type: ReferenceModuleType!
   contract: NetworkAddress!
 
-  """Applied to comments"""
+  """
+  Applied to comments
+  """
   commentsRestricted: Boolean!
 
-  """Applied to mirrors"""
+  """
+  Applied to mirrors
+  """
   mirrorsRestricted: Boolean!
 
-  """Applied to quotes"""
+  """
+  Applied to quotes
+  """
   quotesRestricted: Boolean!
 
-  """Who the degree of separation is applied to"""
+  """
+  Who the degree of separation is applied to
+  """
   sourceProfileId: ProfileId!
 
-  """Degrees of separation"""
+  """
+  Degrees of separation
+  """
   degreesOfSeparation: Int!
 }
 
@@ -2010,7 +2528,9 @@ input FeedHighlightsWhere {
   for: ProfileId
 }
 
-"""The paginated profile result"""
+"""
+The paginated profile result
+"""
 type PaginatedProfileResult {
   items: [Profile!]!
   pageInfo: PaginatedResultInfo!
@@ -2050,7 +2570,9 @@ input FollowStatusBulk {
   profileId: ProfileId!
 }
 
-"""Represents NULL values"""
+"""
+Represents NULL values
+"""
 scalar Void
 
 input InternalClaimStatusRequest {
@@ -2114,7 +2636,9 @@ input GenerateModuleCurrencyApprovalDataRequest {
 }
 
 input AmountInput {
-  """The currency"""
+  """
+  The currency
+  """
   currency: EvmAddress!
 
   """
@@ -2168,7 +2692,9 @@ type GetModuleMetadataResult {
   metadata: ModuleMetadata!
   moduleType: ModuleType!
 
-  """True if the module is deemed as safe"""
+  """
+  True if the module is deemed as safe
+  """
   verified: Boolean!
 
   """
@@ -2193,7 +2719,9 @@ type ModuleMetadata {
   attributes: [MetadataAttribute!]!
 }
 
-"""The ABI json string"""
+"""
+The ABI json string
+"""
 scalar ABIJson
 
 enum ModuleType {
@@ -2226,7 +2754,11 @@ type MomokaTransactionsResult {
   pageInfo: PaginatedResultInfo!
 }
 
-union MomokaTransaction = MomokaPostTransaction | MomokaCommentTransaction | MomokaMirrorTransaction | MomokaQuoteTransaction
+union MomokaTransaction =
+    MomokaPostTransaction
+  | MomokaCommentTransaction
+  | MomokaMirrorTransaction
+  | MomokaQuoteTransaction
 
 type MomokaPostTransaction {
   transactionId: String!
@@ -2237,7 +2769,9 @@ type MomokaPostTransaction {
   publication: Post!
 }
 
-union MomokaVerificationStatus = MomokaVerificationStatusSuccess | MomokaVerificationStatusFailure
+union MomokaVerificationStatus =
+    MomokaVerificationStatusSuccess
+  | MomokaVerificationStatusFailure
 
 type MomokaVerificationStatusSuccess {
   verified: Boolean!
@@ -2315,7 +2849,9 @@ input MomokaTransactionsRequest {
 }
 
 input MomokaTransactionRequest {
-  """The momoka transaction id or internal publication id"""
+  """
+  The momoka transaction id or internal publication id
+  """
   for: String!
 }
 
@@ -2335,24 +2871,38 @@ type Nft {
   owner: Owner!
 }
 
-"""Nft Collection type"""
+"""
+Nft Collection type
+"""
 type NftCollection {
-  """The contract info, address and chain id"""
+  """
+  The contract info, address and chain id
+  """
   contract: NetworkAddress!
 
-  """Collection name"""
+  """
+  Collection name
+  """
   name: String!
 
-  """Collection symbol"""
+  """
+  Collection symbol
+  """
   symbol: String!
 
-  """Collection base URI for token metadata"""
+  """
+  Collection base URI for token metadata
+  """
   baseUri: URI
 
-  """Collection ERC type"""
+  """
+  Collection ERC type
+  """
   contractType: NftContractType!
 
-  """Collection verified status"""
+  """
+  Collection verified status
+  """
   verified: Boolean!
 }
 
@@ -2377,10 +2927,14 @@ input NftsRequest {
 }
 
 input NftsRequestWhere {
-  """Search query. Has to be part of a collection name"""
+  """
+  Search query. Has to be part of a collection name
+  """
   query: String
 
-  """Profile ID of the owner"""
+  """
+  Profile ID of the owner
+  """
   forProfileId: ProfileId = null
 
   """
@@ -2393,7 +2947,9 @@ input NftsRequestWhere {
   """
   chainIds: [ChainId!] = [5, 80001]
 
-  """Exclude follower NFTs from the search"""
+  """
+  Exclude follower NFTs from the search
+  """
   excludeFollowers: Boolean = true
   includeCollections: [NetworkAddressInput!] = []
   excludeCollections: [NetworkAddressInput!] = []
@@ -2404,18 +2960,24 @@ input NetworkAddressInput {
   chainId: ChainId!
 }
 
-"""Nft collections paginated result"""
+"""
+Nft collections paginated result
+"""
 type PaginatedNftCollectionsResult {
   items: [NftCollection!]!
   pageInfo: PaginatedResultInfo!
 }
 
-"""NFT collections request"""
+"""
+NFT collections request
+"""
 input NftCollectionsRequest {
   limit: LimitType
   cursor: Cursor
 
-  """Filter by owner address"""
+  """
+  Filter by owner address
+  """
   forAddress: EvmAddress
   for: ProfileId
 
@@ -2424,37 +2986,55 @@ input NftCollectionsRequest {
   """
   chainIds: [ChainId!] = [5, 80001]
 
-  """Exclude Lens Follower NFTs"""
+  """
+  Exclude Lens Follower NFTs
+  """
   excludeFollowers: Boolean = true
 }
 
-"""Mutual NFT collections request"""
+"""
+Mutual NFT collections request
+"""
 input MutualNftCollectionsRequest {
   limit: LimitType
   cursor: Cursor
 
-  """Profile id of the first user"""
+  """
+  Profile id of the first user
+  """
   observer: ProfileId!
 
-  """Profile id of the second user"""
+  """
+  Profile id of the second user
+  """
   viewing: ProfileId!
 }
 
-"""NFT collection owners request"""
+"""
+NFT collection owners request
+"""
 input NftCollectionOwnersRequest {
   limit: LimitType
   cursor: Cursor
 
-  """The contract address"""
+  """
+  The contract address
+  """
   for: EvmAddress!
 
-  """The chain id"""
+  """
+  The chain id
+  """
   chainId: ChainId!
 
-  """The ordering of Nft collection owners"""
+  """
+  The ordering of Nft collection owners
+  """
   order: NftCollectionOwnersOrder = None
 
-  """The profile id to use when ordering by followers"""
+  """
+  The profile id to use when ordering by followers
+  """
   by: ProfileId = null
 }
 
@@ -2463,7 +3043,9 @@ enum NftCollectionOwnersOrder {
   None
 }
 
-"""Popular Nft collections paginated result"""
+"""
+Popular Nft collections paginated result
+"""
 type PaginatedPopularNftCollectionsResult {
   items: [NftCollectionWithOwners!]!
   pageInfo: PaginatedResultInfo!
@@ -2473,7 +3055,9 @@ type PaginatedPopularNftCollectionsResult {
 A wrapper object containing an Nft collection, the total number of Lens profiles that own it, and optional field resolvers
 """
 type NftCollectionWithOwners {
-  """The Nft collection"""
+  """
+  The Nft collection
+  """
   collection: NftCollection!
 
   """
@@ -2482,7 +3066,9 @@ type NftCollectionWithOwners {
   totalOwners: Float!
 }
 
-"""Popular NFT collections request"""
+"""
+Popular NFT collections request
+"""
 input PopularNftCollectionsRequest {
   limit: LimitType
   cursor: Cursor
@@ -2492,10 +3078,14 @@ input PopularNftCollectionsRequest {
   """
   chainIds: [ChainId!] = [5, 80001]
 
-  """Exclude Lens Follower NFTs"""
+  """
+  Exclude Lens Follower NFTs
+  """
   excludeFollowers: Boolean = true
 
-  """Include only verified collections"""
+  """
+  Include only verified collections
+  """
   onlyVerified: Boolean = true
 
   """
@@ -2523,10 +3113,14 @@ type NftGallery {
   updatedAt: DateTime!
 }
 
-"""Nft gallery id type"""
+"""
+Nft gallery id type
+"""
 scalar NftGalleryId
 
-"""Nft gallery name type"""
+"""
+Nft gallery name type
+"""
 scalar NftGalleryName
 
 input NftGalleriesRequest {
@@ -2540,7 +3134,14 @@ type PaginatedNotificationResult {
   pageInfo: PaginatedResultInfo!
 }
 
-union Notification = ReactionNotification | CommentNotification | MirrorNotification | QuoteNotification | ActedNotification | FollowNotification | MentionNotification
+union Notification =
+    ReactionNotification
+  | CommentNotification
+  | MirrorNotification
+  | QuoteNotification
+  | ActedNotification
+  | FollowNotification
+  | MentionNotification
 
 type ReactionNotification {
   id: UUID!
@@ -2620,30 +3221,42 @@ enum NotificationType {
   ACTED
 }
 
-"""The paginated Poap Token Results"""
+"""
+The paginated Poap Token Results
+"""
 type PaginatedPoapTokenResult {
   items: [PoapToken!]!
   pageInfo: PaginatedResultInfo!
 }
 
-"""The Poap Token Event"""
+"""
+The Poap Token Event
+"""
 type PoapToken {
   tokenId: TokenId!
 
-  """Poap Event Id"""
+  """
+  Poap Event Id
+  """
   eventId: PoapEventId!
   owner: NetworkAddress!
 
-  """Which network the token is: L1 (eth) or L2 (Gnosis)"""
+  """
+  Which network the token is: L1 (eth) or L2 (Gnosis)
+  """
   layer: PoapTokenLayerType!
   created: DateTime!
 
-  """migrated to L1 at"""
+  """
+  migrated to L1 at
+  """
   migrated: DateTime
   event: PoapEvent!
 }
 
-"""The Poap Event id"""
+"""
+The Poap Event id
+"""
 scalar PoapEventId
 
 enum PoapTokenLayerType {
@@ -2651,7 +3264,9 @@ enum PoapTokenLayerType {
   Layer2
 }
 
-"""The POAP Event result"""
+"""
+The POAP Event result
+"""
 type PoapEvent {
   id: PoapEventId!
   fancyId: String
@@ -2678,7 +3293,9 @@ input UserPoapsQueryRequest {
   for: ProfileId!
 }
 
-"""The paginated Poap Events result"""
+"""
+The paginated Poap Events result
+"""
 type PaginatedPoapEventResult {
   items: [PoapEvent!]!
   pageInfo: PaginatedResultInfo!
@@ -2705,24 +3322,36 @@ input ProfilesRequest {
   limit: LimitType
   cursor: Cursor
 
-  """The where clause to use to filter on what you are looking for"""
+  """
+  The where clause to use to filter on what you are looking for
+  """
   where: ProfilesRequestWhere!
 }
 
 input ProfilesRequestWhere {
-  """Pass in an array of evm address to get the profile entities they own"""
+  """
+  Pass in an array of evm address to get the profile entities they own
+  """
   ownedBy: [EvmAddress!]
 
-  """Pass in an array of profile ids to get the profile entities"""
+  """
+  Pass in an array of profile ids to get the profile entities
+  """
   profileIds: [ProfileId!]
 
-  """Pass in an array of handles to get the profile entities"""
+  """
+  Pass in an array of handles to get the profile entities
+  """
   handles: [Handle!]
 
-  """Pass the publication id and get a list of the profiles who quoted it"""
+  """
+  Pass the publication id and get a list of the profiles who quoted it
+  """
   whoQuotedPublication: PublicationId
 
-  """Pass the publication id and get a list of the profiles who mirrored it"""
+  """
+  Pass the publication id and get a list of the profiles who mirrored it
+  """
   whoMirroredPublication: PublicationId
 
   """
@@ -2732,10 +3361,14 @@ input ProfilesRequestWhere {
 }
 
 input ProfileRequest {
-  """The profile you want to fetch"""
+  """
+  The profile you want to fetch
+  """
   forProfileId: ProfileId
 
-  """The handle for profile you want to fetch - namespace/localname"""
+  """
+  The handle for profile you want to fetch - namespace/localname
+  """
   forHandle: Handle
 }
 
@@ -2760,7 +3393,9 @@ type PaginatedProfileActionHistoryResult {
   pageInfo: PaginatedResultInfo!
 }
 
-"""The Profile"""
+"""
+The Profile
+"""
 type ProfileActionHistory {
   id: Float!
   actionType: ProfileActionHistoryType!
@@ -2769,7 +3404,9 @@ type ProfileActionHistory {
   actionedOn: DateTime!
 }
 
-"""Profile action history type"""
+"""
+Profile action history type
+"""
 enum ProfileActionHistoryType {
   FOLLOW
   UNFOLLOW
@@ -2810,7 +3447,9 @@ type ClaimableProfilesResult {
 type ReservedClaimable {
   id: String!
 
-  """The full handle - namespace/localname"""
+  """
+  The full handle - namespace/localname
+  """
   withHandle: Handle!
   source: AppId!
   expiry: DateTime!
@@ -2835,25 +3474,37 @@ input ExploreProfilesRequest {
   limit: LimitType
   cursor: Cursor
 
-  """Filtering criteria for exploring profiles"""
+  """
+  Filtering criteria for exploring profiles
+  """
   where: ExploreProfilesWhere
 
-  """Order criteria for exploring profiles"""
+  """
+  Order criteria for exploring profiles
+  """
   orderBy: ExploreProfilesOrderByType!
 }
 
 input ExploreProfilesWhere {
-  """Filter profiles created since the specified timestamp"""
+  """
+  Filter profiles created since the specified timestamp
+  """
   since: UnixTimestamp
 
-  """Array of custom filters for exploring profiles"""
+  """
+  Array of custom filters for exploring profiles
+  """
   customFilters: [CustomFiltersType!] = []
 }
 
-"""The unix timestamp"""
+"""
+The unix timestamp
+"""
 scalar UnixTimestamp
 
-"""Possible sort criteria for exploring profiles"""
+"""
+Possible sort criteria for exploring profiles
+"""
 enum ExploreProfilesOrderByType {
   CREATED_ON
   MOST_FOLLOWERS
@@ -2866,7 +3517,10 @@ enum ExploreProfilesOrderByType {
 }
 
 type InvitedResult {
-  by: EvmAddress! @deprecated(reason: "Profiles hand out invites on Lens V2 so this is unnecessary information. Will always be the dead address.")
+  by: EvmAddress!
+    @deprecated(
+      reason: "Profiles hand out invites on Lens V2 so this is unnecessary information. Will always be the dead address."
+    )
   addressInvited: EvmAddress!
   profileMinted: Profile
   when: DateTime!
@@ -2876,7 +3530,9 @@ input AlreadyInvitedCheckRequest {
   for: EvmAddress!
 }
 
-"""The paginated profile managers result"""
+"""
+The paginated profile managers result
+"""
 type PaginatedProfileManagersResult {
   items: [ProfilesManagedResult!]!
   pageInfo: PaginatedResultInfo!
@@ -2891,7 +3547,9 @@ input ProfileManagersRequest {
   limit: LimitType
   cursor: Cursor
 
-  """The profile ID for which to retrieve managers"""
+  """
+  The profile ID for which to retrieve managers
+  """
   for: ProfileId!
 }
 
@@ -2899,7 +3557,9 @@ input ProfilesManagedRequest {
   limit: LimitType
   cursor: Cursor
 
-  """The Ethereum address for which to retrieve managed profiles"""
+  """
+  The Ethereum address for which to retrieve managed profiles
+  """
   for: EvmAddress!
   includeOwned: Boolean = true
 }
@@ -2908,13 +3568,19 @@ input ProfileRecommendationsRequest {
   limit: LimitType
   cursor: Cursor
 
-  """Filter based on a specific profile ID"""
+  """
+  Filter based on a specific profile ID
+  """
   for: ProfileId!
 
-  """Disable machine learning recommendations (default: false)"""
+  """
+  Disable machine learning recommendations (default: false)
+  """
   disableML: Boolean = false
 
-  """Shuffle the recommendations (default: false)"""
+  """
+  Shuffle the recommendations (default: false)
+  """
   shuffle: Boolean = false
 }
 
@@ -2962,15 +3628,21 @@ input ProfileSearchRequest {
   limit: LimitType
   cursor: Cursor
 
-  """Query for the profile search"""
+  """
+  Query for the profile search
+  """
   query: String!
 
-  """Filtering criteria for profile search"""
+  """
+  Filtering criteria for profile search
+  """
   where: ProfileSearchWhere
 }
 
 input ProfileSearchWhere {
-  """Array of custom filters for profile search"""
+  """
+  Array of custom filters for profile search
+  """
   customFilters: [CustomFiltersType!]
 }
 
@@ -2980,7 +3652,9 @@ type UserSigNonces {
   lensPublicActProxyOnchainSigNonce: Nonce!
 }
 
-"""The nonce value"""
+"""
+The nonce value
+"""
 scalar Nonce
 
 enum LensProtocolVersion {
@@ -3085,12 +3759,18 @@ type ProfileWhoReactedResult {
   reactions: [ProfileReactionResult!]!
 }
 
-"""The reaction details for a publication"""
+"""
+The reaction details for a publication
+"""
 type ProfileReactionResult {
-  """The reaction"""
+  """
+  The reaction
+  """
   reaction: PublicationReactionType!
 
-  """The reaction date"""
+  """
+  The reaction date
+  """
   reactionAt: DateTime!
 }
 
@@ -3165,7 +3845,9 @@ input RevenueFromPublicationsRequest {
   limit: LimitType
   cursor: Cursor
 
-  """The profile to get revenue for"""
+  """
+  The profile to get revenue for
+  """
   for: ProfileId!
 
   """
@@ -3237,7 +3919,9 @@ enum RelayRoleKey {
   WITH_SIG_10
 }
 
-"""The tx id"""
+"""
+The tx id
+"""
 scalar TxId
 
 type LensTransactionResult {
@@ -3260,7 +3944,9 @@ enum LensTransactionFailureType {
 }
 
 input LensTransactionStatusRequest {
-  """Transaction hash for retrieving transaction status"""
+  """
+  Transaction hash for retrieving transaction status
+  """
   forTxHash: TxHash
 
   """
@@ -3273,63 +3959,126 @@ type Mutation {
   authenticate(request: SignedAuthChallenge!): AuthenticationResult!
   refresh(request: RefreshRequest!): AuthenticationResult!
   revokeAuthentication(request: RevokeAuthenticationRequest!): Void
-  walletAuthenticationToProfileAuthentication(request: WalletAuthenticationToProfileAuthenticationRequest!): AuthenticationResult!
-  linkHandleToProfile(request: LinkHandleToProfileRequest!): LensProfileManagerRelayResult!
-  unlinkHandleFromProfile(request: UnlinkHandleFromProfileRequest!): LensProfileManagerRelayResult!
-  createLinkHandleToProfileTypedData(options: TypedDataOptions, request: LinkHandleToProfileRequest!): CreateLinkHandleToProfileBroadcastItemResult!
-  createUnlinkHandleFromProfileTypedData(options: TypedDataOptions, request: UnlinkHandleFromProfileRequest!): CreateUnlinkHandleFromProfileBroadcastItemResult!
+  walletAuthenticationToProfileAuthentication(
+    request: WalletAuthenticationToProfileAuthenticationRequest!
+  ): AuthenticationResult!
+  linkHandleToProfile(
+    request: LinkHandleToProfileRequest!
+  ): LensProfileManagerRelayResult!
+  unlinkHandleFromProfile(
+    request: UnlinkHandleFromProfileRequest!
+  ): LensProfileManagerRelayResult!
+  createLinkHandleToProfileTypedData(
+    options: TypedDataOptions
+    request: LinkHandleToProfileRequest!
+  ): CreateLinkHandleToProfileBroadcastItemResult!
+  createUnlinkHandleFromProfileTypedData(
+    options: TypedDataOptions
+    request: UnlinkHandleFromProfileRequest!
+  ): CreateUnlinkHandleFromProfileBroadcastItemResult!
   broadcastOnMomoka(request: BroadcastRequest!): BroadcastMomokaResult!
   broadcastOnchain(request: BroadcastRequest!): RelayResult!
   follow(request: FollowLensManagerRequest!): LensProfileManagerRelayResult!
   unfollow(request: UnfollowRequest!): LensProfileManagerRelayResult!
-  createFollowTypedData(options: TypedDataOptions, request: FollowRequest!): CreateFollowBroadcastItemResult!
-  createUnfollowTypedData(options: TypedDataOptions, request: UnfollowRequest!): CreateUnfollowBroadcastItemResult!
+  createFollowTypedData(
+    options: TypedDataOptions
+    request: FollowRequest!
+  ): CreateFollowBroadcastItemResult!
+  createUnfollowTypedData(
+    options: TypedDataOptions
+    request: UnfollowRequest!
+  ): CreateUnfollowBroadcastItemResult!
   internalClaim(request: InternalClaimRequest!): Void
   internalCuratedUpdate(request: InternalCuratedUpdateRequest!): Void
   internalAllowDomain(request: InternalAllowDomainRequest!): Void
   internalAddCuratedTag(request: InternalAddCuratedTagRequest!): Void
   internalRemoveCuratedTag(request: InternalRemoveCuratedTagRequest!): Void
-  internalUpdateProfileStatus(request: InternalUpdateProfileStatusRequest!): Void
+  internalUpdateProfileStatus(
+    request: InternalUpdateProfileStatusRequest!
+  ): Void
   internalNftIndex(request: InternalNftIndexRequest!): Void
   internalNftVerify(request: InternalNftVerifyRequest!): Void
   internalAddInvites(request: InternalAddInvitesRequest!): Void
-  internalUpdateModuleOptions(request: InternalUpdateModuleOptionsRequest!): Void
-  setFollowModule(request: SetFollowModuleRequest!): LensProfileManagerRelayResult!
-  actOnOpenAction(request: ActOnOpenActionLensManagerRequest!): LensProfileManagerRelayResult!
+  internalUpdateModuleOptions(
+    request: InternalUpdateModuleOptionsRequest!
+  ): Void
+  setFollowModule(
+    request: SetFollowModuleRequest!
+  ): LensProfileManagerRelayResult!
+  actOnOpenAction(
+    request: ActOnOpenActionLensManagerRequest!
+  ): LensProfileManagerRelayResult!
   legacyCollect(request: LegacyCollectRequest!): LensProfileManagerRelayResult!
-  createSetFollowModuleTypedData(options: TypedDataOptions, request: SetFollowModuleRequest!): CreateSetFollowModuleBroadcastItemResult!
-  createActOnOpenActionTypedData(options: TypedDataOptions, request: ActOnOpenActionRequest!): CreateActOnOpenActionBroadcastItemResult!
-  createLegacyCollectTypedData(options: TypedDataOptions, request: LegacyCollectRequest!): CreateLegacyCollectBroadcastItemResult!
+  createSetFollowModuleTypedData(
+    options: TypedDataOptions
+    request: SetFollowModuleRequest!
+  ): CreateSetFollowModuleBroadcastItemResult!
+  createActOnOpenActionTypedData(
+    options: TypedDataOptions
+    request: ActOnOpenActionRequest!
+  ): CreateActOnOpenActionBroadcastItemResult!
+  createLegacyCollectTypedData(
+    options: TypedDataOptions
+    request: LegacyCollectRequest!
+  ): CreateLegacyCollectBroadcastItemResult!
   postOnMomoka(request: MomokaPostRequest!): RelayMomokaResult!
   commentOnMomoka(request: MomokaCommentRequest!): RelayMomokaResult!
   quoteOnMomoka(request: MomokaQuoteRequest!): RelayMomokaResult!
   mirrorOnMomoka(request: MomokaMirrorRequest!): RelayMomokaResult!
-  createMomokaQuoteTypedData(request: MomokaQuoteRequest!): CreateMomokaQuoteBroadcastItemResult!
-  createMomokaPostTypedData(request: MomokaPostRequest!): CreateMomokaPostBroadcastItemResult!
-  createMomokaCommentTypedData(request: MomokaCommentRequest!): CreateMomokaCommentBroadcastItemResult!
-  createMomokaMirrorTypedData(request: MomokaMirrorRequest!): CreateMomokaMirrorBroadcastItemResult!
+  createMomokaQuoteTypedData(
+    request: MomokaQuoteRequest!
+  ): CreateMomokaQuoteBroadcastItemResult!
+  createMomokaPostTypedData(
+    request: MomokaPostRequest!
+  ): CreateMomokaPostBroadcastItemResult!
+  createMomokaCommentTypedData(
+    request: MomokaCommentRequest!
+  ): CreateMomokaCommentBroadcastItemResult!
+  createMomokaMirrorTypedData(
+    request: MomokaMirrorRequest!
+  ): CreateMomokaMirrorBroadcastItemResult!
   createNftGallery(request: NftGalleryCreateRequest!): NftGalleryId!
   updateNftGalleryInfo(request: NftGalleryUpdateInfoRequest!): Void
   updateNftGalleryOrder(request: NftGalleryUpdateItemOrderRequest!): Void
   updateNftGalleryItems(request: NftGalleryUpdateItemsRequest!): Void
   deleteNftGallery(request: NftGalleryDeleteRequest!): Void
-  nftOwnershipChallenge(request: NftOwnershipChallengeRequest!): NftOwnershipChallengeResult!
+  nftOwnershipChallenge(
+    request: NftOwnershipChallengeRequest!
+  ): NftOwnershipChallengeResult!
   addProfileInterests(request: ProfileInterestsRequest!): Void
   removeProfileInterests(request: ProfileInterestsRequest!): Void
   dismissRecommendedProfiles(request: DismissRecommendedProfilesRequest!): Void
   setDefaultProfile(request: SetDefaultProfileRequest!): Void
   reportProfile(request: ReportProfileRequest!): Void
-  claimProfileWithHandle(request: ClaimProfileWithHandleRequest!): ClaimProfileWithHandleResult!
-  createProfileWithHandle(request: CreateProfileWithHandleRequest!): CreateProfileWithHandleResult!
+  claimProfileWithHandle(
+    request: ClaimProfileWithHandleRequest!
+  ): ClaimProfileWithHandleResult!
+  createProfileWithHandle(
+    request: CreateProfileWithHandleRequest!
+  ): CreateProfileWithHandleResult!
   createProfile(request: CreateProfileRequest!): RelaySuccess!
   invite(request: InviteRequest!): Void
   block(request: BlockRequest!): LensProfileManagerRelayResult!
   unblock(request: UnblockRequest!): LensProfileManagerRelayResult!
-  setProfileMetadata(request: OnchainSetProfileMetadataRequest!): LensProfileManagerRelayResult!
-  createOnchainSetProfileMetadataTypedData(options: TypedDataOptions, request: OnchainSetProfileMetadataRequest!): CreateOnchainSetProfileMetadataBroadcastItemResult!
-  createChangeProfileManagersTypedData(options: TypedDataOptions, request: ChangeProfileManagersRequest!): CreateChangeProfileManagersBroadcastItemResult!
-  createBlockProfilesTypedData(options: TypedDataOptions, request: BlockRequest!): CreateBlockProfilesBroadcastItemResult!
-  createUnblockProfilesTypedData(options: TypedDataOptions, request: UnblockRequest!): CreateUnblockProfilesBroadcastItemResult!
+  setProfileMetadata(
+    request: OnchainSetProfileMetadataRequest!
+  ): LensProfileManagerRelayResult!
+  createOnchainSetProfileMetadataTypedData(
+    options: TypedDataOptions
+    request: OnchainSetProfileMetadataRequest!
+  ): CreateOnchainSetProfileMetadataBroadcastItemResult!
+  createChangeProfileManagersTypedData(
+    options: TypedDataOptions
+    request: ChangeProfileManagersRequest!
+  ): CreateChangeProfileManagersBroadcastItemResult!
+  createBlockProfilesTypedData(
+    options: TypedDataOptions
+    request: BlockRequest!
+  ): CreateBlockProfilesBroadcastItemResult!
+  createUnblockProfilesTypedData(
+    options: TypedDataOptions
+    request: UnblockRequest!
+  ): CreateUnblockProfilesBroadcastItemResult!
   hidePublication(request: HidePublicationRequest!): Void
   addPublicationNotInterested(request: PublicationNotInterestedRequest!): Void
   undoPublicationNotInterested(request: PublicationNotInterestedRequest!): Void
@@ -3339,45 +4088,81 @@ type Mutation {
   removeReaction(request: ReactionRequest!): Void
   reportPublication(request: ReportPublicationRequest!): Void
   postOnchain(request: OnchainPostRequest!): LensProfileManagerRelayResult!
-  commentOnchain(request: OnchainCommentRequest!): LensProfileManagerRelayResult!
+  commentOnchain(
+    request: OnchainCommentRequest!
+  ): LensProfileManagerRelayResult!
   quoteOnchain(request: OnchainQuoteRequest!): LensProfileManagerRelayResult!
   mirrorOnchain(request: OnchainMirrorRequest!): LensProfileManagerRelayResult!
-  refreshPublicationMetadata(request: RefreshPublicationMetadataRequest!): RefreshPublicationMetadataResult!
-  createOnchainPostTypedData(options: TypedDataOptions, request: OnchainPostRequest!): CreateOnchainPostBroadcastItemResult!
-  createOnchainCommentTypedData(options: TypedDataOptions, request: OnchainCommentRequest!): CreateOnchainCommentBroadcastItemResult!
-  createOnchainQuoteTypedData(options: TypedDataOptions, request: OnchainQuoteRequest!): CreateOnchainQuoteBroadcastItemResult!
-  createOnchainMirrorTypedData(options: TypedDataOptions, request: OnchainMirrorRequest!): CreateOnchainMirrorBroadcastItemResult!
-  idKitPhoneVerifyWebhook(request: IdKitPhoneVerifyWebhookRequest!): IdKitPhoneVerifyWebhookResultStatusType!
+  refreshPublicationMetadata(
+    request: RefreshPublicationMetadataRequest!
+  ): RefreshPublicationMetadataResult!
+  createOnchainPostTypedData(
+    options: TypedDataOptions
+    request: OnchainPostRequest!
+  ): CreateOnchainPostBroadcastItemResult!
+  createOnchainCommentTypedData(
+    options: TypedDataOptions
+    request: OnchainCommentRequest!
+  ): CreateOnchainCommentBroadcastItemResult!
+  createOnchainQuoteTypedData(
+    options: TypedDataOptions
+    request: OnchainQuoteRequest!
+  ): CreateOnchainQuoteBroadcastItemResult!
+  createOnchainMirrorTypedData(
+    options: TypedDataOptions
+    request: OnchainMirrorRequest!
+  ): CreateOnchainMirrorBroadcastItemResult!
+  idKitPhoneVerifyWebhook(
+    request: IdKitPhoneVerifyWebhookRequest!
+  ): IdKitPhoneVerifyWebhookResultStatusType!
 }
 
-"""The authentication result"""
+"""
+The authentication result
+"""
 type AuthenticationResult {
-  """The access token"""
+  """
+  The access token
+  """
   accessToken: Jwt!
 
-  """The refresh token"""
+  """
+  The refresh token
+  """
   refreshToken: Jwt!
 }
 
-"""The signed auth challenge"""
+"""
+The signed auth challenge
+"""
 input SignedAuthChallenge {
   id: ChallengeId!
 
-  """The signature"""
+  """
+  The signature
+  """
   signature: Signature!
 }
 
-"""The signature value"""
+"""
+The signature value
+"""
 scalar Signature
 
-"""The refresh request"""
+"""
+The refresh request
+"""
 input RefreshRequest {
-  """The refresh token"""
+  """
+  The refresh token
+  """
   refreshToken: Jwt!
 }
 
 input RevokeAuthenticationRequest {
-  """The token authorization id wish to revoke"""
+  """
+  The token authorization id wish to revoke
+  """
   authorizationId: UUID!
 }
 
@@ -3388,7 +4173,9 @@ input WalletAuthenticationToProfileAuthenticationRequest {
   profileId: ProfileId!
 }
 
-union LensProfileManagerRelayResult = RelaySuccess | LensProfileManagerRelayError
+union LensProfileManagerRelayResult =
+    RelaySuccess
+  | LensProfileManagerRelayError
 
 type RelaySuccess {
   txHash: TxHash
@@ -3409,37 +4196,55 @@ enum LensProfileManagerRelayErrorReasonType {
 }
 
 input LinkHandleToProfileRequest {
-  """The full handle - namespace/localname"""
+  """
+  The full handle - namespace/localname
+  """
   handle: Handle!
 }
 
 input UnlinkHandleFromProfileRequest {
-  """The full handle - namespace/localname"""
+  """
+  The full handle - namespace/localname
+  """
   handle: Handle!
 }
 
 type CreateLinkHandleToProfileBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateLinkHandleToProfileEIP712TypedData!
 }
 
-"""The broadcast id"""
+"""
+The broadcast id
+"""
 scalar BroadcastId
 
 type CreateLinkHandleToProfileEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateLinkHandleToProfileEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateLinkHandleToProfileEIP712TypedDataValue!
 }
 
@@ -3447,27 +4252,43 @@ type CreateLinkHandleToProfileEIP712TypedDataTypes {
   Link: [EIP712TypedDataField!]!
 }
 
-"""The eip 712 typed data field"""
+"""
+The eip 712 typed data field
+"""
 type EIP712TypedDataField {
-  """The name of the typed data field"""
+  """
+  The name of the typed data field
+  """
   name: String!
 
-  """The type of the typed data field"""
+  """
+  The type of the typed data field
+  """
   type: String!
 }
 
-"""The eip 712 typed data domain"""
+"""
+The eip 712 typed data domain
+"""
 type EIP712TypedDataDomain {
-  """The name of the typed data domain"""
+  """
+  The name of the typed data domain
+  """
   name: String!
 
-  """The chainId"""
+  """
+  The chainId
+  """
   chainId: ChainId!
 
-  """The version"""
+  """
+  The version
+  """
   version: String!
 
-  """The verifying contract"""
+  """
+  The verifying contract
+  """
   verifyingContract: EvmAddress!
 }
 
@@ -3486,24 +4307,36 @@ input TypedDataOptions {
 }
 
 type CreateUnlinkHandleFromProfileBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateUnlinkHandleFromProfileEIP712TypedData!
 }
 
 type CreateUnlinkHandleFromProfileEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateUnlinkHandleFromProfileEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateUnlinkHandleFromProfileEIP712TypedDataValue!
 }
 
@@ -3526,7 +4359,9 @@ type CreateMomokaPublicationResult {
   momokaId: MomokaId!
 }
 
-"""The momoka id"""
+"""
+The momoka id
+"""
 scalar MomokaId
 
 type RelayError {
@@ -3575,34 +4410,52 @@ input UnfollowRequest {
 }
 
 type CreateFollowBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateFollowEIP712TypedData!
 }
 
-"""The create follow eip 712 typed data"""
+"""
+The create follow eip 712 typed data
+"""
 type CreateFollowEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateFollowEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateFollowEIP712TypedDataValue!
 }
 
-"""The create follow eip 712 typed data types"""
+"""
+The create follow eip 712 typed data types
+"""
 type CreateFollowEIP712TypedDataTypes {
   Follow: [EIP712TypedDataField!]!
 }
 
-"""The create follow eip 712 typed data value"""
+"""
+The create follow eip 712 typed data value
+"""
 type CreateFollowEIP712TypedDataValue {
   nonce: Nonce!
   deadline: UnixTimestamp!
@@ -3631,24 +4484,36 @@ input FeeFollowModuleRedeemInput {
 }
 
 type CreateUnfollowBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateUnfollowEIP712TypedData!
 }
 
 type CreateUnfollowEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateUnfollowEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateUnfollowEIP712TypedDataValue!
 }
 
@@ -3672,13 +4537,17 @@ input InternalClaimRequest {
   overrideAlreadyClaimed: Boolean!
 }
 
-"""Create handle value"""
+"""
+Create handle value
+"""
 scalar CreateHandle
 
 input InternalCuratedUpdateRequest {
   secret: String!
 
-  """The full handle - namespace/localname"""
+  """
+  The full handle - namespace/localname
+  """
   handle: Handle!
   remove: Boolean!
 }
@@ -3787,24 +4656,36 @@ input LegacyCollectRequest {
 }
 
 type CreateSetFollowModuleBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateSetFollowModuleEIP712TypedData!
 }
 
 type CreateSetFollowModuleEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateSetFollowModuleEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateSetFollowModuleEIP712TypedDataValue!
 }
 
@@ -3821,24 +4702,36 @@ type CreateSetFollowModuleEIP712TypedDataValue {
 }
 
 type CreateActOnOpenActionBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateActOnOpenActionEIP712TypedData!
 }
 
 type CreateActOnOpenActionEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateActOnOpenActionEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateActOnOpenActionEIP712TypedDataValue!
 }
 
@@ -3858,7 +4751,9 @@ type CreateActOnOpenActionEIP712TypedDataValue {
   actionModuleData: BlockchainData!
 }
 
-"""The onchain publication id"""
+"""
+The onchain publication id
+"""
 scalar OnchainPublicationId
 
 input ActOnOpenActionRequest {
@@ -3874,24 +4769,36 @@ input ActOnOpenActionInput {
 }
 
 type CreateLegacyCollectBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateLegacyCollectEIP712TypedData!
 }
 
 type CreateLegacyCollectEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateLegacyCollectEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateLegacyCollectEIP712TypedDataValue!
 }
 
@@ -3910,7 +4817,9 @@ type CreateLegacyCollectEIP712TypedDataValue {
   collectModuleData: BlockchainData!
 }
 
-union RelayMomokaResult = CreateMomokaPublicationResult | LensProfileManagerRelayError
+union RelayMomokaResult =
+    CreateMomokaPublicationResult
+  | LensProfileManagerRelayError
 
 input MomokaPostRequest {
   contentURI: URI!
@@ -3929,29 +4838,43 @@ input MomokaQuoteRequest {
 input MomokaMirrorRequest {
   mirrorOn: PublicationId!
 
-  """You can add information like app on a mirror or tracking stuff"""
+  """
+  You can add information like app on a mirror or tracking stuff
+  """
   metadataURI: URI
 }
 
 type CreateMomokaQuoteBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateMomokaQuoteEIP712TypedData!
 }
 
 type CreateMomokaQuoteEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateMomokaQuoteEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateMomokaQuoteEIP712TypedDataValue!
 }
 
@@ -3976,24 +4899,36 @@ type CreateMomokaQuoteEIP712TypedDataValue {
 }
 
 type CreateMomokaPostBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateMomokaPostEIP712TypedData!
 }
 
 type CreateMomokaPostEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateMomokaPostEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateMomokaPostEIP712TypedDataValue!
 }
 
@@ -4013,24 +4948,36 @@ type CreateMomokaPostEIP712TypedDataValue {
 }
 
 type CreateMomokaCommentBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateMomokaCommentEIP712TypedData!
 }
 
 type CreateMomokaCommentEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateMomokaCommentEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateMomokaCommentEIP712TypedDataValue!
 }
 
@@ -4055,24 +5002,36 @@ type CreateMomokaCommentEIP712TypedDataValue {
 }
 
 type CreateMomokaMirrorBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateMomokaMirrorEIP712TypedData!
 }
 
 type CreateMomokaMirrorEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateMomokaMirrorEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateMomokaMirrorEIP712TypedDataValue!
 }
 
@@ -4142,7 +5101,9 @@ input ProfileInterestsRequest {
   interests: [ProfileInterestTypes!]!
 }
 
-"""Profile interests types"""
+"""
+Profile interests types
+"""
 enum ProfileInterestTypes {
   ART_ENTERTAINMENT
   ART_ENTERTAINMENT__BOOKS
@@ -4254,13 +5215,17 @@ enum ProfileReportingSpamSubreason {
   SOMETHING_ELSE
 }
 
-union ClaimProfileWithHandleResult = RelaySuccess | ClaimProfileWithHandleErrorResult
+union ClaimProfileWithHandleResult =
+    RelaySuccess
+  | ClaimProfileWithHandleErrorResult
 
 type ClaimProfileWithHandleErrorResult {
   reason: ClaimProfileWithHandleErrorReasonType!
 }
 
-"""Claim profile with handle error reason type"""
+"""
+Claim profile with handle error reason type
+"""
 enum ClaimProfileWithHandleErrorReasonType {
   CONTRACT_EXECUTED
   HANDLE_ALREADY_CLAIMED
@@ -4278,7 +5243,9 @@ input ClaimProfileWithHandleRequest {
   followModule: FollowModuleInput
 }
 
-union CreateProfileWithHandleResult = RelaySuccess | CreateProfileWithHandleErrorResult
+union CreateProfileWithHandleResult =
+    RelaySuccess
+  | CreateProfileWithHandleErrorResult
 
 type CreateProfileWithHandleErrorResult {
   reason: CreateProfileWithHandleErrorReasonType!
@@ -4317,24 +5284,36 @@ input OnchainSetProfileMetadataRequest {
 }
 
 type CreateOnchainSetProfileMetadataBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateOnchainSetProfileMetadataEIP712TypedData!
 }
 
 type CreateOnchainSetProfileMetadataEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateOnchainSetProfileMetadataEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateOnchainSetProfileMetadataEIP712TypedDataValue!
 }
 
@@ -4350,24 +5329,36 @@ type CreateOnchainSetProfileMetadataEIP712TypedDataValue {
 }
 
 type CreateChangeProfileManagersBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateChangeProfileManagersEIP712TypedData!
 }
 
 type CreateChangeProfileManagersEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateChangeProfileManagersEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateChangeProfileManagersEIP712TypedDataValue!
 }
 
@@ -4405,24 +5396,36 @@ enum ChangeProfileManagerActionType {
 }
 
 type CreateBlockProfilesBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateBlockProfilesEIP712TypedData!
 }
 
 type CreateBlockProfilesEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateBlockProfilesEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateBlockProfilesEIP712TypedDataValue!
 }
 
@@ -4439,24 +5442,36 @@ type CreateBlockProfilesEIP712TypedDataValue {
 }
 
 type CreateUnblockProfilesBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateUnblockProfilesEIP712TypedData!
 }
 
 type CreateUnblockProfilesEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateUnblockProfilesEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateUnblockProfilesEIP712TypedDataValue!
 }
 
@@ -4584,7 +5599,9 @@ input MultirecipientFeeCollectModuleInput {
 }
 
 input RecipientDataInput {
-  """Recipient of collect fees."""
+  """
+  Recipient of collect fees.
+  """
   recipient: EvmAddress!
 
   """
@@ -4659,7 +5676,9 @@ input OnchainQuoteRequest {
 input OnchainMirrorRequest {
   mirrorOn: PublicationId!
 
-  """You can add information like app on a mirror or tracking stuff"""
+  """
+  You can add information like app on a mirror or tracking stuff
+  """
   metadataURI: URI
 
   """
@@ -4684,24 +5703,36 @@ input RefreshPublicationMetadataRequest {
 }
 
 type CreateOnchainPostBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateOnchainPostEIP712TypedData!
 }
 
 type CreateOnchainPostEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateOnchainPostEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateOnchainPostEIP712TypedDataValue!
 }
 
@@ -4721,24 +5752,36 @@ type CreateOnchainPostEIP712TypedDataValue {
 }
 
 type CreateOnchainCommentBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateOnchainCommentEIP712TypedData!
 }
 
 type CreateOnchainCommentEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateOnchainCommentEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateOnchainCommentEIP712TypedDataValue!
 }
 
@@ -4763,24 +5806,36 @@ type CreateOnchainCommentEIP712TypedDataValue {
 }
 
 type CreateOnchainQuoteBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateOnchainQuoteEIP712TypedData!
 }
 
 type CreateOnchainQuoteEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateOnchainQuoteEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateOnchainQuoteEIP712TypedDataValue!
 }
 
@@ -4805,24 +5860,36 @@ type CreateOnchainQuoteEIP712TypedDataValue {
 }
 
 type CreateOnchainMirrorBroadcastItemResult {
-  """This broadcast item ID"""
+  """
+  This broadcast item ID
+  """
   id: BroadcastId!
 
-  """The date the broadcast item expiries"""
+  """
+  The date the broadcast item expiries
+  """
   expiresAt: DateTime!
 
-  """The typed data"""
+  """
+  The typed data
+  """
   typedData: CreateOnchainMirrorEIP712TypedData!
 }
 
 type CreateOnchainMirrorEIP712TypedData {
-  """The types"""
+  """
+  The types
+  """
   types: CreateOnchainMirrorEIP712TypedDataTypes!
 
-  """The typed data domain"""
+  """
+  The typed data domain
+  """
   domain: EIP712TypedDataDomain!
 
-  """The values"""
+  """
+  The values
+  """
   value: CreateOnchainMirrorEIP712TypedDataValue!
 }
 

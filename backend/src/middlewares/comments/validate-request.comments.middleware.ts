@@ -3,6 +3,21 @@ import { ClientError } from "../../errors/client-error.error";
 import { putAnonymousCommentBodyRequestModel } from "../../models/requests/body/put-anonymous-comment.body.request.model";
 import PostAnonymousCommentRequestBodyModel from "../../models/requests/body/post-anonymous-comment.body.request.model";
 
+export const validatePostAnonymousCommentRequestMiddleware = (
+  req: Request<unknown, unknown, PostAnonymousCommentRequestBodyModel>,
+  res: Response,
+  next: NextFunction
+) => {
+  if (req.body && req.body.url && req.body.content) {
+    return next();
+  } else {
+    throw new ClientError(
+      "Check the request body: 'url' and 'content' must be supplied",
+      400
+    );
+  }
+};
+
 /**
  * Validates the request for an anonymous comment.
  *
@@ -16,26 +31,17 @@ export const validatePutAnonymousCommentRequestMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  if (req.body && req.body.pubId && req.body.content) {
+  if (
+    req.body &&
+    req.body.pubId &&
+    req.body.content &&
+    req.body.mainPostImageUrl &&
+    req.body.isThisComment
+  ) {
     return next();
   } else {
     throw new ClientError(
-      "Check the request body: pubId and content must be supplied",
-      400
-    );
-  }
-};
-
-export const validatePostAnonymousCommentRequestMiddleware = (
-  req: Request<unknown, unknown, PostAnonymousCommentRequestBodyModel>,
-  res: Response,
-  next: NextFunction
-) => {
-  if (req.body && req.body.url && req.body.content) {
-    return next();
-  } else {
-    throw new ClientError(
-      "Check the request body: 'url' and 'content' must be supplied",
+      "Check the request body: pubId, content, isThisComment and mainPostImageUrl must be supplied",
       400
     );
   }
