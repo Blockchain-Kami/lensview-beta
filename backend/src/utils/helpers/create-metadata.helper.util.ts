@@ -35,7 +35,7 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
     ? `${urlObj.lensHandle}`
     : APP_LENS_HANDLE;
 
-  urlObj["lensHandle"]
+  urlObj["lensHandle"] !== APP_LENS_HANDLE
     ? tags.push(TAG_USER_PUB) // userPub
     : tags.push(TAG_ANONYMOUS_PUB); // anonymousPub
 

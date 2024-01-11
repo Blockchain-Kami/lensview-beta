@@ -11,7 +11,7 @@ export const PRIVATE_KEY = process.env.PRIVATE_KEY as string;
 export const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY as string;
 export const NETWORK = process.env.NETWORK as string;
 export const SOURCE_APP_ID = process.env.SOURCE_APP_ID as string;
-export const WEB3STORAGE_TOKEN = process.env.WEB3STORAGE_TOKEN as string;
+export const NFT_STORAGE_TOKEN = process.env.NFT_STORAGE_TOKEN as string;
 export const APP_LENS_HANDLE = process.env.APP_LENS_HANDLE as string;
 export const LENS_HUB_CONTRACT_ADDRESS = process.env
   .LENS_HUB_CONTRACT_ADDRESS as string;
