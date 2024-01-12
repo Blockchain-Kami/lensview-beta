@@ -28,7 +28,7 @@ export const uploadIpfs = async (data: string) => {
   const client = makeStorageClient();
   const cid = await client.storeDirectory(makeFileObjects(data));
   console.log("stored files with cid:", cid);
-  const uri = `https://${cid}.ipfs.w3s.link/metaData.json`;
+  const uri = `https://${cid}.ipfs.nftstorage.link/metaData.json`;
 
   console.log("URI : " + uri);
   return uri;
