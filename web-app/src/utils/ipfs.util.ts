@@ -1,7 +1,7 @@
-import { Web3Storage } from "web3.storage";
-const { VITE_WEB3STORAGE_TOKEN } = import.meta.env;
+import { NFTStorage } from "nft.storage";
+const { VITE_NFT_STORAGE_TOKEN } = import.meta.env;
 
-if (!VITE_WEB3STORAGE_TOKEN) {
+if (!VITE_NFT_STORAGE_TOKEN) {
   throw new Error("Must define VITE_WEB3STORAGE_TOKEN in the .env to run this");
 }
 
@@ -21,12 +21,12 @@ function makeFileObjects(data: string) {
 }
 
 function makeStorageClient() {
-  return new Web3Storage({ token: VITE_WEB3STORAGE_TOKEN });
+  return new NFTStorage({ token: VITE_NFT_STORAGE_TOKEN });
 }
 
 export const uploadIpfs = async (data: string) => {
   const client = makeStorageClient();
-  const cid = await client.put(makeFileObjects(data));
+  const cid = await client.storeDirectory(makeFileObjects(data));
   console.log("stored files with cid:", cid);
   const uri = `https://${cid}.ipfs.w3s.link/metaData.json`;
 
