@@ -1,4 +1,4 @@
-import { NFTStorage, File, Blob } from 'nft.storage'
+import { NFTStorage, File, Blob } from "nft.storage";
 import { NFT_STORAGE_TOKEN } from "../../config/env.config";
 // import { Web3Storage, File } from "web3.storage";
 
@@ -29,7 +29,7 @@ if (!NFT_STORAGE_TOKEN) {
  */
 function makeStorageClient() {
   // return new Web3Storage({ token: WEB3STORAGE_TOKEN });
-  return new NFTStorage({ token: NFT_STORAGE_TOKEN })
+  return new NFTStorage({ token: NFT_STORAGE_TOKEN });
 }
 
 /**

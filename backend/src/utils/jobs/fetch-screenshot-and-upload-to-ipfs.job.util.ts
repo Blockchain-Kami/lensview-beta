@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
 import { NFT_STORAGE_TOKEN } from "../../config/env.config";
-import { NFTStorage, Blob, CIDString } from 'nft.storage'
+import { NFTStorage, Blob, CIDString } from "nft.storage";
 import { minimal_args } from "../../config/puppetteer.config";
 import { InternalServerError } from "../../errors/internal-server-error.error";
 // import { CIDString, Web3Storage, File } from "web3.storage";
@@ -14,7 +14,7 @@ import { InternalServerError } from "../../errors/internal-server-error.error";
  */
 export const fetchScreenshotAndUploadToIPFSJobUtil = async (url: string) => {
   // const imgName = "image.jpg";
-  const client = new NFTStorage({ token: NFT_STORAGE_TOKEN })
+  const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
 
   try {
     const screenshot = await Screenshot(url);
@@ -24,9 +24,7 @@ export const fetchScreenshotAndUploadToIPFSJobUtil = async (url: string) => {
     // const client = new Web3Storage({ token: WEB3STORAGE_TOKEN });
     // const imgCID = await client.put([file], { name: imgName });
     const imgCID = await client.storeBlob(screenshotBlob);
-    console.log(
-      "Screenshot image stored: " + makeGatewayURLImage(imgCID)
-    );
+    console.log("Screenshot image stored: " + makeGatewayURLImage(imgCID));
     return makeGatewayURLImage(imgCID);
   } catch (error) {
     throw new InternalServerError(
