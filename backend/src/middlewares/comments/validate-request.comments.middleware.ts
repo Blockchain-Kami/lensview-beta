@@ -36,7 +36,7 @@ export const validatePutAnonymousCommentRequestMiddleware = (
     req.body.pubId &&
     req.body.content &&
     req.body.mainPostImageUrl &&
-    (req.body.isThisComment !== undefined)
+    req.body.isThisComment !== undefined
   ) {
     return next();
   } else {

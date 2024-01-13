@@ -19,29 +19,36 @@ export const addImageToPostAdminController = async (
   req: Request<unknown, unknown, AddImageToPostAdminRouteBodyRequestModel>,
   res: Response<PublicationResponseModel>
 ) => {
-  const { url } = req.body;
-  const urlString = isInputTypeURLHelperUtil(url);
-  const urlObj = preprocessURLAndCreateMetadataObjectHelperUtil(
-    urlString ? urlString : url,
-    APP_LENS_HANDLE,
-    null,
-    []
-  );
-  console.log(JSON.stringify(urlObj));
-  const publicationExists = await relatedParentPublicationsLensService([
-    urlObj.hashedURL
-  ]);
-  console.log(JSON.stringify(publicationExists));
-  if (publicationExists && publicationExists.items.length > 0) {
-    await uploadScreenshotAndCommentWithImageJobUtil(urlObj);
-    return res.status(httpStatusCodes.CREATED).send({
-      publicationID: publicationExists.items[0].id,
-      message: "Image Added To Post"
-    });
-  } else {
-    return res.status(httpStatusCodes.OK).send({
+  try {
+    const { url } = req.body;
+    const urlString = isInputTypeURLHelperUtil(url);
+    const urlObj = preprocessURLAndCreateMetadataObjectHelperUtil(
+      urlString ? urlString : url,
+      APP_LENS_HANDLE,
+      null,
+      []
+    );
+    console.log(JSON.stringify(urlObj));
+    const publicationExists = await relatedParentPublicationsLensService([
+      urlObj.hashedURL
+    ]);
+    console.log(JSON.stringify(publicationExists));
+    if (publicationExists && publicationExists.items.length > 0) {
+      await uploadScreenshotAndCommentWithImageJobUtil(urlObj);
+      return res.status(httpStatusCodes.CREATED).send({
+        publicationID: publicationExists.items[0].id,
+        message: "Image Added To Post"
+      });
+    } else {
+      return res.status(httpStatusCodes.OK).send({
+        publicationID: null,
+        message: "Could Not Find Publication"
+      });
+    }
+  } catch (error) {
+    return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
       publicationID: null,
-      message: "Could Not Find Publication"
+      message: "Error:" + error
     });
   }
 };
