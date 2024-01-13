@@ -1,9 +1,10 @@
-import { CIDString, Web3Storage, File } from "web3.storage";
-import { Blob } from "buffer";
 import puppeteer from "puppeteer";
-import { WEB3STORAGE_TOKEN } from "../../config/env.config";
+import { NFT_STORAGE_TOKEN } from "../../config/env.config";
+import { NFTStorage, Blob, CIDString } from "nft.storage";
 import { minimal_args } from "../../config/puppetteer.config";
 import { InternalServerError } from "../../errors/internal-server-error.error";
+// import { CIDString, Web3Storage, File } from "web3.storage";
+// import { Blob } from "buffer";
 
 /**
  * Fetches a screenshot from the given URL and uploads it to IPFS.
@@ -12,19 +13,19 @@ import { InternalServerError } from "../../errors/internal-server-error.error";
  * @return {Promise<string>} - A promise that resolves to the URL of the uploaded image on IPFS.
  */
 export const fetchScreenshotAndUploadToIPFSJobUtil = async (url: string) => {
-  const imgName = "image.jpg";
+  // const imgName = "image.jpg";
+  const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
 
   try {
     const screenshot = await Screenshot(url);
     console.log("Screenshot taken successfully");
     const screenshotBlob = new Blob([screenshot]);
-    const file = new File([screenshotBlob as BlobPart], imgName);
-    const client = new Web3Storage({ token: WEB3STORAGE_TOKEN });
-    const imgCID = await client.put([file], { name: imgName });
-    console.log(
-      "Screenshot image stored: " + makeGatewayURLImage(imgCID, imgName)
-    );
-    return makeGatewayURLImage(imgCID, imgName);
+    // const file = new File([screenshotBlob as BlobPart], imgName);
+    // const client = new Web3Storage({ token: WEB3STORAGE_TOKEN });
+    // const imgCID = await client.put([file], { name: imgName });
+    const imgCID = await client.storeBlob(screenshotBlob);
+    console.log("Screenshot image stored: " + makeGatewayURLImage(imgCID));
+    return makeGatewayURLImage(imgCID);
   } catch (error) {
     throw new InternalServerError(
       "Error while uploading screenshot to IPFS: " + error,
@@ -39,11 +40,10 @@ export const fetchScreenshotAndUploadToIPFSJobUtil = async (url: string) => {
  * Generates a gateway URL for an image based on the image CID and image name.
  *
  * @param {CIDString} imgCID - The CID of the image.
- * @param {string} imgName - The name of the image.
  * @return {string} The generated gateway URL for the image.
  */
-const makeGatewayURLImage = (imgCID: CIDString, imgName: string) => {
-  return `https://${imgCID}.ipfs.w3s.link/${imgName}`;
+const makeGatewayURLImage = (imgCID: CIDString) => {
+  return `https://${imgCID}.ipfs.nftstorage.link`;
 };
 
 /**

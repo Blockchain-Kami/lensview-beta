@@ -1,5 +1,6 @@
-import { Web3Storage, File } from "web3.storage";
-import { WEB3STORAGE_TOKEN } from "../../config/env.config";
+import { NFTStorage, File, Blob } from "nft.storage";
+import { NFT_STORAGE_TOKEN } from "../../config/env.config";
+// import { Web3Storage, File } from "web3.storage";
 
 /**
  * Uploads a file to IPFS and returns the URI of the uploaded file.
@@ -9,25 +10,26 @@ import { WEB3STORAGE_TOKEN } from "../../config/env.config";
  */
 export const uploadToIPFSHelperUtil = async (data: string) => {
   const client = makeStorageClient();
-  const cid = await client.put(makeFileObjects(data));
+  const cid = await client.storeDirectory(makeFileObjects(data));
   console.log("stored files with cid:", cid);
-  const uri = `https://${cid}.ipfs.w3s.link/metaData.json`;
+  const uri = `https://${cid}.ipfs.nftstorage.link/metaData.json`;
 
   console.log("URI : " + uri);
   return uri;
 };
 
-if (!WEB3STORAGE_TOKEN) {
-  throw new Error("Must define WEB3STORAGE_TOKEN in the .env to run this");
+if (!NFT_STORAGE_TOKEN) {
+  throw new Error("Must define NFT_STORAGE_TOKEN in the .env to run this");
 }
 
 /**
  * Creates a new instance of the StorageClient class.
  *
- * @return {Web3Storage} A new instance of the StorageClient class.
+ * @return {NFTStorage} A new instance of the StorageClient class.
  */
 function makeStorageClient() {
-  return new Web3Storage({ token: WEB3STORAGE_TOKEN });
+  // return new Web3Storage({ token: WEB3STORAGE_TOKEN });
+  return new NFTStorage({ token: NFT_STORAGE_TOKEN });
 }
 
 /**
