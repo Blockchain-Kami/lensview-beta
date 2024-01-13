@@ -101,10 +101,10 @@
     });
   };
 
-  const openCreateLensProfileModal = () => {
-    showCreateLensProfileModal = true;
-    dialog.close();
-  };
+  // const openCreateLensProfileModal = () => {
+  //   showCreateLensProfileModal = true;
+  //   dialog.close();
+  // };
 
   const loggedUserInIfAccessTokenPresent = async () => {
     const isValidAccessTokenPresentInLocalStorage =
@@ -140,16 +140,15 @@
       on:click|stopPropagation
       transition:fly={{ y: 40, easing: backInOut, duration: 700 }}
     >
-      <div class="CenterRowFlex head">
-        <div class="h3">Login</div>
-        <div class="head__close-btn">
-          <button on:click={() => dialog.close()}>
-            <Icon d={close} />
-          </button>
-        </div>
-      </div>
-
       {#if !$addressUserStore}
+        <div class="CenterRowFlex head">
+          <div class="h3">Login</div>
+          <div class="head__close-btn">
+            <button on:click={() => dialog.close()}>
+              <Icon d={close} />
+            </button>
+          </div>
+        </div>
         <div class="body">Please connect your wallet to continue</div>
         <div class="line" />
         <div class="footer">
@@ -158,6 +157,14 @@
       {:else if !$isLoggedInUserStore}
         {#if !loggingIn}
           {#if $idsAndHandlesUserStore.length > 0}
+            <div class="CenterRowFlex head">
+              <div class="h3">Login</div>
+              <div class="head__close-btn">
+                <button on:click={() => dialog.close()}>
+                  <Icon d={close} />
+                </button>
+              </div>
+            </div>
             <div class="body">
               Please login with Lens
               <br />
@@ -180,19 +187,54 @@
               </button>
             </div>
           {:else}
+            <div class="CenterRowFlex head">
+              <div class="h3">Post your thoughts, anonymously</div>
+              <div class="head__close-btn">
+                <button on:click={() => dialog.close()}>
+                  <Icon d={close} />
+                </button>
+              </div>
+            </div>
             <div class="body">
-              No Account found!
+              <div style="font-weight: bold">
+                Join our waitlist now to unlock the full experience of LensView.
+              </div>
               <br />
-              Please create Lens Profile to continue
+              But this doesn't stop your voice from being heard, feel free to post
+              your opinions anonymously with no sign-ins with the "Post Anonymously"
+              button. We eagerly await your contributions!
             </div>
             <div class="line" />
             <div class="footer">
-              <button on:click={openCreateLensProfileModal} class="btn">
-                Create Lens Profile
+              <button
+                on:click={() =>
+                  window.open("https://waitlist.lens.xyz/", "_blank")}
+                class="btn"
+              >
+                Join Waitlist
               </button>
             </div>
+            <!--            <div class="body">-->
+            <!--              No Account found!-->
+            <!--              <br />-->
+            <!--              Please create Lens Profile to continue-->
+            <!--            </div>-->
+            <!--            <div class="line" />-->
+            <!--            <div class="footer">-->
+            <!--              <button on:click={openCreateLensProfileModal} class="btn">-->
+            <!--                Create Lens Profile-->
+            <!--              </button>-->
+            <!--            </div>-->
           {/if}
         {:else}
+          <div class="CenterRowFlex head">
+            <div class="h3">Login</div>
+            <div class="head__close-btn">
+              <button on:click={() => dialog.close()}>
+                <Icon d={close} />
+              </button>
+            </div>
+          </div>
           <div class="body">
             Please login with Lens
             <br />
