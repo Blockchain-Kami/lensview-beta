@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
 
 function manageMainPostImageUrl() {
-  const mainPostImageUrl = writable<string>();
+  const mainPostImageUrl = writable<string>("empty");
 
   return {
     subscribe: mainPostImageUrl.subscribe,
