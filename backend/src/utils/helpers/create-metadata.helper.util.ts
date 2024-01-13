@@ -63,7 +63,7 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
       }
     ],
     sharingLink: urlObj.url,
-    content: `LensView Post by ${lensHandle}`
+    content: `LensView Post by ${lensHandle} on ${urlObj.url}`
     //TODO: Check the fields below for potential usage in LensView
     // attachments: [PublicationMetadataMediaVideo],
     // "encryptedWith": PublicationMetadataLitEncryption,

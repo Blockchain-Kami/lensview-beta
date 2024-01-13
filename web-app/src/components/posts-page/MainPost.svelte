@@ -207,8 +207,11 @@
     return "";
   };
 
-  const updateMainPostImageUrlStore = (imageUrl: string) => {
-    mainPostImageUrlStore.setMainPostImageUrl(imageUrl);
+  const updateMainPostImageUrlStore = (imageUrl: string | undefined) => {
+    if (imageUrl === undefined)
+      mainPostImageUrlStore.setMainPostImageUrl("empty");
+    else mainPostImageUrlStore.setMainPostImageUrl(imageUrl);
+
     return "";
   };
 </script>
