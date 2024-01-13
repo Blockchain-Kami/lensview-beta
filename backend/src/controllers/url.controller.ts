@@ -108,9 +108,9 @@ export const urlExistsValidationController = async (
 ) => {
   try {
     const searchQuery = req.query.search_query;
-    const isURL = isInputTypeURLHelperUtil(searchQuery);
-    if (isURL) {
-      const [url, , , ,] = preprocessURLHelperUtil(searchQuery);
+    const URLString = isInputTypeURLHelperUtil(searchQuery);
+    if (URLString) {
+      const [url, , , ,] = preprocessURLHelperUtil(URLString);
       const hashedURL = createHashHelperUtil(url);
       const publicationExists = await relatedParentPublicationsLensService([
         hashedURL
