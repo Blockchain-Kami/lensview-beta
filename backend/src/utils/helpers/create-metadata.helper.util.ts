@@ -36,8 +36,8 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
     : APP_LENS_HANDLE;
 
   urlObj["lensHandle"] !== APP_LENS_HANDLE
-    ? tags.push(TAG_USER_PUB) // userPub
-    : tags.push(TAG_ANONYMOUS_PUB); // anonymousPub
+    ? tags.push(TAG_USER_PUB)
+    : tags.push(TAG_ANONYMOUS_PUB);
 
   tags = [...new Set(tags)];
 
@@ -60,6 +60,11 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
         key: "createdOn",
         type: MetadataAttributeType.STRING,
         value: `${new Date().toJSON().slice(0, 10)}`
+      },
+      {
+        key: "category",
+        type: MetadataAttributeType.STRING,
+        value: "LensView Beta User"
       }
     ],
     sharingLink: urlObj.url,
@@ -76,11 +81,11 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
   mainPostImageUrl: string,
   isThisComment: boolean
 ) => {
-  const tags = [TAG_ANONYMOUS_PUB]; // anonymousPub
+  const tags = [TAG_ANONYMOUS_PUB];
   if (isThisComment) {
-    tags.push(TAG_USER_COMMENT); // userComment
+    tags.push(TAG_USER_COMMENT);
   } else {
-    tags.push(TAG_USER_POST); // userPost
+    tags.push(TAG_USER_POST);
   }
   return textOnly({
     locale: "en-US",
@@ -100,12 +105,17 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
       {
         key: "createdOn",
         type: MetadataAttributeType.STRING,
-        value: Date.now().toString()
+        value: `${new Date().toJSON().slice(0, 10)}`
       },
       {
         key: "mainPostImageUrl",
         type: MetadataAttributeType.STRING,
         value: mainPostImageUrl
+      },
+      {
+        key: "category",
+        type: MetadataAttributeType.STRING,
+        value: "LensView Beta User"
       }
     ],
     content: comment
@@ -120,7 +130,7 @@ export const createMetaDataForImageCommentHelperUtil = (
 ) => {
   return image({
     locale: "en-US",
-    tags: [TAG_IMAGE_PUB], // imagePub
+    tags: [TAG_IMAGE_PUB],
     appId: SOURCE_APP_ID,
     attributes: [
       {
@@ -136,20 +146,25 @@ export const createMetaDataForImageCommentHelperUtil = (
       {
         key: "createdOn",
         type: MetadataAttributeType.STRING,
-        value: Date.now().toString()
+        value: `${new Date().toJSON().slice(0, 10)}`
+      },
+      {
+        key: "category",
+        type: MetadataAttributeType.STRING,
+        value: "LensView Beta User"
       }
     ],
     image: {
       item: `${urlObj.image}`,
       type: MediaImageMimeType.PNG,
-      altTag: urlObj.hostname,
+      altTag: urlObj.url,
       license: MetadataLicenseType.CCO
     },
     attachments: [
       {
         item: `${urlObj.image}`,
         type: MediaImageMimeType.PNG,
-        altTag: urlObj.hostname,
+        altTag: urlObj.url,
         license: MetadataLicenseType.CCO
       }
     ],
