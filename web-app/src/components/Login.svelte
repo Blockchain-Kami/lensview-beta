@@ -95,7 +95,7 @@
     addNotification({
       position: "top-right",
       heading: "Successfully logged-in",
-      description: "You have successfully logged-in to Lens Views",
+      description: "You have successfully logged-in to LensView",
       type: tick,
       removeAfter: 3000
     });

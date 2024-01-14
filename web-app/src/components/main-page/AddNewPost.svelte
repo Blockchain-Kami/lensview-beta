@@ -131,6 +131,8 @@
           "empty"
         );
 
+        userEnteredContent = "";
+        userEnteredUrl = "";
         addNotification({
           position: "top-right",
           heading: "Successfully Posted",
@@ -196,6 +198,8 @@
         userEnteredContent
       );
 
+      userEnteredContent = "";
+      userEnteredUrl = "";
       addNotification({
         position: "top-right",
         heading: "Successfully Posted",

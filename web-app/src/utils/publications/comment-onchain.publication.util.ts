@@ -52,12 +52,17 @@ const commentOnChainPublicationUtil = async (
       {
         key: "createdOn",
         type: MetadataAttributeType.STRING,
-        value: Date.now().toString()
+        value: `${new Date().toJSON().slice(0, 10)}`
       },
       {
         key: "mainPostImageUrl",
         type: MetadataAttributeType.STRING,
         value: mainPostImageUrl
+      },
+      {
+        key: "category",
+        type: MetadataAttributeType.STRING,
+        value: "LensView Beta User"
       }
     ],
     content: comment
