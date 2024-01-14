@@ -326,6 +326,7 @@
     );
     padding: 1rem;
     overflow-wrap: anywhere;
+    color: #aac0c3;
   }
 
   .body__input__err-msg {
