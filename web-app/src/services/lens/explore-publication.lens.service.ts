@@ -7,6 +7,7 @@ import {
 } from "../../gql/graphql";
 import type { ExplorePublicationsLensModel } from "../../models/lens/explore-publications.lens.model";
 const { VITE_SOURCE_APP_ID } = import.meta.env;
+const { VITE_DATA_SINCE } = import.meta.env;
 
 const explorePublicationLensService = async () => {
   const result = await baseClientAuthenticationUtil
@@ -16,6 +17,7 @@ const explorePublicationLensService = async () => {
         limit: LimitType.Fifty,
         where: {
           publicationTypes: [ExplorePublicationType.Post],
+          since: Number(VITE_DATA_SINCE),
           metadata: {
             publishedOn: [VITE_SOURCE_APP_ID]
           }

@@ -3,6 +3,9 @@ export interface ExplorePublicationsLensModel {
   items: {
     __typename: "Post";
     id: string;
+    by: {
+      id: string;
+    };
     createdAt: string;
     stats: {
       comments: number;

@@ -7,6 +7,9 @@ const explorePublicationsQueryGraphql = graphql(`
         ... on Post {
           id
           createdAt
+          by {
+            id
+          }
           stats {
             comments
             upvotes: reactions(request: { type: UPVOTE })

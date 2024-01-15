@@ -93,166 +93,170 @@
     <IntroPrompt />
     <div class="body">
       {#each data.items as item}
-        <a
-          href={"/posts/" + item?.id}
-          use:inview={options}
-          on:inview_change={(event) => handleChange(event, item?.id)}
-        >
-          <div
-            class="card"
-            class:card__hover-effect={isInView[item?.id] && matches}
+        {#if item?.by?.id === VITE_APP_LENS_ID}
+          <a
+            href={"/posts/" + item?.id}
+            use:inview={options}
+            on:inview_change={(event) => handleChange(event, item?.id)}
           >
-            {#await getImageCommentLensService(item?.id)}
-              <div class="card__image-loader" />
-            {:then fetchedImageUrl}
-              <div
-                class="card__image"
-                style="background-image: url({fetchedImageUrl})"
-                class:card__image__hover-effect={isInView[item?.id] && matches}
-              >
-                <div class="CenterRowFlex card__image__layer1">
-                  <div class="CenterRowFlex card__image__layer1__posts-count">
-                    <Icon d={modeComment} />
-                    {item?.stats?.comments}
-                  </div>
-                  <button
-                    class="card__image__layer1__more-icon"
-                    on:click={(event) => openCloseCardsMore(event, item?.id)}
-                  >
-                    <Icon d={moreHoriz} />
-                  </button>
-                </div>
-                {#if isCardsMoreOpen[item?.id]}
-                  <div class="CenterColumnFlex card__image__more">
+            <div
+              class="card"
+              class:card__hover-effect={isInView[item?.id] && matches}
+            >
+              {#await getImageCommentLensService(item?.id)}
+                <div class="card__image-loader" />
+              {:then fetchedImageUrl}
+                <div
+                  class="card__image"
+                  style="background-image: url({fetchedImageUrl})"
+                  class:card__image__hover-effect={isInView[item?.id] &&
+                    matches}
+                >
+                  <div class="CenterRowFlex card__image__layer1">
+                    <div class="CenterRowFlex card__image__layer1__posts-count">
+                      <Icon d={modeComment} />
+                      {item?.stats?.comments}
+                    </div>
                     <button
-                      on:click={(event) => sharePost(event, item?.id)}
-                      class="CenterRowFlex card__image__more__share"
+                      class="card__image__layer1__more-icon"
+                      on:click={(event) => openCloseCardsMore(event, item?.id)}
                     >
-                      <span
-                        class="CenterRowFlex card__image__more__share__icon"
-                      >
-                        <Icon d={share} size="1.2em" />
-                      </span>
-                      Share
+                      <Icon d={moreHoriz} />
                     </button>
                   </div>
-                {/if}
-              </div>
-            {:catch _error}
-              <div
-                class="card__image"
-                style="background-image: url('https://media.istockphoto.com/id/1392182937/vector/no-image-available-photo-coming-soon.jpg?s=170667a&w=0&k=20&c=HOCGNLwt3LkB92ZlyHAupxbwHY5X2143KDlbA-978dE=')"
-              />
-            {/await}
-            <div class="CenterRowFlex card__info">
-              <div class="CenterRowFlex card__info__reaction">
-                <div class="CenterRowFlex card__info__reaction__val">
-                  <Icon d={thumbUp} />
-                  {item?.stats?.upvotes}
+                  {#if isCardsMoreOpen[item?.id]}
+                    <div class="CenterColumnFlex card__image__more">
+                      <button
+                        on:click={(event) => sharePost(event, item?.id)}
+                        class="CenterRowFlex card__image__more__share"
+                      >
+                        <span
+                          class="CenterRowFlex card__image__more__share__icon"
+                        >
+                          <Icon d={share} size="1.2em" />
+                        </span>
+                        Share
+                      </button>
+                    </div>
+                  {/if}
                 </div>
-                <div class="card__info__reaction__vertical-line" />
-                <div class="CenterRowFlex card__info__reaction__val">
-                  <Icon d={thumbDown} />
-                  {item?.stats?.downvotes}
-                </div>
-              </div>
-              <div class="CenterColumnFlex card__info__content">
-                <a href={item?.metadata?.sharingLink} target="_blank">
-                  <div class="CenterRowFlex card__info__content__link">
-                    <Icon d={redirect} />{item?.metadata?.sharingLink.substring(
-                      0,
-                      20
-                    )}...
+              {:catch _error}
+                <div
+                  class="card__image"
+                  style="background-image: url('https://media.istockphoto.com/id/1392182937/vector/no-image-available-photo-coming-soon.jpg?s=170667a&w=0&k=20&c=HOCGNLwt3LkB92ZlyHAupxbwHY5X2143KDlbA-978dE=')"
+                />
+              {/await}
+              <div class="CenterRowFlex card__info">
+                <div class="CenterRowFlex card__info__reaction">
+                  <div class="CenterRowFlex card__info__reaction__val">
+                    <Icon d={thumbUp} />
+                    {item?.stats?.upvotes}
                   </div>
-                </a>
-                <div class="card__info__content__time">
-                  {getFormattedDateHelperUtil(item?.createdAt)}
+                  <div class="card__info__reaction__vertical-line" />
+                  <div class="CenterRowFlex card__info__reaction__val">
+                    <Icon d={thumbDown} />
+                    {item?.stats?.downvotes}
+                  </div>
+                </div>
+                <div class="CenterColumnFlex card__info__content">
+                  <a href={item?.metadata?.sharingLink} target="_blank">
+                    <div class="CenterRowFlex card__info__content__link">
+                      <Icon
+                        d={redirect}
+                      />{item?.metadata?.sharingLink?.substring(0, 20)}...
+                    </div>
+                  </a>
+                  <div class="card__info__content__time">
+                    {getFormattedDateHelperUtil(item?.createdAt)}
+                  </div>
                 </div>
               </div>
-            </div>
-            {#await getCommentBasedOnParameterPublicationUtil(item?.id, LimitType.Ten, CommentFilterType.FirstMostRelevantComments)}
-              <div class="CenterRowFlex card__post">
-                <div class="card__post__user-pic-loader" />
-                <div class="card__post__info">
-                  <div class="CenterRowFlex card__post__info__head-loader" />
-                  <div class="card__post__info__body-loader" />
-                </div>
-              </div>
-            {:then comments}
-              {#if !comments || (comments && comments.items.length === 0)}
-                <div class="CenterRowFlex card__post">No Top Post</div>
-              {:else}
+              {#await getCommentBasedOnParameterPublicationUtil(item?.id, LimitType.Ten, CommentFilterType.FirstMostRelevantComments)}
                 <div class="CenterRowFlex card__post">
-                  <div class="card__post__user-pic">
-                    <img
-                      src={getPictureURLUtil(
-                        comments.items[0]?.by?.metadata?.picture?.optimized
-                          ?.uri,
-                        comments.items[0]?.by?.ownedBy?.address
-                      )}
-                      alt="avatar"
-                    />
-                  </div>
+                  <div class="card__post__user-pic-loader" />
                   <div class="card__post__info">
-                    <div class="CenterRowFlex card__post__info__head">
-                      <div class="card__post__info__head__username">
-                        {comments.items[0]?.by?.handle?.fullHandle.substring(
-                          5,
-                          17
-                        )}
-                        {comments.items[0]?.by?.handle?.fullHandle.length > 17
-                          ? "..."
-                          : ""}
-                      </div>
-                      {#if comments.items[0]?.by?.id === VITE_APP_LENS_ID}
-                        <Tooltip
-                          content="This post was made by an anonymous user!"
-                          position="top"
-                          autoPosition
-                          align="left"
-                          theme="custom-tooltip"
-                          maxWidth="150"
-                          animation="slide"
-                        >
-                          <span
-                            class="CenterRowFlex card__post__info__head__anon-comment"
-                          >
-                            <Icon d={person} size="1.05em" />
-                          </span>
-                        </Tooltip>
-                      {/if}
-                      <div class="CenterRowFlex card__post__info__head__trend">
-                        <div
-                          class="CenterRowFlex card__post__info__head__trend__icon"
-                        >
-                          <Icon d={trendingUp} />
-                        </div>
-                        <div class="card__post__info__head__trend__count">
-                          {comments?.items[0]?.stats?.upvotes === undefined
-                            ? 0
-                            : comments?.items[0]?.stats?.upvotes}
-                        </div>
-                      </div>
-                      <div class="card__post__info__head__time">
-                        {getFormattedDateHelperUtil(
-                          comments?.items[0]?.createdAt
-                        )}
-                      </div>
-                    </div>
-                    <div class="card__post__info__body">
-                      <!--eslint-disable-next-line svelte/no-at-html-tags -->
-                      {@html DOMPurify.sanitize(
-                        comments?.items[0]?.metadata?.content
-                      ).substring(0, 100)}
-                    </div>
+                    <div class="CenterRowFlex card__post__info__head-loader" />
+                    <div class="card__post__info__body-loader" />
                   </div>
                 </div>
-              {/if}
-            {:catch _error}
-              <div class="CenterRowFlex card__post">No Top Post</div>
-            {/await}
-          </div>
-        </a>
+              {:then comments}
+                {#if !comments || (comments && comments.items.length === 0)}
+                  <div class="CenterRowFlex card__post">No Top Post</div>
+                {:else}
+                  <div class="CenterRowFlex card__post">
+                    <div class="card__post__user-pic">
+                      <img
+                        src={getPictureURLUtil(
+                          comments.items[0]?.by?.metadata?.picture?.optimized
+                            ?.uri,
+                          comments.items[0]?.by?.ownedBy?.address
+                        )}
+                        alt="avatar"
+                      />
+                    </div>
+                    <div class="card__post__info">
+                      <div class="CenterRowFlex card__post__info__head">
+                        <div class="card__post__info__head__username">
+                          {comments.items[0]?.by?.handle?.fullHandle.substring(
+                            5,
+                            17
+                          )}
+                          {comments.items[0]?.by?.handle?.fullHandle.length > 17
+                            ? "..."
+                            : ""}
+                        </div>
+                        {#if comments.items[0]?.by?.id === VITE_APP_LENS_ID}
+                          <Tooltip
+                            content="This post was made by an anonymous user!"
+                            position="top"
+                            autoPosition
+                            align="left"
+                            theme="custom-tooltip"
+                            maxWidth="150"
+                            animation="slide"
+                          >
+                            <span
+                              class="CenterRowFlex card__post__info__head__anon-comment"
+                            >
+                              <Icon d={person} size="1.05em" />
+                            </span>
+                          </Tooltip>
+                        {/if}
+                        <div
+                          class="CenterRowFlex card__post__info__head__trend"
+                        >
+                          <div
+                            class="CenterRowFlex card__post__info__head__trend__icon"
+                          >
+                            <Icon d={trendingUp} />
+                          </div>
+                          <div class="card__post__info__head__trend__count">
+                            {comments?.items[0]?.stats?.upvotes === undefined
+                              ? 0
+                              : comments?.items[0]?.stats?.upvotes}
+                          </div>
+                        </div>
+                        <div class="card__post__info__head__time">
+                          {getFormattedDateHelperUtil(
+                            comments?.items[0]?.createdAt
+                          )}
+                        </div>
+                      </div>
+                      <div class="card__post__info__body">
+                        <!--eslint-disable-next-line svelte/no-at-html-tags -->
+                        {@html DOMPurify.sanitize(
+                          comments?.items[0]?.metadata?.content
+                        ).substring(0, 100)}
+                      </div>
+                    </div>
+                  </div>
+                {/if}
+              {:catch _error}
+                <div class="CenterRowFlex card__post">No Top Post</div>
+              {/await}
+            </div>
+          </a>
+        {/if}
       {/each}
     </div>
     <button

@@ -326,6 +326,12 @@
     );
     padding: 1rem;
     overflow-wrap: anywhere;
+  }
+
+  div[contenteditable="true"]:empty::before {
+    content: attr(
+      placeholder
+    ); // this will take the placeholder attribute of the div element and use as content
     color: #aac0c3;
   }
 
