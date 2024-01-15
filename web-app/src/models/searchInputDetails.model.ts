@@ -1,4 +1,4 @@
 export interface SearchInputDetailsModel {
-	userEnteredUrlOrKeywords: string;
-	isInputUrl: boolean;
+  userEnteredUrlOrKeywords: string;
+  isInputUrl: boolean;
 }

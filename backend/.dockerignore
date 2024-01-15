@@ -1,0 +1,8 @@
+node_modules
+Dockerfile
+.dockerignore
+.gitignore
+build
+.husky
+dist
+.env.example

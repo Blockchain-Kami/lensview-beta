@@ -1,11 +1,8 @@
 import type { PageLoad } from "./$types";
-import { getExplorePublicationsForApp } from "../utils/frontend/getExplorePublicationsForApp";
+import explorePublicationLensService from "../services/lens/explore-publication.lens.service";
 
 export const load = (async () => {
-  const fetchedExplorePublicationsForApp = await getExplorePublicationsForApp();
-  const explorePublicationsForApp = fetchedExplorePublicationsForApp?.data?.explorePublications;
-
-  return {
-    "explorePublicationsForApp": explorePublicationsForApp
-  };
+  return await explorePublicationLensService();
 }) satisfies PageLoad;
+
+export const ssr = false;

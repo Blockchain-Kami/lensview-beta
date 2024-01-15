@@ -1,34 +1,36 @@
 <script lang="ts">
-    import AddNewPost from "../main-page/AddNewPost.svelte";
-    import { searchInputDetails } from "../../services/searchInputDetails";
+  import AddNewPost from "../main-page/AddNewPost.svelte";
+  import { page } from "$app/stores";
 
-    let showAddNewPostModal = false;
+  let showAddNewPostModal = false;
 </script>
-
 
 <!----------------------------- HTML ----------------------------->
 <section>
-    <div class="content">
-        <div class="content__sub-title">
-            Oops, we might not have what you are looking for right now.
-        </div>
-        <div class="h2 content__title">
-            But you can always start a new discussion or share your views by
-            <span style="color: var(--primary);">creating one!</span>
-        </div>
+  <div class="content">
+    <div class="content__sub-title">
+      Oops, we might not have what you are looking for right now.
     </div>
-    <div class="create-btn">
-        <button on:click={() => showAddNewPostModal = true}
-                class="btn">
-            Create a post
-        </button>
+    <div class="h2 content__title">
+      But you can always start a new discussion or share your views by
+      <span style="color: var(--primary);">creating one!</span>
     </div>
+  </div>
+  <div class="create-btn">
+    <button on:click={() => (showAddNewPostModal = true)} class="btn">
+      Create a post
+    </button>
+  </div>
 </section>
 
-<AddNewPost userEnteredUrl={$searchInputDetails.userEnteredUrlOrKeywords} bind:showAddNewPostModal/>
+<AddNewPost
+  userEnteredUrl={$page.data.userEnteredUrlOrKeywords}
+  bind:showAddNewPostModal
+/>
+
+<!----------------------------------------------------------------->
 
 <!---------------------------------------------------------------->
-
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
@@ -40,7 +42,9 @@
     border-radius: 20px;
     background: var(--bg);
     border-left: 2px solid var(--primary);
-    box-shadow: rgba(0, 0, 0, 0.25) 0 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0 54px 55px,
+      rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+      rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
   }
 
   .content {
@@ -102,4 +106,3 @@
     }
   }
 </style>
-<!----------------------------------------------------------------->

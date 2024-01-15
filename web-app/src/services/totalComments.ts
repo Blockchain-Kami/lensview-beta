@@ -1,14 +1,14 @@
-import { writable } from 'svelte/store';
+import { writable } from "svelte/store";
 
 function manageTotalComments() {
-	const totalComments = writable();
+  const totalComments = writable();
 
-	return {
-		subscribe: totalComments.subscribe,
-		setTotalComments: (fetchedTotalComments: number) => {
-			totalComments.set(fetchedTotalComments);
-		}
-	};
+  return {
+    subscribe: totalComments.subscribe,
+    setTotalComments: (fetchedTotalComments: number) => {
+      totalComments.set(fetchedTotalComments);
+    }
+  };
 }
 
 export const totalComments = manageTotalComments();

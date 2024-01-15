@@ -11,41 +11,39 @@
   $: if (postPubId !== $page.data.postPubId) {
     postPubId = $page.data.postPubId;
   }
-
 </script>
 
-
 <!----------------------------- HTML ----------------------------->
-
 
 <MediaQuery query="(max-width: 1024px)" let:matches>
   {#if matches}
     <main class="tablet">
-      <MainPost/>
-      {#if postPubId !== undefined }
-        <Publication/>
+      <MainPost />
+      {#if postPubId !== undefined}
+        <Publication />
       {/if}
-      <PostAPublication/>
-      <CommentsOfAPublication/>
+      <PostAPublication />
+      <CommentsOfAPublication />
     </main>
   {:else}
     <main>
       <div class="left">
-        <MainPost/>
+        <MainPost />
       </div>
       <div class="right">
-        {#if postPubId !== undefined }
-          <Publication/>
+        {#if postPubId !== undefined}
+          <Publication />
         {/if}
-        <PostAPublication/>
-        <CommentsOfAPublication/>
+        <PostAPublication />
+        <CommentsOfAPublication />
       </div>
     </main>
   {/if}
 </MediaQuery>
 
-<!---------------------------------------------------------------->
+<!----------------------------------------------------------------->
 
+<!---------------------------------------------------------------->
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
@@ -84,4 +82,3 @@
     gap: 2rem;
   }
 </style>
-<!----------------------------------------------------------------->

@@ -11,89 +11,122 @@
     thumbDownAlt,
     thumbUp,
     thumbUpAlt
-  } from "../../utils/frontend/appIcon";
+  } from "../../utils/app-icon.util";
   import Icon from "$lib/Icon.svelte";
   import { page } from "$app/stores";
-  import getFormattedDate from "../../utils/frontend/getFormattedDate";
-  import { getCommentOfPublication } from "../../utils/frontend/getCommentOfPublication";
-  import { totalComments } from "../../services/totalComments";
   import { getNotificationsContext } from "svelte-notifications";
   import DOMPurify from "dompurify";
-  import { PUBLIC_APP_LENS_ID } from "$env/static/public";
   import { Tooltip } from "@svelte-plugins/tooltips";
   import { onMount } from "svelte";
-  import { reloadAPublication } from "../../services/reloadPublication";
-  import { isSignedIn } from "../../services/signInStatus";
-  import { addReactionToAPost, removeReactionFromAPost } from "../../utils/frontend/updateReactionForAPost";
+  import { reloadAPublication } from "../../stores/reload-publication.store";
   import Login from "../Login.svelte";
-  import getPictureURL from "../../utils/frontend/getPictureURL";
+  import { totalCommentsStore } from "../../stores/total-comments.store";
+  import getCommentBasedOnParameterPublicationUtil from "../../utils/publications/get-comment-based-on-parameter.publication.util";
+  import { LimitType } from "../../gql/graphql";
+  import {
+    AppReactionType,
+    CommentFilterType
+  } from "../../config/app-constants.config";
+  import getReactionBasedOnLoginStatusHelperUtil from "../../utils/helper/get-reaction-based-on-login-status.helper.util";
+  import Autolinker from "autolinker";
+  import getLinkPreviewHtmlHelperUtil from "../../utils/helper/get-link-preview-html.helper.util";
+  import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
+  import addReactionLensService from "../../services/lens/add-reaction.lens.service";
+  import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
+  import getPictureURLUtil from "../../utils/get-picture-URL.util";
+  import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  const { VITE_APP_LENS_ID } = import.meta.env;
 
-
-  const {addNotification} = getNotificationsContext();
+  const { addNotification } = getNotificationsContext();
   let postPubId = $page.data.postPubId;
   let isPostMoreOpen = false;
   let showLoginModal = false;
-  let reaction: string | null = null;
+  let reaction = AppReactionType.NoReaction;
   let upVoteCount = 0;
   let downVoteCount = 0;
-  
-  let promiseOfGetPost = getCommentOfPublication(postPubId, 1, "post");
+
+  let promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
+    postPubId,
+    LimitType.Ten,
+    CommentFilterType.CommentsById
+  );
 
   $: if (postPubId !== $page.data.postPubId) {
     postPubId = $page.data.postPubId;
-    promiseOfGetPost = getCommentOfPublication(postPubId, 1, "post");
+    promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
+      postPubId,
+      LimitType.Ten,
+      CommentFilterType.CommentsById
+    );
   }
 
   onMount(() => {
     reloadAPublication.subscribe((val) => {
       console.log("Reloaded a publication" + val);
-      promiseOfGetPost = getCommentOfPublication(postPubId, 1, "post");
+      promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
+        postPubId,
+        LimitType.Ten,
+        CommentFilterType.CommentsById
+      );
     });
   });
 
   const getTotalComments = (fetchedTotalComments: number) => {
-    totalComments.setTotalComments(fetchedTotalComments);
+    totalCommentsStore.setTotalComments(fetchedTotalComments);
     return fetchedTotalComments;
-  }
+  };
 
-  const sharePost = (event) => {
+  const sharePost = (event: Event) => {
     event.preventDefault();
     event.stopPropagation();
-    navigator.clipboard.writeText(window.location.origin +
-      "/posts/" + $page.data.postPubId + "/" + $page.data.postPubId);
+    navigator.clipboard.writeText(
+      window.location.origin +
+        "/posts/" +
+        $page.data.postPubId +
+        "/" +
+        $page.data.postPubId
+    );
     addNotification({
-      position: 'top-right',
-      heading: 'Copied to clipboard',
-      description: 'The link to this post has been copied to your clipboard.',
+      position: "top-right",
+      heading: "Copied to clipboard",
+      description: "The link to this post has been copied to your clipboard.",
       type: copy,
-      removeAfter: 5000,
+      removeAfter: 5000
     });
-  }
+  };
 
-  const callAddReaction = async (event: Event, passedReaction: string) => {
+  const callAddReaction = async (
+    event: Event,
+    passedReaction: AppReactionType
+  ) => {
     event.preventDefault();
     event.stopPropagation();
 
-    let signedStatus;
-    const unsub = isSignedIn.subscribe((value) => {
-      signedStatus = value;
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
     });
     unsub();
 
-    if (!signedStatus) {
+    if (!isUserLoggedIn) {
       openLoginNotification();
     } else {
       try {
-        if (reaction !== null) {
+        if (reaction !== AppReactionType.NoReaction) {
           await callRemoveReaction(event, reaction);
         }
 
         reaction = passedReaction;
-        upVoteCount = passedReaction === "UPVOTE" ? upVoteCount + 1 : upVoteCount;
-        downVoteCount = passedReaction === "DOWNVOTE" ? downVoteCount + 1 : downVoteCount;
+        upVoteCount =
+          passedReaction === AppReactionType.UpVote
+            ? upVoteCount + 1
+            : upVoteCount;
+        downVoteCount =
+          passedReaction === AppReactionType.DownVote
+            ? downVoteCount + 1
+            : downVoteCount;
 
-        await addReactionToAPost(postPubId, passedReaction);
-
+        await addReactionLensService(postPubId, passedReaction);
       } catch (error) {
         console.log("Error while reacting", error);
 
@@ -106,28 +139,36 @@
         });
       }
     }
-
   };
 
-  const callRemoveReaction = async (event: Event, passedReaction: string) => {
+  const callRemoveReaction = async (
+    event: Event,
+    passedReaction: AppReactionType
+  ) => {
     event.preventDefault();
     event.stopPropagation();
 
-    let signedStatus;
-    const unsub = isSignedIn.subscribe((value) => {
-      signedStatus = value;
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
     });
     unsub();
 
-    if (!signedStatus) {
+    if (!isUserLoggedIn) {
       openLoginNotification();
     } else {
       try {
-        reaction = null;
-        upVoteCount = passedReaction === "UPVOTE" ? upVoteCount - 1 : upVoteCount;
-        downVoteCount = passedReaction === "DOWNVOTE" ? downVoteCount - 1 : downVoteCount;
+        reaction = AppReactionType.NoReaction;
+        upVoteCount =
+          passedReaction === AppReactionType.UpVote
+            ? upVoteCount - 1
+            : upVoteCount;
+        downVoteCount =
+          passedReaction === AppReactionType.DownVote
+            ? downVoteCount - 1
+            : downVoteCount;
 
-        await removeReactionFromAPost(postPubId, passedReaction);
+        await removeReactionLensService(postPubId, passedReaction);
       } catch (error) {
         console.log("Error while reacting", error);
 
@@ -140,14 +181,14 @@
         });
       }
     }
-
   };
 
   const openLoginNotification = () => {
     addNotification({
       position: "top-right",
       heading: "Please Login",
-      description: "Kindly log-in to react to this post. Simply click on \"Login\" button to proceed with your login.",
+      description:
+        'Kindly log-in to react to this post. Simply click on "Login" button to proceed with your login.',
       type: login,
       removeAfter: 10000,
       ctaBtnName: "Login",
@@ -158,122 +199,142 @@
   };
 
   const updateReactionDetails = (
-    passedReaction: string,
+    passedUpVoteStatus: boolean,
+    passedDownVoteStatus: boolean,
     passedUpVoteCount: number,
-    passedDownVoteCount: number) => {
-    reaction = passedReaction;
+    passedDownVoteCount: number
+  ) => {
+    reaction = getReactionBasedOnLoginStatusHelperUtil(
+      passedUpVoteStatus,
+      passedDownVoteStatus
+    );
     upVoteCount = passedUpVoteCount;
     downVoteCount = passedDownVoteCount;
     return "";
   };
 </script>
 
-
 <!----------------------------- HTML ----------------------------->
 <section>
-  {#await promiseOfGetPost}
+  {#await promiseOfGetComment}
     <div class="comment">
-      <div class="comment__pic__loader">
-      </div>
+      <div class="comment__pic__loader" />
       <div class="comment__body">
         <div class="CenterRowFlex comment__body__top">
-          <div class="CenterRowFlex comment__body__top__left__loader">
-          </div>
-          <div class="CenterRowFlex comment__body__top__right__loader">
-          </div>
+          <div class="CenterRowFlex comment__body__top__left__loader" />
+          <div class="CenterRowFlex comment__body__top__right__loader" />
         </div>
-        <div class="comment__body__content__loader">
-        </div>
+        <div class="comment__body__content__loader" />
       </div>
     </div>
-  {:then postPub}
+  {:then comments}
     <div class="comment">
       <div class="comment__pic">
-        <img src={getPictureURL(
-          postPub?.data?.publications?.items[0]?.profile?.picture?.original?.url,
-          postPub?.data?.publications?.items[0]?.profile?.ownedBy
+        <img
+          src={getPictureURLUtil(
+            comments.items[0]?.by?.metadata?.picture?.optimized?.uri,
+            comments.items[0]?.by?.ownedBy?.address
           )}
-             alt="avatar">
+          alt="avatar"
+        />
       </div>
       <div class="comment__body">
         <div class="CenterRowFlex comment__body__top">
           <div class="CenterRowFlex comment__body__top__left">
-            {#if postPub?.data?.publications?.items[0]?.profile?.name !== null}
+            {#if comments.items[0]?.by?.metadata?.displayName !== undefined}
               <div class="comment__body__top__left__name">
-                {postPub?.data?.publications?.items[0]?.profile?.name}
+                {comments.items[0]?.by?.metadata?.displayName}
               </div>
-              <div class="comment__body__top__left__dot"></div>
+              <div class="comment__body__top__left__dot" />
             {/if}
             <div class="comment__body__top__left__handle">
-              {postPub?.data?.publications?.items[0]?.profile?.handle}
+              {comments.items[0]?.by?.handle?.fullHandle.substring(5)}
             </div>
-            {#if postPub?.data?.publications?.items[0]?.profile?.id === PUBLIC_APP_LENS_ID}
+            {#if comments.items[0]?.by?.id === VITE_APP_LENS_ID}
               <Tooltip
-                      content="This post was made by an anonymous user!"
-                      position="right"
-                      autoPosition
-                      align="left"
-                      theme="custom-tooltip"
-                      maxWidth="150"
-                      animation="slide">
-                    <span class="CenterRowFlex comment__body__top__left__anon-comment">
-                      <Icon d={person} size="1.05em"/>
-                    </span>
+                content="This post was made by an anonymous user!"
+                position="right"
+                autoPosition
+                align="left"
+                theme="custom-tooltip"
+                maxWidth="150"
+                animation="slide"
+              >
+                <span
+                  class="CenterRowFlex comment__body__top__left__anon-comment"
+                >
+                  <Icon d={person} size="1.05em" />
+                </span>
               </Tooltip>
             {/if}
           </div>
           <div class="CenterRowFlex comment__body__top__right">
-            <button on:click={() => sharePost(event)}
-                    class="CenterRowFlex comment__body__top__right__share">
-              <Icon d={share}/>
+            <button
+              on:click={(event) => sharePost(event)}
+              class="CenterRowFlex comment__body__top__right__share"
+            >
+              <Icon d={share} />
             </button>
             <div class="CenterRowFlex comment__body__top__right__reaction">
               {updateReactionDetails(
-                postPub?.data?.publications?.items[0]?.reaction,
-                postPub?.data?.publications?.items[0]?.stats?.totalUpvotes,
-                postPub?.data?.publications?.items[0]?.stats?.totalDownvotes
+                comments.items[0]?.operations?.hasUpVoted,
+                comments.items[0]?.operations?.hasDownVoted,
+                comments.items[0]?.stats?.upvotes,
+                comments.items[0]?.stats?.downvotes
               )}
-              {#if reaction === "UPVOTE"}
-                <button on:click={() => callRemoveReaction(event, "UPVOTE")}
-                        class="CenterRowFlex comment__body__top__right__reaction__val">
+              {#if reaction === AppReactionType.UpVote}
+                <button
+                  on:click={(event) =>
+                    callRemoveReaction(event, AppReactionType.UpVote)}
+                  class="CenterRowFlex comment__body__top__right__reaction__val"
+                >
                   <Icon d={thumbUp} />
                   {upVoteCount}
                 </button>
               {:else}
-                <button on:click={() => callAddReaction(event, "UPVOTE")}
-                        class="CenterRowFlex comment__body__top__right__reaction__val">
+                <button
+                  on:click={(event) =>
+                    callAddReaction(event, AppReactionType.UpVote)}
+                  class="CenterRowFlex comment__body__top__right__reaction__val"
+                >
                   <Icon d={thumbUpAlt} />
                   {upVoteCount}
                 </button>
               {/if}
-              <div class="comment__body__top__right__reaction__vertical-line"></div>
-              {#if reaction === "DOWNVOTE"}
-                <button on:click={() => callRemoveReaction(event, "DOWNVOTE")}
-                        class="CenterRowFlex comment__body__top__right__reaction__val">
+              <div class="comment__body__top__right__reaction__vertical-line" />
+              {#if reaction === AppReactionType.DownVote}
+                <button
+                  on:click={(event) =>
+                    callRemoveReaction(event, AppReactionType.DownVote)}
+                  class="CenterRowFlex comment__body__top__right__reaction__val"
+                >
                   <Icon d={thumbDown} />
                   {downVoteCount}
                 </button>
               {:else}
-                <button on:click={() => callAddReaction(event, "DOWNVOTE")}
-                        class="CenterRowFlex comment__body__top__right__reaction__val">
+                <button
+                  on:click={(event) =>
+                    callAddReaction(event, AppReactionType.DownVote)}
+                  class="CenterRowFlex comment__body__top__right__reaction__val"
+                >
                   <Icon d={thumbDownAlt} />
                   {downVoteCount}
                 </button>
               {/if}
             </div>
             <div class="CenterRowFlex comment__body__top__right__posts-count">
-              <Icon d={modeComment}/>
-              {getTotalComments(postPub?.data?.publications?.items[0]?.stats?.totalAmountOfComments)}
+              <Icon d={modeComment} />
+              {getTotalComments(comments.items[0]?.stats?.comments)}
             </div>
             <div class="comment__body__top__right__more">
               <button>
-                <Icon d={moreVert} size="1.65em"/>
+                <Icon d={moreVert} size="1.65em" />
               </button>
               {#if isPostMoreOpen}
                 <div class="CenterColumnFlex comment__body__more">
                   <div class="CenterRowFlex comment__body__more__share">
                     <div class="CenterRowFlex comment__body__more__share__icon">
-                      <Icon d={share} size="1.2em"/>
+                      <Icon d={share} size="1.2em" />
                     </div>
                     Share
                   </div>
@@ -283,10 +344,32 @@
           </div>
         </div>
         <div class="comment__body__time">
-          {getFormattedDate(postPub?.data?.publications?.items[0]?.createdAt)}
+          {getFormattedDateHelperUtil(comments.items[0]?.createdAt)}
         </div>
         <div class="comment__body__content">
-          {@html DOMPurify.sanitize(postPub?.data?.publications?.items[0]?.metadata?.content)}
+          <!--eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html Autolinker.link(
+            DOMPurify.sanitize(comments.items[0]?.metadata?.content),
+            {
+              className: "links"
+            }
+          )}
+          <blockquote
+            class="twitter-tweet"
+            data-conversation="none"
+            data-theme="dark"
+          >
+            <a
+              href={`https://twitter.com/username/status/${getLinkPreviewHtmlHelperUtil(
+                DOMPurify.sanitize(comments.items[0]?.metadata?.content)
+              )}`}>&nbsp;</a
+            >
+          </blockquote>
+          <script
+            async
+            src="https://platform.twitter.com/widgets.js"
+            charset="utf-8"
+          ></script>
         </div>
       </div>
     </div>
@@ -294,12 +377,13 @@
 </section>
 
 <Login bind:showLoginModal />
-<!---------------------------------------------------------------->
 
+<!----------------------------------------------------------------->
+
+<!---------------------------------------------------------------->
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
-
   .comment {
     display: flex;
     flex-direction: row;
@@ -325,7 +409,7 @@
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
-    border: 2px solid #32F9FF;
+    border: 2px solid #32f9ff;
   }
 
   .comment__body {
@@ -469,4 +553,3 @@
     animation: 1s shine linear infinite;
   }
 </style>
-<!----------------------------------------------------------------->
