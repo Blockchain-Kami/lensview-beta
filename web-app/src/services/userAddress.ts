@@ -1,15 +1,14 @@
-import { writable } from 'svelte/store';
+import { writable } from "svelte/store";
 
-function manageUserAddress(){
+function manageUserAddress() {
   const address = writable();
 
-  return{
+  return {
     subscribe: address.subscribe,
-    setUserAddress: (fetchedAddress: string) =>  {
-      address.set(fetchedAddress)
-    },
-  }
+    setUserAddress: (fetchedAddress: string) => {
+      address.set(fetchedAddress);
+    }
+  };
 }
 
 export const userAddress = manageUserAddress();
-

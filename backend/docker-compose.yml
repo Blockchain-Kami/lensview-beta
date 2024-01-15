@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  lensview-beta-backend:
+    image: lensview-beta-backend-image:${DOCKER_VERSION_TAG}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PORT: ${PORT}
+    container_name: lensview-beta-backend-container
+    ports:
+      - "${PORT}:${PORT}/tcp"
+    env_file:
+      - .env

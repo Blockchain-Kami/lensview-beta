@@ -6,9 +6,9 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        PORT: 3000
+        PORT: ${PORT}
     container_name: lensview-beta-container
     ports:
-      - "3000:3000/tcp"
+      - "${PORT}:${PORT}/tcp"
     env_file:
       - .env

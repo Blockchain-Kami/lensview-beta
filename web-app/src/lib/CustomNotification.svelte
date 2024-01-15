@@ -1,50 +1,51 @@
 <script lang="ts">
-    import Icon from "$lib/Icon.svelte";
-    import {close} from "../utils/frontend/appIcon";
-    import type {CustomNotificationModel} from "../models/customNotification.model";
-    import {fly} from 'svelte/transition'
+  import Icon from "$lib/Icon.svelte";
+  import { close } from "../utils/app-icon.util";
+  import type { CustomNotificationModel } from "../models/custom-notification.model";
+  import { fly } from "svelte/transition";
 
-    export let notification: CustomNotificationModel;
-    export let onRemove;
+  export let notification: CustomNotificationModel;
+  export let onRemove;
 
-    const callCtaFunctionAndRemove = () => {
-        notification.ctaFunction();
-        onRemove();
-    }
+  const callCtaFunctionAndRemove = () => {
+    notification.ctaFunction();
+    onRemove();
+  };
 </script>
-
 
 <!----------------------------- HTML ----------------------------->
 <section transition:fly={{ x: 50 }} on:introstart on:outroend>
-    <div class="CenterRowFlex head">
-        <div class="head__title">
-            {notification.heading}
-        </div>
-        <button on:click={onRemove}>
-            <Icon d={close}/>
-        </button>
+  <div class="CenterRowFlex head">
+    <div class="head__title">
+      {notification.heading}
     </div>
-    <div class="CenterRowFlex body">
-        <div class="CenterRowFlex body__icon">
-            <Icon d={notification.type} size="2em"/>
-        </div>
-        <div class="body__content">
-            {notification.description}
-        </div>
+    <button on:click={onRemove}>
+      <Icon d={close} />
+    </button>
+  </div>
+  <div class="CenterRowFlex body">
+    <div class="CenterRowFlex body__icon">
+      <Icon d={notification.type} size="2em" />
     </div>
-    {#if notification.ctaBtnName !== undefined}
-        <div class="footer">
-            <button on:click={callCtaFunctionAndRemove}>{notification.ctaBtnName}</button>
-        </div>
-    {/if}
+    <div class="body__content">
+      {notification.description}
+    </div>
+  </div>
+  {#if notification.ctaBtnName !== undefined}
+    <div class="footer">
+      <button on:click={callCtaFunctionAndRemove}
+        >{notification.ctaBtnName}</button
+      >
+    </div>
+  {/if}
 </section>
+
+<!----------------------------------------------------------------->
 
 <!---------------------------------------------------------------->
 
-
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
-
   section {
     display: flex;
     flex-direction: column;
@@ -55,7 +56,9 @@
     border-radius: 1rem;
     border-left: 2px solid var(--primary);
     margin: 0.5rem 0.5rem 0 0;
-    box-shadow: rgba(0, 0, 0, 0.25) 0 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0 54px 55px,
+      rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+      rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
   }
 
   .head {
@@ -89,4 +92,3 @@
     color: black;
   }
 </style>
-<!----------------------------------------------------------------->

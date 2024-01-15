@@ -1,5 +1,9 @@
 export const ALLOWED_ORIGINS = {
-  TESTNET: [""],
-  MAINNET: [""],
-  DEV: ["http://localhost:8080", "https://cdpn.io"]
+  DEVELOPMENT: [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:4173",
+    "https://testnet.lensview.io"
+  ],
+  PRODUCTION: ["https://lensview.io"]
 };
