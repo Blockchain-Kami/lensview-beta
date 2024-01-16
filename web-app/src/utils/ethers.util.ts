@@ -17,12 +17,11 @@ export const signedTypeData = async (
   const signer = getSigner();
 
   // remove the __typedname from the signature!
-  const result = await signer._signTypedData(
+  return await signer._signTypedData(
     omit(domain, "__typename"),
     omit(types, "__typename"),
     omit(value, "__typename")
   );
-  return result;
 };
 
 export const splitSignature = (signature: string) => {
