@@ -3,8 +3,10 @@ import { ethers, utils } from "ethers";
 import { omit } from "./helpers.util";
 
 export const getSigner = () => {
-  const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-  return provider.getSigner();
+  if (typeof window !== "undefined") {
+    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    return provider.getSigner();
+  }
 };
 
 export const signedTypeData = async (

@@ -24,5 +24,3 @@ export const load = (async ({ params }: LoadEvent) => {
     commentPubId: commentPubId
   };
 }) satisfies PageLoad;
-
-export const ssr = false;
