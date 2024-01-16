@@ -45,37 +45,42 @@
   let onLoginIntialization: () => Promise<void>;
 
   onMount(async () => {
-    try {
-      await getMetamaskAddressAuthenticationUtil(true);
+    if (
+      typeof window !== "undefined" &&
+      typeof window.ethereum !== "undefined"
+    ) {
+      try {
+        await getMetamaskAddressAuthenticationUtil(true);
 
-      let address;
-      const unsub = addressUserStore.subscribe((_address) => {
-        address = _address;
-      });
-      unsub();
+        let address;
+        const unsub = addressUserStore.subscribe((_address) => {
+          address = _address;
+        });
+        unsub();
 
-      if (address) {
-        const isValidAccessTokenPresentInLocalStorage =
-          await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
+        if (address) {
+          const isValidAccessTokenPresentInLocalStorage =
+            await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
 
-        console.log(
-          "isValidAccessTokenPresentInLocalStorage : " +
-            isValidAccessTokenPresentInLocalStorage
-        );
+          console.log(
+            "isValidAccessTokenPresentInLocalStorage : " +
+              isValidAccessTokenPresentInLocalStorage
+          );
 
-        if (isValidAccessTokenPresentInLocalStorage) {
-          await setProfileAuthenticationUtil();
-          isLoggedInUserStore.setLoggedInStatus(true);
+          if (isValidAccessTokenPresentInLocalStorage) {
+            await setProfileAuthenticationUtil();
+            isLoggedInUserStore.setLoggedInStatus(true);
 
-          setReloadMethods();
+            setReloadMethods();
+          }
         }
+      } catch (error) {
+        showLoginModal = false;
+        console.log(error);
       }
-    } catch (error) {
-      showLoginModal = false;
-      console.log(error);
-    }
 
-    accountAndChainChangedMethods();
+      accountAndChainChangedMethods();
+    }
   });
 
   const accountAndChainChangedMethods = () => {
