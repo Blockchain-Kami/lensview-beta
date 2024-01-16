@@ -3,8 +3,10 @@ import { ethers, utils } from "ethers";
 import { omit } from "./helpers.util";
 
 export const getSigner = () => {
-  const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-  return provider.getSigner();
+  if (typeof window !== "undefined") {
+    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    return provider.getSigner();
+  }
 };
 
 export const signedTypeData = async (
@@ -15,12 +17,11 @@ export const signedTypeData = async (
   const signer = getSigner();
 
   // remove the __typedname from the signature!
-  const result = await signer._signTypedData(
+  return await signer._signTypedData(
     omit(domain, "__typename"),
     omit(types, "__typename"),
     omit(value, "__typename")
   );
-  return result;
 };
 
 export const splitSignature = (signature: string) => {
