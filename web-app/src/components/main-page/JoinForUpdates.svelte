@@ -43,7 +43,7 @@
         <a href="https://getwaitlist.com/waitlist/8129" target="_blank">
           <img src={Mail} alt="" />
         </a>
-        <a href="https://www.instagram.com/lensview.lens/" target="_blank">
+        <a href="https://www.instagram.com/lensview.io/" target="_blank">
           <img src={Instagram} alt="" />
         </a>
         <a href="https://www.reddit.com/r/lensview/" target="_blank">
