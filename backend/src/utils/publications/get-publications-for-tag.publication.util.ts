@@ -18,14 +18,14 @@ export const getPublicationsForTagPublicationUtil = async (
 
     for (let i = 0; i < keywords.length; i++) {
       const keyword = keywords[i].trim();
-      tags.push(keyword);
+      tags.push(keyword.toLowerCase());
     }
     if (tags.length > 0) {
       const res = await relatedParentPublicationsLensService(tags);
 
       const items = res?.items || [];
 
-      items.forEach((publication: any) => {
+      items.forEach((publication) => {
         if (publication.__typename === "Post")
           relatedPublications.push(publication?.id);
       });
