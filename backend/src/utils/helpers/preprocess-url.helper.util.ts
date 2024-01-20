@@ -81,9 +81,9 @@ export const preprocessURLHelperUtil = (
     // return hostname;
     return [
       cleanURL.toString().trim(),
-      hostname.trim(),
-      domain.trim(),
-      path.trim(),
+      hostname.trim().toLowerCase(),
+      domain.trim().toLowerCase(),
+      path.trim().toLowerCase(),
       query
     ];
   } catch (error) {
