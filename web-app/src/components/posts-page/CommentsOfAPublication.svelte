@@ -38,6 +38,7 @@
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
   import addReactionLensService from "../../services/lens/add-reaction.lens.service";
   import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
+  import MediaQuery from "$lib/MediaQuery.svelte";
   const { VITE_APP_LENS_ID } = import.meta.env;
 
   type CommentMoreStatus = {
@@ -248,240 +249,250 @@
 </script>
 
 <!----------------------------- HTML ----------------------------->
-<section>
-  <div class="CenterRowFlex filter">
-    <div class="filter__label">Sorted By:</div>
-    <div class="filter__type">
-      <select
-        bind:value={selectedFilterType}
-        on:change={updatedpromiseOfGetComments}
-      >
-        <option value={CommentFilterType.MostLikedComments}>Most liked</option>
-        <option value={CommentFilterType.LatestComments}>Latest</option>
-      </select>
-    </div>
-    <hr class="filter__line" />
-    <div class="filter__comment-count">
-      {#if $page.data.postPubId === undefined}
-        {$totalPostsStore} &nbsp;Posts
-      {:else}
-        {$totalCommentsStore} &nbsp;Comments
-      {/if}
-    </div>
-  </div>
-  <div class="CenterColumnFlex body">
-    {#await promiseOfGetComments}
-      <div class="comment">
-        <div class="comment__pic__loader" />
-        <div class="comment__body">
-          <div class="CenterRowFlex comment__body__top">
-            <div class="CenterRowFlex comment__body__top__left__loader" />
-            <div class="CenterRowFlex comment__body__top__right__loader" />
-          </div>
-          <div class="comment__body__content__loader" />
-        </div>
-      </div>
-      <div class="comment">
-        <div class="comment__pic__loader" />
-        <div class="comment__body">
-          <div class="CenterRowFlex comment__body__top">
-            <div class="CenterRowFlex comment__body__top__left__loader" />
-            <div class="CenterRowFlex comment__body__top__right__loader" />
-          </div>
-          <div class="comment__body__content__loader" />
-        </div>
-      </div>
-      <div class="comment">
-        <div class="comment__pic__loader" />
-        <div class="comment__body">
-          <div class="CenterRowFlex comment__body__top">
-            <div class="CenterRowFlex comment__body__top__left__loader" />
-            <div class="CenterRowFlex comment__body__top__right__loader" />
-          </div>
-          <div class="comment__body__content__loader" />
-        </div>
-      </div>
-    {:then commentsData}
-      {#each commentsData?.items as comment, index}
-        <a
-          href={`/posts/${$page.data.mainPostPubId}/${comment?.id}`}
-          class="comment"
+<MediaQuery query="(max-width: 1024px)" let:matches>
+  <section>
+    <div class="CenterRowFlex filter">
+      <div class="filter__label">Sorted By:</div>
+      <div class="filter__type">
+        <select
+          bind:value={selectedFilterType}
+          on:change={updatedpromiseOfGetComments}
         >
-          <div class="comment__pic">
-            <img
-              src={getPictureURLUtil(
-                comment?.by?.metadata?.picture?.optimized?.uri,
-                comment?.by?.ownedBy?.address
-              )}
-              alt="avatar"
-            />
-          </div>
+          <option value={CommentFilterType.MostLikedComments}>Most liked</option
+          >
+          <option value={CommentFilterType.LatestComments}>Latest</option>
+        </select>
+      </div>
+      <hr class="filter__line" />
+      <div class="filter__comment-count">
+        {#if $page.data.postPubId === undefined}
+          {$totalPostsStore} &nbsp;Posts
+        {:else}
+          {$totalCommentsStore} &nbsp;Comments
+        {/if}
+      </div>
+    </div>
+    <div class="CenterColumnFlex body">
+      {#await promiseOfGetComments}
+        <div class="comment">
+          <div class="comment__pic__loader" />
           <div class="comment__body">
             <div class="CenterRowFlex comment__body__top">
-              <div class="CenterRowFlex comment__body__top__left">
-                {#if comment?.by?.metadata?.displayName !== undefined && comment?.by?.metadata?.displayName !== null}
-                  <div class="comment__body__top__left__name">
-                    {comment?.by?.metadata?.displayName.substring(0, 5)}
-                    {#if comment?.by?.metadata?.displayName.length >= 5}..{/if}
-                  </div>
-                  <div class="comment__body__top__left__dot" />
-                {/if}
-                <div class="comment__body__top__left__handle">
-                  {comment?.by?.handle?.fullHandle.substring(5)}
-                </div>
-                {#if comment?.by?.id === VITE_APP_LENS_ID}
-                  <Tooltip
-                    content="This post was made by an anonymous user!"
-                    position="right"
-                    autoPosition
-                    align="left"
-                    theme="custom-tooltip"
-                    maxWidth="150"
-                    animation="slide"
-                  >
-                    <span
-                      class="CenterRowFlex comment__body__top__left__anon-comment"
-                    >
-                      <Icon d={person} size="1.05em" />
-                    </span>
-                  </Tooltip>
-                {/if}
-              </div>
-              <div class="CenterRowFlex comment__body__top__right">
-                <div class="CenterRowFlex comment__body__top__right__reaction">
-                  {updateReactionDetails(
-                    comment?.id,
-                    comment?.operations?.hasUpVoted,
-                    comment?.operations?.hasDownVoted,
-                    comment?.stats?.upvotes,
-                    comment?.stats?.downvotes
-                  )}
-                  {#if reactionDetails[comment?.id]["reaction"] === AppReactionType.UpVote}
-                    <button
-                      on:click={(event) =>
-                        callRemoveReaction(
-                          event,
-                          comment?.id,
-                          AppReactionType.UpVote
-                        )}
-                      class="CenterRowFlex comment__body__top__right__reaction__val"
-                    >
-                      <Icon d={thumbUp} />
-                      {reactionDetails[comment?.id]["upVoteCount"]}
-                    </button>
-                  {:else}
-                    <button
-                      on:click={(event) =>
-                        callAddReaction(
-                          event,
-                          comment?.id,
-                          AppReactionType.UpVote
-                        )}
-                      class="CenterRowFlex comment__body__top__right__reaction__val"
-                    >
-                      <Icon d={thumbUpAlt} />
-                      {reactionDetails[comment?.id]["upVoteCount"]}
-                    </button>
-                  {/if}
-                  <div
-                    class="comment__body__top__right__reaction__vertical-line"
-                  />
-                  {#if reactionDetails[comment?.id]["reaction"] === AppReactionType.DownVote}
-                    <button
-                      on:click={(event) =>
-                        callRemoveReaction(
-                          event,
-                          comment?.id,
-                          AppReactionType.DownVote
-                        )}
-                      class="CenterRowFlex comment__body__top__right__reaction__val"
-                    >
-                      <Icon d={thumbDown} />
-                      {reactionDetails[comment?.id]["downVoteCount"]}
-                    </button>
-                  {:else}
-                    <button
-                      on:click={(event) =>
-                        callAddReaction(
-                          event,
-                          comment?.id,
-                          AppReactionType.DownVote
-                        )}
-                      class="CenterRowFlex comment__body__top__right__reaction__val"
-                    >
-                      <Icon d={thumbDownAlt} />
-                      {reactionDetails[comment?.id]["downVoteCount"]}
-                    </button>
-                  {/if}
-                </div>
-                <div
-                  class="CenterRowFlex comment__body__top__right__posts-count"
-                >
-                  <Icon d={modeComment} />
-                  {comment?.stats?.comments}
-                </div>
-                <div class="comment__body__top__right__more">
-                  <button
-                    on:click={(event) =>
-                      openCloseCommentMore(event, comment?.id)}
-                  >
-                    <Icon d={moreVert} size="1.65em" />
-                  </button>
-                  {#if isCommentMoreOpen[comment?.id]}
-                    <div class="CenterColumnFlex comment__body__more">
-                      <button
-                        on:click={(event) => sharePost(event, comment?.id)}
-                        class="CenterRowFlex comment__body__more__share"
-                      >
-                        <span
-                          class="CenterRowFlex comment__body__more__share__icon"
-                        >
-                          <Icon d={share} size="1.2em" />
-                        </span>
-                        Share
-                      </button>
-                    </div>
-                  {/if}
-                </div>
-              </div>
+              <div class="CenterRowFlex comment__body__top__left__loader" />
+              <div class="CenterRowFlex comment__body__top__right__loader" />
             </div>
-            <div class="comment__body__time">
-              {getFormattedDateHelperUtil(comment?.createdAt)}
-            </div>
-            <div class="comment__body__content">
-              {#if index === 0}
-                {updateMetaTagsDescription(comment?.metadata?.content)}
-              {/if}
-              <!--eslint-disable-next-line svelte/no-at-html-tags -->
-              {@html Autolinker.link(
-                DOMPurify.sanitize(comment?.metadata?.content),
-                {
-                  className: "links"
-                }
-              )}
-              <blockquote
-                class="twitter-tweet"
-                data-conversation="none"
-                data-theme="dark"
-              >
-                <a
-                  href={`https://twitter.com/username/status/${getLinkPreviewHtmlHelperUtil(
-                    DOMPurify.sanitize(comment?.metadata?.content)
-                  )}`}>&nbsp;</a
-                >
-              </blockquote>
-              <script
-                async
-                src="https://platform.twitter.com/widgets.js"
-                charset="utf-8"
-              ></script>
-            </div>
+            <div class="comment__body__content__loader" />
           </div>
-        </a>
-      {/each}
-    {/await}
-  </div>
-</section>
+        </div>
+        <div class="comment">
+          <div class="comment__pic__loader" />
+          <div class="comment__body">
+            <div class="CenterRowFlex comment__body__top">
+              <div class="CenterRowFlex comment__body__top__left__loader" />
+              <div class="CenterRowFlex comment__body__top__right__loader" />
+            </div>
+            <div class="comment__body__content__loader" />
+          </div>
+        </div>
+        <div class="comment">
+          <div class="comment__pic__loader" />
+          <div class="comment__body">
+            <div class="CenterRowFlex comment__body__top">
+              <div class="CenterRowFlex comment__body__top__left__loader" />
+              <div class="CenterRowFlex comment__body__top__right__loader" />
+            </div>
+            <div class="comment__body__content__loader" />
+          </div>
+        </div>
+      {:then commentsData}
+        {#each commentsData?.items as comment, index}
+          <a
+            href={`/posts/${$page.data.mainPostPubId}/${comment?.id}`}
+            class="comment"
+          >
+            <div class="comment__pic">
+              <img
+                src={getPictureURLUtil(
+                  comment?.by?.metadata?.picture?.optimized?.uri,
+                  comment?.by?.ownedBy?.address
+                )}
+                alt="avatar"
+              />
+            </div>
+            <div class="comment__body">
+              <div class="CenterRowFlex comment__body__top">
+                <div class="CenterRowFlex comment__body__top__left">
+                  {#if comment?.by?.metadata?.displayName !== undefined && comment?.by?.metadata?.displayName !== null}
+                    <div class="comment__body__top__left__name">
+                      {#if matches}
+                        {comment?.by?.metadata?.displayName.substring(0, 5)}
+                        {#if comment?.by?.metadata?.displayName.length > 5}..{/if}
+                      {:else}
+                        {comment?.by?.metadata?.displayName.substring(0, 15)}
+                        {#if comment?.by?.metadata?.displayName.length > 15}..{/if}
+                      {/if}
+                    </div>
+                    <div class="comment__body__top__left__dot" />
+                  {/if}
+                  <div class="comment__body__top__left__handle">
+                    {comment?.by?.handle?.fullHandle.substring(5)}
+                  </div>
+                  {#if comment?.by?.id === VITE_APP_LENS_ID}
+                    <Tooltip
+                      content="This post was made by an anonymous user!"
+                      position="right"
+                      autoPosition
+                      align="left"
+                      theme="custom-tooltip"
+                      maxWidth="150"
+                      animation="slide"
+                    >
+                      <span
+                        class="CenterRowFlex comment__body__top__left__anon-comment"
+                      >
+                        <Icon d={person} size="1.05em" />
+                      </span>
+                    </Tooltip>
+                  {/if}
+                </div>
+                <div class="CenterRowFlex comment__body__top__right">
+                  <div
+                    class="CenterRowFlex comment__body__top__right__reaction"
+                  >
+                    {updateReactionDetails(
+                      comment?.id,
+                      comment?.operations?.hasUpVoted,
+                      comment?.operations?.hasDownVoted,
+                      comment?.stats?.upvotes,
+                      comment?.stats?.downvotes
+                    )}
+                    {#if reactionDetails[comment?.id]["reaction"] === AppReactionType.UpVote}
+                      <button
+                        on:click={(event) =>
+                          callRemoveReaction(
+                            event,
+                            comment?.id,
+                            AppReactionType.UpVote
+                          )}
+                        class="CenterRowFlex comment__body__top__right__reaction__val"
+                      >
+                        <Icon d={thumbUp} />
+                        {reactionDetails[comment?.id]["upVoteCount"]}
+                      </button>
+                    {:else}
+                      <button
+                        on:click={(event) =>
+                          callAddReaction(
+                            event,
+                            comment?.id,
+                            AppReactionType.UpVote
+                          )}
+                        class="CenterRowFlex comment__body__top__right__reaction__val"
+                      >
+                        <Icon d={thumbUpAlt} />
+                        {reactionDetails[comment?.id]["upVoteCount"]}
+                      </button>
+                    {/if}
+                    <div
+                      class="comment__body__top__right__reaction__vertical-line"
+                    />
+                    {#if reactionDetails[comment?.id]["reaction"] === AppReactionType.DownVote}
+                      <button
+                        on:click={(event) =>
+                          callRemoveReaction(
+                            event,
+                            comment?.id,
+                            AppReactionType.DownVote
+                          )}
+                        class="CenterRowFlex comment__body__top__right__reaction__val"
+                      >
+                        <Icon d={thumbDown} />
+                        {reactionDetails[comment?.id]["downVoteCount"]}
+                      </button>
+                    {:else}
+                      <button
+                        on:click={(event) =>
+                          callAddReaction(
+                            event,
+                            comment?.id,
+                            AppReactionType.DownVote
+                          )}
+                        class="CenterRowFlex comment__body__top__right__reaction__val"
+                      >
+                        <Icon d={thumbDownAlt} />
+                        {reactionDetails[comment?.id]["downVoteCount"]}
+                      </button>
+                    {/if}
+                  </div>
+                  <div
+                    class="CenterRowFlex comment__body__top__right__posts-count"
+                  >
+                    <Icon d={modeComment} />
+                    {comment?.stats?.comments}
+                  </div>
+                  <div class="comment__body__top__right__more">
+                    <button
+                      on:click={(event) =>
+                        openCloseCommentMore(event, comment?.id)}
+                    >
+                      <Icon d={moreVert} size="1.65em" />
+                    </button>
+                    {#if isCommentMoreOpen[comment?.id]}
+                      <div class="CenterColumnFlex comment__body__more">
+                        <button
+                          on:click={(event) => sharePost(event, comment?.id)}
+                          class="CenterRowFlex comment__body__more__share"
+                        >
+                          <span
+                            class="CenterRowFlex comment__body__more__share__icon"
+                          >
+                            <Icon d={share} size="1.2em" />
+                          </span>
+                          Share
+                        </button>
+                      </div>
+                    {/if}
+                  </div>
+                </div>
+              </div>
+              <div class="comment__body__time">
+                {getFormattedDateHelperUtil(comment?.createdAt)}
+              </div>
+              <div class="comment__body__content">
+                {#if index === 0}
+                  {updateMetaTagsDescription(comment?.metadata?.content)}
+                {/if}
+                <!--eslint-disable-next-line svelte/no-at-html-tags -->
+                {@html Autolinker.link(
+                  DOMPurify.sanitize(comment?.metadata?.content),
+                  {
+                    className: "links"
+                  }
+                )}
+                <blockquote
+                  class="twitter-tweet"
+                  data-conversation="none"
+                  data-theme="dark"
+                >
+                  <a
+                    href={`https://twitter.com/username/status/${getLinkPreviewHtmlHelperUtil(
+                      DOMPurify.sanitize(comment?.metadata?.content)
+                    )}`}>&nbsp;</a
+                  >
+                </blockquote>
+                <script
+                  async
+                  src="https://platform.twitter.com/widgets.js"
+                  charset="utf-8"
+                ></script>
+              </div>
+            </div>
+          </a>
+        {/each}
+      {/await}
+    </div>
+  </section>
+</MediaQuery>
 
 <Login bind:showLoginModal />
 
