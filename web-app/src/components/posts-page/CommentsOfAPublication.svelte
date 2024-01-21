@@ -319,9 +319,10 @@
           <div class="comment__body">
             <div class="CenterRowFlex comment__body__top">
               <div class="CenterRowFlex comment__body__top__left">
-                {#if comment?.by?.metadata?.displayName !== undefined}
+                {#if comment?.by?.metadata?.displayName !== undefined && comment?.by?.metadata?.displayName !== null}
                   <div class="comment__body__top__left__name">
-                    {comment?.by?.metadata?.displayName}
+                    {comment?.by?.metadata?.displayName.substring(0, 5)}
+                    {#if comment?.by?.metadata?.displayName.length >= 5}..{/if}
                   </div>
                   <div class="comment__body__top__left__dot" />
                 {/if}

@@ -87,7 +87,14 @@
 </script>
 
 <!----------------------------- HTML ----------------------------->
-
+<div class="youtube-link">
+  <u class="youtube-link__video">
+    <a href="https://youtu.be/Q-Ni7IC5kxI?si=Y7yhWSOSFbW1U6jD" target="_blank">
+      Check out this video
+    </a>
+  </u>
+  to navigate your way around
+</div>
 <MediaQuery query="(max-width: 825px)" let:matches>
   <section>
     <IntroPrompt />
@@ -246,7 +253,7 @@
                         <!--eslint-disable-next-line svelte/no-at-html-tags -->
                         {@html DOMPurify.sanitize(
                           comments?.items[0]?.metadata?.content
-                        ).substring(0, 100)}
+                        )}
                       </div>
                     </div>
                   </div>
@@ -276,6 +283,22 @@
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
+  .youtube-link {
+    background-color: var(--primary);
+    width: 100%;
+    text-align: center;
+    height: 1.5rem;
+    color: black;
+    padding: 0.1rem;
+    top: 0;
+    position: fixed;
+    z-index: 10;
+  }
+
+  .youtube-link__video {
+    font-weight: var(--medium-font-weight);
+  }
+
   section {
     display: flex;
     flex-direction: column;
@@ -513,7 +536,7 @@
   .card__post__info__body {
     height: 5.2rem;
     overflow-wrap: break-word;
-    width: 20.5rem;
+    overflow: hidden;
   }
 
   @keyframes shine {
