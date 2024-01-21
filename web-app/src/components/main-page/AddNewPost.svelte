@@ -34,7 +34,7 @@
   let isContentInvalid = true;
   let showLoginModal = false;
   export let userEnteredUrl = "";
-  let isUrlInvalid = false;
+  let isUrlInvalid = true;
   let urlInvalidReason = "";
   let showGetTestMaticModal = false;
 
@@ -147,6 +147,13 @@
         });
       } catch (err) {
         removeNotification(userPostNotificationId);
+        addNotification({
+          position: "top-right",
+          heading: "Failed To Post",
+          description: "Your post was not posted. Please try again",
+          type: cross,
+          removeAfter: 20000
+        });
         console.log("error: ", err);
       }
     }

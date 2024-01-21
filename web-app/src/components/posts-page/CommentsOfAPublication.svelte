@@ -319,7 +319,7 @@
           <div class="comment__body">
             <div class="CenterRowFlex comment__body__top">
               <div class="CenterRowFlex comment__body__top__left">
-                {#if comment?.by?.metadata?.displayName !== undefined}
+                {#if comment?.by?.metadata?.displayName !== undefined && comment?.by?.metadata?.displayName !== null}
                   <div class="comment__body__top__left__name">
                     {comment?.by?.metadata?.displayName}
                   </div>
