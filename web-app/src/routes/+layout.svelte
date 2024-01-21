@@ -1,6 +1,7 @@
 <script lang="ts">
   import "../global.scss";
   import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
   import { onMount } from "svelte";
   import {
     home,
@@ -43,6 +44,14 @@
   let isSearching = false;
   let showLoginModal = false;
   let onLoginIntialization: () => Promise<void>;
+  let isThisHomePage = true;
+  let currentPath = "/";
+
+  $: if (currentPath !== $page.url.pathname) {
+    console.log("$page.url.pathname : " + $page.url.pathname);
+    currentPath = $page.url.pathname;
+    isThisHomePage = currentPath === "/";
+  }
 
   onMount(async () => {
     if (
@@ -144,7 +153,7 @@
 
 <!----------------------------- HTML ----------------------------->
 <Notifications item={CustomNotification} zIndex="20">
-  <div class="CenterRowFlex nav">
+  <div class="CenterRowFlex nav" style={isThisHomePage ? "top: 1.5rem;" : ""}>
     <div class="nav__hamburger">
       <button
         on:click={() => {
@@ -297,7 +306,6 @@
     gap: 1rem;
     background: rgba(0, 0, 0, 0.1);
     position: fixed;
-    top: 0;
     width: 100%;
     background: #0c151a94;
     z-index: 10;
