@@ -21,10 +21,10 @@ export const logConfiguration = {
     }),
     winston.format.timestamp({
       format: "MMM-DD-YYYY HH:mm:ss"
-    }),
-    winston.format.printf(
-      (info) =>
-        `${info.label}: ${[info.timestamp]}: ${info.level}: ${info.message}`
-    )
+    })
+    // winston.format.printf(
+    //   (info) =>
+    //     `${info.label}: ${[info.timestamp]}: ${info.level}: ${info.message}`
+    // )
   )
 };

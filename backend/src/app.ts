@@ -1,8 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
-import { v4 as uuidv4 } from "uuid";
-import { createNamespace } from "continuation-local-storage";
-
 import bodyParser from "body-parser";
 import routes from "./routes/index.route";
 import { logger } from "./log/log-manager.log";
@@ -39,15 +36,6 @@ app.use(
     credentials: true
   })
 );
-
-const myRequest = createNamespace("my request");
-// Run the context for each request. Assign a unique identifier to each request
-app.use(function (req, res, next) {
-  myRequest.run(function () {
-    myRequest.set("reqId", uuidv4());
-    next();
-  });
-});
 
 app.use("/", routes);
 

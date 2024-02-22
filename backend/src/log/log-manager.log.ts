@@ -7,9 +7,10 @@ export const winstonLogger = winston.createLogger(logConfiguration);
 // Wrap Winston logger to print reqId in each log
 const formatMessage = function (message: string) {
   const myRequest = getNamespace("my request");
+  console.log("Hellooo " + myRequest?.get("reqId"));
   message =
     myRequest && myRequest.get("reqId")
-      ? message + " reqId: " + myRequest.get("reqId")
+      ? new Date().getTime() + " reqId: " + myRequest.get("reqId") + message
       : message;
   return message;
 };
