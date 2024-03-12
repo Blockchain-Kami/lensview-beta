@@ -1,16 +1,24 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
+import { createNamespace } from "continuation-local-storage";
+import { v4 as uuidv4 } from "uuid";
 import routes from "./routes/index.route";
 
 import { IS_PROD, PORT } from "./config/env.config";
 import { ALLOWED_ORIGINS } from "./config/app-config.config";
 
 const app = express();
+const myRequest = createNamespace("lensview-app");
 
 app.use(bodyParser.json());
 
-console.log("Welcome!!");
+app.use((_req, _res, next) => {
+  myRequest.run(() => {
+    myRequest.set("reqId", uuidv4());
+    next();
+  });
+});
 
 const allowedOrigins = IS_PROD
   ? ALLOWED_ORIGINS.PRODUCTION
