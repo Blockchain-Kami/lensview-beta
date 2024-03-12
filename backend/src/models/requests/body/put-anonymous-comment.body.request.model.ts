@@ -1,6 +1,7 @@
 export interface putAnonymousCommentBodyRequestModel {
   pubId: string;
   content: string;
-  isThisComment: boolean;
+  mainPostUrl: string;
   mainPostImageUrl: string;
+  isThisComment: boolean;
 }
