@@ -97,13 +97,24 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
   mainPostImageUrl: string,
   isThisComment: boolean
 ) => {
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Execution Started."
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Input Parameters: " +
+      {
+        comment,
+        mainPostImageUrl,
+        isThisComment
+      }
+  );
   const tags = [TAG_ANONYMOUS_PUB];
   if (isThisComment) {
     tags.push(TAG_USER_COMMENT);
   } else {
     tags.push(TAG_USER_POST);
   }
-  return textOnly({
+  const textOnlyMetadata = textOnly({
     locale: "en-US",
     tags,
     appId: SOURCE_APP_ID,
@@ -139,6 +150,14 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
     // encryptedWith: PublicationMetadataLitEncryption,
     // hideFromFeed: false,
   });
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Metadata for Comment Publication: " +
+      JSON.stringify(textOnlyMetadata)
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Execution Ended."
+  );
+  return textOnlyMetadata;
 };
 
 export const createMetaDataForImageCommentHelperUtil = (

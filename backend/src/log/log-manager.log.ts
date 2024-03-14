@@ -1,5 +1,5 @@
 import winston from "winston";
-import { getNamespace } from "continuation-local-storage";
+import { getNamespace } from "cls-hooked";
 import { logConfiguration } from "./log-config.log";
 
 const winstonLogger = winston.createLogger(logConfiguration);
@@ -37,6 +37,11 @@ export const logger = {
 // Wrap Winston logger to print reqId in each log
 const formatMessage = (message: string) => {
   const myRequest = getNamespace("lensview-app");
+  if (myRequest) {
+    console.log("reqId: ", myRequest.get("reqId"));
+  } else {
+    console.log("Empty");
+  }
   message =
     myRequest && myRequest.get("reqId")
       ? myRequest.get("reqId") + ": " + message

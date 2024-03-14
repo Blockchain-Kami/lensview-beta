@@ -70,12 +70,19 @@ export const postAnonymousCommentController = async (
         false
       );
       await commentOnChainPublicationUtil(publicationId, commentMetadata);
+      logger.info(
+        "comments.controller.ts: postAnonymousCommentController: Execution Ended. Publication Found and Anonymous Comment Added: Publication ID: " +
+          publicationId
+      );
       return res.status(httpStatusCodes.CREATED).send({
         publicationID: publicationId,
         alreadyExists: true,
         message: "Publication Found and Anonymous Comment Added"
       });
     } else {
+      logger.info(
+        "comments.controller.ts: postAnonymousCommentController: Publication Not Found. Adding URL to LensView."
+      );
       const postMetadata = createMetaDataForUrlHelperUtil(urlObj);
       await postOnChainPublicationUtil(postMetadata);
       imageQueue.add({ urlObj });
@@ -84,8 +91,9 @@ export const postAnonymousCommentController = async (
       ]);
       if (addedPublication && addedPublication.items.length > 0) {
         const newPublicationId = addedPublication.items[0]?.id;
-        console.log(
-          "Publication added and indexed on-chain: " + newPublicationId
+        logger.info(
+          "comments.controller.ts: postAnonymousCommentController: Publication added and indexed on-chain: " +
+            newPublicationId
         );
         // TODO: Can put a default image URL for mainPostImageUrl
         const commentMetadata = createMetaDataForAnonymousCommentHelperUtil(
@@ -94,12 +102,19 @@ export const postAnonymousCommentController = async (
           false
         );
         await commentOnChainPublicationUtil(newPublicationId, commentMetadata);
+        logger.info(
+          "comments.controller.ts: postAnonymousCommentController: Execution Ended. Publication and Anonymous Comment Added: Publication ID: " +
+            newPublicationId
+        );
         return res.status(httpStatusCodes.CREATED).send({
           publicationID: addedPublication.items[0]?.id,
           alreadyExists: false,
           message: "Publication and Anonymous Comment Added"
         });
       } else {
+        logger.error(
+          "comments.controller.ts: postAnonymousCommentController: Server Timeout: Failed to add URL OR POST COMMENT to LensView"
+        );
         return res.status(httpStatusCodes.SERVER_TIMEOUT).send({
           publicationID: null,
           alreadyExists: false,
@@ -108,7 +123,9 @@ export const postAnonymousCommentController = async (
       }
     }
   } catch (e) {
-    console.log(e);
+    logger.error(
+      "comments.controller.ts: postAnonymousCommentController: Error in Execution: Failed to add URL OR POST COMMENT to LensView"
+    );
     return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
       publicationID: null,
       alreadyExists: false,

@@ -2,6 +2,7 @@ import { PolygonGasPriceResponseModel } from "../models/response/polygon-gas-pri
 import axios from "axios";
 import { ethers } from "ethers";
 import { GASSTATION_URL } from "../config/env.config";
+import { logger } from "../log/log-manager.log";
 
 export const polygonGasPriceService = async () => {
   let data: PolygonGasPriceResponseModel;
@@ -23,7 +24,10 @@ export const polygonGasPriceService = async () => {
       maxPriorityFeePerGas: Number(maxPriorityFeePerGas)
     };
   } catch (error) {
-    console.log("error", error);
+    logger.error(
+      "polygon-gas-price.service.ts: polygonGasPriceService: Error in execution: " +
+        error
+    );
     return {
       maxFeePerGas: Number(maxFeePerGas),
       maxPriorityFeePerGas: Number(maxPriorityFeePerGas)

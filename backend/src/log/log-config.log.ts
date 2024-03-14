@@ -23,7 +23,7 @@ export const logConfiguration = {
   ],
   format: winston.format.combine(
     winston.format.label({
-      label: `🏷-LOGS`
+      label: `-LOG`
     }),
     winston.format.timestamp({
       format: "MMM-DD-YYYY HH:mm:ss"

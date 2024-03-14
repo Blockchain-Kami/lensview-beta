@@ -1,6 +1,7 @@
 import hasTxBeenIndexedLensService from "../../services/lens/has-tx-been-indexed.lens.service";
 import { LensTransactionStatusType } from "../../gql/graphql";
 import type { LensTransactionStatusQuery } from "../../gql/graphql";
+import { logger } from "../../log/log-manager.log";
 
 /**
  * Waits until the specified transaction is complete and returns the transaction status query.
@@ -9,11 +10,22 @@ import type { LensTransactionStatusQuery } from "../../gql/graphql";
  * @param {number} startTime - The start time of the function execution.
  * @return {Promise<LensTransactionStatusQuery | undefined>} A promise that resolves to the transaction status query if the transaction is complete, or undefined if the transaction is not found.
  */
-export const hasTransactionBeenIndexedIndexerUtil: any = async (
+export const hasTransactionBeenIndexedIndexerUtil = async (
   input: { forTxHash: string } | { forTxId: string },
   startTime: number
 ): Promise<LensTransactionStatusQuery | undefined> => {
+  logger.info(
+    "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: Execution started."
+  );
+  logger.info(
+    "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: Input Parameter: Transaction ID: " +
+      input
+  );
   if (Date.now() - startTime > 45000) {
+    logger.error(
+      "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: Timeout: 45 seconds exceeded. Transaction ID: " +
+        input
+    );
     throw new Error("Tx timeout");
   }
   const response = await hasTxBeenIndexedLensService(input);
@@ -21,25 +33,37 @@ export const hasTransactionBeenIndexedIndexerUtil: any = async (
   if (!response) {
     throw new Error("No response from hasTxBeenIndexedLensService");
   }
-
-  console.log("pool until indexed: result", response);
-
+  logger.info(
+    "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: pool until indexed: result" +
+      response
+  );
   switch (response.lensTransactionStatus?.status) {
     case LensTransactionStatusType.Failed:
+      logger.error(
+        "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: Indexing failed: Transaction ID: " +
+          input
+      );
       throw new Error(
         response.lensTransactionStatus.reason ?? "Transaction failed"
       );
 
     case LensTransactionStatusType.Processing:
-      console.log("still in progress");
+      logger.info(
+        "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: still processing: Transaction ID: " +
+          input
+      );
       break;
 
     case LensTransactionStatusType.Complete:
-      console.log("complete and indexed onchain");
+      logger.info(
+        "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: complete and indexed onchain: Transaction ID: " +
+          input
+      );
       return response;
   }
-
-  console.log("pool until indexed: sleep for 1500 milliseconds then try again");
+  logger.info(
+    "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: sleep for 1500 milliseconds then try again"
+  );
   // sleep for before trying again
   await new Promise((resolve) => setTimeout(resolve, 1500));
 

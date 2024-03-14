@@ -5,6 +5,7 @@ import {
   APP_LENS_ID,
   LENS_API_URL
 } from "../../config/env.config";
+import { logger } from "../../log/log-manager.log";
 import { signer } from "../helpers/get-signer.helper.util";
 import authenticateService from "../../services/lens/authenticate.lens.service";
 import { ChallengeRequest, SignedAuthChallenge } from "../../gql/graphql";
@@ -17,6 +18,9 @@ import getChallengeInfoLensService from "../../services/lens/get-challenge-info.
 export const getAuthenticatedClientAuthenticationUtil: () => Promise<Client> =
   async () => {
     try {
+      logger.info(
+        "get-authenticated-client.authentication.util.ts: getAuthenticatedClientAuthenticationUtil: Execution Started."
+      );
       const challengeRequest: ChallengeRequest = {
         for: APP_LENS_ID,
         signedBy: APP_ADDRESS
@@ -24,9 +28,7 @@ export const getAuthenticatedClientAuthenticationUtil: () => Promise<Client> =
       // Query challenge info
       const challengeInfo = await getChallengeInfoLensService(challengeRequest);
 
-      console.log("Challenge info,", challengeInfo);
-
-      if (challengeInfo.error || !challengeInfo.data) {
+      if (!challengeInfo || challengeInfo.error || !challengeInfo.data) {
         return getBaseClientHelperUtil;
       }
 
@@ -35,28 +37,20 @@ export const getAuthenticatedClientAuthenticationUtil: () => Promise<Client> =
         challengeInfo.data.challenge.text
       );
 
-      console.log("Signature", signature);
-      console.log("id", challengeInfo.data.challenge.id);
-
       const request: SignedAuthChallenge = {
         id: challengeInfo.data.challenge.id,
         signature: signature
       };
 
-      // Authenticate the user
-      const authData = await authenticateService(request);
-
-      // Extract accessToken from authentication response
+      // Authenticate the user and extract accessToken from authentication response
       const {
         data: {
           authenticate: { accessToken }
         }
-      } = authData;
-
-      console.log("Access token", accessToken);
+      } = await authenticateService(request);
 
       // Create and return authenticated client
-      return createClient({
+      const authenticatedClient = createClient({
         url: LENS_API_URL,
         exchanges: [cacheExchange, fetchExchange],
         requestPolicy: "cache-and-network",
@@ -66,9 +60,16 @@ export const getAuthenticatedClientAuthenticationUtil: () => Promise<Client> =
           }
         }
       });
+      logger.info(
+        "get-authenticated-client.authentication.util.ts: getAuthenticatedClientAuthenticationUtil: Execution Completed."
+      );
+      return authenticatedClient;
     } catch (error) {
       // Return baseClientUtil if authentication fails
-      console.log(error);
+      logger.error(
+        "get-authenticated-client.authentication.util.ts: getAuthenticatedClientAuthenticationUtil: Error in execution" +
+          error
+      );
       return getBaseClientHelperUtil;
     }
   };
