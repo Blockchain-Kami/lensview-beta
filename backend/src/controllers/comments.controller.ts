@@ -16,6 +16,7 @@ import {
   PublicationResponseModelForPostAnonymousComment
 } from "../models/response/publication.response.model";
 import { imageQueue } from "../jobs/add-image-queue.job";
+import { logger } from "../log/log-manager.log";
 import PostAnonymousCommentRequestBodyModel from "../models/requests/body/post-anonymous-comment.body.request.model";
 
 /**
@@ -29,11 +30,17 @@ export const postAnonymousCommentController = async (
   req: Request<unknown, unknown, PostAnonymousCommentRequestBodyModel>,
   res: Response<PublicationResponseModelForPostAnonymousComment>
 ) => {
+  logger.info(
+    "comments.controller.ts: postAnonymousCommentController: Execution Started"
+  );
   try {
     const { url, content, userTags: tags } = req.body;
-
     const urlString = isInputTypeURLHelperUtil(url);
     if (!urlString) {
+      logger.warn(
+        "comments.controller.ts: postAnonymousCommentController: Execution End. User entered a tag: " +
+          urlString
+      );
       return res.status(httpStatusCodes.BAD_REQUEST).send({
         publicationID: null,
         alreadyExists: false,
@@ -53,6 +60,10 @@ export const postAnonymousCommentController = async (
 
     if (publicationExists && publicationExists.items.length > 0) {
       const publicationId = publicationExists.items[0]?.id;
+      logger.info(
+        "comments.controller.ts: postAnonymousCommentController: Publication already exists: Publication ID: " +
+          publicationId
+      );
       const commentMetadata = createMetaDataForAnonymousCommentHelperUtil(
         content,
         "empty",

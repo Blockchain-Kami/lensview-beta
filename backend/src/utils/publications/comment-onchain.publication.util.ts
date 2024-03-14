@@ -18,10 +18,15 @@ import { splitSignatureHelperUtil } from "../helpers/split-signature.helper.util
 import { createContractHelperUtils } from "../helpers/create-contract.helper.utils";
 import LENS_HUB_ABI from "../../abis/lens-hub-contract.abi.json";
 import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util";
+import {
+  ImageMetadata,
+  LinkMetadata,
+  TextOnlyMetadata
+} from "@lens-protocol/metadata";
 
 const commentOnChainPublicationUtil = async (
   parentPubId: string,
-  metadata: any
+  metadata: LinkMetadata | TextOnlyMetadata | ImageMetadata
 ) => {
   //TODO: Check in production weather we need "@lens-protocol/metadata", if it works putting in
   // devDependencies then keep it or go with schema approach that there in "api-examples" repo

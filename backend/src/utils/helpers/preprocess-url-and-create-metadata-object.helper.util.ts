@@ -1,6 +1,7 @@
 import { preprocessURLHelperUtil } from "./preprocess-url.helper.util";
 import { createHashHelperUtil } from "./create-hash.helper.util";
 import { MetadataObjectModel } from "../../models/metadata-object.model";
+import { logger } from "../../log/log-manager.log";
 
 /**
  * Generates a metadata object based on the provided URL and other parameters.
@@ -17,13 +18,24 @@ export const preprocessURLAndCreateMetadataObjectHelperUtil = (
   postContent: string | null,
   tags: string[] | []
 ): MetadataObjectModel => {
+  logger.info(
+    "preprocess-url-and-create-metadata-object.helper.util.ts: preprocessURLAndCreateMetadataObjectHelperUtil: Execution Started"
+  );
+  logger.info(
+    "preprocess-url-and-create-metadata-object.helper.util.ts: preprocessURLAndCreateMetadataObjectHelperUtil: Function Input Parameters: " +
+      {
+        urlString,
+        lensHandle,
+        postContent,
+        tags
+      }
+  );
   const [url, hostname, domain, path, query] =
     preprocessURLHelperUtil(urlString);
   const hashedURL = createHashHelperUtil(url);
   const hashedHostname = createHashHelperUtil(hostname);
   const hashedPath = createHashHelperUtil(path);
-
-  return {
+  const urlObj = {
     url,
     hashedURL,
     hostname,
@@ -37,4 +49,9 @@ export const preprocessURLAndCreateMetadataObjectHelperUtil = (
     tags,
     image: ""
   };
+  logger.info(
+    "preprocess-url-and-create-metadata-object.helper.util.ts: preprocessURLAndCreateMetadataObjectHelperUtil: Execution Ended. Output: " +
+      urlObj
+  );
+  return urlObj;
 };

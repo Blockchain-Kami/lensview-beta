@@ -15,6 +15,7 @@ import {
   TAG_USER_POST,
   TAG_USER_PUB
 } from "../../config/env.config";
+import { logger } from "../../log/log-manager.log";
 import { createTagsHelperUtil } from "./helpers.helpers.util";
 import { MetadataObjectModel } from "../../models/metadata-object.model";
 
@@ -26,6 +27,13 @@ import { MetadataObjectModel } from "../../models/metadata-object.model";
  * @return {any} - The generated metadata.
  */
 export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForUrlHelperUtil: Execution Started."
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForUrlHelperUtil: Input Parameter: urlObj: " +
+      JSON.stringify(urlObj)
+  );
   let tags: string[];
   const userTags = urlObj.tags;
   const URLtags = [urlObj.hashedURL, urlObj.hostname, urlObj.domain];
@@ -41,7 +49,7 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
 
   tags = [...new Set(tags)];
 
-  return link({
+  const linkMetadata = link({
     locale: "en-US",
     tags: tags,
     appId: SOURCE_APP_ID,
@@ -74,6 +82,14 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
     // "encryptedWith": PublicationMetadataLitEncryption,
     // "hideFromFeed": true,
   });
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForUrlHelperUtil: Metadata for Link Publication: " +
+      JSON.stringify(linkMetadata)
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForUrlHelperUtil: Execution Ended."
+  );
+  return linkMetadata;
 };
 
 export const createMetaDataForAnonymousCommentHelperUtil = (
