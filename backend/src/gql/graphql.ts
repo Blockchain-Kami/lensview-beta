@@ -5472,6 +5472,66 @@ export type BroadcastOnchainMutation = {
     | { __typename: "RelaySuccess"; txHash?: any | null; txId: any };
 };
 
+export type CreateChangeProfileManagersTypedDataMutationVariables = Exact<{
+  request: ChangeProfileManagersRequest;
+}>;
+
+export type CreateChangeProfileManagersTypedDataMutation = {
+  __typename?: "Mutation";
+  createChangeProfileManagersTypedData: {
+    __typename?: "CreateChangeProfileManagersBroadcastItemResult";
+    expiresAt: any;
+    id: any;
+    typedData: {
+      __typename?: "CreateChangeProfileManagersEIP712TypedData";
+      domain: {
+        __typename?: "EIP712TypedDataDomain";
+        name: string;
+        chainId: any;
+        version: string;
+        verifyingContract: any;
+      };
+      types: {
+        __typename?: "CreateChangeProfileManagersEIP712TypedDataTypes";
+        ChangeDelegatedExecutorsConfig: Array<{
+          __typename?: "EIP712TypedDataField";
+          name: string;
+          type: string;
+        }>;
+      };
+      value: {
+        __typename?: "CreateChangeProfileManagersEIP712TypedDataValue";
+        nonce: any;
+        deadline: any;
+        delegatorProfileId: any;
+        delegatedExecutors: Array<any>;
+        approvals: Array<boolean>;
+        configNumber: number;
+        switchToGivenConfig: boolean;
+      };
+    };
+  };
+};
+
+export type CommentOnMomokaMutationVariables = Exact<{
+  request: MomokaCommentRequest;
+}>;
+
+export type CommentOnMomokaMutation = {
+  __typename?: "Mutation";
+  commentOnMomoka:
+    | {
+        __typename?: "CreateMomokaPublicationResult";
+        id: any;
+        proof: any;
+        momokaId: any;
+      }
+    | {
+        __typename?: "LensProfileManagerRelayError";
+        reason: LensProfileManagerRelayErrorReasonType;
+      };
+};
+
 export type CreateMomokaCommentTypedDataMutationVariables = Exact<{
   request: MomokaCommentRequest;
 }>;
@@ -5971,6 +6031,263 @@ export const BroadcastOnchainDocument = {
 } as unknown as DocumentNode<
   BroadcastOnchainMutation,
   BroadcastOnchainMutationVariables
+>;
+export const CreateChangeProfileManagersTypedDataDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "CreateChangeProfileManagersTypedData" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "request" }
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ChangeProfileManagersRequest" }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: {
+              kind: "Name",
+              value: "createChangeProfileManagersTypedData"
+            },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "request" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "request" }
+                }
+              }
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "expiresAt" } },
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "typedData" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "domain" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "name" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "chainId" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "version" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "verifyingContract" }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "types" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: {
+                                kind: "Name",
+                                value: "ChangeDelegatedExecutorsConfig"
+                              },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" }
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "type" }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "value" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "nonce" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "deadline" }
+                            },
+                            {
+                              kind: "Field",
+                              name: {
+                                kind: "Name",
+                                value: "delegatorProfileId"
+                              }
+                            },
+                            {
+                              kind: "Field",
+                              name: {
+                                kind: "Name",
+                                value: "delegatedExecutors"
+                              }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "approvals" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "configNumber" }
+                            },
+                            {
+                              kind: "Field",
+                              name: {
+                                kind: "Name",
+                                value: "switchToGivenConfig"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CreateChangeProfileManagersTypedDataMutation,
+  CreateChangeProfileManagersTypedDataMutationVariables
+>;
+export const CommentOnMomokaDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "CommentOnMomoka" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "request" }
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "MomokaCommentRequest" }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "commentOnMomoka" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "request" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "request" }
+                }
+              }
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "InlineFragment",
+                  typeCondition: {
+                    kind: "NamedType",
+                    name: {
+                      kind: "Name",
+                      value: "CreateMomokaPublicationResult"
+                    }
+                  },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      { kind: "Field", name: { kind: "Name", value: "proof" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "momokaId" }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: "InlineFragment",
+                  typeCondition: {
+                    kind: "NamedType",
+                    name: {
+                      kind: "Name",
+                      value: "LensProfileManagerRelayError"
+                    }
+                  },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "reason" } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CommentOnMomokaMutation,
+  CommentOnMomokaMutationVariables
 >;
 export const CreateMomokaCommentTypedDataDocument = {
   kind: "Document",
