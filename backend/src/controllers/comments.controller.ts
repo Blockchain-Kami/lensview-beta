@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util";
 import { httpStatusCodes } from "../config/app-constants.config";
 import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service";
-import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
+// import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
 import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
 import { putAnonymousCommentBodyRequestModel } from "../models/requests/body/put-anonymous-comment.body.request.model";
 import commentOnChainPublicationUtil from "../utils/publications/comment-onchain.publication.util";
@@ -18,6 +18,8 @@ import {
 import { imageQueue } from "../jobs/add-image-queue.job";
 import { logger } from "../log/log-manager.log";
 import PostAnonymousCommentRequestBodyModel from "../models/requests/body/post-anonymous-comment.body.request.model";
+import { commentMomokaPublicationUtil } from "../utils/publications/comment-momoka.publication.util";
+import { postMomokaPublicationUtil } from "../utils/publications/post-momoka.publication.util";
 
 /**
  * Adds a URL or a post comment to the system.
@@ -69,7 +71,7 @@ export const postAnonymousCommentController = async (
         "empty",
         false
       );
-      await commentOnChainPublicationUtil(publicationId, commentMetadata);
+      await commentMomokaPublicationUtil(publicationId, commentMetadata);
       logger.info(
         "comments.controller.ts: postAnonymousCommentController: Execution Ended. Publication Found and Anonymous Comment Added: Publication ID: " +
           publicationId
@@ -84,7 +86,7 @@ export const postAnonymousCommentController = async (
         "comments.controller.ts: postAnonymousCommentController: Publication Not Found. Adding URL to LensView."
       );
       const postMetadata = createMetaDataForUrlHelperUtil(urlObj);
-      await postOnChainPublicationUtil(postMetadata);
+      await postMomokaPublicationUtil(postMetadata);
       imageQueue.add({ urlObj });
       const addedPublication = await relatedParentPublicationsLensService([
         urlObj.hashedURL
@@ -101,7 +103,7 @@ export const postAnonymousCommentController = async (
           "empty",
           false
         );
-        await commentOnChainPublicationUtil(newPublicationId, commentMetadata);
+        await commentMomokaPublicationUtil(newPublicationId, commentMetadata);
         logger.info(
           "comments.controller.ts: postAnonymousCommentController: Execution Ended. Publication and Anonymous Comment Added: Publication ID: " +
             newPublicationId
@@ -155,7 +157,7 @@ export const putAnonymousCommentController = async (
       mainPostImageUrl,
       isThisComment
     );
-    await commentOnChainPublicationUtil(pubId, metadata);
+    await commentMomokaPublicationUtil(pubId, metadata);
     logger.info(
       "comments.controller.ts: putAnonymousCommentController: Comment added to publication: " +
         pubId
