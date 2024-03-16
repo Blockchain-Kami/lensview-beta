@@ -9,7 +9,8 @@ import { logger } from "../log/log-manager.log";
 import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util";
 import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
 import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service";
-import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
+// import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
+import { postMomokaPublicationUtil } from "../utils/publications/post-momoka.publication.util";
 import { preprocessURLHelperUtil } from "../utils/helpers/preprocess-url.helper.util";
 import { createHashHelperUtil } from "../utils/helpers/create-hash.helper.util";
 import { createMetaDataForUrlHelperUtil } from "../utils/helpers/create-metadata.helper.util";
@@ -68,7 +69,7 @@ export const postNewPublicationController = async (
       });
     } else {
       const postMetadata = createMetaDataForUrlHelperUtil(urlObj);
-      await postOnChainPublicationUtil(postMetadata);
+      await postMomokaPublicationUtil(postMetadata);
       imageQueue.add({ urlObj });
       const newPublication = await relatedParentPublicationsLensService([
         urlObj.hashedURL
