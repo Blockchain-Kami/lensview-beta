@@ -23,12 +23,12 @@ export const preprocessURLAndCreateMetadataObjectHelperUtil = (
   );
   logger.info(
     "preprocess-url-and-create-metadata-object.helper.util.ts: preprocessURLAndCreateMetadataObjectHelperUtil: Function Input Parameters: " +
-      {
+      JSON.stringify({
         urlString,
         lensHandle,
         postContent,
         tags
-      }
+      })
   );
   const [url, hostname, domain, path, query] =
     preprocessURLHelperUtil(urlString);
@@ -51,7 +51,7 @@ export const preprocessURLAndCreateMetadataObjectHelperUtil = (
   };
   logger.info(
     "preprocess-url-and-create-metadata-object.helper.util.ts: preprocessURLAndCreateMetadataObjectHelperUtil: Execution Ended. Output: " +
-      urlObj
+      JSON.stringify(urlObj)
   );
   return urlObj;
 };

@@ -146,6 +146,9 @@ export const putAnonymousCommentController = async (
   res: Response<PublicationResponseModel>
 ) => {
   try {
+    logger.info(
+      "comments.controller.ts: putAnonymousCommentController: Execution Started"
+    );
     const { pubId, content, mainPostImageUrl, isThisComment } = req.body;
     const metadata = createMetaDataForAnonymousCommentHelperUtil(
       content,
@@ -153,12 +156,22 @@ export const putAnonymousCommentController = async (
       isThisComment
     );
     await commentOnChainPublicationUtil(pubId, metadata);
+    logger.info(
+      "comments.controller.ts: putAnonymousCommentController: Comment added to publication: " +
+        pubId
+    );
+    logger.info(
+      "comments.controller.ts: putAnonymousCommentController: Execution Ended"
+    );
     res.status(httpStatusCodes.CREATED).send({
       publicationID: pubId,
       message: "Comment added successfully"
     });
   } catch (error) {
-    console.log(error);
+    logger.error(
+      "comments.controller.ts: putAnonymousCommentController: Error in Execution: " +
+        error
+    );
     res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
       publicationID: req.body.pubId,
       message: "Failed to ADD ANONYMOUS COMMENT to LensView"

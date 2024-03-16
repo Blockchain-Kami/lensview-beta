@@ -102,11 +102,11 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
   );
   logger.info(
     "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Input Parameters: " +
-      {
+      JSON.stringify({
         comment,
         mainPostImageUrl,
         isThisComment
-      }
+      })
   );
   const tags = [TAG_ANONYMOUS_PUB];
   if (isThisComment) {

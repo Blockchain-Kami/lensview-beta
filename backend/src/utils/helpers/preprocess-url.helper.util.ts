@@ -37,9 +37,7 @@ export const preprocessURLHelperUtil = (
   );
   logger.info(
     "preprocess-url.helper.util.ts: preprocessURLHelperUtil: Function Input Parameters: " +
-      {
-        url
-      }
+      url
   );
   try {
     // convert the url to a URL object

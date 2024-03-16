@@ -12,7 +12,7 @@ import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentica
 const broadcastOnchainRequestService = async (request: BroadcastRequest) => {
   logger.info(
     "broadcastOnchainRequestLensService: broadcastOnchainRequestService: Execution Started for request: " +
-      request
+      JSON.stringify(request)
   );
   const authenticateClient = await getAuthenticatedClientAuthenticationUtil();
   const result = await authenticateClient

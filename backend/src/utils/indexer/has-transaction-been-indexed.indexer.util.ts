@@ -19,29 +19,29 @@ export const hasTransactionBeenIndexedIndexerUtil = async (
   );
   logger.info(
     "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: Input Parameter: Transaction ID: " +
-      input
+      JSON.stringify(input)
   );
   if (Date.now() - startTime > 45000) {
     logger.error(
       "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: Timeout: 45 seconds exceeded. Transaction ID: " +
-        input
+        JSON.stringify(input)
     );
     throw new Error("Tx timeout");
   }
   const response = await hasTxBeenIndexedLensService(input);
 
   if (!response) {
+    logger.error(
+      "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: No response from hasTxBeenIndexedLensService:"
+    );
     throw new Error("No response from hasTxBeenIndexedLensService");
   }
-  logger.info(
-    "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: pool until indexed: result" +
-      response
-  );
+
   switch (response.lensTransactionStatus?.status) {
     case LensTransactionStatusType.Failed:
       logger.error(
         "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: Indexing failed: Transaction ID: " +
-          input
+          JSON.stringify(input)
       );
       throw new Error(
         response.lensTransactionStatus.reason ?? "Transaction failed"
@@ -50,14 +50,14 @@ export const hasTransactionBeenIndexedIndexerUtil = async (
     case LensTransactionStatusType.Processing:
       logger.info(
         "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: still processing: Transaction ID: " +
-          input
+          JSON.stringify(input)
       );
       break;
 
     case LensTransactionStatusType.Complete:
       logger.info(
         "has-transaction-been-indexed.indexer.util.ts: hasTransactionBeenIndexedIndexerUtil: complete and indexed onchain: Transaction ID: " +
-          input
+          JSON.stringify(input)
       );
       return response;
   }

@@ -5,6 +5,7 @@ import { UrlExistsValidationResponseModel } from "../models/response/url-exists-
 import PostNewPublicationBodyRequestModel from "../models/requests/body/post-new-publication.body.request.model";
 import { httpStatusCodes } from "../config/app-constants.config";
 import { imageQueue } from "../jobs/add-image-queue.job";
+import { logger } from "../log/log-manager.log";
 import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util";
 import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
 import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service";
@@ -25,11 +26,18 @@ export const postNewPublicationController = async (
   req: Request<unknown, unknown, PostNewPublicationBodyRequestModel>,
   res: Response<PublicationResponseModelForNewPubURL>
 ) => {
+  logger.info(
+    "url.controller.ts: postNewPublicationController: Execution Started"
+  );
   try {
     const { url, lensHandle, userTags } = req.body;
 
     const urlString = isInputTypeURLHelperUtil(url);
     if (!urlString) {
+      logger.warn(
+        "url.controller.ts: postNewPublicationController: Execution End. User entered a tag: " +
+          urlString
+      );
       return res.status(httpStatusCodes.BAD_REQUEST).send({
         publicationID: null,
         alreadyExists: false,

@@ -65,6 +65,10 @@ function makeFileObjects(data: string): File[] {
   // Here we're just storing a JSON object, but you can store images,
   // audio, or whatever you want!
   try {
+    logger.info(
+      "upload-to-ipfs.helper.util.ts: makeFileObjects: Making file objects for data: " +
+        data
+    );
     const blob = new Blob([data], {
       type: "application/json"
     });

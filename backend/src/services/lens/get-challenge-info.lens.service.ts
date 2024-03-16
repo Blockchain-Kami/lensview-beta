@@ -19,7 +19,7 @@ const getChallengeInfoLensService = async (request: ChallengeRequest) => {
         request.signedBy
     );
     logger.info(
-      "get-challenge-info.lens.service.ts: getChallengeInfoLensService: For: " +
+      "get-challenge-info.lens.service.ts: getChallengeInfoLensService: For Profile: " +
         request.for
     );
     return await getBaseClientHelperUtil

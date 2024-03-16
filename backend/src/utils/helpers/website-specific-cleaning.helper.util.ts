@@ -13,9 +13,7 @@ export const websiteSpecificCleaningHelperUtil = (input: string): string => {
   );
   logger.info(
     "website-specific-cleaning.helper.util.ts: websiteSpecificCleaningHelperUtil: Function Input Parameters: " +
-      {
-        input
-      }
+      input
   );
   // Parse the input URL
   const inputURL = new URL(input);

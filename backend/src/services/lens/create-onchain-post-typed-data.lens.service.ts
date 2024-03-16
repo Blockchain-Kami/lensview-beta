@@ -17,7 +17,7 @@ const createOnchainPostTypedDataLensService = async (
   );
   logger.info(
     "comment-onchain-comment-typed-data.lens.service.ts: createOnchainPostTypedDataLensService: Input parameters: request" +
-      request
+      JSON.stringify(request)
   );
   const authenticateClient = await getAuthenticatedClientAuthenticationUtil();
   const result = await authenticateClient

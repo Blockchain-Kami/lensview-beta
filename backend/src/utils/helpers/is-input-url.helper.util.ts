@@ -13,9 +13,7 @@ export const isInputTypeURLHelperUtil = (url: string) => {
   );
   logger.info(
     "is-input-url.helper.util.ts: isInputTypeURLHelperUtil: Function Input Parameters: " +
-      {
-        url
-      }
+      url
   );
   let urlRequest = url;
   try {

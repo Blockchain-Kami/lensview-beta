@@ -17,13 +17,18 @@ const hasTxBeenIndexedLensService = async (
 ): Promise<LensTransactionStatusQuery | undefined> => {
   logger.info(
     "has-tx-been-indexed.lens.service.ts: hasTxBeenIndexedLensService: hasTxBeenIndexedLensService request" +
-      request
+      JSON.stringify(request)
   );
   const result = await getBaseClientHelperUtil
     .query(lensTransactionStatusQueryGraphql, { request })
     .toPromise();
+  const response = result.data;
+  logger.info(
+    "has-tx-been-indexed.lens.service.ts: hasTxBeenIndexedLensService: hasTxBeenIndexedLensService: result" +
+      JSON.stringify(response)
+  );
 
-  return result.data;
+  return response;
 };
 
 export default hasTxBeenIndexedLensService;

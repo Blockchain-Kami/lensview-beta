@@ -22,9 +22,7 @@ export const relatedParentPublicationsLensService = async (tags: string[]) => {
   );
   logger.info(
     "related-parent-publications.lens.service.ts: relatedParentPublicationsLensService: Input Parameter: " +
-      {
-        tags
-      }
+      tags
   );
   const publicationsWhere: PublicationsWhere = {
     from: [APP_LENS_ID],

@@ -7,13 +7,13 @@ import { ClientError } from "../../errors/client-error.error";
  * Validates the secret key and URL in the request body and throws an error if they are invalid.
  *
  * @param {Request<unknown, unknown, AddImageToPostAdminRouteBodyRequestModel>} req - The request object.
- * @param {Response} res - The response object.
+ * @param {Response} _res - The response object.
  * @param {NextFunction} next - The next function.
  * @throws {ClientError} If the secret key or URL is invalid.
  */
 export const validateSecretAdminMiddleware = (
   req: Request<unknown, unknown, AddImageToPostAdminRouteBodyRequestModel>,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   const { secretKey, url } = req.body;

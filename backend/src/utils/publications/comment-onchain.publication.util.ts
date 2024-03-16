@@ -48,10 +48,10 @@ const commentOnChainPublicationUtil = async (
   );
   logger.info(
     "comment-onchain.publication.util.ts: commentOnChainPublicationUtil: Input parameters: " +
-      {
+      JSON.stringify({
         parentPubId,
         metadata
-      }
+      })
   );
   try {
     const ipfsResultUri = await uploadToIPFSHelperUtil(

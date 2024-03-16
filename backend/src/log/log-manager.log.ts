@@ -37,11 +37,6 @@ export const logger = {
 // Wrap Winston logger to print reqId in each log
 const formatMessage = (message: string) => {
   const myRequest = getNamespace("lensview-app");
-  if (myRequest) {
-    console.log("reqId: ", myRequest.get("reqId"));
-  } else {
-    console.log("Empty");
-  }
   message =
     myRequest && myRequest.get("reqId")
       ? myRequest.get("reqId") + ": " + message

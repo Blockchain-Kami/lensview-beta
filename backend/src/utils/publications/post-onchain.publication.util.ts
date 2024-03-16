@@ -37,7 +37,7 @@ const postOnChainPublicationUtil = async (
   );
   logger.info(
     "post-onchain.publication.util.ts: postOnChainPublicationUtil: Input parameters: metadata" +
-      metadata
+      JSON.stringify(metadata)
   );
   const ipfsResultUri = await uploadToIPFSHelperUtil(JSON.stringify(metadata));
   console.log("post onchain: ipfs result uri", ipfsResultUri);

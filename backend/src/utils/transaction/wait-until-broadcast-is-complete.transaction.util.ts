@@ -25,7 +25,6 @@ export async function waitUntilBroadcastIsCompleteTransactionUtil(
       actionToBroadcast +
       ": pool until indexed"
   );
-  console.log(`${actionToBroadcast}: poll until indexed`);
   const indexedResult = await hasTransactionBeenIndexedIndexerUtil(
     {
       forTxId: broadcastResult.txId
@@ -36,7 +35,7 @@ export async function waitUntilBroadcastIsCompleteTransactionUtil(
     "wait-until-broadcast-is-complete.transaction.util.ts: waitUntilBroadcastIsCompleteTransactionUtil: " +
       actionToBroadcast +
       ": has been indexed. Indexed Result: " +
-      indexedResult
+      JSON.stringify(indexedResult)
   );
 }
 
