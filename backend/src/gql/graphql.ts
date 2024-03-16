@@ -5472,6 +5472,53 @@ export type BroadcastOnchainMutation = {
     | { __typename: "RelaySuccess"; txHash?: any | null; txId: any };
 };
 
+export type CreateMomokaCommentTypedDataMutationVariables = Exact<{
+  request: MomokaCommentRequest;
+}>;
+
+export type CreateMomokaCommentTypedDataMutation = {
+  __typename?: "Mutation";
+  createMomokaCommentTypedData: {
+    __typename?: "CreateMomokaCommentBroadcastItemResult";
+    id: any;
+    expiresAt: any;
+    typedData: {
+      __typename?: "CreateMomokaCommentEIP712TypedData";
+      types: {
+        __typename?: "CreateMomokaCommentEIP712TypedDataTypes";
+        Comment: Array<{
+          __typename?: "EIP712TypedDataField";
+          name: string;
+          type: string;
+        }>;
+      };
+      domain: {
+        __typename?: "EIP712TypedDataDomain";
+        name: string;
+        chainId: any;
+        version: string;
+        verifyingContract: any;
+      };
+      value: {
+        __typename?: "CreateMomokaCommentEIP712TypedDataValue";
+        actionModules: Array<any>;
+        actionModulesInitDatas: Array<any>;
+        contentURI: any;
+        deadline: any;
+        nonce: any;
+        pointedProfileId: any;
+        pointedPubId: any;
+        profileId: any;
+        referenceModule: any;
+        referenceModuleData: any;
+        referenceModuleInitData: any;
+        referrerProfileIds: Array<any>;
+        referrerPubIds: Array<any>;
+      };
+    };
+  };
+};
+
 export type CreateMomokaPostTypedDataMutationVariables = Exact<{
   request: MomokaPostRequest;
 }>;
@@ -5924,6 +5971,194 @@ export const BroadcastOnchainDocument = {
 } as unknown as DocumentNode<
   BroadcastOnchainMutation,
   BroadcastOnchainMutationVariables
+>;
+export const CreateMomokaCommentTypedDataDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "CreateMomokaCommentTypedData" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "request" }
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "MomokaCommentRequest" }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createMomokaCommentTypedData" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "request" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "request" }
+                }
+              }
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "expiresAt" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "typedData" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "types" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "Comment" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" }
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "type" }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "domain" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "name" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "chainId" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "version" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "verifyingContract" }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "value" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "actionModules" }
+                            },
+                            {
+                              kind: "Field",
+                              name: {
+                                kind: "Name",
+                                value: "actionModulesInitDatas"
+                              }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "contentURI" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "deadline" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "nonce" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "pointedProfileId" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "pointedPubId" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "profileId" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "referenceModule" }
+                            },
+                            {
+                              kind: "Field",
+                              name: {
+                                kind: "Name",
+                                value: "referenceModuleData"
+                              }
+                            },
+                            {
+                              kind: "Field",
+                              name: {
+                                kind: "Name",
+                                value: "referenceModuleInitData"
+                              }
+                            },
+                            {
+                              kind: "Field",
+                              name: {
+                                kind: "Name",
+                                value: "referrerProfileIds"
+                              }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "referrerPubIds" }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CreateMomokaCommentTypedDataMutation,
+  CreateMomokaCommentTypedDataMutationVariables
 >;
 export const CreateMomokaPostTypedDataDocument = {
   kind: "Document",

@@ -1,6 +1,6 @@
 import { graphql } from "../../gql";
 
-const CreateMomokaPostTypedDataDocument = graphql(`
+const CreateMomokaPostTypedDataMutationGraphql = graphql(`
   mutation CreateMomokaPostTypedData($request: MomokaPostRequest!) {
     createMomokaPostTypedData(request: $request) {
       id
@@ -33,4 +33,4 @@ const CreateMomokaPostTypedDataDocument = graphql(`
   }
 `);
 
-export default CreateMomokaPostTypedDataDocument;
+export default CreateMomokaPostTypedDataMutationGraphql;
