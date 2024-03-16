@@ -40,7 +40,6 @@ const postOnChainPublicationUtil = async (
       JSON.stringify(metadata)
   );
   const ipfsResultUri = await uploadToIPFSHelperUtil(JSON.stringify(metadata));
-  console.log("post onchain: ipfs result uri", ipfsResultUri);
 
   const request: OnchainPostRequest = {
     contentURI: ipfsResultUri

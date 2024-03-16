@@ -15,8 +15,12 @@ import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/
 const documents = {
   "\n  mutation Authenticate($request: SignedAuthChallenge!) {\n    authenticate(request: $request) {\n      accessToken\n      refreshToken\n    }\n  }\n":
     types.AuthenticateDocument,
+  "\n  mutation BroadcastOnMomoka($request: BroadcastRequest!) {\n    broadcastOnMomoka(request: $request) {\n      ... on CreateMomokaPublicationResult {\n        id\n        proof\n        momokaId\n      }\n      ... on RelayError {\n        __typename\n        reason\n      }\n    }\n  }\n":
+    types.BroadcastOnMomokaDocument,
   "\n  mutation BroadcastOnchain($request: BroadcastRequest!) {\n    broadcastOnchain(request: $request) {\n      ... on RelaySuccess {\n        __typename\n        txHash\n        txId\n      }\n      ... on RelayError {\n        __typename\n        reason\n      }\n    }\n  }\n":
     types.BroadcastOnchainDocument,
+  "\n  mutation CreateMomokaPostTypedData($request: MomokaPostRequest!) {\n    createMomokaPostTypedData(request: $request) {\n      id\n      expiresAt\n      typedData {\n        types {\n          Post {\n            name\n            type\n          }\n        }\n        domain {\n          name\n          chainId\n          version\n          verifyingContract\n        }\n        value {\n          nonce\n          deadline\n          profileId\n          contentURI\n          actionModules\n          actionModulesInitDatas\n          referenceModule\n          referenceModuleInitData\n        }\n      }\n    }\n  }\n":
+    types.CreateMomokaPostTypedDataDocument,
   "\n  mutation CreateOnchainCommentTypedData($request: OnchainCommentRequest!) {\n    createOnchainCommentTypedData(request: $request) {\n      id\n      expiresAt\n      typedData {\n        types {\n          Comment {\n            name\n            type\n          }\n        }\n        domain {\n          name\n          chainId\n          version\n          verifyingContract\n        }\n        value {\n          nonce\n          deadline\n          profileId\n          contentURI\n          pointedProfileId\n          pointedPubId\n          referrerProfileIds\n          referrerPubIds\n          referenceModuleData\n          actionModules\n          actionModulesInitDatas\n          referenceModule\n          referenceModuleInitData\n        }\n      }\n    }\n  }\n":
     types.CreateOnchainCommentTypedDataDocument,
   "\n  mutation CreateOnchainPostTypedData($request: OnchainPostRequest!) {\n    createOnchainPostTypedData(request: $request) {\n      id\n      expiresAt\n      typedData {\n        types {\n          Post {\n            name\n            type\n          }\n        }\n        domain {\n          name\n          chainId\n          version\n          verifyingContract\n        }\n        value {\n          nonce\n          deadline\n          profileId\n          contentURI\n          actionModules\n          actionModulesInitDatas\n          referenceModule\n          referenceModuleInitData\n        }\n      }\n    }\n  }\n":
@@ -55,8 +59,20 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
+  source: "\n  mutation BroadcastOnMomoka($request: BroadcastRequest!) {\n    broadcastOnMomoka(request: $request) {\n      ... on CreateMomokaPublicationResult {\n        id\n        proof\n        momokaId\n      }\n      ... on RelayError {\n        __typename\n        reason\n      }\n    }\n  }\n"
+): (typeof documents)["\n  mutation BroadcastOnMomoka($request: BroadcastRequest!) {\n    broadcastOnMomoka(request: $request) {\n      ... on CreateMomokaPublicationResult {\n        id\n        proof\n        momokaId\n      }\n      ... on RelayError {\n        __typename\n        reason\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
   source: "\n  mutation BroadcastOnchain($request: BroadcastRequest!) {\n    broadcastOnchain(request: $request) {\n      ... on RelaySuccess {\n        __typename\n        txHash\n        txId\n      }\n      ... on RelayError {\n        __typename\n        reason\n      }\n    }\n  }\n"
 ): (typeof documents)["\n  mutation BroadcastOnchain($request: BroadcastRequest!) {\n    broadcastOnchain(request: $request) {\n      ... on RelaySuccess {\n        __typename\n        txHash\n        txId\n      }\n      ... on RelayError {\n        __typename\n        reason\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation CreateMomokaPostTypedData($request: MomokaPostRequest!) {\n    createMomokaPostTypedData(request: $request) {\n      id\n      expiresAt\n      typedData {\n        types {\n          Post {\n            name\n            type\n          }\n        }\n        domain {\n          name\n          chainId\n          version\n          verifyingContract\n        }\n        value {\n          nonce\n          deadline\n          profileId\n          contentURI\n          actionModules\n          actionModulesInitDatas\n          referenceModule\n          referenceModuleInitData\n        }\n      }\n    }\n  }\n"
+): (typeof documents)["\n  mutation CreateMomokaPostTypedData($request: MomokaPostRequest!) {\n    createMomokaPostTypedData(request: $request) {\n      id\n      expiresAt\n      typedData {\n        types {\n          Post {\n            name\n            type\n          }\n        }\n        domain {\n          name\n          chainId\n          version\n          verifyingContract\n        }\n        value {\n          nonce\n          deadline\n          profileId\n          contentURI\n          actionModules\n          actionModulesInitDatas\n          referenceModule\n          referenceModuleInitData\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

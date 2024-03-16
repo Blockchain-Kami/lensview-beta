@@ -3,7 +3,8 @@ import { omit } from "./helpers.helpers.util";
 import { signer } from "./get-signer.helper.util";
 import {
   CreateOnchainPostEip712TypedDataTypes,
-  CreateOnchainCommentEip712TypedDataTypes
+  CreateOnchainCommentEip712TypedDataTypes,
+  CreateMomokaPostEip712TypedDataTypes
 } from "../../gql/graphql";
 
 /**
@@ -17,7 +18,9 @@ export const getSigner = () => {
 
 export const signedTypeDataForPostHelperUtil = async (
   domain: TypedDataDomain,
-  types: CreateOnchainPostEip712TypedDataTypes,
+  types:
+    | CreateOnchainPostEip712TypedDataTypes
+    | CreateMomokaPostEip712TypedDataTypes,
   value: Record<string, any>
 ) => {
   const signer = getSigner();

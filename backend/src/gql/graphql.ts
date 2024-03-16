@@ -5445,6 +5445,22 @@ export type AuthenticateMutation = {
   };
 };
 
+export type BroadcastOnMomokaMutationVariables = Exact<{
+  request: BroadcastRequest;
+}>;
+
+export type BroadcastOnMomokaMutation = {
+  __typename?: "Mutation";
+  broadcastOnMomoka:
+    | {
+        __typename?: "CreateMomokaPublicationResult";
+        id: any;
+        proof: any;
+        momokaId: any;
+      }
+    | { __typename: "RelayError"; reason: RelayErrorReasonType };
+};
+
 export type BroadcastOnchainMutationVariables = Exact<{
   request: BroadcastRequest;
 }>;
@@ -5454,6 +5470,48 @@ export type BroadcastOnchainMutation = {
   broadcastOnchain:
     | { __typename: "RelayError"; reason: RelayErrorReasonType }
     | { __typename: "RelaySuccess"; txHash?: any | null; txId: any };
+};
+
+export type CreateMomokaPostTypedDataMutationVariables = Exact<{
+  request: MomokaPostRequest;
+}>;
+
+export type CreateMomokaPostTypedDataMutation = {
+  __typename?: "Mutation";
+  createMomokaPostTypedData: {
+    __typename?: "CreateMomokaPostBroadcastItemResult";
+    id: any;
+    expiresAt: any;
+    typedData: {
+      __typename?: "CreateMomokaPostEIP712TypedData";
+      types: {
+        __typename?: "CreateMomokaPostEIP712TypedDataTypes";
+        Post: Array<{
+          __typename?: "EIP712TypedDataField";
+          name: string;
+          type: string;
+        }>;
+      };
+      domain: {
+        __typename?: "EIP712TypedDataDomain";
+        name: string;
+        chainId: any;
+        version: string;
+        verifyingContract: any;
+      };
+      value: {
+        __typename?: "CreateMomokaPostEIP712TypedDataValue";
+        nonce: any;
+        deadline: any;
+        profileId: any;
+        contentURI: any;
+        actionModules: Array<any>;
+        actionModulesInitDatas: Array<any>;
+        referenceModule: any;
+        referenceModuleInitData: any;
+      };
+    };
+  };
 };
 
 export type CreateOnchainCommentTypedDataMutationVariables = Exact<{
@@ -5685,6 +5743,97 @@ export const AuthenticateDocument = {
   AuthenticateMutation,
   AuthenticateMutationVariables
 >;
+export const BroadcastOnMomokaDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "BroadcastOnMomoka" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "request" }
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "BroadcastRequest" }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "broadcastOnMomoka" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "request" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "request" }
+                }
+              }
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "InlineFragment",
+                  typeCondition: {
+                    kind: "NamedType",
+                    name: {
+                      kind: "Name",
+                      value: "CreateMomokaPublicationResult"
+                    }
+                  },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      { kind: "Field", name: { kind: "Name", value: "proof" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "momokaId" }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: "InlineFragment",
+                  typeCondition: {
+                    kind: "NamedType",
+                    name: { kind: "Name", value: "RelayError" }
+                  },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "__typename" }
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "reason" } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  BroadcastOnMomokaMutation,
+  BroadcastOnMomokaMutationVariables
+>;
 export const BroadcastOnchainDocument = {
   kind: "Document",
   definitions: [
@@ -5775,6 +5924,168 @@ export const BroadcastOnchainDocument = {
 } as unknown as DocumentNode<
   BroadcastOnchainMutation,
   BroadcastOnchainMutationVariables
+>;
+export const CreateMomokaPostTypedDataDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "CreateMomokaPostTypedData" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "request" }
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "MomokaPostRequest" }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createMomokaPostTypedData" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "request" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "request" }
+                }
+              }
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "expiresAt" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "typedData" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "types" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "Post" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" }
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "type" }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "domain" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "name" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "chainId" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "version" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "verifyingContract" }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "value" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "nonce" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "deadline" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "profileId" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "contentURI" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "actionModules" }
+                            },
+                            {
+                              kind: "Field",
+                              name: {
+                                kind: "Name",
+                                value: "actionModulesInitDatas"
+                              }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "referenceModule" }
+                            },
+                            {
+                              kind: "Field",
+                              name: {
+                                kind: "Name",
+                                value: "referenceModuleInitData"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  CreateMomokaPostTypedDataMutation,
+  CreateMomokaPostTypedDataMutationVariables
 >;
 export const CreateOnchainCommentTypedDataDocument = {
   kind: "Document",
