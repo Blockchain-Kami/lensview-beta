@@ -16,6 +16,7 @@
 </script>
 
 <!----------------------------- HTML ----------------------------->
+
 <section>
   {#await getProfileUsingIdLensService($page.data.profileId)}
     <div class="cover-image-loader" />
@@ -103,12 +104,12 @@
           </div>
         </div>
         <div class="CenterRowFlex profile-details__right__middle">
-          <div class="CenterRowFlex profile-details__right__middle__lens">
-            <div class="profile-details__right__middle__handle">
-              {response?.data?.profile?.handle?.fullHandle
-                ? response?.data?.profile?.handle?.fullHandle
-                : ""}
-            </div>
+          <div class="profile-details__right__middle__handle">
+            {response?.data?.profile?.handle?.fullHandle
+              ? response?.data?.profile?.handle?.fullHandle
+              : ""}
+          </div>
+          <div class="CenterRowFlex">
             <div
               class="CenterRowFlex profile-details__right__middle__grey-text"
             >
@@ -252,6 +253,8 @@
     font-size: var(--semi-large-font-size);
     font-weight: var(--semi-medium-font-weight);
     font-family: var(--special-font);
+    line-height: 1em;
+    text-align: center;
   }
 
   .profile-details__right__middle {
@@ -290,15 +293,20 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 1.5rem;
+    padding: 1.5rem 1.5rem 0.5rem 1.5rem;
     margin: 1rem 5rem;
     background: #0c151a;
     border-radius: 15px;
     justify-content: space-evenly;
+    flex-wrap: wrap;
   }
 
   .stats__box {
+    width: 25%;
+    flex-grow: 1;
+    flex-shrink: 1;
     gap: 1rem;
+    margin-bottom: 1rem;
   }
 
   .stats__box__right__value-loader {
@@ -343,5 +351,54 @@
     background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);
     background-size: 200% 100%;
     animation: 1s shine linear infinite;
+  }
+
+  @media only screen and (max-width: 1024px) {
+    .profile-details {
+      flex-direction: column;
+      padding: 0 2rem;
+    }
+
+    .profile-details__right {
+      width: 100%;
+      align-items: center;
+    }
+
+    .profile-details__right__top {
+      flex-direction: column;
+    }
+
+    .profile-details__right__top-loader {
+      width: 15rem;
+    }
+
+    .profile-details__right__top__follow {
+      width: 100%;
+    }
+
+    .profile-details__right__top__follow button {
+      width: 100%;
+    }
+
+    .profile-details__right__middle {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .profile-details__right__middle-loader {
+      width: 20rem;
+    }
+
+    .profile-details__right__bottom-loader {
+      width: 10rem;
+    }
+
+    .stats {
+      margin: 0 2rem 1rem 2rem;
+    }
+
+    .stats__box {
+      width: 50%;
+    }
   }
 </style>
