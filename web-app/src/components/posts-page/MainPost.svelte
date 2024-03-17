@@ -521,12 +521,12 @@
   }
 
   .tablet__main-post {
-    background: #123439;
+    background: var(--bg-solid-2);
     border-radius: 10.8px;
   }
 
   .tablet__main-post__loader {
-    background: #123439;
+    background: var(--bg-solid-2);
     width: 100%;
     border-radius: 10.8px;
   }
@@ -545,7 +545,7 @@
 
   .tablet__main-post__url {
     padding: 0.75rem;
-    background: #123439;
+    background: var(--bg-solid-2);
     justify-content: flex-start;
     gap: 0.5rem;
   }
@@ -618,7 +618,7 @@
 
   .tablet__main-post__info__bottom__added-by__handle {
     padding: 0.2rem 0.5rem;
-    background: #18393a;
+    background: var(--bg-solid-2);
     border-radius: 5px;
     color: var(--primary);
   }
@@ -689,7 +689,7 @@
   }
 
   .main-post__content__top {
-    background: #18393a;
+    background: var(--bg-solid-2);
     padding: 1rem;
     gap: 0.5rem;
     width: 100%;
@@ -711,7 +711,7 @@
   }
 
   .main-post__content__bottom__reaction {
-    background: #18393a;
+    background: var(--bg-solid-2);
     border-radius: 6.8px;
     opacity: 70%;
   }
@@ -727,7 +727,7 @@
   }
 
   .main-post__content__bottom__posts-count {
-    background: #18393a;
+    background: var(--bg-solid-2);
     padding: 0.5rem 0.7rem;
     gap: 0.5rem;
     border-radius: 5.8px;
@@ -736,7 +736,7 @@
 
   .main-post__content__bottom__share {
     border-radius: 50%;
-    background: #18393a;
+    background: var(--bg-solid-2);
     padding: 0.5rem;
   }
 
@@ -751,7 +751,7 @@
 
   .main-post__content__bottom__added-by__handle {
     padding: 0.2rem 0.5rem;
-    background: #18393a;
+    background: var(--bg-solid-2);
     border-radius: 5px;
     color: var(--primary);
   }

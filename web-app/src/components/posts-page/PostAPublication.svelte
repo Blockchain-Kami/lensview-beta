@@ -289,7 +289,7 @@
   }
 
   .body {
-    background: #18393a;
+    background: var(--bg-solid-2);
     padding: 1.3rem;
     gap: 1rem;
     justify-content: space-between;

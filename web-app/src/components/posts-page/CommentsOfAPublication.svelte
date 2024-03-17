@@ -592,13 +592,13 @@
 
   .comment__body__top__left__handle {
     padding: 0.2rem 0.5rem;
-    background: #18393a;
+    background: var(--bg-solid-2);
     border-radius: 5px;
     color: var(--primary);
   }
 
   .comment__body__top__left__anon-comment {
-    background: #132e2e;
+    background: var(--bg-solid-3);
     border-radius: 50%;
     padding: 0.25rem;
   }
@@ -614,7 +614,7 @@
   }
 
   .comment__body__top__right__reaction {
-    background: #18393a;
+    background: var(--bg-solid-2);
     border-radius: 6.8px;
     opacity: 70%;
   }
@@ -630,7 +630,7 @@
   }
 
   .comment__body__top__right__posts-count {
-    background: #18393a;
+    background: var(--bg-solid-2);
     padding: 0.5rem 0.7rem;
     gap: 0.5rem;
     border-radius: 5.8px;

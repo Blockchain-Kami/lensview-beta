@@ -317,7 +317,7 @@
 
   .stats__box__icon {
     border-radius: 50%;
-    background: #132e2e;
+    background: var(--bg-solid-3);
     padding: 0.9rem 1rem;
   }
 
