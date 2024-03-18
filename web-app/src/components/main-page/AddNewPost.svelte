@@ -128,6 +128,7 @@
           pubId,
           userEnteredContent,
           VITE_USER_POST,
+          userEnteredUrl,
           "empty"
         );
 

@@ -13,6 +13,7 @@
   import commentOnChainPublicationUtil from "../../utils/publications/comment-onchain.publication.util";
   import updateCommentAnonymouslyAppService from "../../services/app/update-comment-anonymously.app.service";
   import { mainPostImageUrlStore } from "../../stores/main-post-image-url.store";
+  import { mainPostUrlStore } from "../../stores/main-post-url.store";
   const { VITE_USER_COMMENT } = import.meta.env;
   const { VITE_USER_POST } = import.meta.env;
 
@@ -104,18 +105,25 @@
           : VITE_USER_POST;
 
         let mainPostImageUrl = "";
-        const unsub = mainPostImageUrlStore.subscribe(
+        const unsub1 = mainPostImageUrlStore.subscribe(
           (storedMainPostImageUrl) => {
             mainPostImageUrl = storedMainPostImageUrl;
           }
         );
-        unsub();
+        unsub1();
+
+        let mainPostUrl = "";
+        const unsub2 = mainPostUrlStore.subscribe((storedMainPostUrl) => {
+          mainPostUrl = storedMainPostUrl;
+        });
+        unsub2();
 
         await commentOnChainPublicationUtil(
           pubId,
           userEnteredContent,
           postOrCommentHash,
-          mainPostImageUrl
+          mainPostUrl,
+          mainPostImageUrl,
         );
         isPublishing = false;
         userEnteredContent = "";
@@ -155,17 +163,24 @@
       const localPubBtnName = pubBtnName;
 
       let mainPostImageUrl = "";
-      const unsub = mainPostImageUrlStore.subscribe(
+      const unsub1 = mainPostImageUrlStore.subscribe(
         (storedMainPostImageUrl) => {
           mainPostImageUrl = storedMainPostImageUrl;
         }
       );
-      unsub();
+      unsub1();
+
+      let mainPostUrl = "";
+      const unsub2 = mainPostUrlStore.subscribe((storedMainPostUrl) => {
+        mainPostUrl = storedMainPostUrl;
+      });
+      unsub2();
 
       await updateCommentAnonymouslyAppService(
         pubId,
         userEnteredContent,
         isThisComment,
+        mainPostUrl,
         mainPostImageUrl
       );
 

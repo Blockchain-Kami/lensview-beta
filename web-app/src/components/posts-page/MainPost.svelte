@@ -36,6 +36,7 @@
   import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
   import addReactionLensService from "../../services/lens/add-reaction.lens.service";
   import { mainPostImageUrlStore } from "../../stores/main-post-image-url.store";
+  import { mainPostUrlStore } from "../../stores/main-post-url.store";
 
   const { addNotification } = getNotificationsContext();
   let mainPostPubId = $page.data.mainPostPubId;
@@ -214,6 +215,14 @@
 
     return "";
   };
+
+  const updateMainPostUrlStore = (url: string | undefined) => {
+    if (url === undefined)
+      mainPostUrlStore.setMainPostUrl("empty");
+    else mainPostUrlStore.setMainPostUrl(url);
+
+    return "";
+  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -263,6 +272,7 @@
             href={mainPostPub?.metadata?.sharingLink}
             target="_blank"
           >
+            {updateMainPostUrlStore(mainPostPub?.metadata?.sharingLink)}
             {updateMetaTagsTitle(mainPostPub?.metadata?.sharingLink)}
             <Icon d={redirect} />
             {mainPostPub?.metadata?.sharingLink.substring(0, 40)}
