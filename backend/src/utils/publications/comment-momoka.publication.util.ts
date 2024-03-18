@@ -39,10 +39,11 @@ export const commentMomokaPublicationUtil = async (
 };
 
 const createCommentOnMomoka = async (
-  momokaCommentRequest: MomokaCommentRequest
+  createMomokaCommentRequest: MomokaCommentRequest
 ) => {
-  const result =
-    await createMomokaCommentTypedDataLensService(momokaCommentRequest);
+  const result = await createMomokaCommentTypedDataLensService(
+    createMomokaCommentRequest
+  );
   const typedData = result.typedData;
 
   const signature = await signedTypeDataForCommentHelperUtil(

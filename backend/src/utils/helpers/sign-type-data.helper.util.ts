@@ -5,7 +5,8 @@ import {
   CreateOnchainPostEip712TypedDataTypes,
   CreateOnchainCommentEip712TypedDataTypes,
   CreateMomokaPostEip712TypedDataTypes,
-  CreateMomokaCommentEip712TypedDataTypes
+  CreateMomokaCommentEip712TypedDataTypes,
+  CreateChangeProfileManagersEip712TypedDataTypes
 } from "../../gql/graphql";
 
 /**
@@ -49,4 +50,33 @@ export const signedTypeDataForCommentHelperUtil = async (
     omit(types, "__typename"),
     omit(value, "__typename")
   );
+};
+
+export const signedTypeData = async (
+  domain: TypedDataDomain,
+  types: CreateChangeProfileManagersEip712TypedDataTypes,
+  value: Record<string, any>
+) => {
+  const signer = getSigner();
+
+  // remove the __typedname from the signature!
+  return await signer.signTypedData(
+    omit(domain, "__typename"),
+    // @ts-ignore
+    omit(types, "__typename"),
+    omit(value, "__typename")
+  );
+
+  // console.log('typed data - domain', omit(domain, '__typename'));
+  // console.log('typed data - types', omit(types, '__typename'));
+  // console.log('typed data - value', omit(value, '__typename'));
+  // console.log('typed data - signature', result);
+
+  // const whoSigned = utils.verifyTypedData(
+  //   omit(domain, '__typename'),
+  //   omit(types, '__typename'),
+  //   omit(value, '__typename'),
+  //   result
+  // );
+  // console.log('who signed', whoSigned);
 };

@@ -20,6 +20,7 @@ import { logger } from "../log/log-manager.log";
 import PostAnonymousCommentRequestBodyModel from "../models/requests/body/post-anonymous-comment.body.request.model";
 import { commentMomokaPublicationUtil } from "../utils/publications/comment-momoka.publication.util";
 import { postMomokaPublicationUtil } from "../utils/publications/post-momoka.publication.util";
+import { commentMomokaProfileManagerPublicationUtil } from "../utils/publications/comment-momoka-profile-manager.publication.util";
 
 /**
  * Adds a URL or a post comment to the system.
@@ -157,7 +158,7 @@ export const putAnonymousCommentController = async (
       mainPostImageUrl,
       isThisComment
     );
-    await commentMomokaPublicationUtil(pubId, metadata);
+    await commentMomokaProfileManagerPublicationUtil(pubId, metadata);
     logger.info(
       "comments.controller.ts: putAnonymousCommentController: Comment added to publication: " +
         pubId
