@@ -12,11 +12,14 @@ import { httpStatusCodes } from "../../config/app-constants.config";
  * @param {NextFunction} next - The next function.
  * @return {void}
  */
-export const validatePostNewPublicationController = (
+export const validatePostNewPublicationMiddleware = (
   req: Request<unknown, unknown, PostNewPublicationBodyRequestModel, unknown>,
   _res: Response,
   next: NextFunction
 ) => {
+  logger.info(
+    "validate-request.url.middleware.ts: validatePostNewPublicationMiddleware: Execution Started."
+  );
   logger.info(
     "validate-request.url.middleware.ts: validatePostNewPublicationController: request body: " +
       JSON.stringify(req.body)

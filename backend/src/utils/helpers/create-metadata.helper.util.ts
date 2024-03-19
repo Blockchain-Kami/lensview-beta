@@ -169,7 +169,14 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
 export const createMetaDataForImageCommentHelperUtil = (
   urlObj: MetadataObjectModel
 ) => {
-  return image({
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Execution Started."
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Input Parameters: " +
+      JSON.stringify(urlObj)
+  );
+  const imageMetadata = image({
     locale: "en-US",
     tags: [TAG_IMAGE_PUB],
     appId: SOURCE_APP_ID,
@@ -217,4 +224,12 @@ export const createMetaDataForImageCommentHelperUtil = (
     // hideFromFeed: true,
     // encryptedWith: PublicationMetadataLitEncryption,
   });
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Metadata for Comment Publication: " +
+      JSON.stringify(imageMetadata)
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Execution Ended."
+  );
+  return imageMetadata;
 };
