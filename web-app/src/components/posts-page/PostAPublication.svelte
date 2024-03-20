@@ -123,7 +123,7 @@
           userEnteredContent,
           postOrCommentHash,
           mainPostUrl,
-          mainPostImageUrl,
+          mainPostImageUrl
         );
         isPublishing = false;
         userEnteredContent = "";
@@ -132,6 +132,13 @@
       } catch (err) {
         console.log("error: ", err);
         isPublishing = false;
+        addNotification({
+          position: "top-right",
+          heading: `Failed To ${pubBtnName}`,
+          description: `Your ${pubBtnName.toLowerCase()} was not ${pubBtnName.toLowerCase()}ed anonymously. Please try again`,
+          type: cross,
+          removeAfter: 20000
+        });
       }
     }
   };
@@ -366,11 +373,6 @@
     gap: 1rem;
     justify-content: space-between;
     border-radius: 0 0 10px 10px;
-  }
-
-  .footer__insert__item__matic {
-    color: var(--primary);
-    font-size: var(--small-font-size);
   }
 
   .footer__operations {

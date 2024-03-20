@@ -217,8 +217,7 @@
   };
 
   const updateMainPostUrlStore = (url: string | undefined) => {
-    if (url === undefined)
-      mainPostUrlStore.setMainPostUrl("empty");
+    if (url === undefined) mainPostUrlStore.setMainPostUrl("empty");
     else mainPostUrlStore.setMainPostUrl(url);
 
     return "";
@@ -409,6 +408,7 @@
                 target="_blank"
                 class="CenterRowFlex"
               >
+                {updateMainPostUrlStore(mainPostPub?.metadata?.sharingLink)}
                 {updateMetaTagsTitle(mainPostPub?.metadata?.sharingLink)}
                 <div class="CenterRowFlex main-post__content__top__redirect">
                   <Icon d={redirect} />

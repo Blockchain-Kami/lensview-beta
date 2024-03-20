@@ -12,7 +12,7 @@ export const load = (async ({ params }: LoadEvent) => {
     });
 
   try {
-    const response = await getProfileIdUsingHandleLensService(`lens/${handle}`);
+    const response = await getProfileIdUsingHandleLensService(handle);
 
     if (response?.data?.profile?.id) {
       return {

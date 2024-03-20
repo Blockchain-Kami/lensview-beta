@@ -112,7 +112,9 @@
       });
 
       try {
-        const pubId = await addUrlAppService(userEnteredUrl);
+        const { publicationID, mainPostImageUrl } = await addUrlAppService(
+          userEnteredUrl
+        );
 
         removeNotification(userPostNotificationId);
         addNotification({
@@ -125,11 +127,11 @@
         });
 
         await commentOnChainPublicationUtil(
-          pubId,
+          publicationID,
           userEnteredContent,
           VITE_USER_POST,
           userEnteredUrl,
-          "empty"
+          mainPostImageUrl ? mainPostImageUrl : "empty"
         );
 
         userEnteredContent = "";
@@ -143,7 +145,7 @@
           removeAfter: 20000,
           ctaBtnName: "View Post",
           ctaFunction: () => {
-            goto(`/posts/${pubId}`);
+            goto(`/posts/${publicationID}`);
           }
         });
       } catch (err) {
@@ -409,11 +411,6 @@
   .footer {
     justify-content: space-between;
     padding: 1rem;
-  }
-
-  .footer__left__matic {
-    color: var(--primary);
-    font-size: var(--small-font-size);
   }
 
   .footer__right {
