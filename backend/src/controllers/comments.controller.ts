@@ -19,6 +19,7 @@ import PostAnonymousCommentRequestBodyModel from "../models/requests/body/post-a
 import { commentMomokaPublicationUtil } from "../utils/publications/comment-momoka.publication.util";
 import { postMomokaPublicationUtil } from "../utils/publications/post-momoka.publication.util";
 import { commentMomokaProfileManagerPublicationUtil } from "../utils/publications/comment-momoka-profile-manager.publication.util";
+import { getMainPublicationImageLensService } from "../services/lens/get-main-publication-image.lens.service";
 // import commentOnChainPublicationUtil from "../utils/publications/comment-onchain.publication.util";
 // import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
 
@@ -63,14 +64,12 @@ export const postAnonymousCommentController = async (
 
     if (publicationExists && publicationExists.items.length > 0) {
       const publicationId = publicationExists.items[0]?.id;
-      logger.info(
-        "comments.controller.ts: postAnonymousCommentController: Publication already exists: Publication ID: " +
-          publicationId
-      );
+      const mainPostImageUrl =
+        await getMainPublicationImageLensService(publicationId);
       const commentMetadata = createMetaDataForAnonymousCommentHelperUtil(
         content,
         urlObj.url,
-        "empty",
+        mainPostImageUrl,
         false
       );
       await commentMomokaPublicationUtil(publicationId, commentMetadata);
