@@ -64,6 +64,10 @@ export const postAnonymousCommentController = async (
 
     if (publicationExists && publicationExists.items.length > 0) {
       const publicationId = publicationExists.items[0]?.id;
+      logger.info(
+        "comments.controller.ts: postAnonymousCommentController: Publication already exists: Publication ID: " +
+          publicationId
+      );
       const mainPostImageUrl =
         await getMainPublicationImageLensService(publicationId);
       const commentMetadata = createMetaDataForAnonymousCommentHelperUtil(
