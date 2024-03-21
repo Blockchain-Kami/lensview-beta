@@ -1,183 +1,218 @@
 <script lang="ts">
-import getPictureURLUtil from "../../utils/get-picture-URL.util";
-import {
-    copy, cross, login,
+  import getPictureURLUtil from "../../utils/get-picture-URL.util";
+  import {
+    copy,
+    cross,
+    login,
     modeComment,
     moreVert,
-    person, redirect,
+    person,
+    redirect,
     share,
     thumbDown,
     thumbDownAlt,
     thumbUp,
     thumbUpAlt
-} from "../../utils/app-icon.util";
-import {AppReactionType} from "../../config/app-constants.config";
-import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
-import Autolinker from "autolinker";
-import DOMPurify from "dompurify";
-import getLinkPreviewHtmlHelperUtil from "../../utils/helper/get-link-preview-html.helper.util";
-import Icon from "$lib/Icon.svelte";
-import {page} from "$app/stores";
-import {isLoggedInUserStore} from "../../stores/user/is-logged-in.user.store";
-import addReactionLensService from "../../services/lens/add-reaction.lens.service";
-import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
-import getReactionBasedOnLoginStatusHelperUtil from "../../utils/helper/get-reaction-based-on-login-status.helper.util";
-import type {ReactionDetailsModel} from "../../models/reactionDetails.model";
+  } from "../../utils/app-icon.util";
+  import { AppReactionType } from "../../config/app-constants.config";
+  import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
+  import Autolinker from "autolinker";
+  import DOMPurify from "dompurify";
+  import getLinkPreviewHtmlHelperUtil from "../../utils/helper/get-link-preview-html.helper.util";
+  import Icon from "$lib/Icon.svelte";
+  import { page } from "$app/stores";
+  import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  import addReactionLensService from "../../services/lens/add-reaction.lens.service";
+  import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
+  import getReactionBasedOnLoginStatusHelperUtil from "../../utils/helper/get-reaction-based-on-login-status.helper.util";
+  import type { ReactionDetailsModel } from "../../models/reactionDetails.model";
+  import getCommentByProfileIdPublicationUtil from "../../utils/publications/get-comment-by-profileId.publication.util";
+  import { LimitType } from "../../gql/graphql";
+  import MediaQuery from "$lib/MediaQuery.svelte";
+  import getImageCommentLensService from "../../services/lens/get-image-comment.lens.service";
 
-let isPostMoreOpen = false;
-let reactionDetails: ReactionDetailsModel = {};
+  let isPostMoreOpen = false;
+  let reactionDetails: ReactionDetailsModel = {};
+  let promiseOfGetComments = getCommentByProfileIdPublicationUtil(
+    $page.data.profileId,
+    LimitType.Fifty,
+    true
+  );
 
-
-const sharePost = (event: Event) => {
+  const sharePost = (event: Event) => {
     event.preventDefault();
     event.stopPropagation();
     navigator.clipboard.writeText(
-        window.location.origin +
+      window.location.origin +
         "/posts/" +
         $page.data.postPubId +
         "/" +
         $page.data.postPubId
     );
     addNotification({
-        position: "top-right",
-        heading: "Copied to clipboard",
-        description: "The link to this post has been copied to your clipboard.",
-        type: copy,
-        removeAfter: 5000
+      position: "top-right",
+      heading: "Copied to clipboard",
+      description: "The link to this post has been copied to your clipboard.",
+      type: copy,
+      removeAfter: 5000
     });
-};
-
+  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
-
-<section>
-<!--    <div class="card">-->
-<!--        <div class="card__left card__left-loader">-->
-<!--        </div>-->
-<!--        <div class="card__right card__right-loader">-->
-<!--        </div>-->
-<!--    </div>-->
-
-    <div class="card">
-        <div class="card__left">
-            <div class="card__left__image" style="background-image: url('https://ik.imagekit.io/lens/media-snapshot/e7aa952ad7af711681d8ab8527b2960a7bca2cc44064bd6cb9317256c5b92f65.jpg')"></div>
-        </div>
-        <div class="card__right">
+<MediaQuery query="(max-width: 1024px)" let:matches>
+  <section>
+    {#await promiseOfGetComments}
+      <div class="card">
+        <div class="card__left card__left-loader" />
+        <div class="card__right card__right-loader" />
+      </div>
+      <div class="card">
+        <div class="card__left card__left-loader" />
+        <div class="card__right card__right-loader" />
+      </div>
+    {:then postData}
+      {#each postData?.items as post}
+        <div class="card">
+          {#await getImageCommentLensService(post?.root?.id)}
+            <div class="card__left card__left-loader" />
+          {:then imageUrl}
+            <div class="card__left">
+              <div
+                class="card__left__image"
+                style="background-image: url({imageUrl})"
+              />
+            </div>
+          {/await}
+          <div class="card__right">
             <div class="card__right__content">
-                <div class="card__right__content__pic">
-                    <img
-                            src="https://ik.imagekit.io/lens/media-snapshot/9b8d775698eb53717be5471eeb20d47e0f334e730a7962d39457e841da4e4951.jpg"
-                            alt="avatar"
-                    />
-                </div>
-                <div class="card__right__content__body">
-                    <div class="CenterRowFlex card__right__content__body__top">
-                        <div class="CenterRowFlex card__right__content__body__top__left">
-                            <!--{#if card__right__contents.items[0]?.by?.metadata?.displayName !== undefined}-->
-                                <div class="card__right__content__body__top__left__name">
-                                    Nader Dabit
-                                </div>
-                                <div class="card__right__content__body__top__left__dot" />
-                            <!--{/if}-->
-                            <div class="card__right__content__body__top__left__handle">
-                                nader
-                            </div>
-                            <div class="card__right__content__body__top__left__dot" />
-                            <div class="card__right__content__body__top__left__date">
-                                8 months ago
-                            </div>
-                        </div>
-                        <div class="CenterRowFlex card__right__content__body__top__right">
-                            <div class="card__right__content__body__top__right__more">
-                                <button>
-                                    <Icon d={moreVert} size="1.65em" />
-                                </button>
-                                {#if isPostMoreOpen}
-                                    <div class="CenterColumnFlex card__right__content__body__more">
-                                        <div class="CenterRowFlex card__right__content__body__more__share">
-                                            <div class="CenterRowFlex card__right__content__body__more__share__icon">
-                                                <Icon d={share} size="1.2em" />
-                                            </div>
-                                            Share
-                                        </div>
-                                    </div>
-                                {/if}
-                            </div>
-                        </div>
-                    </div>
+              <div class="card__right__content__pic">
+                <img
+                  src={getPictureURLUtil(
+                    post?.by?.metadata?.picture?.optimized?.uri,
+                    post?.by?.ownedBy?.address
+                  )}
+                  alt="avatar"
+                />
+              </div>
+              <div class="card__right__content__body">
+                <div class="CenterRowFlex card__right__content__body__top">
+                  <div
+                    class="CenterRowFlex card__right__content__body__top__left"
+                  >
+                    {#if post?.by?.metadata?.displayName !== undefined && post?.by?.metadata?.displayName !== null}
+                      <div class="card__right__content__body__top__left__name">
+                        {#if matches}
+                          {post?.by?.metadata?.displayName.substring(0, 5)}
+                          {#if post?.by?.metadata?.displayName.length > 5}..{/if}
+                        {:else}
+                          {post?.by?.metadata?.displayName.substring(0, 15)}
+                          {#if post?.by?.metadata?.displayName.length > 15}..{/if}
+                        {/if}
+                      </div>
+                      <div class="card__right__content__body__top__left__dot" />
+                    {/if}
 
-                    <div class="card__right__content__body__content">
-                        We firmly believe that user experience must come first for decentralized social to succeed. Momoka is a natural result of this belief, joining our other innovations in abstracting away blockchain complexities and making Lens feel familiar and easy to use.
-                        We firmly believe that user experience must come first for decentralized social to succeed. Momoka is a natural result of this belief, joining our other innovations in abstracting away blockchain complexities and making Lens feel familiar and easy to use.
-                        We firmly believe that user experience must come first for decentralized social to succeed. Momoka is a natural result of this belief, joining our other innovations in abstracting away blockchain complexities and making Lens feel familiar and easy to use.
-                        <!--eslint-disable-next-line svelte/no-at-html-tags -->
-              <!--          {@html Autolinker.link(-->
-              <!--              DOMPurify.sanitize(card__right__contents.items[0]?.metadata?.content),-->
-              <!--              {-->
-              <!--                  className: "links"-->
-              <!--              }-->
-              <!--          )}-->
-              <!--          <blockquote-->
-              <!--                  class="twitter-tweet"-->
-              <!--                  data-conversation="none"-->
-              <!--                  data-theme="dark"-->
-              <!--          >-->
-              <!--              <a-->
-              <!--                      href={`https://twitter.com/username/status/${getLinkPreviewHtmlHelperUtil(-->
-              <!--  DOMPurify.sanitize(card__right__contents.items[0]?.metadata?.content)-->
-              <!--)}`}>&nbsp;</a-->
-              <!--              >-->
-              <!--          </blockquote>-->
-              <!--          <script-->
-              <!--                  async-->
-              <!--                  src="https://platform.twitter.com/widgets.js"-->
-              <!--                  charset="utf-8"-->
-              <!--          ></script>-->
+                    <div class="card__right__content__body__top__left__handle">
+                      {post?.by?.handle?.fullHandle.substring(5)}
                     </div>
-                    ...
+                    <div class="card__right__content__body__top__left__dot" />
+                    <div class="card__right__content__body__top__left__date">
+                      {getFormattedDateHelperUtil(post?.createdAt)}
+                    </div>
+                  </div>
+                  <div
+                    class="CenterRowFlex card__right__content__body__top__right"
+                  >
+                    <div class="card__right__content__body__top__right__more">
+                      <button>
+                        <Icon d={moreVert} size="1.65em" />
+                      </button>
+                      {#if isPostMoreOpen}
+                        <div
+                          class="CenterColumnFlex card__right__content__body__more"
+                        >
+                          <div
+                            class="CenterRowFlex card__right__content__body__more__share"
+                          >
+                            <div
+                              class="CenterRowFlex card__right__content__body__more__share__icon"
+                            >
+                              <Icon d={share} size="1.2em" />
+                            </div>
+                            Share
+                          </div>
+                        </div>
+                      {/if}
+                    </div>
+                  </div>
                 </div>
+
+                <div class="card__right__content__body__content">
+                  <!--eslint-disable-next-line svelte/no-at-html-tags -->
+                  {@html Autolinker.link(
+                    DOMPurify.sanitize(post?.metadata?.content),
+                    {
+                      className: "links"
+                    }
+                  )}
+                  <blockquote
+                    class="twitter-tweet"
+                    data-conversation="none"
+                    data-theme="dark"
+                  >
+                    <a
+                      href={`https://twitter.com/username/status/${getLinkPreviewHtmlHelperUtil(
+                        DOMPurify.sanitize(post?.metadata?.content)
+                      )}`}>&nbsp;</a
+                    >
+                  </blockquote>
+                  <script
+                    async
+                    src="https://platform.twitter.com/widgets.js"
+                    charset="utf-8"
+                  ></script>
+                </div>
+              </div>
             </div>
             <div class="CenterRowFlex card__footer">
-                <div class="CenterRowFlex card__footer__left">
-                    <div
-                            class="CenterRowFlex card__footer__left__reaction"
-                    >
-                        <button
-                                class="CenterRowFlex card__footer__left__reaction__val"
-                        >
-                            <Icon d={thumbUp} />
-                            1
-                        </button>
+              <div class="CenterRowFlex card__footer__left">
+                <div class="CenterRowFlex card__footer__left__reaction">
+                  <button
+                    class="CenterRowFlex card__footer__left__reaction__val"
+                  >
+                    <Icon d={thumbUp} />
+                    1
+                  </button>
 
-                        <div
-                                class="card__footer__left__reaction__vertical-line"
-                        />
-                        <button
-                                class="CenterRowFlex card__footer__left__reaction__val"
-                        >
-                            <Icon d={thumbDown} />
-                            1
-                        </button>
-
-                    </div>
-                    <div
-                            class="CenterRowFlex card__footer__left__posts-count"
-                    >
-                        <Icon d={modeComment} />
-                        5
-                    </div>
+                  <div class="card__footer__left__reaction__vertical-line" />
+                  <button
+                    class="CenterRowFlex card__footer__left__reaction__val"
+                  >
+                    <Icon d={thumbDown} />
+                    1
+                  </button>
                 </div>
-                <div class="card__footer__right">
-                    <div class="CenterRowFlex card__footer__right__url">
-                        <Icon d={redirect} />
-                        https://www.flipkart.com
-                    </div>
+                <div class="CenterRowFlex card__footer__left__posts-count">
+                  <Icon d={modeComment} />
+                  5
                 </div>
+              </div>
+              <div class="card__footer__right">
+                <div class="CenterRowFlex card__footer__right__url">
+                  <Icon d={redirect} />
+                  {post?.metadata?.attributes
+                    .find((item) => item.key === "mainPostUrl")
+                    ?.value.substring(0, 30)}...
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-</section>
+      {/each}
+    {/await}
+  </section>
+</MediaQuery>
 
 <!----------------------------------------------------------------->
 
@@ -185,7 +220,7 @@ const sharePost = (event: Event) => {
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
-  section{
+  section {
     display: flex;
     flex-direction: column;
     background-color: var(--bg-solid-1);
@@ -236,11 +271,11 @@ const sharePost = (event: Event) => {
     }
   }
 
-  .card__right{
+  .card__right {
     width: 70%;
   }
 
-  .card__right-loader{
+  .card__right-loader {
     height: 15.5rem;
     border-radius: 10px;
   }
@@ -253,7 +288,7 @@ const sharePost = (event: Event) => {
     background: #1e4748;
     border-radius: 10px 10px 0 0;
     width: 100%;
-    height: 11rem;
+    //height: 11rem;
   }
 
   .card__right__content__pic {
@@ -377,7 +412,7 @@ const sharePost = (event: Event) => {
     margin-top: 1rem;
   }
 
-  .card__footer{
+  .card__footer {
     padding: 1rem;
     background: var(--bg-solid-2);
     border-radius: 0 0 10px 10px;
@@ -418,7 +453,7 @@ const sharePost = (event: Event) => {
     opacity: 85%;
   }
 
-  .card__footer__right__url{
+  .card__footer__right__url {
     gap: 0.5rem;
   }
 
@@ -435,8 +470,8 @@ const sharePost = (event: Event) => {
     animation: 1s shine linear infinite;
   }
 
-  @media only screen and (max-width: 1024px){
-    section{
+  @media only screen and (max-width: 1024px) {
+    section {
       background-color: transparent;
       padding: 0;
       margin: 2rem;
@@ -449,20 +484,25 @@ const sharePost = (event: Event) => {
       padding: 1.5rem 0;
     }
 
-    .card__left{
+    .card__left {
       width: 100%;
     }
 
-    .card__left-loader{
+    .card__left-loader {
       height: 20rem;
     }
 
-    .card__left__image{
+    .card__left__image {
       height: 20rem;
     }
 
-    .card__right{
+    .card__right {
       width: 100%;
+    }
+
+    .card__right__content {
+      //height: auto;
+      //max-height: 11rem;
     }
   }
 </style>
