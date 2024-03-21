@@ -1,22 +1,3 @@
-import { DateType } from "../../config/app-constants.config";
-
-/**
- * Helper function to get a formatted date based on the specified type.
- * @param {string} date - The input date to format.
- * @param {DateType} type - The type of date formatting to apply.
- * @returns {string} - The formatted date.
- */
-const getFormattedDateHelperUtil = (
-  date: string,
-  type: DateType = DateType.RoughDate
-): string => {
-  if (type === DateType.ExactDate) {
-    return getExactDate(date);
-  }
-
-  return getRoughDate(date);
-};
-
 /**
  * It returns the formatted date based on the date passed
  * If the date is of today, it returns the seconds, minutes or hours
@@ -25,7 +6,7 @@ const getFormattedDateHelperUtil = (
  * If the date is of more than 1 year from today, it returns the years
  * @param date
  */
-const getRoughDate = (date: string) => {
+const getFormattedDateHelperUtil = (date: string) => {
   if (date === undefined || date === null) return "";
 
   const today = new Date();
@@ -66,18 +47,6 @@ const getRoughDate = (date: string) => {
     } else {
       return `${diffYears} years ago`;
     }
-  }
-};
-
-const getExactDate = (date: string) => {
-  if (date) {
-    return new Date(date).toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    });
-  } else {
-    return "";
   }
 };
 

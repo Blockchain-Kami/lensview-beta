@@ -51,7 +51,7 @@
 
   .head {
     justify-content: space-between;
-    background: var(--bg-solid-2);
+    background: #18393a;
     padding: 1.2rem;
     color: var(--primary);
     border-radius: 10px 10px 0 0;

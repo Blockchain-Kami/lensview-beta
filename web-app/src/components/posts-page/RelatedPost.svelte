@@ -473,7 +473,7 @@
   }
 
   .card__post__info__head__anon-comment {
-    background: var(--bg-solid-3);
+    background: #132e2e;
     border-radius: 50%;
     padding: 0.25rem;
   }

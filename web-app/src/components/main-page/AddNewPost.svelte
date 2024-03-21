@@ -112,9 +112,7 @@
       });
 
       try {
-        const { publicationID, mainPostImageUrl } = await addUrlAppService(
-          userEnteredUrl
-        );
+        const pubId = await addUrlAppService(userEnteredUrl);
 
         removeNotification(userPostNotificationId);
         addNotification({
@@ -127,11 +125,10 @@
         });
 
         await commentOnChainPublicationUtil(
-          publicationID,
+          pubId,
           userEnteredContent,
           VITE_USER_POST,
-          userEnteredUrl,
-          mainPostImageUrl ? mainPostImageUrl : "empty"
+          "empty"
         );
 
         userEnteredContent = "";
@@ -145,7 +142,7 @@
           removeAfter: 20000,
           ctaBtnName: "View Post",
           ctaFunction: () => {
-            goto(`/posts/${publicationID}`);
+            goto(`/posts/${pubId}`);
           }
         });
       } catch (err) {
@@ -340,7 +337,7 @@
 
   .head {
     justify-content: space-between;
-    background: var(--bg-solid-2);
+    background: #18393a;
     padding: 1.2rem;
     color: var(--primary);
     border-radius: 10px 10px 0 0;
@@ -411,6 +408,11 @@
   .footer {
     justify-content: space-between;
     padding: 1rem;
+  }
+
+  .footer__left__matic {
+    color: var(--primary);
+    font-size: var(--small-font-size);
   }
 
   .footer__right {

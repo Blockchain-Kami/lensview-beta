@@ -6,7 +6,6 @@ const updateCommentAnonymouslyAppService = async (
   pubId: string,
   userEnteredContent: string,
   isThisComment: boolean,
-  mainPostUrl: string,
   mainPostImageUrl: string
 ) => {
   console.log("createPostAnonymouslyAppService pubId:", pubId);
@@ -21,7 +20,6 @@ const updateCommentAnonymouslyAppService = async (
         pubId: pubId,
         content: userEnteredContent,
         isThisComment: isThisComment,
-        mainPostUrl: mainPostUrl,
         mainPostImageUrl: mainPostImageUrl
       })
       .then((resp: AxiosResponse<PostCommentResponseAppModel>) => {

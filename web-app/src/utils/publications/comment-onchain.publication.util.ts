@@ -20,7 +20,6 @@ const commentOnChainPublicationUtil = async (
   parentPubId: string,
   comment: string,
   postOrCommentHash: string,
-  mainPostUrl: string,
   mainPostImageUrl: string
 ) => {
   let handle = "";
@@ -59,11 +58,6 @@ const commentOnChainPublicationUtil = async (
         key: "mainPostImageUrl",
         type: MetadataAttributeType.STRING,
         value: mainPostImageUrl
-      },
-      {
-        key: "mainPostUrl",
-        type: MetadataAttributeType.STRING,
-        value: mainPostUrl
       },
       {
         key: "category",
