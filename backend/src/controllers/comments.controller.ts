@@ -83,7 +83,6 @@ export const postAnonymousCommentController = async (
         // TODO: Can put a default image URL for mainPostImageUrl
         const commentMetadata = createMetaDataForAnonymousCommentHelperUtil(
           content,
-          urlObj.url,
           "empty",
           false
         );
@@ -123,11 +122,9 @@ export const putAnonymousCommentController = async (
   res: Response<PublicationResponseModel>
 ) => {
   try {
-    const { pubId, content, mainPostUrl, mainPostImageUrl, isThisComment } =
-      req.body;
+    const { pubId, content, mainPostImageUrl, isThisComment } = req.body;
     const metadata = createMetaDataForAnonymousCommentHelperUtil(
       content,
-      mainPostUrl,
       mainPostImageUrl,
       isThisComment
     );

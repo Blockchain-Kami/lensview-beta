@@ -500,7 +500,7 @@
   }
 
   .card__post__info__head__anon-comment {
-    background: #132e2e;
+    background: var(--bg-solid-3);
     border-radius: 50%;
     padding: 0.25rem;
   }

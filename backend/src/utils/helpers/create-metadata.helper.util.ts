@@ -78,7 +78,6 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
 
 export const createMetaDataForAnonymousCommentHelperUtil = (
   comment: string,
-  mainPostUrl: string,
   mainPostImageUrl: string,
   isThisComment: boolean
 ) => {
@@ -107,11 +106,6 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
         key: "createdOn",
         type: MetadataAttributeType.STRING,
         value: `${new Date().toJSON().slice(0, 10)}`
-      },
-      {
-        key: "mainPostUrl",
-        type: MetadataAttributeType.STRING,
-        value: mainPostUrl
       },
       {
         key: "mainPostImageUrl",

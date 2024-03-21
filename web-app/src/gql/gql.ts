@@ -1,6 +1,6 @@
 /* eslint-disable */
 import * as types from './graphql';
-import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+import type {TypedDocumentNode as DocumentNode} from '@graphql-typed-document-node/core';
 
 /**
  * Map of all GraphQL operations in the project.
@@ -28,8 +28,9 @@ const documents = {
     "\n  query lastLoggedInProfile($request: LastLoggedInProfileRequest!) {\n    lastLoggedInProfile(request: $request) {\n      id\n    }\n  }\n": types.LastLoggedInProfileDocument,
     "\n  query lensTransactionStatus($request: LensTransactionStatusRequest!) {\n    lensTransactionStatus(request: $request) {\n      status\n      txHash\n      reason\n      extraInfo\n    }\n  }\n": types.LensTransactionStatusDocument,
     "\n  query LinkPublication($request: PublicationRequest!) {\n    publication(request: $request) {\n      ... on Post {\n        id\n        createdAt\n        by {\n          handle {\n            fullHandle\n          }\n        }\n        stats {\n          comments\n          upvotes: reactions(request: { type: UPVOTE })\n          downvotes: reactions(request: { type: DOWNVOTE })\n        }\n        metadata {\n          ... on LinkMetadataV3 {\n            sharingLink\n            attributes {\n              key\n              value\n            }\n          }\n        }\n        operations {\n          hasUpVoted: hasReacted(request: { type: UPVOTE })\n          hasDownVoted: hasReacted(request: { type: DOWNVOTE })\n        }\n      }\n    }\n  }\n": types.LinkPublicationDocument,
+    "\n  query ProfileId($request: ProfileRequest!) {\n    profile(request: $request) {\n      id\n    }\n  }\n": types.ProfileIdDocument,
     "\n  query profilesManaged($request: ProfilesManagedRequest!) {\n    profilesManaged(request: $request) {\n      items {\n        id\n        handle {\n          fullHandle\n        }\n      }\n    }\n  }\n": types.ProfilesManagedDocument,
-    "\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      handle {\n        fullHandle\n        localName\n      }\n      id\n      metadata {\n        displayName\n        picture {\n          ... on NftImage {\n            image {\n              optimized {\n                uri\n              }\n            }\n          }\n        }\n      }\n      ownedBy {\n        address\n      }\n    }\n  }\n": types.ProfileDocument,
+    "\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      createdAt\n      handle {\n        fullHandle\n        localName\n      }\n      metadata {\n        displayName\n        coverPicture {\n          optimized {\n            uri\n          }\n        }\n        picture {\n          ... on ImageSet {\n            optimized {\n              uri\n            }\n          }\n        }\n        bio\n      }\n      ownedBy {\n        address\n      }\n      stats {\n        followers\n        following\n        posts\n        comments\n        reactions\n      }\n      id\n    }\n  }\n": types.ProfileDocument,
 };
 
 /**
@@ -109,11 +110,15 @@ export function graphql(source: "\n  query LinkPublication($request: Publication
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  query ProfileId($request: ProfileRequest!) {\n    profile(request: $request) {\n      id\n    }\n  }\n"): (typeof documents)["\n  query ProfileId($request: ProfileRequest!) {\n    profile(request: $request) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query profilesManaged($request: ProfilesManagedRequest!) {\n    profilesManaged(request: $request) {\n      items {\n        id\n        handle {\n          fullHandle\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query profilesManaged($request: ProfilesManagedRequest!) {\n    profilesManaged(request: $request) {\n      items {\n        id\n        handle {\n          fullHandle\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      handle {\n        fullHandle\n        localName\n      }\n      id\n      metadata {\n        displayName\n        picture {\n          ... on NftImage {\n            image {\n              optimized {\n                uri\n              }\n            }\n          }\n        }\n      }\n      ownedBy {\n        address\n      }\n    }\n  }\n"): (typeof documents)["\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      handle {\n        fullHandle\n        localName\n      }\n      id\n      metadata {\n        displayName\n        picture {\n          ... on NftImage {\n            image {\n              optimized {\n                uri\n              }\n            }\n          }\n        }\n      }\n      ownedBy {\n        address\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      createdAt\n      handle {\n        fullHandle\n        localName\n      }\n      metadata {\n        displayName\n        coverPicture {\n          optimized {\n            uri\n          }\n        }\n        picture {\n          ... on ImageSet {\n            optimized {\n              uri\n            }\n          }\n        }\n        bio\n      }\n      ownedBy {\n        address\n      }\n      stats {\n        followers\n        following\n        posts\n        comments\n        reactions\n      }\n      id\n    }\n  }\n"): (typeof documents)["\n  query Profile($request: ProfileRequest!) {\n    profile(request: $request) {\n      createdAt\n      handle {\n        fullHandle\n        localName\n      }\n      metadata {\n        displayName\n        coverPicture {\n          optimized {\n            uri\n          }\n        }\n        picture {\n          ... on ImageSet {\n            optimized {\n              uri\n            }\n          }\n        }\n        bio\n      }\n      ownedBy {\n        address\n      }\n      stats {\n        followers\n        following\n        posts\n        comments\n        reactions\n      }\n      id\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
