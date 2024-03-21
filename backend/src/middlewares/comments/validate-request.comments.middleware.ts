@@ -35,13 +35,14 @@ export const validatePutAnonymousCommentRequestMiddleware = (
     req.body &&
     req.body.pubId &&
     req.body.content &&
+    req.body.mainPostUrl &&
     req.body.mainPostImageUrl &&
     req.body.isThisComment !== undefined
   ) {
     return next();
   } else {
     throw new ClientError(
-      "Check the request body: pubId, content, isThisComment and mainPostImageUrl must be supplied",
+      "Check the request body: parameters(pubId, content, mainPostUrl, mainPostImageUrl and isThisComment) must be supplied",
       400
     );
   }

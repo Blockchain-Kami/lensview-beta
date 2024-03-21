@@ -10,6 +10,7 @@ import {
   createMetaDataForAnonymousCommentHelperUtil,
   createMetaDataForUrlHelperUtil
 } from "../utils/helpers/create-metadata.helper.util";
+import { getMainPublicationImageLensService } from "../services/lens/get-main-publication-image.lens.service";
 import { APP_LENS_HANDLE } from "../config/env.config";
 import {
   PublicationResponseModel,
@@ -53,9 +54,12 @@ export const postAnonymousCommentController = async (
 
     if (publicationExists && publicationExists.items.length > 0) {
       const publicationId = publicationExists.items[0]?.id;
+      const mainPostImageUrl =
+        await getMainPublicationImageLensService(publicationId);
       const commentMetadata = createMetaDataForAnonymousCommentHelperUtil(
         content,
-        "empty",
+        urlObj.url,
+        mainPostImageUrl,
         false
       );
       await commentOnChainPublicationUtil(publicationId, commentMetadata);
@@ -79,6 +83,7 @@ export const postAnonymousCommentController = async (
         // TODO: Can put a default image URL for mainPostImageUrl
         const commentMetadata = createMetaDataForAnonymousCommentHelperUtil(
           content,
+          urlObj.url,
           "empty",
           false
         );
@@ -118,9 +123,11 @@ export const putAnonymousCommentController = async (
   res: Response<PublicationResponseModel>
 ) => {
   try {
-    const { pubId, content, mainPostImageUrl, isThisComment } = req.body;
+    const { pubId, content, mainPostUrl, mainPostImageUrl, isThisComment } =
+      req.body;
     const metadata = createMetaDataForAnonymousCommentHelperUtil(
       content,
+      mainPostUrl,
       mainPostImageUrl,
       isThisComment
     );
