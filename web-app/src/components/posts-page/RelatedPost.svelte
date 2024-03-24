@@ -191,16 +191,16 @@
                   </div>
                 </div>
               {:then comments}
-                {#if comments.items[0]?.by?.handle?.fullHandle === undefined}
+                {#if comments[0]?.by?.handle?.fullHandle === undefined}
                   <div class="CenterRowFlex card__post">No Top Post</div>
                 {:else}
                   <div class="CenterRowFlex card__post">
                     <div class="card__post__user-pic">
                       <img
                         src={getPictureURLUtil(
-                          comments.items[0]?.by?.metadata?.picture?.optimized
+                          comments[0]?.by?.metadata?.picture?.optimized
                             ?.uri,
-                          comments.items[0]?.by?.ownedBy?.address
+                          comments[0]?.by?.ownedBy?.address
                         )}
                         alt="avatar"
                       />
@@ -208,15 +208,15 @@
                     <div class="card__post__info">
                       <div class="CenterRowFlex card__post__info__head">
                         <div class="card__post__info__head__username">
-                          {comments.items[0]?.by?.handle?.fullHandle.substring(
+                          {comments[0]?.by?.handle?.fullHandle.substring(
                             5,
                             17
                           )}
-                          {comments.items[0]?.by?.handle?.fullHandle.length > 12
+                          {comments[0]?.by?.handle?.fullHandle.length > 12
                             ? "..."
                             : ""}
                         </div>
-                        {#if comments.items[0]?.by?.id === VITE_APP_LENS_ID}
+                        {#if comments[0]?.by?.id === VITE_APP_LENS_ID}
                           <Tooltip
                             content="This post was made by an anonymous user!"
                             position="top"
@@ -242,21 +242,21 @@
                             <Icon d={trendingUp} />
                           </div>
                           <div class="card__post__info__head__trend__count">
-                            {comments?.items[0]?.stats?.upvotes === undefined
+                            {comments[0]?.stats?.upvotes === undefined
                               ? 0
-                              : comments?.items[0]?.stats?.upvotes}
+                              : comments[0]?.stats?.upvotes}
                           </div>
                         </div>
                         <div class="card__post__info__head__time">
                           {getFormattedDateHelperUtil(
-                            comments?.items[0]?.createdAt
+                            comments[0]?.createdAt
                           )}
                         </div>
                       </div>
                       <div class="card__post__info__body">
                         <!--eslint-disable-next-line svelte/no-at-html-tags -->
                         {@html DOMPurify.sanitize(
-                          comments?.items[0]?.metadata?.content
+                          comments[0]?.metadata?.content
                         ).substring(0, 70)}
                       </div>
                     </div>

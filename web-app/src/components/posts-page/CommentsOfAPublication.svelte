@@ -305,7 +305,7 @@
           </div>
         </div>
       {:then commentsData}
-        {#each commentsData?.items as comment, index}
+        {#each commentsData as comment, index}
           <a
             href={`/posts/${$page.data.mainPostPubId}/${comment?.id}`}
             class="comment"

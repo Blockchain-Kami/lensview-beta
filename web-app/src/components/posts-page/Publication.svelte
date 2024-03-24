@@ -232,8 +232,8 @@
       <div class="comment__pic">
         <img
           src={getPictureURLUtil(
-            comments.items[0]?.by?.metadata?.picture?.optimized?.uri,
-            comments.items[0]?.by?.ownedBy?.address
+            comments[0]?.by?.metadata?.picture?.optimized?.uri,
+            comments[0]?.by?.ownedBy?.address
           )}
           alt="avatar"
         />
@@ -241,16 +241,16 @@
       <div class="comment__body">
         <div class="CenterRowFlex comment__body__top">
           <div class="CenterRowFlex comment__body__top__left">
-            {#if comments.items[0]?.by?.metadata?.displayName !== undefined}
+            {#if comments[0]?.by?.metadata?.displayName !== undefined}
               <div class="comment__body__top__left__name">
-                {comments.items[0]?.by?.metadata?.displayName}
+                {comments[0]?.by?.metadata?.displayName}
               </div>
               <div class="comment__body__top__left__dot" />
             {/if}
             <div class="comment__body__top__left__handle">
-              {comments.items[0]?.by?.handle?.fullHandle.substring(5)}
+              {comments[0]?.by?.handle?.fullHandle.substring(5)}
             </div>
-            {#if comments.items[0]?.by?.id === VITE_APP_LENS_ID}
+            {#if comments[0]?.by?.id === VITE_APP_LENS_ID}
               <Tooltip
                 content="This post was made by an anonymous user!"
                 position="right"
@@ -277,10 +277,10 @@
             </button>
             <div class="CenterRowFlex comment__body__top__right__reaction">
               {updateReactionDetails(
-                comments.items[0]?.operations?.hasUpVoted,
-                comments.items[0]?.operations?.hasDownVoted,
-                comments.items[0]?.stats?.upvotes,
-                comments.items[0]?.stats?.downvotes
+                comments[0]?.operations?.hasUpVoted,
+                comments[0]?.operations?.hasDownVoted,
+                comments[0]?.stats?.upvotes,
+                comments[0]?.stats?.downvotes
               )}
               {#if reaction === AppReactionType.UpVote}
                 <button
@@ -324,7 +324,7 @@
             </div>
             <div class="CenterRowFlex comment__body__top__right__posts-count">
               <Icon d={modeComment} />
-              {getTotalComments(comments.items[0]?.stats?.comments)}
+              {getTotalComments(comments[0]?.stats?.comments)}
             </div>
             <div class="comment__body__top__right__more">
               <button>
@@ -344,12 +344,12 @@
           </div>
         </div>
         <div class="comment__body__time">
-          {getFormattedDateHelperUtil(comments.items[0]?.createdAt)}
+          {getFormattedDateHelperUtil(comments[0]?.createdAt)}
         </div>
         <div class="comment__body__content">
           <!--eslint-disable-next-line svelte/no-at-html-tags -->
           {@html Autolinker.link(
-            DOMPurify.sanitize(comments.items[0]?.metadata?.content),
+            DOMPurify.sanitize(comments[0]?.metadata?.content),
             {
               className: "links"
             }
@@ -361,7 +361,7 @@
           >
             <a
               href={`https://twitter.com/username/status/${getLinkPreviewHtmlHelperUtil(
-                DOMPurify.sanitize(comments.items[0]?.metadata?.content)
+                DOMPurify.sanitize(comments[0]?.metadata?.content)
               )}`}>&nbsp;</a
             >
           </blockquote>

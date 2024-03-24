@@ -15,3 +15,11 @@ export enum DateType {
   ExactDate = "EXACT_DATE",
   RoughDate = "ROUGH_DATE"
 }
+
+export enum AttributeKeyType {
+  creator = "creator",
+  app = "app",
+  createdOn = "createdOn",
+  mainPostImageUrl = "mainPostImageUrl",
+  mainPostUrl = "mainPostUrl",
+}

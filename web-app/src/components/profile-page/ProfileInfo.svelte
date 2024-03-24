@@ -198,7 +198,7 @@
 <style lang="scss">
   .cover-image {
     width: 100%;
-    height: 12rem;
+    height: 15rem;
     background-size: cover;
     background-position: center;
     background-color: var(--secondary);

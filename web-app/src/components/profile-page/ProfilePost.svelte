@@ -13,7 +13,10 @@
     thumbUp,
     thumbUpAlt
   } from "../../utils/app-icon.util";
-  import { AppReactionType } from "../../config/app-constants.config";
+  import {
+    AppReactionType,
+    AttributeKeyType
+  } from "../../config/app-constants.config";
   import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
   import Autolinker from "autolinker";
   import DOMPurify from "dompurify";
@@ -33,9 +36,13 @@
   import { getNotificationsContext } from "svelte-notifications";
   import { reloadAPublication } from "../../stores/reload-publication.store";
   import { onMount } from "svelte";
+  import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
+
+  type PostMoreStatus = {
+    [key: string]: boolean;
+  };
 
   const { addNotification } = getNotificationsContext();
-  let isPostMoreOpen = false;
   let reactionDetails: ReactionDetailsModel = {};
   let promiseOfGetComments = getCommentByProfileIdPublicationUtil(
     $page.data.profileId,
@@ -43,6 +50,7 @@
     true
   );
   let showLoginModal = false;
+  let isPostMoreOpen: PostMoreStatus = {};
 
   onMount(() => {
     reloadAPublication.subscribe(() => {
@@ -53,6 +61,12 @@
       );
     });
   });
+
+  const openClosePostMore = (event: Event, id: string) => {
+    event.preventDefault();
+    event.stopPropagation();
+    isPostMoreOpen[id] = !isPostMoreOpen[id];
+  };
 
   const callAddReaction = async (
     event: Event,
@@ -171,13 +185,13 @@
     });
   };
 
-  const updateReactionDetails = (
-    pubID: string,
-    passedUpVoteStatus: boolean,
-    passedDownVoteStatus: boolean,
-    upVoteCount: number,
-    downVoteCount: number
-  ) => {
+  const updateReactionDetails = (post: CommentsPublicationLensModel) => {
+    const pubID = post?.id;
+    const passedUpVoteStatus = post?.operations?.hasUpVoted;
+    const passedDownVoteStatus = post?.operations?.hasDownVoted;
+    const upVoteCount = post?.stats?.upvotes;
+    const downVoteCount = post?.stats?.downvotes;
+
     reactionDetails[pubID] = {
       reaction: getReactionBasedOnLoginStatusHelperUtil(
         passedUpVoteStatus,
@@ -189,15 +203,11 @@
     return "";
   };
 
-  const sharePost = (event: Event) => {
+  const sharePost = (event: Event, mainPostId: string, postId: string) => {
     event.preventDefault();
     event.stopPropagation();
     navigator.clipboard.writeText(
-      window.location.origin +
-        "/posts/" +
-        $page.data.postPubId +
-        "/" +
-        $page.data.postPubId
+      window.location.origin + "/posts/" + mainPostId + "/" + postId
     );
     addNotification({
       position: "top-right",
@@ -206,6 +216,12 @@
       type: copy,
       removeAfter: 5000
     });
+  };
+
+  const getMainPostUrl = (post: CommentsPublicationLensModel) => {
+    return post?.metadata?.attributes.find(
+      (item) => item.key === AttributeKeyType.mainPostUrl
+    )?.value;
   };
 </script>
 
@@ -222,8 +238,8 @@
         <div class="card__right card__right-loader" />
       </div>
     {:then postData}
-      {#each postData?.items as post}
-        <div class="card">
+      {#each postData as post}
+        <a href={`/posts/${post?.root?.id}/${post?.id}`} class="card">
           {#await getImageCommentLensService(post?.root?.id)}
             <div class="card__left card__left-loader" />
           {:then imageUrl}
@@ -275,23 +291,27 @@
                     class="CenterRowFlex card__right__content__body__top__right"
                   >
                     <div class="card__right__content__body__top__right__more">
-                      <button>
+                      <button
+                        on:click={(event) => openClosePostMore(event, post?.id)}
+                      >
                         <Icon d={moreVert} size="1.65em" />
                       </button>
-                      {#if isPostMoreOpen}
+                      {#if isPostMoreOpen[post?.id]}
                         <div
                           class="CenterColumnFlex card__right__content__body__more"
                         >
-                          <div
+                          <button
+                            on:click={(event) =>
+                              sharePost(event, post?.root?.id, post?.id)}
                             class="CenterRowFlex card__right__content__body__more__share"
                           >
-                            <div
+                            <span
                               class="CenterRowFlex card__right__content__body__more__share__icon"
                             >
                               <Icon d={share} size="1.2em" />
-                            </div>
+                            </span>
                             Share
-                          </div>
+                          </button>
                         </div>
                       {/if}
                     </div>
@@ -328,13 +348,7 @@
             <div class="CenterRowFlex card__footer">
               <div class="CenterRowFlex card__footer__left">
                 <div class="CenterRowFlex card__footer__left__reaction">
-                  {updateReactionDetails(
-                    post?.id,
-                    post?.operations?.hasUpVoted,
-                    post?.operations?.hasDownVoted,
-                    post?.stats?.upvotes,
-                    post?.stats?.downvotes
-                  )}
+                  {updateReactionDetails(post)}
                   {#if reactionDetails[post?.id]["reaction"] === AppReactionType.UpVote}
                     <button
                       on:click={(event) =>
@@ -397,16 +411,18 @@
                 </div>
               </div>
               <div class="card__footer__right">
-                <div class="CenterRowFlex card__footer__right__url">
+                <a
+                  href={getMainPostUrl(post)}
+                  target="_blank"
+                  class="CenterRowFlex card__footer__right__url"
+                >
                   <Icon d={redirect} />
-                  {post?.metadata?.attributes
-                    .find((item) => item.key === "mainPostUrl")
-                    ?.value.substring(0, 30)}...
-                </div>
+                  {getMainPostUrl(post)?.substring(0, 30)}...
+                </a>
               </div>
             </div>
           </div>
-        </div>
+        </a>
       {/each}
     {/await}
   </section>
@@ -449,7 +465,8 @@
 
   .card__left__image {
     width: 100%;
-    height: 15.5rem;
+    height: 100%;
+    max-height: 50rem;
     background-color: #000;
     overflow: hidden;
     padding-bottom: 50%; /* Adjust this value to control the aspect ratio */
@@ -579,7 +596,7 @@
     margin-right: 0.5rem;
     position: absolute;
     right: 0;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
     box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
   }
 
