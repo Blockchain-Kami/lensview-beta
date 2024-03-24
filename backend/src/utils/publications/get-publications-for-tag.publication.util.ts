@@ -1,5 +1,6 @@
 import { relatedParentPublicationsLensService } from "../../services/lens/related-parent-publications.lens.service";
 import { FAILURE, SUCCESS } from "../../config/app-constants.config";
+import { logger } from "../../log/log-manager.log";
 
 /**
  * Finds publications related to the input string.
@@ -11,6 +12,13 @@ import { FAILURE, SUCCESS } from "../../config/app-constants.config";
 export const getPublicationsForTagPublicationUtil = async (
   inputString: string
 ): Promise<{ relatedPublications: string[]; message: number }> => {
+  logger.info(
+    "get-publications-for-tag-publication.util.ts: getPublicationsForTagPublicationUtil: Execution Started."
+  );
+  logger.info(
+    "get-publications-for-tag-publication.util.ts: getPublicationsForTagPublicationUtil: Input Parameters: inputString: " +
+      inputString
+  );
   try {
     const tags: string[] = [];
     const relatedPublications: Array<string> = [];
@@ -30,12 +38,19 @@ export const getPublicationsForTagPublicationUtil = async (
           relatedPublications.push(publication?.id);
       });
     }
-
+    logger.info(
+      "get-publications-for-tag-publication.util.ts: getPublicationsForTagPublicationUtil: Execution Ended. Related Publications: " +
+        relatedPublications
+    );
     return {
       relatedPublications,
       message: SUCCESS
     };
-  } catch (e) {
+  } catch (error) {
+    logger.error(
+      "get-publications-for-tag-publication.util.ts: getPublicationsForTagPublicationUtil: Error in execution: " +
+        error
+    );
     return {
       relatedPublications: [],
       message: FAILURE
