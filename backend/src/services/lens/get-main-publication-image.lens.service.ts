@@ -1,5 +1,3 @@
-import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util";
-import getMainPublicationImageQueryGraphql from "../../graphql/queries/get-main-publication-image.query.graphql";
 import { InternalServerError } from "../../errors/internal-server-error.error";
 import {
   LimitType,
@@ -8,6 +6,9 @@ import {
 } from "../../gql/graphql";
 import { TAG_IMAGE_PUB } from "../../config/env.config";
 import { logger } from "../../log/log-manager.log";
+import { httpStatusCodes } from "../../config/app-constants.config";
+import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util";
+import getMainPublicationImageQueryGraphql from "../../graphql/queries/get-main-publication-image.query.graphql";
 
 export const getMainPublicationImageLensService = async (
   publicationID: string
@@ -64,6 +65,9 @@ export const getMainPublicationImageLensService = async (
       "get-main-publication-image.lens.service.ts: getMainPublicationImageLensService: error in fetching URI: " +
         error
     );
-    throw new InternalServerError("Error Fetching Data From Lens API", 504);
+    throw new InternalServerError(
+      "Error Fetching Data From Lens API",
+      httpStatusCodes.SERVER_TIMEOUT
+    );
   }
 };
