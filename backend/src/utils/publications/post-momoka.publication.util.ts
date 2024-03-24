@@ -10,6 +10,7 @@ import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util";
 import { signedTypeDataForPostHelperUtil } from "../helpers/sign-type-data.helper.util";
 import createMomokaPostTypedDataLensService from "../../services/lens/create-momoka-post-typed-data.lens.service";
 import { logger } from "../../log/log-manager.log";
+import { httpStatusCodes } from "../../config/app-constants.config";
 
 export const postMomokaPublicationUtil = async (
   metadata: LinkMetadata | TextOnlyMetadata | ImageMetadata
@@ -35,23 +36,25 @@ export const postMomokaPublicationUtil = async (
       // all request objects are in `publication-reference-module-options.ts`,
       // referenceModule: referenceModuleFollowOnly,
     };
-    logger.info(
-      "post-momoka.publication.util.ts: postMomokaPublicationUtil: MomokaPostRequest: " +
-        JSON.stringify(request)
-    );
     const result = await createPostOnMomoka(request);
     if (result.__typename !== "CreateMomokaPublicationResult") {
-      logger.info(
+      logger.error(
         "post-momoka.publication.util.ts: postMomokaPublicationUtil: Failed to create post on Momoka."
       );
       return;
     }
+    logger.info(
+      "post-momoka.publication.util.ts: postMomokaPublicationUtil: Execution ended."
+    );
   } catch (error) {
     logger.error(
       "post-momoka.publication.util.ts: postMomokaPublicationUtil: Failed to create post on Momoka. Error: " +
         error
     );
-    throw new InternalServerError("Failed to create post on Momoka", 505);
+    throw new InternalServerError(
+      "Failed to create post on Momoka",
+      httpStatusCodes.INTERNAL_SERVER_ERROR
+    );
   }
 };
 
@@ -81,6 +84,7 @@ const createPostOnMomoka = async (momokaPostRequest: MomokaPostRequest) => {
       logger.error(
         "post-momoka.publication.util.ts: createPostOnMomoka: Execution ended. Failed to create post on Momoka."
       );
+      throw new Error("create momoka post via broadcast: failed");
     }
     logger.info(
       "post-momoka.publication.util.ts: createPostOnMomoka: Execution ended. Successfully created post on Momoka."
@@ -90,6 +94,9 @@ const createPostOnMomoka = async (momokaPostRequest: MomokaPostRequest) => {
     logger.error(
       "post-momoka.publication.util.ts: createPostOnMomoka: Execution ended. Failed to create post on Momoka."
     );
-    throw new InternalServerError("Failed to create post on Momoka", 505);
+    throw new InternalServerError(
+      "Failed to create post on Momoka",
+      httpStatusCodes.INTERNAL_SERVER_ERROR
+    );
   }
 };
