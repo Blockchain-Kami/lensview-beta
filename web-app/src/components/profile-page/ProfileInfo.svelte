@@ -13,6 +13,7 @@
   import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
   import { DateType } from "../../config/app-constants.config";
   import getProfileUsingIdLensService from "../../services/lens/get-profile-using-id.lens.service";
+  import { profileUserStore } from "../../stores/user/profile.user.store";
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -96,12 +97,14 @@
               ? response?.data?.profile?.metadata?.displayName
               : ""}
           </div>
-          <div class="profile-details__right__top__follow">
-            <button class="CenterRowFlex btn">
-              <Icon d={personAdd} color="black" />
-              &nbsp; &nbsp;Follow
-            </button>
-          </div>
+          {#if $page.data.profileId !== $profileUserStore?.id}
+            <div class="profile-details__right__top__follow">
+              <button class="CenterRowFlex btn">
+                <Icon d={personAdd} color="black" />
+                &nbsp; &nbsp;Follow
+              </button>
+            </div>
+          {/if}
         </div>
         <div class="CenterRowFlex profile-details__right__middle">
           <div class="profile-details__right__middle__handle">
@@ -203,7 +206,7 @@
 
   .cover-image-loader {
     width: 100%;
-    height: 13rem;
+    height: 15rem;
   }
 
   .profile-details {

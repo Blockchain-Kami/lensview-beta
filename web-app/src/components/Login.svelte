@@ -117,6 +117,7 @@
       await setProfileAuthenticationUtil();
       isLoggedInUserStore.setLoggedInStatus(true);
       loggingIn = false;
+      setReloadMethods();
       dialog.close();
       addNotification({
         position: "top-right",

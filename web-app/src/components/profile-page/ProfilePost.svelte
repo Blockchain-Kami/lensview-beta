@@ -6,7 +6,6 @@
     login,
     modeComment,
     moreVert,
-    person,
     redirect,
     share,
     thumbDown,
@@ -30,7 +29,12 @@
   import { LimitType } from "../../gql/graphql";
   import MediaQuery from "$lib/MediaQuery.svelte";
   import getImageCommentLensService from "../../services/lens/get-image-comment.lens.service";
+  import Login from "../Login.svelte";
+  import { getNotificationsContext } from "svelte-notifications";
+  import { reloadAPublication } from "../../stores/reload-publication.store";
+  import { onMount } from "svelte";
 
+  const { addNotification } = getNotificationsContext();
   let isPostMoreOpen = false;
   let reactionDetails: ReactionDetailsModel = {};
   let promiseOfGetComments = getCommentByProfileIdPublicationUtil(
@@ -38,6 +42,152 @@
     LimitType.Fifty,
     true
   );
+  let showLoginModal = false;
+
+  onMount(() => {
+    reloadAPublication.subscribe(() => {
+      promiseOfGetComments = getCommentByProfileIdPublicationUtil(
+        $page.data.profileId,
+        LimitType.Fifty,
+        true
+      );
+    });
+  });
+
+  const callAddReaction = async (
+    event: Event,
+    pubID: string,
+    reaction: AppReactionType
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
+    });
+    unsub();
+
+    if (!isUserLoggedIn) {
+      openLoginNotification();
+    } else {
+      try {
+        if (reactionDetails[pubID]["reaction"] !== null) {
+          await callRemoveReaction(
+            event,
+            pubID,
+            reactionDetails[pubID]["reaction"]
+          );
+        }
+
+        const localUpVoteCount =
+          reaction === AppReactionType.UpVote
+            ? reactionDetails[pubID]["upVoteCount"] + 1
+            : reactionDetails[pubID]["upVoteCount"];
+        const localDownVoteCount =
+          reaction === AppReactionType.DownVote
+            ? reactionDetails[pubID]["downVoteCount"] + 1
+            : reactionDetails[pubID]["downVoteCount"];
+        reactionDetails[pubID] = {
+          reaction: reaction,
+          upVoteCount: localUpVoteCount,
+          downVoteCount: localDownVoteCount
+        };
+
+        await addReactionLensService(pubID, reaction);
+      } catch (error) {
+        console.log("Error while reacting", error);
+
+        addNotification({
+          position: "top-right",
+          heading: "Error while reacting",
+          description: "Please try again .",
+          type: cross,
+          removeAfter: 4000
+        });
+      }
+    }
+  };
+
+  const callRemoveReaction = async (
+    event: Event,
+    pubID: string,
+    reaction: AppReactionType
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
+    });
+    unsub();
+
+    if (!isUserLoggedIn) {
+      openLoginNotification();
+    } else {
+      try {
+        const localUpVoteCount =
+          reaction === AppReactionType.UpVote
+            ? reactionDetails[pubID]["upVoteCount"] - 1
+            : reactionDetails[pubID]["upVoteCount"];
+        const localDownVoteCount =
+          reaction === AppReactionType.DownVote
+            ? reactionDetails[pubID]["downVoteCount"] - 1
+            : reactionDetails[pubID]["downVoteCount"];
+        reactionDetails[pubID] = {
+          reaction: AppReactionType.NoReaction,
+          upVoteCount: localUpVoteCount,
+          downVoteCount: localDownVoteCount
+        };
+
+        await removeReactionLensService(pubID, reaction);
+      } catch (error) {
+        console.log("Error while reacting", error);
+
+        addNotification({
+          position: "top-right",
+          heading: "Error removing",
+          description: "Error while removing your reaction. Please try again .",
+          type: cross,
+          removeAfter: 4000
+        });
+      }
+    }
+  };
+
+  const openLoginNotification = () => {
+    addNotification({
+      position: "top-right",
+      heading: "Please Login",
+      description:
+        'Kindly log-in to react to this post. Simply click on "Login" button to proceed with your login.',
+      type: login,
+      removeAfter: 10000,
+      ctaBtnName: "Login",
+      ctaFunction: () => {
+        showLoginModal = true;
+      }
+    });
+  };
+
+  const updateReactionDetails = (
+    pubID: string,
+    passedUpVoteStatus: boolean,
+    passedDownVoteStatus: boolean,
+    upVoteCount: number,
+    downVoteCount: number
+  ) => {
+    reactionDetails[pubID] = {
+      reaction: getReactionBasedOnLoginStatusHelperUtil(
+        passedUpVoteStatus,
+        passedDownVoteStatus
+      ),
+      upVoteCount: upVoteCount,
+      downVoteCount: downVoteCount
+    };
+    return "";
+  };
 
   const sharePost = (event: Event) => {
     event.preventDefault();
@@ -178,20 +328,68 @@
             <div class="CenterRowFlex card__footer">
               <div class="CenterRowFlex card__footer__left">
                 <div class="CenterRowFlex card__footer__left__reaction">
-                  <button
-                    class="CenterRowFlex card__footer__left__reaction__val"
-                  >
-                    <Icon d={thumbUp} />
-                    1
-                  </button>
-
+                  {updateReactionDetails(
+                    post?.id,
+                    post?.operations?.hasUpVoted,
+                    post?.operations?.hasDownVoted,
+                    post?.stats?.upvotes,
+                    post?.stats?.downvotes
+                  )}
+                  {#if reactionDetails[post?.id]["reaction"] === AppReactionType.UpVote}
+                    <button
+                      on:click={(event) =>
+                        callRemoveReaction(
+                          event,
+                          post?.id,
+                          AppReactionType.UpVote
+                        )}
+                      class="CenterRowFlex card__footer__left__reaction__val"
+                    >
+                      <Icon d={thumbUp} />
+                      {reactionDetails[post?.id]["upVoteCount"]}
+                    </button>
+                  {:else}
+                    <button
+                      on:click={(event) =>
+                        callAddReaction(
+                          event,
+                          post?.id,
+                          AppReactionType.UpVote
+                        )}
+                      class="CenterRowFlex card__footer__left__reaction__val"
+                    >
+                      <Icon d={thumbUpAlt} />
+                      {reactionDetails[post?.id]["upVoteCount"]}
+                    </button>
+                  {/if}
                   <div class="card__footer__left__reaction__vertical-line" />
-                  <button
-                    class="CenterRowFlex card__footer__left__reaction__val"
-                  >
-                    <Icon d={thumbDown} />
-                    1
-                  </button>
+                  {#if reactionDetails[post?.id]["reaction"] === AppReactionType.DownVote}
+                    <button
+                      on:click={(event) =>
+                        callRemoveReaction(
+                          event,
+                          post?.id,
+                          AppReactionType.DownVote
+                        )}
+                      class="CenterRowFlex card__footer__left__reaction__val"
+                    >
+                      <Icon d={thumbDown} />
+                      {reactionDetails[post?.id]["downVoteCount"]}
+                    </button>
+                  {:else}
+                    <button
+                      on:click={(event) =>
+                        callAddReaction(
+                          event,
+                          post?.id,
+                          AppReactionType.DownVote
+                        )}
+                      class="CenterRowFlex card__footer__left__reaction__val"
+                    >
+                      <Icon d={thumbDownAlt} />
+                      {reactionDetails[post?.id]["downVoteCount"]}
+                    </button>
+                  {/if}
                 </div>
                 <div class="CenterRowFlex card__footer__left__posts-count">
                   <Icon d={modeComment} />
@@ -213,6 +411,8 @@
     {/await}
   </section>
 </MediaQuery>
+
+<Login bind:showLoginModal />
 
 <!----------------------------------------------------------------->
 
