@@ -73,7 +73,7 @@ export const postAnonymousCommentController = async (
       const commentMetadata = createMetaDataForAnonymousCommentHelperUtil(
         content,
         urlObj.url,
-        mainPostImageUrl,
+        mainPostImageUrl ? mainPostImageUrl : null,
         false
       );
       await commentMomokaPublicationUtil(publicationId, commentMetadata);

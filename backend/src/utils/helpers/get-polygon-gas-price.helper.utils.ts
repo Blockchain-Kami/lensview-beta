@@ -13,10 +13,7 @@ export const getPolygonGasPriceHelperUtil = async () => {
     const maxFeePerGas = gas.maxFeePerGas;
     const maxPriorityFeePerGas = gas.maxPriorityFeePerGas;
     logger.info(
-      "get-polygon-gas-price.helper.utils.ts: getPolygonGasPriceHelperUtil: Execution Completed. Max Fee Per Gas: " +
-        maxFeePerGas +
-        ", Max Priority Fee Per Gas: " +
-        maxPriorityFeePerGas
+      "get-polygon-gas-price.helper.utils.ts: getPolygonGasPriceHelperUtil: Execution Completed."
     );
     return {
       maxFeePerGas,
