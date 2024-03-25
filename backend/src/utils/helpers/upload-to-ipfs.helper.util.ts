@@ -2,6 +2,7 @@ import { NFTStorage, File, Blob } from "nft.storage";
 import { NFT_STORAGE_TOKEN } from "../../config/env.config";
 import { logger } from "../../log/log-manager.log";
 import { InternalServerError } from "../../errors/internal-server-error.error";
+import { httpStatusCodes } from "../../config/app-constants.config";
 // import { Web3Storage, File } from "web3.storage";
 
 /**
@@ -49,7 +50,10 @@ function makeStorageClient(): NFTStorage {
       "upload-to-ipfs.helper.util.ts: makeStorageClient: Error while creating storage client: " +
         error
     );
-    throw new InternalServerError("Error while creating storage client", 500);
+    throw new InternalServerError(
+      "Error while creating storage client",
+      httpStatusCodes.INTERNAL_SERVER_ERROR
+    );
   }
 }
 
@@ -82,6 +86,9 @@ function makeFileObjects(data: string): File[] {
       "upload-to-ipfs.helper.util.ts: makeFileObjects: Error while creating file objects: " +
         error
     );
-    throw new InternalServerError("Error while creating file objects", 500);
+    throw new InternalServerError(
+      "Error while creating file objects",
+      httpStatusCodes.INTERNAL_SERVER_ERROR
+    );
   }
 }

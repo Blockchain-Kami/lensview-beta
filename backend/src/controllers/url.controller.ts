@@ -3,18 +3,17 @@ import { PublicationResponseModelForNewPubURL } from "../models/response/publica
 import { SearchQueryRequestModel } from "../models/requests/query/search.query.request.model";
 import { UrlExistsValidationResponseModel } from "../models/response/url-exists-validation.response.model";
 import PostNewPublicationBodyRequestModel from "../models/requests/body/post-new-publication.body.request.model";
-import { httpStatusCodes } from "../config/app-constants.config";
-import { imageQueue } from "../jobs/add-image-queue.job";
-import { logger } from "../log/log-manager.log";
 import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util";
 import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
 import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service";
-// import postOnChainPublicationUtil from "../utils/publications/post-onchain.publication.util";
-import { postMomokaPublicationUtil } from "../utils/publications/post-momoka.publication.util";
 import { preprocessURLHelperUtil } from "../utils/helpers/preprocess-url.helper.util";
 import { createHashHelperUtil } from "../utils/helpers/create-hash.helper.util";
 import { createMetaDataForUrlHelperUtil } from "../utils/helpers/create-metadata.helper.util";
 import { getMainPublicationImageLensService } from "../services/lens/get-main-publication-image.lens.service";
+import { getPostMethod } from "../config/app-config.config";
+import { httpStatusCodes } from "../config/app-constants.config";
+import { imageQueue } from "../jobs/add-image-queue.job";
+import { logger } from "../log/log-manager.log";
 
 /**
  * Handles the logic for posting a new publication.
@@ -30,6 +29,7 @@ export const postNewPublicationController = async (
   logger.info(
     "url.controller.ts: postNewPublicationController: Execution Started"
   );
+  const postOnLensView = getPostMethod();
   try {
     const { url, lensHandle, userTags } = req.body;
 
@@ -76,7 +76,7 @@ export const postNewPublicationController = async (
         "url.controller.ts: postNewPublicationController: Execution End. Publication not found. Adding Publication to LensView."
       );
       const postMetadata = createMetaDataForUrlHelperUtil(urlObj);
-      await postMomokaPublicationUtil(postMetadata);
+      await postOnLensView(postMetadata);
       imageQueue.add({ urlObj });
       const newPublication = await relatedParentPublicationsLensService([
         urlObj.hashedURL

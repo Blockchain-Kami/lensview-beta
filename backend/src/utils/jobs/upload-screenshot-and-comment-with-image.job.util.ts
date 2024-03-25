@@ -2,9 +2,8 @@ import { MetadataObjectModel } from "../../models/metadata-object.model";
 import { relatedParentPublicationsLensService } from "../../services/lens/related-parent-publications.lens.service";
 import { fetchScreenshotAndUploadToIPFSJobUtil } from "./fetch-screenshot-and-upload-to-ipfs.job.util";
 import { createMetaDataForImageCommentHelperUtil } from "../helpers/create-metadata.helper.util";
-// import commentOnchainPublicationUtil from "../publications/comment-onchain.publication.util";
 import { logger } from "../../log/log-manager.log";
-import { commentMomokaProfileManagerPublicationUtil } from "../publications/comment-momoka-profile-manager.publication.util";
+import { getCommentMethod } from "../../config/app-config.config";
 
 export const uploadScreenshotAndCommentWithImageJobUtil = async (
   urlObj: MetadataObjectModel
@@ -19,10 +18,7 @@ export const uploadScreenshotAndCommentWithImageJobUtil = async (
     const sourceURL = urlObj.url;
     urlObj.image = await fetchScreenshotAndUploadToIPFSJobUtil(sourceURL);
     const imageMetadata = createMetaDataForImageCommentHelperUtil(urlObj);
-    await commentMomokaProfileManagerPublicationUtil(
-      parentPostID,
-      imageMetadata
-    );
+    await getCommentMethod()(parentPostID, imageMetadata);
     logger.info(
       "upload-screenshot-and-comment-with-image.job.ts: uploadScreenshotAndCommentWithImageJobUtil: Execution Completed."
     );

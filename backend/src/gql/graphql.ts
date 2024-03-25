@@ -5579,6 +5579,25 @@ export type CreateMomokaCommentTypedDataMutation = {
   };
 };
 
+export type PostOnMomokaMutationVariables = Exact<{
+  request: MomokaPostRequest;
+}>;
+
+export type PostOnMomokaMutation = {
+  __typename?: "Mutation";
+  postOnMomoka:
+    | {
+        __typename?: "CreateMomokaPublicationResult";
+        id: any;
+        proof: any;
+        momokaId: any;
+      }
+    | {
+        __typename?: "LensProfileManagerRelayError";
+        reason: LensProfileManagerRelayErrorReasonType;
+      };
+};
+
 export type CreateMomokaPostTypedDataMutationVariables = Exact<{
   request: MomokaPostRequest;
 }>;
@@ -6476,6 +6495,96 @@ export const CreateMomokaCommentTypedDataDocument = {
 } as unknown as DocumentNode<
   CreateMomokaCommentTypedDataMutation,
   CreateMomokaCommentTypedDataMutationVariables
+>;
+export const PostOnMomokaDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "PostOnMomoka" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "request" }
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "MomokaPostRequest" }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "postOnMomoka" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "request" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "request" }
+                }
+              }
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "InlineFragment",
+                  typeCondition: {
+                    kind: "NamedType",
+                    name: {
+                      kind: "Name",
+                      value: "CreateMomokaPublicationResult"
+                    }
+                  },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      { kind: "Field", name: { kind: "Name", value: "proof" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "momokaId" }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: "InlineFragment",
+                  typeCondition: {
+                    kind: "NamedType",
+                    name: {
+                      kind: "Name",
+                      value: "LensProfileManagerRelayError"
+                    }
+                  },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "reason" } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  PostOnMomokaMutation,
+  PostOnMomokaMutationVariables
 >;
 export const CreateMomokaPostTypedDataDocument = {
   kind: "Document",

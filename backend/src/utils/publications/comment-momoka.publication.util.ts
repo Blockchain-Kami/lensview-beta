@@ -98,7 +98,8 @@ const createCommentOnMomoka = async (
     return broadcastResult;
   } catch (error) {
     logger.error(
-      "comment-momoka.publication.util.ts: createCommentOnMomoka: Execution ended. Failed to create post on Momoka."
+      "comment-momoka.publication.util.ts: createCommentOnMomoka: Execution ended. Failed to create post on Momoka." +
+        error
     );
     throw new InternalServerError(
       "Failed to create post on Momoka",

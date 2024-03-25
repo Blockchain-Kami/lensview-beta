@@ -4,6 +4,11 @@ dotenv.config();
 export const PORT = Number(process.env.PORT);
 export const IS_PROD = process.env.IS_PROD === "true";
 export const USE_GASLESS = process.env.USE_GASLESS === "true";
+export const POST_AND_COMMENT_TYPES = {
+  MOMOKA: "MOMOKA",
+  PROFILE_MANAGER: "PROFILE_MANAGER",
+  ON_CHAIN: "ON_CHAIN"
+};
 export const LENS_API_URL = process.env.LENS_API_URL as string;
 export const APP_LENS_ID = process.env.APP_LENS_ID as string;
 export const APP_ADDRESS = process.env.APP_ADDRESS as string;
@@ -21,3 +26,4 @@ export const TAG_USER_PUB = process.env.TAG_USER_PUB as string;
 export const TAG_ANONYMOUS_PUB = process.env.TAG_ANONYMOUS_PUB as string;
 export const TAG_USER_POST = process.env.TAG_USER_POST as string;
 export const TAG_USER_COMMENT = process.env.TAG_USER_COMMENT as string;
+export const POST_AND_COMMENT_CONFIG = POST_AND_COMMENT_TYPES.ON_CHAIN;

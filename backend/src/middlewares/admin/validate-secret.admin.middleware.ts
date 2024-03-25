@@ -5,6 +5,7 @@ import {
 } from "../../models/requests/body/admin-route.body.request.model";
 import { createHashHelperUtil } from "../../utils/helpers/create-hash.helper.util";
 import { ClientError } from "../../errors/client-error.error";
+import { logger } from "../../log/log-manager.log";
 
 /**
  * Validates the secret key and URL in the request body and throws an error if they are invalid.
@@ -24,7 +25,17 @@ export const validateSecretAdminMiddleware = (
   _res: Response,
   next: NextFunction
 ) => {
-  console.log(req.path);
+  logger.info(
+    "validate-secret.admin.middleware.ts: validateSecretAdminMiddleware: Execution Started."
+  );
+  logger.info(
+    "validate-secret.admin.middleware.ts: validateSecretAdminMiddleware: Path: " +
+      req.path
+  );
+  logger.info(
+    "validate-secret.admin.middleware.ts: validateSecretAdminMiddleware: Body: " +
+      JSON.stringify(req.body)
+  );
   const { secretKey } = req.body;
   if (secretKey) {
     if (
@@ -33,8 +44,16 @@ export const validateSecretAdminMiddleware = (
     ) {
       if (req.path == "/add-post-image") {
         if (req.body.url) {
+          logger.info(
+            "validate-secret.admin.middleware.ts: validateSecretAdminMiddleware: Validation Successfull for path: " +
+              req.path
+          );
           next();
         } else {
+          logger.error(
+            "validate-secret.admin.middleware.ts: validateSecretAdminMiddleware: Validation Failed for path: " +
+              req.path
+          );
           throw new ClientError(
             "Check the request body: correct secretKey and 'url' must be supplied",
             400
@@ -42,8 +61,16 @@ export const validateSecretAdminMiddleware = (
         }
       } else if (req.path == "/approve-signless") {
         if (req.body.approveSignless !== undefined) {
+          logger.info(
+            "validate-secret.admin.middleware.ts: validateSecretAdminMiddleware: Validation Successfull for path: " +
+              req.path
+          );
           next();
         } else {
+          logger.error(
+            "validate-secret.admin.middleware.ts: validateSecretAdminMiddleware: Validation Failed for path: " +
+              req.path
+          );
           throw new ClientError(
             "Check the request body: correct secretKey and 'approveSignless' must be supplied",
             400
@@ -51,12 +78,20 @@ export const validateSecretAdminMiddleware = (
         }
       }
     } else {
+      logger.error(
+        "validate-secret.admin.middleware.ts: validateSecretAdminMiddleware: Validation Failed for path: " +
+          req.path
+      );
       throw new ClientError(
         "Check the request body: incorrect secretKey supplied",
         400
       );
     }
   } else {
+    logger.info(
+      "validate-secret.admin.middleware.ts: validateSecretAdminMiddleware: Validation Failed for path: " +
+        req.path
+    );
     throw new ClientError(
       "Check the request body. secretKey must be supplied",
       400
