@@ -78,7 +78,7 @@
 
   .body__icon {
     border-radius: 50%;
-    background: #18393a;
+    background: var(--bg-solid-2);
     padding: 0.7rem;
   }
 

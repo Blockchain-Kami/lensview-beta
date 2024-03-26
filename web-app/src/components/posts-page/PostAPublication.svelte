@@ -13,6 +13,7 @@
   import commentOnChainPublicationUtil from "../../utils/publications/comment-onchain.publication.util";
   import updateCommentAnonymouslyAppService from "../../services/app/update-comment-anonymously.app.service";
   import { mainPostImageUrlStore } from "../../stores/main-post-image-url.store";
+  import { mainPostUrlStore } from "../../stores/main-post-url.store";
   const { VITE_USER_COMMENT } = import.meta.env;
   const { VITE_USER_POST } = import.meta.env;
 
@@ -104,17 +105,24 @@
           : VITE_USER_POST;
 
         let mainPostImageUrl = "";
-        const unsub = mainPostImageUrlStore.subscribe(
+        const unsub1 = mainPostImageUrlStore.subscribe(
           (storedMainPostImageUrl) => {
             mainPostImageUrl = storedMainPostImageUrl;
           }
         );
-        unsub();
+        unsub1();
+
+        let mainPostUrl = "";
+        const unsub2 = mainPostUrlStore.subscribe((storedMainPostUrl) => {
+          mainPostUrl = storedMainPostUrl;
+        });
+        unsub2();
 
         await commentOnChainPublicationUtil(
           pubId,
           userEnteredContent,
           postOrCommentHash,
+          mainPostUrl,
           mainPostImageUrl
         );
         isPublishing = false;
@@ -124,6 +132,13 @@
       } catch (err) {
         console.log("error: ", err);
         isPublishing = false;
+        addNotification({
+          position: "top-right",
+          heading: `Failed To ${pubBtnName}`,
+          description: `Your ${pubBtnName.toLowerCase()} was not ${pubBtnName.toLowerCase()}ed anonymously. Please try again`,
+          type: cross,
+          removeAfter: 20000
+        });
       }
     }
   };
@@ -155,17 +170,24 @@
       const localPubBtnName = pubBtnName;
 
       let mainPostImageUrl = "";
-      const unsub = mainPostImageUrlStore.subscribe(
+      const unsub1 = mainPostImageUrlStore.subscribe(
         (storedMainPostImageUrl) => {
           mainPostImageUrl = storedMainPostImageUrl;
         }
       );
-      unsub();
+      unsub1();
+
+      let mainPostUrl = "";
+      const unsub2 = mainPostUrlStore.subscribe((storedMainPostUrl) => {
+        mainPostUrl = storedMainPostUrl;
+      });
+      unsub2();
 
       await updateCommentAnonymouslyAppService(
         pubId,
         userEnteredContent,
         isThisComment,
+        mainPostUrl,
         mainPostImageUrl
       );
 
@@ -289,7 +311,7 @@
   }
 
   .body {
-    background: #18393a;
+    background: var(--bg-solid-2);
     padding: 1.3rem;
     gap: 1rem;
     justify-content: space-between;
@@ -351,11 +373,6 @@
     gap: 1rem;
     justify-content: space-between;
     border-radius: 0 0 10px 10px;
-  }
-
-  .footer__insert__item__matic {
-    color: var(--primary);
-    font-size: var(--small-font-size);
   }
 
   .footer__operations {

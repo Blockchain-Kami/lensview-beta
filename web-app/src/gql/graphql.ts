@@ -1,5 +1,6 @@
 /* eslint-disable */
-import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+/* eslint-disable */
+import type {TypedDocumentNode as DocumentNode} from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -383,10 +384,23 @@ export type ClaimProfileWithHandleRequest = {
 
 export type ClaimProfileWithHandleResult = ClaimProfileWithHandleErrorResult | RelaySuccess;
 
+export type ClaimTokensRequest = {
+  for: ClaimableTokenType;
+};
+
 export type ClaimableProfilesResult = {
   __typename?: 'ClaimableProfilesResult';
   canMintProfileWithFreeTextHandle: Scalars['Boolean']['output'];
   reserved: Array<ReservedClaimable>;
+};
+
+export enum ClaimableTokenType {
+  Bonsai = 'BONSAI'
+}
+
+export type ClaimableTokensResult = {
+  __typename?: 'ClaimableTokensResult';
+  bonsai: Amount;
 };
 
 export type CollectActionModuleInput = {
@@ -423,6 +437,8 @@ export type Comment = {
   createdAt: Scalars['DateTime']['output'];
   firstComment?: Maybe<Comment>;
   hashtagsMentioned: Array<Scalars['String']['output']>;
+  /** Signifies whether this comment has been hidden by the author of its parent publication */
+  hiddenByAuthor: Scalars['Boolean']['output'];
   id: Scalars['PublicationId']['output'];
   isEncrypted: Scalars['Boolean']['output'];
   isHidden: Scalars['Boolean']['output'];
@@ -1247,6 +1263,23 @@ export type DegreesOfSeparationReferenceModuleSettings = {
   type: ReferenceModuleType;
 };
 
+export type DidReactOnPublicationPublicationIdAndProfileId = {
+  profileId: Scalars['ProfileId']['input'];
+  publicationId: Scalars['PublicationId']['input'];
+};
+
+export type DidReactOnPublicationRequest = {
+  for: Array<DidReactOnPublicationPublicationIdAndProfileId>;
+  where?: InputMaybe<WhoReactedPublicationWhere>;
+};
+
+export type DidReactOnPublicationResult = {
+  __typename?: 'DidReactOnPublicationResult';
+  profileId: Scalars['ProfileId']['output'];
+  publicationId: Scalars['PublicationId']['output'];
+  result: Scalars['Boolean']['output'];
+};
+
 export type DismissRecommendedProfilesRequest = {
   dismiss: Array<Scalars['ProfileId']['input']>;
 };
@@ -1510,6 +1543,7 @@ export type FeedRequest = {
 };
 
 export type FeedWhere = {
+  customFilters?: InputMaybe<Array<CustomFiltersType>>;
   feedEventItemTypes?: InputMaybe<Array<FeedEventItemType>>;
   for?: InputMaybe<Scalars['ProfileId']['input']>;
   metadata?: InputMaybe<PublicationMetadataFilters>;
@@ -1623,12 +1657,16 @@ export type FollowersRequest = {
   cursor?: InputMaybe<Scalars['Cursor']['input']>;
   limit?: InputMaybe<LimitType>;
   of: Scalars['ProfileId']['input'];
+  /** The order by which to sort the profiles - note if your looking at your own followers it always be DESC */
+  orderBy?: InputMaybe<ProfilesOrderBy>;
 };
 
 export type FollowingRequest = {
   cursor?: InputMaybe<Scalars['Cursor']['input']>;
   for: Scalars['ProfileId']['input'];
   limit?: InputMaybe<LimitType>;
+  /** The order by which to sort the profiles - note if your looking at your own following it always be DESC */
+  orderBy?: InputMaybe<ProfilesOrderBy>;
 };
 
 export type FraudReasonInput = {
@@ -1677,10 +1715,17 @@ export type GetProfileMetadataArgs = {
   useFallback?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type HandleGuardianResult = {
+  __typename?: 'HandleGuardianResult';
+  cooldownEndsOn?: Maybe<Scalars['DateTime']['output']>;
+  protected: Scalars['Boolean']['output'];
+};
+
 export type HandleInfo = {
   __typename?: 'HandleInfo';
   /** The full handle - namespace/localname */
   fullHandle: Scalars['Handle']['output'];
+  guardian: HandleGuardianResult;
   /** The handle nft token id */
   id: Scalars['TokenId']['output'];
   /** If null its not linked to anything */
@@ -1707,8 +1752,31 @@ export type HandleToAddressRequest = {
   handle: Scalars['Handle']['input'];
 };
 
+export enum HiddenCommentsType {
+  HiddenOnly = 'HIDDEN_ONLY',
+  Hide = 'HIDE',
+  Show = 'SHOW'
+}
+
+export type HideCommentRequest = {
+  /** The comment to hide. It has to be under a publication made by the user making the request. If already hidden, nothing will happen. */
+  for: Scalars['PublicationId']['input'];
+};
+
+export type HideManagedProfileRequest = {
+  /** The profile to hide */
+  profileId: Scalars['ProfileId']['input'];
+};
+
 export type HidePublicationRequest = {
   for: Scalars['PublicationId']['input'];
+};
+
+export type IphResult = {
+  __typename?: 'IPHResult';
+  h?: Maybe<Scalars['Handle']['output']>;
+  hda: Scalars['Boolean']['output'];
+  hs: Scalars['Boolean']['output'];
 };
 
 export type IdKitPhoneVerifyWebhookRequest = {
@@ -1799,6 +1867,19 @@ export type InternalAllowedDomainsRequest = {
   secret: Scalars['String']['input'];
 };
 
+export type InternalBoostProfileRequest = {
+  h?: InputMaybe<Scalars['Handle']['input']>;
+  p?: InputMaybe<Scalars['ProfileId']['input']>;
+  s: Scalars['Int']['input'];
+  secret: Scalars['String']['input'];
+};
+
+export type InternalBoostScoreRequest = {
+  h?: InputMaybe<Scalars['Handle']['input']>;
+  p?: InputMaybe<Scalars['ProfileId']['input']>;
+  secret: Scalars['String']['input'];
+};
+
 export type InternalClaimRequest = {
   address: Scalars['EvmAddress']['input'];
   freeTextHandle?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1834,6 +1915,12 @@ export type InternalInvitesRequest = {
   secret: Scalars['String']['input'];
 };
 
+export type InternalMintHandleAndProfileRequest = {
+  a: Scalars['EvmAddress']['input'];
+  h: Scalars['String']['input'];
+  secret: Scalars['String']['input'];
+};
+
 export type InternalNftIndexRequest = {
   n: Array<Nfi>;
   secret: Scalars['String']['input'];
@@ -1841,6 +1928,11 @@ export type InternalNftIndexRequest = {
 
 export type InternalNftVerifyRequest = {
   n: Array<Nfi>;
+  secret: Scalars['String']['input'];
+};
+
+export type InternalPaymentHandleInfoRequest = {
+  p: Scalars['String']['input'];
   secret: Scalars['String']['input'];
 };
 
@@ -1908,10 +2000,19 @@ export type LatestActed = {
   txHash: Scalars['TxHash']['output'];
 };
 
+export type LatestPaidActionsFilter = {
+  openActionFilters?: InputMaybe<Array<OpenActionFilter>>;
+  openActionPublicationMetadataFilters?: InputMaybe<PublicationMetadataFilters>;
+};
+
 export type LatestPaidActionsResult = {
   __typename?: 'LatestPaidActionsResult';
   items: Array<PaidAction>;
   pageInfo: PaginatedResultInfo;
+};
+
+export type LatestPaidActionsWhere = {
+  customFilters?: InputMaybe<Array<CustomFiltersType>>;
 };
 
 export type LegacyAaveFeeCollectModuleSettings = {
@@ -2119,11 +2220,6 @@ export enum LensProfileManagerRelayErrorReasonType {
 
 export type LensProfileManagerRelayResult = LensProfileManagerRelayError | RelaySuccess;
 
-export enum LensProtocolVersion {
-  V1 = 'V1',
-  V2 = 'V2'
-}
-
 export enum LensTransactionFailureType {
   MetadataError = 'METADATA_ERROR',
   Reverted = 'REVERTED'
@@ -2204,6 +2300,13 @@ export type LiveStreamMetadataV3 = {
   /** The title of the live-stream. Empty if not set. */
   title: Scalars['String']['output'];
 };
+
+/** Managed profile visibility type */
+export enum ManagedProfileVisibility {
+  All = 'ALL',
+  HiddenOnly = 'HIDDEN_ONLY',
+  NoneHidden = 'NONE_HIDDEN'
+}
 
 export type MarketplaceMetadata = {
   __typename?: 'MarketplaceMetadata';
@@ -2290,6 +2393,33 @@ export type MirrorNotification = {
 };
 
 export type MirrorablePublication = Comment | Post | Quote;
+
+export type ModExplorePublicationRequest = {
+  cursor?: InputMaybe<Scalars['Cursor']['input']>;
+  limit?: InputMaybe<LimitType>;
+  orderBy: ExplorePublicationsOrderByType;
+  where?: InputMaybe<ModExplorePublicationsWhere>;
+};
+
+export enum ModExplorePublicationType {
+  Comment = 'COMMENT',
+  Post = 'POST',
+  Quote = 'QUOTE'
+}
+
+export type ModExplorePublicationsWhere = {
+  customFilters?: InputMaybe<Array<CustomFiltersType>>;
+  metadata?: InputMaybe<PublicationMetadataFilters>;
+  publicationTypes?: InputMaybe<Array<ModExplorePublicationType>>;
+  since?: InputMaybe<Scalars['UnixTimestamp']['input']>;
+};
+
+export type ModFollowerResult = {
+  __typename?: 'ModFollowerResult';
+  createdAt: Scalars['DateTime']['output'];
+  follower: Profile;
+  following: Profile;
+};
 
 export type ModuleCurrencyApproval = {
   followModule?: InputMaybe<FollowModuleType>;
@@ -2453,6 +2583,7 @@ export enum MomokaValidatorError {
   PotentialReorg = 'POTENTIAL_REORG',
   PublicationNonceInvalid = 'PUBLICATION_NONCE_INVALID',
   PublicationNoneDa = 'PUBLICATION_NONE_DA',
+  PublicationNotRecognized = 'PUBLICATION_NOT_RECOGNIZED',
   PublicationNoPointer = 'PUBLICATION_NO_POINTER',
   PublicationSignerNotAllowed = 'PUBLICATION_SIGNER_NOT_ALLOWED',
   SimulationFailed = 'SIMULATION_FAILED',
@@ -2544,13 +2675,19 @@ export type Mutation = {
   deleteNftGallery?: Maybe<Scalars['Void']['output']>;
   dismissRecommendedProfiles?: Maybe<Scalars['Void']['output']>;
   follow: LensProfileManagerRelayResult;
+  /** Hides a comment that exists under a publication made by the author. If already hidden, does nothing. */
+  hideComment?: Maybe<Scalars['Void']['output']>;
+  /** Hide a managed profile from your managed profiles list. */
+  hideManagedProfile?: Maybe<Scalars['Void']['output']>;
   hidePublication?: Maybe<Scalars['Void']['output']>;
   idKitPhoneVerifyWebhook: IdKitPhoneVerifyWebhookResultStatusType;
   internalAddCuratedTag?: Maybe<Scalars['Void']['output']>;
   internalAddInvites?: Maybe<Scalars['Void']['output']>;
   internalAllowDomain?: Maybe<Scalars['Void']['output']>;
+  internalBoostProfile: Scalars['Int']['output'];
   internalClaim?: Maybe<Scalars['Void']['output']>;
   internalCuratedUpdate?: Maybe<Scalars['Void']['output']>;
+  internalMintHandleAndProfile: Scalars['TxHash']['output'];
   internalNftIndex?: Maybe<Scalars['Void']['output']>;
   internalNftVerify?: Maybe<Scalars['Void']['output']>;
   internalRemoveCuratedTag?: Maybe<Scalars['Void']['output']>;
@@ -2562,6 +2699,8 @@ export type Mutation = {
   mirrorOnMomoka: RelayMomokaResult;
   mirrorOnchain: LensProfileManagerRelayResult;
   nftOwnershipChallenge: NftOwnershipChallengeResult;
+  peerToPeerRecommend?: Maybe<Scalars['Void']['output']>;
+  peerToPeerUnrecommend?: Maybe<Scalars['Void']['output']>;
   postOnMomoka: RelayMomokaResult;
   postOnchain: LensProfileManagerRelayResult;
   quoteOnMomoka: RelayMomokaResult;
@@ -2580,6 +2719,10 @@ export type Mutation = {
   unblock: LensProfileManagerRelayResult;
   undoPublicationNotInterested?: Maybe<Scalars['Void']['output']>;
   unfollow: LensProfileManagerRelayResult;
+  /** Unhides a hidden comment under a publication made by the author. If not hidden, does nothing. */
+  unhideComment?: Maybe<Scalars['Void']['output']>;
+  /** Unhide an already hidden managed profile from your managed profiles list. */
+  unhideManagedProfile?: Maybe<Scalars['Void']['output']>;
   unlinkHandleFromProfile: LensProfileManagerRelayResult;
   updateNftGalleryInfo?: Maybe<Scalars['Void']['output']>;
   updateNftGalleryItems?: Maybe<Scalars['Void']['output']>;
@@ -2788,6 +2931,16 @@ export type MutationFollowArgs = {
 };
 
 
+export type MutationHideCommentArgs = {
+  request: HideCommentRequest;
+};
+
+
+export type MutationHideManagedProfileArgs = {
+  request: HideManagedProfileRequest;
+};
+
+
 export type MutationHidePublicationArgs = {
   request: HidePublicationRequest;
 };
@@ -2813,6 +2966,11 @@ export type MutationInternalAllowDomainArgs = {
 };
 
 
+export type MutationInternalBoostProfileArgs = {
+  request: InternalBoostProfileRequest;
+};
+
+
 export type MutationInternalClaimArgs = {
   request: InternalClaimRequest;
 };
@@ -2820,6 +2978,11 @@ export type MutationInternalClaimArgs = {
 
 export type MutationInternalCuratedUpdateArgs = {
   request: InternalCuratedUpdateRequest;
+};
+
+
+export type MutationInternalMintHandleAndProfileArgs = {
+  request: InternalMintHandleAndProfileRequest;
 };
 
 
@@ -2875,6 +3038,16 @@ export type MutationMirrorOnchainArgs = {
 
 export type MutationNftOwnershipChallengeArgs = {
   request: NftOwnershipChallengeRequest;
+};
+
+
+export type MutationPeerToPeerRecommendArgs = {
+  request: PeerToPeerRecommendRequest;
+};
+
+
+export type MutationPeerToPeerUnrecommendArgs = {
+  request: PeerToPeerRecommendRequest;
 };
 
 
@@ -2968,6 +3141,16 @@ export type MutationUnfollowArgs = {
 };
 
 
+export type MutationUnhideCommentArgs = {
+  request: UnhideCommentRequest;
+};
+
+
+export type MutationUnhideManagedProfileArgs = {
+  request: UnhideManagedProfileRequest;
+};
+
+
 export type MutationUnlinkHandleFromProfileArgs = {
   request: UnlinkHandleFromProfileRequest;
 };
@@ -2996,6 +3179,8 @@ export type MutualFollowersRequest = {
   cursor?: InputMaybe<Scalars['Cursor']['input']>;
   limit?: InputMaybe<LimitType>;
   observer: Scalars['ProfileId']['input'];
+  /** The order by which to sort the profiles */
+  orderBy?: InputMaybe<ProfilesOrderBy>;
   viewing: Scalars['ProfileId']['input'];
 };
 
@@ -3035,10 +3220,10 @@ export type Nfi = {
 export type Nft = {
   __typename?: 'Nft';
   collection: NftCollection;
-  contentURI: Scalars['URI']['output'];
+  contentURI?: Maybe<Scalars['URI']['output']>;
   contract: NetworkAddress;
   contractType: NftContractType;
-  metadata: NftMetadata;
+  metadata?: Maybe<NftMetadata>;
   owner: Owner;
   tokenId: Scalars['TokenId']['output'];
   totalSupply: Scalars['String']['output'];
@@ -3224,6 +3409,8 @@ export type Notification = ActedNotification | CommentNotification | FollowNotif
 
 export type NotificationRequest = {
   cursor?: InputMaybe<Scalars['Cursor']['input']>;
+  /** The order by which to sort the profiles on follows, reactions, actions and mirrors */
+  orderBy?: InputMaybe<ProfilesOrderBy>;
   where?: InputMaybe<NotificationWhere>;
 };
 
@@ -3242,6 +3429,7 @@ export type NotificationWhere = {
   highSignalFilter?: InputMaybe<Scalars['Boolean']['input']>;
   notificationTypes?: InputMaybe<Array<NotificationType>>;
   publishedOn?: InputMaybe<Array<Scalars['AppId']['input']>>;
+  timeBasedAggregation?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type OnchainCommentRequest = {
@@ -3396,6 +3584,18 @@ export type PaginatedHandlesResult = {
   pageInfo: PaginatedResultInfo;
 };
 
+export type PaginatedModExplorePublicationResult = {
+  __typename?: 'PaginatedModExplorePublicationResult';
+  items: Array<PrimaryPublication>;
+  pageInfo: PaginatedResultInfo;
+};
+
+export type PaginatedModFollowersResult = {
+  __typename?: 'PaginatedModFollowersResult';
+  items: Array<ModFollowerResult>;
+  pageInfo: PaginatedResultInfo;
+};
+
 /** Nft collections paginated result */
 export type PaginatedNftCollectionsResult = {
   __typename?: 'PaginatedNftCollectionsResult';
@@ -3519,6 +3719,11 @@ export type PaginatedWhoReactedResult = {
 };
 
 export type PaidAction = FollowPaidAction | OpenActionPaidAction;
+
+export type PeerToPeerRecommendRequest = {
+  /** The profile to recommend */
+  profileId: Scalars['ProfileId']['input'];
+};
 
 export type PhysicalAddress = {
   __typename?: 'PhysicalAddress';
@@ -3664,6 +3869,8 @@ export type Profile = {
   operations: ProfileOperations;
   /** Who owns the profile */
   ownedBy: NetworkAddress;
+  /** If the profile has been recommended by the authenticated user */
+  peerToPeerRecommendedByMe: Scalars['Boolean']['output'];
   /** If the profile has got signless enabled */
   signless: Scalars['Boolean']['output'];
   /** If lens API will sponsor this persons for gasless experience, note they can have signless on but sponsor false which means it be rejected */
@@ -3929,6 +4136,8 @@ export type ProfileRequest = {
 export type ProfileSearchRequest = {
   cursor?: InputMaybe<Scalars['Cursor']['input']>;
   limit?: InputMaybe<LimitType>;
+  /** The order by which to sort the profiles */
+  orderBy?: InputMaybe<ProfilesOrderBy>;
   /** Query for the profile search */
   query: Scalars['String']['input'];
   /** Filtering criteria for profile search */
@@ -3953,6 +4162,8 @@ export type ProfileStats = {
   followers: Scalars['Int']['output'];
   following: Scalars['Int']['output'];
   id: Scalars['ProfileId']['output'];
+  /** The profile classifier score of this profile relative to others on Lens. It is a % out of 100. */
+  lensClassifierScore?: Maybe<Scalars['Float']['output']>;
   mirrors: Scalars['Int']['output'];
   posts: Scalars['Int']['output'];
   publications: Scalars['Int']['output'];
@@ -3984,6 +4195,7 @@ export type ProfileStatsReactionsArgs = {
 export type ProfileStatsArg = {
   customFilters?: InputMaybe<Array<CustomFiltersType>>;
   forApps?: InputMaybe<Array<Scalars['AppId']['input']>>;
+  hiddenComments?: InputMaybe<HiddenCommentsType>;
 };
 
 export type ProfileStatsCountOpenActionArgs = {
@@ -4004,6 +4216,7 @@ export type ProfilesManagedRequest = {
   cursor?: InputMaybe<Scalars['Cursor']['input']>;
   /** The Ethereum address for which to retrieve managed profiles */
   for: Scalars['EvmAddress']['input'];
+  hiddenFilter?: InputMaybe<ManagedProfileVisibility>;
   includeOwned?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<LimitType>;
 };
@@ -4014,9 +4227,16 @@ export type ProfilesManagedResult = {
   isLensManager: Scalars['Boolean']['output'];
 };
 
+export enum ProfilesOrderBy {
+  Default = 'DEFAULT',
+  ProfileClassifier = 'PROFILE_CLASSIFIER'
+}
+
 export type ProfilesRequest = {
   cursor?: InputMaybe<Scalars['Cursor']['input']>;
   limit?: InputMaybe<LimitType>;
+  /** The order by which to sort the profiles */
+  orderBy?: InputMaybe<ProfilesOrderBy>;
   /** The where clause to use to filter on what you are looking for */
   where: ProfilesRequestWhere;
 };
@@ -4051,6 +4271,8 @@ export type PublicationBookmarksWhere = {
 };
 
 export type PublicationCommentOn = {
+  /** You can use this enum to show, hide or show only hidden comments */
+  hiddenComments?: InputMaybe<HiddenCommentsType>;
   id: Scalars['PublicationId']['input'];
   ranking?: InputMaybe<PublicationCommentOnRanking>;
 };
@@ -4343,6 +4565,7 @@ export type PublicationStatsCountOpenActionArgs = {
 
 export type PublicationStatsInput = {
   customFilters?: InputMaybe<Array<CustomFiltersType>>;
+  hiddenComments?: InputMaybe<HiddenCommentsType>;
   /** Filter the returned stats on apps and 1 of the following filters: tags, contentWarning, mainContentFocus, locale */
   metadata?: InputMaybe<PublicationMetadataFilters>;
 };
@@ -4401,13 +4624,16 @@ export type Query = {
   approvedModuleAllowanceAmount: Array<ApprovedAllowanceAmountResult>;
   canClaim: Array<CanClaimResult>;
   challenge: AuthChallengeResult;
+  claimTokens: LensProfileManagerRelayResult;
   claimableProfiles: ClaimableProfilesResult;
   claimableStatus: ClaimProfileStatusType;
+  claimableTokens: ClaimableTokensResult;
   /** Get all enabled currencies */
   currencies: PaginatedCurrenciesResult;
   currentSession: ApprovedAuthentication;
   /** Get the default profile for a given EvmAddress. If no default is explicitly set, you will get the oldest profile owned by the address. */
   defaultProfile?: Maybe<Profile>;
+  didReactOnPublication: Array<DidReactOnPublicationResult>;
   exploreProfiles: PaginatedProfileResult;
   explorePublications: PaginatedExplorePublicationResult;
   feed: PaginatedFeedResult;
@@ -4416,21 +4642,26 @@ export type Query = {
   followStatusBulk: Array<FollowStatusBulkResult>;
   followers: PaginatedProfileResult;
   following: PaginatedProfileResult;
+  generateLensAPIRelayAddress: Scalars['EvmAddress']['output'];
   /** note here if your using a wallet JWT token it will approve to the public proxy contract if its supported if not throw as profiles act not wallets */
   generateModuleCurrencyApprovalData: GenerateModuleCurrencyApprovalResult;
   handleToAddress?: Maybe<Scalars['EvmAddress']['output']>;
   internalAllowedDomains: Array<Scalars['URI']['output']>;
+  internalBoostScore?: Maybe<Scalars['Int']['output']>;
   internalClaimStatus?: Maybe<Scalars['Void']['output']>;
   internalCuratedHandles: Array<Scalars['String']['output']>;
   internalCuratedTags: Array<Scalars['String']['output']>;
   internalInvites: Scalars['Int']['output'];
+  internalPaymentHandleInfo?: Maybe<IphResult>;
   internalProfileStatus: PrfResult;
   invitedProfiles: Array<InvitedResult>;
   lastLoggedInProfile?: Maybe<Profile>;
   latestPaidActions: LatestPaidActionsResult;
   lensAPIOwnedEOAs: Array<Scalars['EvmAddress']['output']>;
-  lensProtocolVersion: LensProtocolVersion;
+  lensProtocolVersion: Scalars['String']['output'];
   lensTransactionStatus?: Maybe<LensTransactionResult>;
+  modExplorePublications: PaginatedModExplorePublicationResult;
+  modFollowers: PaginatedModFollowersResult;
   moduleMetadata?: Maybe<GetModuleMetadataResult>;
   momokaSubmitters: MomokaSubmittersResult;
   momokaSummary: MomokaSummaryResult;
@@ -4477,6 +4708,7 @@ export type Query = {
   supportedOpenActionModules: PaginatedSupportedModules;
   supportedReferenceModules: PaginatedSupportedModules;
   txIdToTxHash?: Maybe<Scalars['TxHash']['output']>;
+  userRateLimit: UserCurrentRateLimitResult;
   userSigNonces: UserSigNonces;
   validatePublicationMetadata: PublicationValidateMetadataResult;
   verify: Scalars['Boolean']['output'];
@@ -4507,6 +4739,11 @@ export type QueryChallengeArgs = {
 };
 
 
+export type QueryClaimTokensArgs = {
+  request: ClaimTokensRequest;
+};
+
+
 export type QueryCurrenciesArgs = {
   request: PaginatedOffsetRequest;
 };
@@ -4514,6 +4751,11 @@ export type QueryCurrenciesArgs = {
 
 export type QueryDefaultProfileArgs = {
   request: DefaultProfileRequest;
+};
+
+
+export type QueryDidReactOnPublicationArgs = {
+  request: DidReactOnPublicationRequest;
 };
 
 
@@ -4572,6 +4814,11 @@ export type QueryInternalAllowedDomainsArgs = {
 };
 
 
+export type QueryInternalBoostScoreArgs = {
+  request: InternalBoostScoreRequest;
+};
+
+
 export type QueryInternalClaimStatusArgs = {
   request: InternalClaimStatusRequest;
 };
@@ -4592,6 +4839,11 @@ export type QueryInternalInvitesArgs = {
 };
 
 
+export type QueryInternalPaymentHandleInfoArgs = {
+  request: InternalPaymentHandleInfoRequest;
+};
+
+
 export type QueryInternalProfileStatusArgs = {
   request: InternalProfileStatusRequest;
 };
@@ -4603,12 +4855,24 @@ export type QueryLastLoggedInProfileArgs = {
 
 
 export type QueryLatestPaidActionsArgs = {
+  filter?: InputMaybe<LatestPaidActionsFilter>;
   request?: InputMaybe<PaginatedRequest>;
+  where?: InputMaybe<LatestPaidActionsWhere>;
 };
 
 
 export type QueryLensTransactionStatusArgs = {
   request: LensTransactionStatusRequest;
+};
+
+
+export type QueryModExplorePublicationsArgs = {
+  request: ModExplorePublicationRequest;
+};
+
+
+export type QueryModFollowersArgs = {
+  request: PaginatedRequest;
 };
 
 
@@ -4792,6 +5056,11 @@ export type QueryTxIdToTxHashArgs = {
 };
 
 
+export type QueryUserRateLimitArgs = {
+  request: UserCurrentRateLimitRequest;
+};
+
+
 export type QueryValidatePublicationMetadataArgs = {
   request: ValidatePublicationMetadataRequest;
 };
@@ -4955,6 +5224,17 @@ export type RelayResult = RelayError | RelaySuccess;
 
 export enum RelayRoleKey {
   CreateProfile = 'CREATE_PROFILE',
+  CreateProfileWithHandleUsingCredits_1 = 'CREATE_PROFILE_WITH_HANDLE_USING_CREDITS_1',
+  CreateProfileWithHandleUsingCredits_2 = 'CREATE_PROFILE_WITH_HANDLE_USING_CREDITS_2',
+  CreateProfileWithHandleUsingCredits_3 = 'CREATE_PROFILE_WITH_HANDLE_USING_CREDITS_3',
+  CreateProfileWithHandleUsingCredits_4 = 'CREATE_PROFILE_WITH_HANDLE_USING_CREDITS_4',
+  CreateProfileWithHandleUsingCredits_5 = 'CREATE_PROFILE_WITH_HANDLE_USING_CREDITS_5',
+  CreateProfileWithHandleUsingCredits_6 = 'CREATE_PROFILE_WITH_HANDLE_USING_CREDITS_6',
+  CreateProfileWithHandleUsingCredits_7 = 'CREATE_PROFILE_WITH_HANDLE_USING_CREDITS_7',
+  CreateProfileWithHandleUsingCredits_8 = 'CREATE_PROFILE_WITH_HANDLE_USING_CREDITS_8',
+  CreateProfileWithHandleUsingCredits_9 = 'CREATE_PROFILE_WITH_HANDLE_USING_CREDITS_9',
+  CreateProfileWithHandleUsingCredits_10 = 'CREATE_PROFILE_WITH_HANDLE_USING_CREDITS_10',
+  CreateProfileWithHandleUsingCreditsUnderCharLimit = 'CREATE_PROFILE_WITH_HANDLE_USING_CREDITS_UNDER_CHAR_LIMIT',
   LensManager_1 = 'LENS_MANAGER_1',
   LensManager_2 = 'LENS_MANAGER_2',
   LensManager_3 = 'LENS_MANAGER_3',
@@ -4965,6 +5245,26 @@ export enum RelayRoleKey {
   LensManager_8 = 'LENS_MANAGER_8',
   LensManager_9 = 'LENS_MANAGER_9',
   LensManager_10 = 'LENS_MANAGER_10',
+  LensManager_11 = 'LENS_MANAGER_11',
+  LensManager_12 = 'LENS_MANAGER_12',
+  LensManager_13 = 'LENS_MANAGER_13',
+  LensManager_14 = 'LENS_MANAGER_14',
+  LensManager_15 = 'LENS_MANAGER_15',
+  LensManager_16 = 'LENS_MANAGER_16',
+  LensManager_17 = 'LENS_MANAGER_17',
+  LensManager_18 = 'LENS_MANAGER_18',
+  LensManager_19 = 'LENS_MANAGER_19',
+  LensManager_20 = 'LENS_MANAGER_20',
+  LensManager_21 = 'LENS_MANAGER_21',
+  LensManager_22 = 'LENS_MANAGER_22',
+  LensManager_23 = 'LENS_MANAGER_23',
+  LensManager_24 = 'LENS_MANAGER_24',
+  LensManager_25 = 'LENS_MANAGER_25',
+  LensManager_26 = 'LENS_MANAGER_26',
+  LensManager_27 = 'LENS_MANAGER_27',
+  LensManager_28 = 'LENS_MANAGER_28',
+  LensManager_29 = 'LENS_MANAGER_29',
+  LensManager_30 = 'LENS_MANAGER_30',
   WithSig_1 = 'WITH_SIG_1',
   WithSig_2 = 'WITH_SIG_2',
   WithSig_3 = 'WITH_SIG_3',
@@ -4974,7 +5274,17 @@ export enum RelayRoleKey {
   WithSig_7 = 'WITH_SIG_7',
   WithSig_8 = 'WITH_SIG_8',
   WithSig_9 = 'WITH_SIG_9',
-  WithSig_10 = 'WITH_SIG_10'
+  WithSig_10 = 'WITH_SIG_10',
+  WithSig_11 = 'WITH_SIG_11',
+  WithSig_12 = 'WITH_SIG_12',
+  WithSig_13 = 'WITH_SIG_13',
+  WithSig_14 = 'WITH_SIG_14',
+  WithSig_15 = 'WITH_SIG_15',
+  WithSig_16 = 'WITH_SIG_16',
+  WithSig_17 = 'WITH_SIG_17',
+  WithSig_18 = 'WITH_SIG_18',
+  WithSig_19 = 'WITH_SIG_19',
+  WithSig_20 = 'WITH_SIG_20'
 }
 
 export type RelaySuccess = {
@@ -5309,6 +5619,16 @@ export type UnfollowRequest = {
   unfollow: Array<Scalars['ProfileId']['input']>;
 };
 
+export type UnhideCommentRequest = {
+  /** The comment to unhide. It has to be under a publication made by the user making the request. If already visible, nothing will happen. */
+  for: Scalars['PublicationId']['input'];
+};
+
+export type UnhideManagedProfileRequest = {
+  /** The profile to unhide */
+  profileId: Scalars['ProfileId']['input'];
+};
+
 export type UnknownFollowModuleInput = {
   address: Scalars['EvmAddress']['input'];
   data: Scalars['BlockchainData']['input'];
@@ -5417,6 +5737,27 @@ export type UnlinkHandleFromProfileRequest = {
   handle: Scalars['Handle']['input'];
 };
 
+export type UserCurrentRateLimit = {
+  __typename?: 'UserCurrentRateLimit';
+  dayAllowance: Scalars['Int']['output'];
+  dayAllowanceLeft: Scalars['Int']['output'];
+  dayAllowanceUsed: Scalars['Int']['output'];
+  hourAllowance: Scalars['Int']['output'];
+  hourAllowanceLeft: Scalars['Int']['output'];
+  hourAllowanceUsed: Scalars['Int']['output'];
+};
+
+export type UserCurrentRateLimitRequest = {
+  profileId?: InputMaybe<Scalars['ProfileId']['input']>;
+  userAddress: Scalars['EvmAddress']['input'];
+};
+
+export type UserCurrentRateLimitResult = {
+  __typename?: 'UserCurrentRateLimitResult';
+  momoka: UserCurrentRateLimit;
+  onchain: UserCurrentRateLimit;
+};
+
 export type UserPoapsQueryRequest = {
   cursor?: InputMaybe<Scalars['Cursor']['input']>;
   for: Scalars['ProfileId']['input'];
@@ -5476,6 +5817,8 @@ export type WhoActedOnPublicationRequest = {
   cursor?: InputMaybe<Scalars['Cursor']['input']>;
   limit?: InputMaybe<LimitType>;
   on: Scalars['PublicationId']['input'];
+  /** The order by which to sort the profiles */
+  orderBy?: InputMaybe<ProfilesOrderBy>;
   where?: InputMaybe<WhoActedOnPublicationWhere>;
 };
 
@@ -5492,6 +5835,8 @@ export type WhoReactedPublicationRequest = {
   cursor?: InputMaybe<Scalars['Cursor']['input']>;
   for: Scalars['PublicationId']['input'];
   limit?: InputMaybe<LimitType>;
+  /** The order by which to sort the profiles */
+  orderBy?: InputMaybe<ProfilesOrderBy>;
   where?: InputMaybe<WhoReactedPublicationWhere>;
 };
 
@@ -5537,6 +5882,13 @@ export type BroadcastOnchainMutationVariables = Exact<{
 
 export type BroadcastOnchainMutation = { __typename?: 'Mutation', broadcastOnchain: { __typename: 'RelayError', reason: RelayErrorReasonType } | { __typename: 'RelaySuccess', txHash?: any | null, txId: any } };
 
+export type CreateFollowTypedDataMutationVariables = Exact<{
+  request: FollowRequest;
+}>;
+
+
+export type CreateFollowTypedDataMutation = { __typename?: 'Mutation', createFollowTypedData: { __typename?: 'CreateFollowBroadcastItemResult', expiresAt: any, id: any, typedData: { __typename?: 'CreateFollowEIP712TypedData', domain: { __typename?: 'EIP712TypedDataDomain', name: string, chainId: any, version: string, verifyingContract: any }, types: { __typename?: 'CreateFollowEIP712TypedDataTypes', Follow: Array<{ __typename?: 'EIP712TypedDataField', name: string, type: string }> }, value: { __typename?: 'CreateFollowEIP712TypedDataValue', nonce: any, deadline: any, followerProfileId: any, idsOfProfilesToFollow: Array<any>, followTokenIds: Array<any>, datas: Array<any> } } } };
+
 export type CreateOnchainCommentTypedDataMutationVariables = Exact<{
   request: OnchainCommentRequest;
 }>;
@@ -5557,6 +5909,13 @@ export type CreateProfileWithHandleMutationVariables = Exact<{
 
 
 export type CreateProfileWithHandleMutation = { __typename?: 'Mutation', createProfileWithHandle: { __typename?: 'CreateProfileWithHandleErrorResult', reason: CreateProfileWithHandleErrorReasonType } | { __typename?: 'RelaySuccess', txHash?: any | null, txId: any } };
+
+export type CreateUnfollowTypedDataMutationVariables = Exact<{
+  request: UnfollowRequest;
+}>;
+
+
+export type CreateUnfollowTypedDataMutation = { __typename?: 'Mutation', createUnfollowTypedData: { __typename?: 'CreateUnfollowBroadcastItemResult', expiresAt: any, id: any, typedData: { __typename?: 'CreateUnfollowEIP712TypedData', types: { __typename?: 'CreateUnfollowEIP712TypedDataTypes', Unfollow: Array<{ __typename?: 'EIP712TypedDataField', name: string, type: string }> }, domain: { __typename?: 'EIP712TypedDataDomain', name: string, chainId: any, version: string, verifyingContract: any }, value: { __typename?: 'CreateUnfollowEIP712TypedDataValue', nonce: any, deadline: any, unfollowerProfileId: any, idsOfProfilesToUnfollow: Array<any> } } } };
 
 export type RefreshMutationVariables = Exact<{
   request: RefreshRequest;
@@ -5584,7 +5943,7 @@ export type CommentsPublicationQueryVariables = Exact<{
 }>;
 
 
-export type CommentsPublicationQuery = { __typename?: 'Query', publications: { __typename?: 'PaginatedPublicationsResult', items: Array<{ __typename?: 'Comment', id: any, createdAt: any, by: { __typename?: 'Profile', id: any, handle?: { __typename?: 'HandleInfo', fullHandle: any } | null, metadata?: { __typename?: 'ProfileMetadata', displayName?: string | null, picture?: { __typename?: 'ImageSet', optimized?: { __typename?: 'Image', uri: any } | null } | { __typename?: 'NftImage' } | null } | null, ownedBy: { __typename?: 'NetworkAddress', address: any } }, stats: { __typename?: 'PublicationStats', comments: number, upvotes: number, downvotes: number }, metadata: { __typename?: 'ArticleMetadataV3' } | { __typename?: 'AudioMetadataV3' } | { __typename?: 'CheckingInMetadataV3' } | { __typename?: 'EmbedMetadataV3' } | { __typename?: 'EventMetadataV3' } | { __typename?: 'ImageMetadataV3', content: any } | { __typename?: 'LinkMetadataV3' } | { __typename?: 'LiveStreamMetadataV3' } | { __typename?: 'MintMetadataV3' } | { __typename?: 'SpaceMetadataV3' } | { __typename?: 'StoryMetadataV3' } | { __typename?: 'TextOnlyMetadataV3', content: any } | { __typename?: 'ThreeDMetadataV3' } | { __typename?: 'TransactionMetadataV3' } | { __typename?: 'VideoMetadataV3' }, operations: { __typename?: 'PublicationOperations', hasUpVoted: boolean, hasDownVoted: boolean } } | { __typename?: 'Mirror' } | { __typename?: 'Post' } | { __typename?: 'Quote' }> } };
+export type CommentsPublicationQuery = { __typename?: 'Query', publications: { __typename?: 'PaginatedPublicationsResult', items: Array<{ __typename?: 'Comment', id: any, createdAt: any, by: { __typename?: 'Profile', id: any, handle?: { __typename?: 'HandleInfo', fullHandle: any } | null, metadata?: { __typename?: 'ProfileMetadata', displayName?: string | null, picture?: { __typename?: 'ImageSet', optimized?: { __typename?: 'Image', uri: any } | null } | { __typename?: 'NftImage' } | null } | null, ownedBy: { __typename?: 'NetworkAddress', address: any } }, stats: { __typename?: 'PublicationStats', comments: number, upvotes: number, downvotes: number }, metadata: { __typename?: 'ArticleMetadataV3' } | { __typename?: 'AudioMetadataV3' } | { __typename?: 'CheckingInMetadataV3' } | { __typename?: 'EmbedMetadataV3' } | { __typename?: 'EventMetadataV3' } | { __typename?: 'ImageMetadataV3', content: any } | { __typename?: 'LinkMetadataV3' } | { __typename?: 'LiveStreamMetadataV3' } | { __typename?: 'MintMetadataV3' } | { __typename?: 'SpaceMetadataV3' } | { __typename?: 'StoryMetadataV3' } | { __typename?: 'TextOnlyMetadataV3', content: any, attributes?: Array<{ __typename?: 'MetadataAttribute', value: string, key: string }> | null } | { __typename?: 'ThreeDMetadataV3' } | { __typename?: 'TransactionMetadataV3' } | { __typename?: 'VideoMetadataV3' }, operations: { __typename?: 'PublicationOperations', hasUpVoted: boolean, hasDownVoted: boolean }, root: { __typename?: 'Post', id: any } | { __typename?: 'Quote' } } | { __typename?: 'Mirror' } | { __typename?: 'Post' } | { __typename?: 'Quote' }> } };
 
 export type ExplorePublicationsQueryVariables = Exact<{
   request: ExplorePublicationRequest;
@@ -5621,6 +5980,13 @@ export type LinkPublicationQueryVariables = Exact<{
 
 export type LinkPublicationQuery = { __typename?: 'Query', publication?: { __typename?: 'Comment' } | { __typename?: 'Mirror' } | { __typename?: 'Post', id: any, createdAt: any, by: { __typename?: 'Profile', handle?: { __typename?: 'HandleInfo', fullHandle: any } | null }, stats: { __typename?: 'PublicationStats', comments: number, upvotes: number, downvotes: number }, metadata: { __typename?: 'ArticleMetadataV3' } | { __typename?: 'AudioMetadataV3' } | { __typename?: 'CheckingInMetadataV3' } | { __typename?: 'EmbedMetadataV3' } | { __typename?: 'EventMetadataV3' } | { __typename?: 'ImageMetadataV3' } | { __typename?: 'LinkMetadataV3', sharingLink: any, attributes?: Array<{ __typename?: 'MetadataAttribute', key: string, value: string }> | null } | { __typename?: 'LiveStreamMetadataV3' } | { __typename?: 'MintMetadataV3' } | { __typename?: 'SpaceMetadataV3' } | { __typename?: 'StoryMetadataV3' } | { __typename?: 'TextOnlyMetadataV3' } | { __typename?: 'ThreeDMetadataV3' } | { __typename?: 'TransactionMetadataV3' } | { __typename?: 'VideoMetadataV3' }, operations: { __typename?: 'PublicationOperations', hasUpVoted: boolean, hasDownVoted: boolean } } | { __typename?: 'Quote' } | null };
 
+export type ProfileIdQueryVariables = Exact<{
+  request: ProfileRequest;
+}>;
+
+
+export type ProfileIdQuery = { __typename?: 'Query', profile?: { __typename?: 'Profile', id: any } | null };
+
 export type ProfilesManagedQueryVariables = Exact<{
   request: ProfilesManagedRequest;
 }>;
@@ -5633,23 +5999,26 @@ export type ProfileQueryVariables = Exact<{
 }>;
 
 
-export type ProfileQuery = { __typename?: 'Query', profile?: { __typename?: 'Profile', id: any, handle?: { __typename?: 'HandleInfo', fullHandle: any, localName: string } | null, metadata?: { __typename?: 'ProfileMetadata', displayName?: string | null, picture?: { __typename?: 'ImageSet' } | { __typename?: 'NftImage', image: { __typename?: 'ImageSet', optimized?: { __typename?: 'Image', uri: any } | null } } | null } | null, ownedBy: { __typename?: 'NetworkAddress', address: any } } | null };
+export type ProfileQuery = { __typename?: 'Query', profile?: { __typename?: 'Profile', createdAt: any, id: any, handle?: { __typename?: 'HandleInfo', fullHandle: any, localName: string } | null, metadata?: { __typename?: 'ProfileMetadata', displayName?: string | null, bio?: any | null, coverPicture?: { __typename?: 'ImageSet', optimized?: { __typename?: 'Image', uri: any } | null } | null, picture?: { __typename?: 'ImageSet', optimized?: { __typename?: 'Image', uri: any } | null } | { __typename?: 'NftImage' } | null } | null, ownedBy: { __typename?: 'NetworkAddress', address: any }, stats: { __typename?: 'ProfileStats', followers: number, following: number, posts: number, comments: number, reactions: number, publications: number }, operations: { __typename?: 'ProfileOperations', isFollowedByMe: { __typename?: 'OptimisticStatusResult', value: boolean }, isFollowingMe: { __typename?: 'OptimisticStatusResult', value: boolean } } } | null };
 
 
 export const AddReactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddReaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ReactionRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addReaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}]}]}}]} as unknown as DocumentNode<AddReactionMutation, AddReactionMutationVariables>;
 export const AuthenticateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Authenticate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SignedAuthChallenge"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"authenticate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}},{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}}]}}]}}]} as unknown as DocumentNode<AuthenticateMutation, AuthenticateMutationVariables>;
 export const BroadcastOnchainDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BroadcastOnchain"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BroadcastRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"broadcastOnchain"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RelaySuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"txHash"}},{"kind":"Field","name":{"kind":"Name","value":"txId"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RelayError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}}]}}]}}]}}]} as unknown as DocumentNode<BroadcastOnchainMutation, BroadcastOnchainMutationVariables>;
+export const CreateFollowTypedDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateFollowTypedData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FollowRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createFollowTypedData"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"typedData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"domain"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"chainId"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"verifyingContract"}}]}},{"kind":"Field","name":{"kind":"Name","value":"types"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Follow"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"value"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nonce"}},{"kind":"Field","name":{"kind":"Name","value":"deadline"}},{"kind":"Field","name":{"kind":"Name","value":"followerProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"idsOfProfilesToFollow"}},{"kind":"Field","name":{"kind":"Name","value":"followTokenIds"}},{"kind":"Field","name":{"kind":"Name","value":"datas"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateFollowTypedDataMutation, CreateFollowTypedDataMutationVariables>;
 export const CreateOnchainCommentTypedDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateOnchainCommentTypedData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"OnchainCommentRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createOnchainCommentTypedData"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"typedData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"types"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Comment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"domain"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"chainId"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"verifyingContract"}}]}},{"kind":"Field","name":{"kind":"Name","value":"value"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nonce"}},{"kind":"Field","name":{"kind":"Name","value":"deadline"}},{"kind":"Field","name":{"kind":"Name","value":"profileId"}},{"kind":"Field","name":{"kind":"Name","value":"contentURI"}},{"kind":"Field","name":{"kind":"Name","value":"pointedProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"pointedPubId"}},{"kind":"Field","name":{"kind":"Name","value":"referrerProfileIds"}},{"kind":"Field","name":{"kind":"Name","value":"referrerPubIds"}},{"kind":"Field","name":{"kind":"Name","value":"referenceModuleData"}},{"kind":"Field","name":{"kind":"Name","value":"actionModules"}},{"kind":"Field","name":{"kind":"Name","value":"actionModulesInitDatas"}},{"kind":"Field","name":{"kind":"Name","value":"referenceModule"}},{"kind":"Field","name":{"kind":"Name","value":"referenceModuleInitData"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateOnchainCommentTypedDataMutation, CreateOnchainCommentTypedDataMutationVariables>;
 export const CreateOnchainPostTypedDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateOnchainPostTypedData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"OnchainPostRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createOnchainPostTypedData"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"typedData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"types"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Post"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"domain"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"chainId"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"verifyingContract"}}]}},{"kind":"Field","name":{"kind":"Name","value":"value"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nonce"}},{"kind":"Field","name":{"kind":"Name","value":"deadline"}},{"kind":"Field","name":{"kind":"Name","value":"profileId"}},{"kind":"Field","name":{"kind":"Name","value":"contentURI"}},{"kind":"Field","name":{"kind":"Name","value":"actionModules"}},{"kind":"Field","name":{"kind":"Name","value":"actionModulesInitDatas"}},{"kind":"Field","name":{"kind":"Name","value":"referenceModule"}},{"kind":"Field","name":{"kind":"Name","value":"referenceModuleInitData"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateOnchainPostTypedDataMutation, CreateOnchainPostTypedDataMutationVariables>;
 export const CreateProfileWithHandleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateProfileWithHandle"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateProfileWithHandleRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createProfileWithHandle"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RelaySuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"txHash"}},{"kind":"Field","name":{"kind":"Name","value":"txId"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CreateProfileWithHandleErrorResult"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reason"}}]}}]}}]}}]} as unknown as DocumentNode<CreateProfileWithHandleMutation, CreateProfileWithHandleMutationVariables>;
+export const CreateUnfollowTypedDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateUnfollowTypedData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UnfollowRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createUnfollowTypedData"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"typedData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"types"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Unfollow"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"domain"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"chainId"}},{"kind":"Field","name":{"kind":"Name","value":"version"}},{"kind":"Field","name":{"kind":"Name","value":"verifyingContract"}}]}},{"kind":"Field","name":{"kind":"Name","value":"value"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nonce"}},{"kind":"Field","name":{"kind":"Name","value":"deadline"}},{"kind":"Field","name":{"kind":"Name","value":"unfollowerProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"idsOfProfilesToUnfollow"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateUnfollowTypedDataMutation, CreateUnfollowTypedDataMutationVariables>;
 export const RefreshDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Refresh"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RefreshRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refresh"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}},{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}}]}}]}}]} as unknown as DocumentNode<RefreshMutation, RefreshMutationVariables>;
 export const RemoveReactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemoveReaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ReactionRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeReaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}]}]}}]} as unknown as DocumentNode<RemoveReactionMutation, RemoveReactionMutationVariables>;
 export const ChallengeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Challenge"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ChallengeRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"challenge"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<ChallengeQuery, ChallengeQueryVariables>;
-export const CommentsPublicationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CommentsPublication"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PublicationsRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publications"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"by"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"handle"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fullHandle"}}]}},{"kind":"Field","name":{"kind":"Name","value":"metadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"picture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageSet"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optimized"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uri"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"ownedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"stats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"comments"}},{"kind":"Field","alias":{"kind":"Name","value":"upvotes"},"name":{"kind":"Name","value":"reactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"UPVOTE"}}]}}]},{"kind":"Field","alias":{"kind":"Name","value":"downvotes"},"name":{"kind":"Name","value":"reactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"DOWNVOTE"}}]}}]}]}},{"kind":"Field","name":{"kind":"Name","value":"metadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextOnlyMetadataV3"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"content"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageMetadataV3"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"content"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"operations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"hasUpVoted"},"name":{"kind":"Name","value":"hasReacted"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"UPVOTE"}}]}}]},{"kind":"Field","alias":{"kind":"Name","value":"hasDownVoted"},"name":{"kind":"Name","value":"hasReacted"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"DOWNVOTE"}}]}}]}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<CommentsPublicationQuery, CommentsPublicationQueryVariables>;
+export const CommentsPublicationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CommentsPublication"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PublicationsRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publications"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"by"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"handle"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fullHandle"}}]}},{"kind":"Field","name":{"kind":"Name","value":"metadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"picture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageSet"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optimized"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uri"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"ownedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"stats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"comments"}},{"kind":"Field","alias":{"kind":"Name","value":"upvotes"},"name":{"kind":"Name","value":"reactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"UPVOTE"}}]}}]},{"kind":"Field","alias":{"kind":"Name","value":"downvotes"},"name":{"kind":"Name","value":"reactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"DOWNVOTE"}}]}}]}]}},{"kind":"Field","name":{"kind":"Name","value":"metadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextOnlyMetadataV3"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"attributes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"key"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageMetadataV3"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"content"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"operations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"hasUpVoted"},"name":{"kind":"Name","value":"hasReacted"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"UPVOTE"}}]}}]},{"kind":"Field","alias":{"kind":"Name","value":"hasDownVoted"},"name":{"kind":"Name","value":"hasReacted"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"DOWNVOTE"}}]}}]}]}},{"kind":"Field","name":{"kind":"Name","value":"root"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Post"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<CommentsPublicationQuery, CommentsPublicationQueryVariables>;
 export const ExplorePublicationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ExplorePublications"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ExplorePublicationRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"explorePublications"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Post"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"by"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"stats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"comments"}},{"kind":"Field","alias":{"kind":"Name","value":"upvotes"},"name":{"kind":"Name","value":"reactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"UPVOTE"}}]}}]},{"kind":"Field","alias":{"kind":"Name","value":"downvotes"},"name":{"kind":"Name","value":"reactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"DOWNVOTE"}}]}}]}]}},{"kind":"Field","name":{"kind":"Name","value":"metadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LinkMetadataV3"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sharingLink"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ExplorePublicationsQuery, ExplorePublicationsQueryVariables>;
 export const ImageCommentPublicationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ImageCommentPublications"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PublicationsRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publications"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Comment"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"metadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageMetadataV3"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"asset"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"image"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optimized"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uri"}}]}}]}}]}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ImageCommentPublicationsQuery, ImageCommentPublicationsQueryVariables>;
 export const LastLoggedInProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"lastLoggedInProfile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LastLoggedInProfileRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lastLoggedInProfile"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<LastLoggedInProfileQuery, LastLoggedInProfileQueryVariables>;
 export const LensTransactionStatusDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"lensTransactionStatus"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LensTransactionStatusRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lensTransactionStatus"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"txHash"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"extraInfo"}}]}}]}}]} as unknown as DocumentNode<LensTransactionStatusQuery, LensTransactionStatusQueryVariables>;
 export const LinkPublicationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"LinkPublication"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PublicationRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publication"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Post"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"by"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"handle"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fullHandle"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"stats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"comments"}},{"kind":"Field","alias":{"kind":"Name","value":"upvotes"},"name":{"kind":"Name","value":"reactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"UPVOTE"}}]}}]},{"kind":"Field","alias":{"kind":"Name","value":"downvotes"},"name":{"kind":"Name","value":"reactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"DOWNVOTE"}}]}}]}]}},{"kind":"Field","name":{"kind":"Name","value":"metadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LinkMetadataV3"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sharingLink"}},{"kind":"Field","name":{"kind":"Name","value":"attributes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"operations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"hasUpVoted"},"name":{"kind":"Name","value":"hasReacted"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"UPVOTE"}}]}}]},{"kind":"Field","alias":{"kind":"Name","value":"hasDownVoted"},"name":{"kind":"Name","value":"hasReacted"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"type"},"value":{"kind":"EnumValue","value":"DOWNVOTE"}}]}}]}]}}]}}]}}]}}]} as unknown as DocumentNode<LinkPublicationQuery, LinkPublicationQueryVariables>;
+export const ProfileIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProfileId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ProfileRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"profile"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<ProfileIdQuery, ProfileIdQueryVariables>;
 export const ProfilesManagedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"profilesManaged"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ProfilesManagedRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"profilesManaged"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"handle"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fullHandle"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ProfilesManagedQuery, ProfilesManagedQueryVariables>;
-export const ProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Profile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ProfileRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"profile"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"handle"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fullHandle"}},{"kind":"Field","name":{"kind":"Name","value":"localName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"picture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NftImage"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"image"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optimized"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uri"}}]}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"ownedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}}]}}]}}]}}]} as unknown as DocumentNode<ProfileQuery, ProfileQueryVariables>;
+export const ProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Profile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ProfileRequest"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"profile"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"handle"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fullHandle"}},{"kind":"Field","name":{"kind":"Name","value":"localName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"metadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"coverPicture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optimized"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uri"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"picture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageSet"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optimized"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uri"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"bio"}}]}},{"kind":"Field","name":{"kind":"Name","value":"ownedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}}]}},{"kind":"Field","name":{"kind":"Name","value":"stats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"followers"}},{"kind":"Field","name":{"kind":"Name","value":"following"}},{"kind":"Field","name":{"kind":"Name","value":"posts"}},{"kind":"Field","name":{"kind":"Name","value":"comments"}},{"kind":"Field","name":{"kind":"Name","value":"reactions"}},{"kind":"Field","name":{"kind":"Name","value":"publications"}}]}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"operations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isFollowedByMe"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"Field","name":{"kind":"Name","value":"isFollowingMe"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ProfileQuery, ProfileQueryVariables>;

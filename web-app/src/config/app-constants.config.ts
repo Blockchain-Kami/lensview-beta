@@ -10,3 +10,16 @@ export enum CommentFilterType {
   CommentsById = "COMMENTS_BY_ID",
   FirstMostRelevantComments = "FIRST_MOST_RELEVANT_COMMENTS"
 }
+
+export enum DateType {
+  ExactDate = "EXACT_DATE",
+  RoughDate = "ROUGH_DATE"
+}
+
+export enum AttributeKeyType {
+  creator = "creator",
+  app = "app",
+  createdOn = "createdOn",
+  mainPostImageUrl = "mainPostImageUrl",
+  mainPostUrl = "mainPostUrl",
+}

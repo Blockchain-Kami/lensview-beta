@@ -14,13 +14,13 @@ const addUrlAppService = async (url: string) => {
 
   try {
     return await clientAxiosUtil
-      .post("url/new-pub", {
-        url: url,
-        lensHandle: handle
-      })
-      .then((resp: AxiosResponse<PostCommentResponseAppModel>) => {
-        return resp.data.publicationID;
-      });
+        .post("url/new-pub", {
+          url: url,
+          lensHandle: handle
+        })
+        .then((resp: AxiosResponse<PostCommentResponseAppModel>) => {
+          return resp.data;
+        });
   } catch (err) {
     // TODO: Handle error as mentioned in this article
     // https://www.builder.io/blog/safe-data-fetching

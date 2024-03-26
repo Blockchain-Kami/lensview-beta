@@ -34,6 +34,10 @@ const commentsPublicationQueryGraphql = graphql(`
           metadata {
             ... on TextOnlyMetadataV3 {
               content
+              attributes {
+                value
+                key
+              }
             }
             ... on ImageMetadataV3 {
               content
@@ -42,6 +46,11 @@ const commentsPublicationQueryGraphql = graphql(`
           operations {
             hasUpVoted: hasReacted(request: { type: UPVOTE })
             hasDownVoted: hasReacted(request: { type: DOWNVOTE })
+          }
+          root {
+            ... on Post {
+              id
+            }
           }
         }
       }
