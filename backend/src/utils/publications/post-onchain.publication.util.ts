@@ -19,14 +19,27 @@ import { splitSignatureHelperUtil } from "../helpers/split-signature.helper.util
 import { createContractHelperUtils } from "../helpers/create-contract.helper.utils";
 import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util";
 import { getPolygonGasPriceHelperUtil } from "../helpers/get-polygon-gas-price.helper.utils";
+import {
+  ImageMetadata,
+  LinkMetadata,
+  TextOnlyMetadata
+} from "@lens-protocol/metadata";
+import { logger } from "../../log/log-manager.log";
 
-const postOnChainPublicationUtil = async (metadata: any) => {
+const postOnChainPublicationUtil = async (
+  metadata: LinkMetadata | TextOnlyMetadata | ImageMetadata
+) => {
   //TODO: Check in production weather we need "@lens-protocol/metadata", if it works putting in
   // devDependencies then keep it or go with schema approach that there in "api-examples" repo
   // https://docs.lens.xyz/docs/publication-metadata#json-schemas
-
+  logger.info(
+    "post-onchain.publication.util.ts: postOnChainPublicationUtil: Execution Started."
+  );
+  logger.info(
+    "post-onchain.publication.util.ts: postOnChainPublicationUtil: Input parameters: metadata" +
+      JSON.stringify(metadata)
+  );
   const ipfsResultUri = await uploadToIPFSHelperUtil(JSON.stringify(metadata));
-  console.log("post onchain: ipfs result uri", ipfsResultUri);
 
   const request: OnchainPostRequest = {
     contentURI: ipfsResultUri
@@ -42,18 +55,17 @@ const postOnChainPublicationUtil = async (metadata: any) => {
   const { id, typedData } = (await createOnchainPostTypedDataLensService(
     request
   )) as CreateOnchainPostBroadcastItemResult;
-  console.log("post onchain: result", { id, typedData });
-
-  console.log("post onchain: typedData", typedData);
 
   const signature = await signedTypeDataForPostHelperUtil(
     typedData.domain,
     typedData.types,
     typedData.value
   );
-  console.log("post onchain: signature", signature);
 
   if (USE_GASLESS) {
+    logger.info(
+      "post-onchain.publication.util.ts: postOnChainPublicationUtil: Gasless Execution Started."
+    );
     const broadcastResult = (await broadcastOnchainRequestService({
       id,
       signature
@@ -61,7 +73,9 @@ const postOnChainPublicationUtil = async (metadata: any) => {
 
     await waitUntilBroadcastIsCompleteTransactionUtil(broadcastResult, "post");
   } else {
-    console.log("post onchain: not using gasless");
+    logger.info(
+      "post-onchain.publication.util.ts: postOnChainPublicationUtil: Posting with gas."
+    );
     const polygonGasFee = await getPolygonGasPriceHelperUtil();
     const { v, r, s } = splitSignatureHelperUtil(signature);
 
@@ -97,7 +111,10 @@ const postOnChainPublicationUtil = async (metadata: any) => {
       },
       Date.now()
     );
-    console.log("post onchain: tx hash", tx.hash);
+    logger.info(
+      "post-onchain.publication.util.ts: postOnChainPublicationUtil: Execution End. Transaction Hash: " +
+        tx.hash
+    );
   }
 };
 

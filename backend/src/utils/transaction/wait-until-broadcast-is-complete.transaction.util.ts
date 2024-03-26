@@ -4,29 +4,39 @@ import type {
   RelaySuccess
 } from "../../gql/graphql";
 import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util";
+import { logger } from "../../log/log-manager.log";
 
 export async function waitUntilBroadcastIsCompleteTransactionUtil(
   broadcastResult: RelaySuccess | RelayError,
   broadcastName?: string // for logging e.g. 'create post'
 ) {
   const actionToBroadcast = broadcastName ?? "broadcast";
-  console.log(actionToBroadcast, { broadcastResult });
-
   if (broadcastResult.__typename !== "RelaySuccess") {
-    console.error(`${actionToBroadcast}: failed`, broadcastResult);
+    logger.warn(
+      "wait-until-broadcast-is-complete.transaction.util.ts: waitUntilBroadcastIsCompleteTransactionUtil: " +
+        actionToBroadcast +
+        ": failed, broadcast result: " +
+        broadcastResult
+    );
     throw new Error(`${actionToBroadcast}: failed`);
   }
-
-  console.log(`${actionToBroadcast}: poll until indexed`);
+  logger.info(
+    "wait-until-broadcast-is-complete.transaction.util.ts: waitUntilBroadcastIsCompleteTransactionUtil: " +
+      actionToBroadcast +
+      ": pool until indexed"
+  );
   const indexedResult = await hasTransactionBeenIndexedIndexerUtil(
     {
       forTxId: broadcastResult.txId
     },
     Date.now()
   );
-  console.log(`${actionToBroadcast}: has been indexed`, indexedResult);
-
-  console.log(`${actionToBroadcast}: complete`);
+  logger.info(
+    "wait-until-broadcast-is-complete.transaction.util.ts: waitUntilBroadcastIsCompleteTransactionUtil: " +
+      actionToBroadcast +
+      ": has been indexed. Indexed Result: " +
+      JSON.stringify(indexedResult)
+  );
 }
 
 export async function waitUntilLensManagerTransactionIsComplete(
