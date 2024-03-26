@@ -8,7 +8,7 @@ const winstonLogger = winston.createLogger(logConfiguration);
 //   write: function (message: string) {
 //     winstonLogger.info(message);
 //   }
-// };
+// }
 
 export const logger = {
   log: (level: string, message: string) => {

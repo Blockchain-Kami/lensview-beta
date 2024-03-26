@@ -25,6 +25,7 @@
   import { CommentFilterType } from "../../config/app-constants.config";
   import getPictureURLUtil from "../../utils/get-picture-URL.util";
   import getRelatedPostPubIdsAppService from "../../services/app/get-related-post-pub-ids.app.service";
+  import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
   const { VITE_APP_LENS_ID } = import.meta.env;
 
   type KeyStringValBoolean = {
@@ -65,6 +66,10 @@
       }
     }
   });
+
+  const getHandle = (comment: CommentsPublicationLensModel) => {
+    return comment.by?.handle?.fullHandle.substring(5);
+  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -191,32 +196,32 @@
                   </div>
                 </div>
               {:then comments}
-                {#if comments.items[0]?.by?.handle?.fullHandle === undefined}
+                {#if comments[0]?.by?.handle?.fullHandle === undefined}
                   <div class="CenterRowFlex card__post">No Top Post</div>
                 {:else}
                   <div class="CenterRowFlex card__post">
-                    <div class="card__post__user-pic">
+                    <a
+                      href={`/profile/${getHandle(comments[0])}`}
+                      class="card__post__user-pic"
+                    >
                       <img
                         src={getPictureURLUtil(
-                          comments.items[0]?.by?.metadata?.picture?.optimized
-                            ?.uri,
-                          comments.items[0]?.by?.ownedBy?.address
+                          comments[0]?.by?.metadata?.picture?.optimized?.uri,
+                          comments[0]?.by?.ownedBy?.address
                         )}
                         alt="avatar"
                       />
-                    </div>
+                    </a>
                     <div class="card__post__info">
                       <div class="CenterRowFlex card__post__info__head">
-                        <div class="card__post__info__head__username">
-                          {comments.items[0]?.by?.handle?.fullHandle.substring(
-                            5,
-                            17
-                          )}
-                          {comments.items[0]?.by?.handle?.fullHandle.length > 12
-                            ? "..."
-                            : ""}
-                        </div>
-                        {#if comments.items[0]?.by?.id === VITE_APP_LENS_ID}
+                        <a
+                          href={`/profile/${getHandle(comments[0])}`}
+                          class="card__post__info__head__username"
+                        >
+                          {getHandle(comments[0]).substring(0, 12)}
+                          {getHandle(comments[0]).length > 12 ? "..." : ""}
+                        </a>
+                        {#if comments[0]?.by?.id === VITE_APP_LENS_ID}
                           <Tooltip
                             content="This post was made by an anonymous user!"
                             position="top"
@@ -242,21 +247,19 @@
                             <Icon d={trendingUp} />
                           </div>
                           <div class="card__post__info__head__trend__count">
-                            {comments?.items[0]?.stats?.upvotes === undefined
+                            {comments[0]?.stats?.upvotes === undefined
                               ? 0
-                              : comments?.items[0]?.stats?.upvotes}
+                              : comments[0]?.stats?.upvotes}
                           </div>
                         </div>
                         <div class="card__post__info__head__time">
-                          {getFormattedDateHelperUtil(
-                            comments?.items[0]?.createdAt
-                          )}
+                          {getFormattedDateHelperUtil(comments[0]?.createdAt)}
                         </div>
                       </div>
                       <div class="card__post__info__body">
                         <!--eslint-disable-next-line svelte/no-at-html-tags -->
                         {@html DOMPurify.sanitize(
-                          comments?.items[0]?.metadata?.content
+                          comments[0]?.metadata?.content
                         ).substring(0, 70)}
                       </div>
                     </div>
@@ -473,7 +476,7 @@
   }
 
   .card__post__info__head__anon-comment {
-    background: #132e2e;
+    background: var(--bg-solid-3);
     border-radius: 50%;
     padding: 0.25rem;
   }

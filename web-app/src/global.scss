@@ -138,6 +138,9 @@ option:hover {
   --medium-font-weight: 600;
   font-size: var(--semi-medium-font-size);
   --bg: linear-gradient(156deg, #0d171d 39.31%, #22454b 82%);
+  --bg-solid-1: #0d171d94;
+  --bg-solid-2: #18393a;
+  --bg-solid-3: #132e2e;
   --btn-bg: linear-gradient(121deg, #23f9ff 0%, #dbf1ff 100%);
 }
 
@@ -148,7 +151,7 @@ body {
 }
 
 ::backdrop {
-  background: #0d171d94;
+  background: var(--bg-solid-1);
   backdrop-filter: blur(10px);
 }
 
