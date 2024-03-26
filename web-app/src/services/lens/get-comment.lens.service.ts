@@ -26,10 +26,9 @@ const getCommentLensService = async (request: PublicationsRequest) => {
       .toPromise();
   }
 
-  if(result?.data?.publications.__typename === "PaginatedPublicationsResult"){
+  if (result?.data?.publications.__typename === "PaginatedPublicationsResult") {
     return result?.data?.publications?.items as CommentsPublicationLensModel[];
-  }
-  else{
+  } else {
     return [];
   }
 };

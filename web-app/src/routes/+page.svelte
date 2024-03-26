@@ -33,6 +33,8 @@
   import getPictureURLUtil from "../utils/get-picture-URL.util";
   import getFormattedDateHelperUtil from "../utils/helper/get-formatted-date.helper.util";
   import { CommentFilterType } from "../config/app-constants.config";
+  import type { CommentsPublicationLensModel } from "../models/lens/comments-publication.lens.model";
+  import { goto } from "$app/navigation";
   const { VITE_APP_LENS_ID } = import.meta.env;
 
   type KeyStringValBoolean = {
@@ -83,6 +85,16 @@
       type: copy,
       removeAfter: 5000
     });
+  };
+
+  const getHandle = (comment: CommentsPublicationLensModel) => {
+    return comment.by?.handle?.fullHandle.substring(5);
+  };
+
+  const redirectToProfile = (event: Event, handle: string) => {
+    event.preventDefault();
+    event.stopPropagation();
+    goto(`/profile/${handle}`);
   };
 </script>
 
@@ -191,28 +203,32 @@
                   <div class="CenterRowFlex card__post">No Top Post</div>
                 {:else}
                   <div class="CenterRowFlex card__post">
-                    <div class="card__post__user-pic">
+                    <button
+                      on:click={(event) => {
+                        redirectToProfile(event, getHandle(comments[0]));
+                      }}
+                      class="card__post__user-pic"
+                    >
                       <img
                         src={getPictureURLUtil(
-                          comments[0]?.by?.metadata?.picture?.optimized
-                            ?.uri,
+                          comments[0]?.by?.metadata?.picture?.optimized?.uri,
                           comments[0]?.by?.ownedBy?.address
                         )}
                         alt="avatar"
                       />
-                    </div>
+                    </button>
                     <div class="card__post__info">
                       <div class="CenterRowFlex card__post__info__head">
-                        <div class="card__post__info__head__username">
-                          {comments[0]?.by?.handle?.fullHandle.substring(
-                            5,
-                            17
-                          )}
-                          {comments[0]?.by?.handle?.fullHandle.length > 17
-                            ? "..."
-                            : ""}
-                        </div>
-                        {#if comments[0]?.by?.id === VITE_APP_LENS_ID}
+                        <button
+                          on:click={(event) => {
+                            redirectToProfile(event, getHandle(comments[0]));
+                          }}
+                          class="card__post__info__head__username"
+                        >
+                          {getHandle(comments[0]).substring(0, 12)}
+                          {getHandle(comments[0]).length > 17 ? "..." : ""}
+                        </button>
+                        {#if comments[0].by?.id === VITE_APP_LENS_ID}
                           <Tooltip
                             content="This post was made by an anonymous user!"
                             position="top"
@@ -238,15 +254,13 @@
                             <Icon d={trendingUp} />
                           </div>
                           <div class="card__post__info__head__trend__count">
-                            {comments[0]?.stats?.upvotes === undefined
+                            {comments[0].stats?.upvotes === undefined
                               ? 0
-                              : comments[0]?.stats?.upvotes}
+                              : comments[0].stats?.upvotes}
                           </div>
                         </div>
                         <div class="card__post__info__head__time">
-                          {getFormattedDateHelperUtil(
-                            comments[0]?.createdAt
-                          )}
+                          {getFormattedDateHelperUtil(comments[0].createdAt)}
                         </div>
                       </div>
                       <div class="card__post__info__body">
@@ -276,6 +290,8 @@
 </MediaQuery>
 
 <AddNewPost bind:showAddNewPostModal />
+
+}
 
 <!----------------------------------------------------------------->
 

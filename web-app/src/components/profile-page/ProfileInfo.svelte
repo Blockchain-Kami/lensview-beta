@@ -1,9 +1,9 @@
 <script lang="ts">
   import {
     clock,
-    feather,
+    cross,
     followers,
-    modeComment,
+    login,
     personAdd,
     star
   } from "../../utils/app-icon.util";
@@ -14,12 +14,111 @@
   import { DateType } from "../../config/app-constants.config";
   import getProfileUsingIdLensService from "../../services/lens/get-profile-using-id.lens.service";
   import { profileUserStore } from "../../stores/user/profile.user.store";
+  import LensLogo from "$lib/assets/LensLogo.svg";
+  import LensviewLogoFlat from "$lib/assets/LensviewLogoFlat.svg";
+  import Login from "../Login.svelte";
+  import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  import followFollowUtil from "../../utils/follow/follow.follow.util";
+  import { getNotificationsContext } from "svelte-notifications";
+  import { reloadAPublication } from "../../stores/reload-publication.store";
+  import { onMount } from "svelte";
+  import unfollowFollowUtil from "../../utils/follow/unfollow.follow.util";
+
+  let showLoginModal = false;
+  const { addNotification } = getNotificationsContext();
+  let promiseOfGetProfile = getProfileUsingIdLensService($page.data.profileId);
+  let isFollowing = false;
+  let disableActive = false;
+
+  onMount(() => {
+    reloadAPublication.subscribe(() => {
+      promiseOfGetProfile = getProfileUsingIdLensService($page.data.profileId);
+    });
+  });
+
+  const callFollow = async () => {
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
+    });
+    unsub();
+
+    if (!isUserLoggedIn) {
+      openLoginNotification();
+    } else {
+      disableActive = true;
+      try {
+        await followFollowUtil($page.data.profileId);
+        isFollowing = true;
+        disableActive = false;
+      } catch (_error) {
+        console.log("Error following user", _error);
+        disableActive = false;
+        addNotification({
+          position: "top-right",
+          heading: "Error while following",
+          description: "Please try again .",
+          type: cross,
+          removeAfter: 4000
+        });
+      }
+    }
+  };
+
+  const callUnfollow = async () => {
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
+    });
+    unsub();
+
+    if (!isUserLoggedIn) {
+      openLoginNotification();
+    } else {
+      disableActive = true;
+      try {
+        await unfollowFollowUtil($page.data.profileId);
+        isFollowing = false;
+        disableActive = false;
+      } catch (_error) {
+        console.log("Error following user", _error);
+        disableActive = false;
+        addNotification({
+          position: "top-right",
+          heading: "Error while unfollowing",
+          description: "Please try again .",
+          type: cross,
+          removeAfter: 4000
+        });
+      }
+    }
+  };
+
+  const updateIsFollowing = (status: boolean | undefined) => {
+    if (!status) isFollowing = false;
+    else isFollowing = status;
+    return "";
+  };
+  const openLoginNotification = () => {
+    addNotification({
+      position: "top-right",
+      heading: "Please Login",
+      description:
+        'Kindly log-in to react to this post. Simply click on "Login" button to proceed with your login.',
+      type: login,
+      removeAfter: 10000,
+      ctaBtnName: "Login",
+      ctaFunction: () => {
+        showLoginModal = true;
+      }
+    });
+  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
 
 <section>
-  {#await getProfileUsingIdLensService($page.data.profileId)}
+  {#await promiseOfGetProfile}
     <div class="cover-image-loader" />
     <div class="profile-details">
       <div class="CenterColumnFlex profile-details__left">
@@ -42,8 +141,8 @@
         </div>
       </div>
       <div class="CenterRowFlex stats__box stats__posts">
-        <div class="stats__box__icon">
-          <Icon d={feather} size="1.7em" />
+        <div class="stats__box__img">
+          <img src={LensLogo} alt="" />
         </div>
         <div class="CenterColumnFlex stats__box__right">
           <div class="stats__box__right__title">Number of posts</div>
@@ -51,8 +150,8 @@
         </div>
       </div>
       <div class="CenterRowFlex stats__box stats__comments">
-        <div class="stats__box__icon">
-          <Icon d={modeComment} size="1.7em" />
+        <div class="stats__box__img">
+          <img src={LensviewLogoFlat} alt="" />
         </div>
         <div class="CenterColumnFlex stats__box__right">
           <div class="stats__box__right__title">Number of comments</div>
@@ -92,17 +191,35 @@
       </div>
       <div class="profile-details__right">
         <div class="CenterRowFlex profile-details__right__top">
-          <div class="profile-details__right__top__name">
-            {response?.data?.profile?.metadata?.displayName
-              ? response?.data?.profile?.metadata?.displayName
-              : ""}
-          </div>
+          {#if response?.data?.profile?.metadata?.displayName}
+            <div class="profile-details__right__top__name">
+              {response?.data?.profile?.metadata?.displayName}
+            </div>
+          {/if}
           {#if $page.data.profileId !== $profileUserStore?.id}
             <div class="profile-details__right__top__follow">
-              <button class="CenterRowFlex btn">
-                <Icon d={personAdd} color="black" />
-                &nbsp; &nbsp;Follow
-              </button>
+              {updateIsFollowing(
+                response?.data?.profile?.operations?.isFollowedByMe?.value
+              )}
+              {#if !isFollowing}
+                <button
+                  on:click={() => callFollow()}
+                  disabled={disableActive}
+                  class="CenterRowFlex btn"
+                >
+                  <Icon d={personAdd} color="black" />
+                  &nbsp; &nbsp;Follow
+                </button>
+              {:else}
+                <button
+                  on:click={() => callUnfollow()}
+                  disabled={disableActive}
+                  class="CenterRowFlex btn"
+                >
+                  <Icon d={personAdd} color="black" />
+                  &nbsp; &nbsp;Following
+                </button>
+              {/if}
             </div>
           {/if}
         </div>
@@ -112,9 +229,9 @@
               ? response?.data?.profile?.handle?.fullHandle
               : ""}
           </div>
-          <div class="CenterRowFlex">
+          <div class="CenterRowFlex profile-details__right__middle__right">
             <div
-              class="CenterRowFlex profile-details__right__middle__grey-text"
+              class="CenterRowFlex profile-details__right__middle__right__grey-text"
             >
               &nbsp;&nbsp;&nbsp;&nbsp;
               <Icon d={clock} color="#a1a1a1" />
@@ -124,7 +241,7 @@
               )}
             </div>
             <div
-              class="CenterRowFlex profile-details__right__middle__grey-text"
+              class="CenterRowFlex profile-details__right__middle__right__grey-text"
             >
               &nbsp;&nbsp;&nbsp;&nbsp;
               <Icon d={followers} color="#a1a1a1" />
@@ -132,6 +249,11 @@
                 ? response?.data?.profile?.stats?.following
                 : 0} Following
             </div>
+            {#if response?.data?.profile?.operations?.isFollowingMe?.value}
+              <div class="profile-details__right__middle__right__follows-you">
+                Follows You
+              </div>
+            {/if}
           </div>
         </div>
         <div class="profile-details__right__bottom">
@@ -154,24 +276,24 @@
         </div>
       </div>
       <div class="CenterRowFlex stats__box stats__posts">
-        <div class="stats__box__icon">
-          <Icon d={feather} size="1.7em" />
+        <div class="stats__box__img">
+          <img src={LensLogo} alt="" />
         </div>
         <div class="CenterColumnFlex stats__box__right">
-          <div class="stats__box__right__title">Number of posts</div>
+          <div class="stats__box__right__title">Lens Contribution</div>
           <div class="stats__box__right__value">
-            {response?.data?.profile?.stats?.posts}
+            {response?.data?.profile?.stats?.publications}
           </div>
         </div>
       </div>
       <div class="CenterRowFlex stats__box stats__comments">
-        <div class="stats__box__icon">
-          <Icon d={modeComment} size="1.7em" />
+        <div class="stats__box__img">
+          <img src={LensviewLogoFlat} alt="" />
         </div>
         <div class="CenterColumnFlex stats__box__right">
-          <div class="stats__box__right__title">Number of comments</div>
+          <div class="stats__box__right__title">LensView Contribution</div>
           <div class="stats__box__right__value">
-            {response?.data?.profile?.stats?.comments}
+            {response?.data?.profile?.stats?.publications}
           </div>
         </div>
       </div>
@@ -191,6 +313,8 @@
     <div>Failed to load profile</div>
   {/await}
 </section>
+
+<Login bind:showLoginModal />
 
 <!---------------------------------------------------------------->
 
@@ -277,9 +401,23 @@
     color: var(--primary);
   }
 
-  .profile-details__right__middle__grey-text {
+  .profile-details__right__middle__right {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  .profile-details__right__middle__right__grey-text {
     font-size: var(--small-font-size);
     color: var(--text-accent);
+  }
+
+  .profile-details__right__middle__right__follows-you {
+    border-radius: 5px;
+    background-color: var(--bg-solid-2);
+    font-size: var(--small-font-size);
+    color: var(--text-accent);
+    padding: 0.2rem 0.5rem;
   }
 
   .profile-details__right__bottom {
@@ -324,6 +462,12 @@
     padding: 0.9rem 1rem;
   }
 
+  .stats__box__img img {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+  }
+
   .stats__box__right {
     display: flex;
     flex-direction: column;
@@ -365,6 +509,7 @@
     .profile-details__right {
       width: 100%;
       align-items: center;
+      padding: 2rem 1rem;
     }
 
     .profile-details__right__top {
@@ -380,12 +525,20 @@
     }
 
     .profile-details__right__top__follow button {
-      width: 100%;
+      width: 90%;
     }
 
     .profile-details__right__middle {
       flex-direction: column;
       width: 100%;
+    }
+
+    .profile-details__right__middle__right {
+      gap: 0.2rem;
+    }
+
+    .profile-details__right__middle__right__follows-you {
+      background-color: var(--bg-solid-1);
     }
 
     .profile-details__right__middle-loader {

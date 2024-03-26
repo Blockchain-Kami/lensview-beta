@@ -33,8 +33,17 @@ const profileQueryGraphql = graphql(`
         posts
         comments
         reactions
+        publications
       }
       id
+      operations {
+        isFollowedByMe {
+          value
+        }
+        isFollowingMe {
+          value
+        }
+      }
     }
   }
 `);

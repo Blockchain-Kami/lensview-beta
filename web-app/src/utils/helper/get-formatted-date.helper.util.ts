@@ -73,7 +73,7 @@ const getExactDate = (date: string) => {
   if (date) {
     return new Date(date).toLocaleDateString("en-GB", {
       day: "numeric",
-      month: "long",
+      month: "short",
       year: "numeric"
     });
   } else {

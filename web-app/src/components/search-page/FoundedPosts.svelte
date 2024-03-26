@@ -23,6 +23,7 @@
   import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
   import getRelatedPostPubIdsAppService from "../../services/app/get-related-post-pub-ids.app.service";
   import { page } from "$app/stores";
+  import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
   const { VITE_APP_LENS_ID } = import.meta.env;
 
   type KeyStringValBoolean = {
@@ -40,6 +41,10 @@
     id: string
   ) => {
     isInView[id] = event.detail.inView;
+  };
+
+  const getHandle = (comment: CommentsPublicationLensModel) => {
+    return comment.by?.handle?.fullHandle.substring(5);
   };
 </script>
 
@@ -163,30 +168,29 @@
                     </div>
                   {:else}
                     <div class="CenterRowFlex mobile__card__post">
-                      <div class="mobile__card__post__user-pic">
+                      <a
+                        href={`/profile/${getHandle(comments[0])}`}
+                        class="mobile__card__post__user-pic"
+                      >
                         <img
                           src={getPictureURLUtil(
-                            comments[0]?.by?.metadata?.picture?.optimized
-                              ?.uri,
+                            comments[0]?.by?.metadata?.picture?.optimized?.uri,
                             comments[0]?.by?.ownedBy?.address
                           )}
                           alt="avatar"
                         />
-                      </div>
+                      </a>
                       <div class="mobile__card__post__info">
                         <div
                           class="CenterRowFlex mobile__card__post__info__head"
                         >
-                          <div class="mobile__card__post__info__head__username">
-                            {comments[0]?.by?.handle?.fullHandle.substring(
-                              5,
-                              17
-                            )}
-                            {comments[0]?.by?.handle?.fullHandle.length >
-                            12
-                              ? "..."
-                              : ""}
-                          </div>
+                          <a
+                            href={`/profile/${getHandle(comments[0])}`}
+                            class="mobile__card__post__info__head__username"
+                          >
+                            {getHandle(comments[0]).substring(0, 12)}
+                            {getHandle(comments[0]).length > 12 ? "..." : ""}
+                          </a>
                           {#if comments[0]?.by?.id === VITE_APP_LENS_ID}
                             <Tooltip
                               content="This post was made by an anonymous user!"
@@ -221,9 +225,7 @@
                             </div>
                           </div>
                           <div class="mobile__card__post__info__head__time">
-                            {getFormattedDateHelperUtil(
-                              comments[0]?.createdAt
-                            )}
+                            {getFormattedDateHelperUtil(comments[0]?.createdAt)}
                           </div>
                         </div>
                         <div class="mobile__card__post__info__body">
@@ -350,21 +352,26 @@
                     <div class="CenterRowFlex card__body__post__loader" />
                   {:then comments}
                     <div class="CenterRowFlex card__body__post">
-                      <div class="card__body__post__pic">
+                      <a
+                        href={`/profile/${getHandle(comments[0])}`}
+                        class="card__body__post__pic"
+                      >
                         <img
                           src={getPictureURLUtil(
-                            comments[0]?.by?.metadata?.picture?.optimized
-                              ?.uri,
+                            comments[0]?.by?.metadata?.picture?.optimized?.uri,
                             comments[0]?.by?.ownedBy?.address
                           )}
                           alt="avatar"
                         />
-                      </div>
+                      </a>
                       <div class="card__body__post__info">
                         <div class="CenterRowFlex card__body__post__info__head">
-                          <div class="card__body__post__info__head__handle">
-                            {comments[0]?.by?.handle?.fullHandle}
-                          </div>
+                          <a
+                            href={`/profile/${getHandle(comments[0])}`}
+                            class="card__body__post__info__head__handle"
+                          >
+                            {getHandle(comments[0])}
+                          </a>
                           {#if comments[0]?.by?.id === VITE_APP_LENS_ID}
                             <Tooltip
                               content="This post was made by an anonymous user!"
@@ -400,9 +407,7 @@
                           </div>
                           <div class="dot" />
                           <div class="card__body__post__info__head__time">
-                            {getFormattedDateHelperUtil(
-                              comments[0]?.createdAt
-                            )}
+                            {getFormattedDateHelperUtil(comments[0]?.createdAt)}
                           </div>
                         </div>
                         <div class="card__body__post__info__content">

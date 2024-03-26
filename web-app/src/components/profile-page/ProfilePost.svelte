@@ -219,9 +219,13 @@
   };
 
   const getMainPostUrl = (post: CommentsPublicationLensModel) => {
-    return post?.metadata?.attributes.find(
+    const url = post?.metadata?.attributes.find(
       (item) => item.key === AttributeKeyType.mainPostUrl
     )?.value;
+
+    if (url === "empty") return undefined;
+
+    return url;
   };
 </script>
 
@@ -411,14 +415,16 @@
                 </div>
               </div>
               <div class="card__footer__right">
-                <a
-                  href={getMainPostUrl(post)}
-                  target="_blank"
-                  class="CenterRowFlex card__footer__right__url"
-                >
-                  <Icon d={redirect} />
-                  {getMainPostUrl(post)?.substring(0, 30)}...
-                </a>
+                {#if getMainPostUrl(post)}
+                  <a
+                    href={getMainPostUrl(post)}
+                    target="_blank"
+                    class="CenterRowFlex card__footer__right__url"
+                  >
+                    <Icon d={redirect} />
+                    {getMainPostUrl(post)?.substring(0, 30)}...
+                  </a>
+                {/if}
               </div>
             </div>
           </div>
@@ -552,36 +558,6 @@
     gap: 0.5rem;
   }
 
-  .card__right__content__body__top__right__share {
-    border-radius: 50%;
-    background: var(--bg-solid-2);
-    padding: 0.5rem;
-  }
-
-  .card__right__content__body__top__right__reaction {
-    background: var(--bg-solid-2);
-    border-radius: 6.8px;
-    opacity: 70%;
-  }
-
-  .card__right__content__body__top__right__reaction__val {
-    padding: 0.5rem 0.7rem;
-    gap: 0.4rem;
-  }
-
-  .card__right__content__body__top__right__reaction__vertical-line {
-    border-left: 2px solid #ffffff45;
-    height: 21px;
-  }
-
-  .card__right__content__body__top__right__posts-count {
-    background: var(--bg-solid-2);
-    padding: 0.5rem 0.7rem;
-    gap: 0.5rem;
-    border-radius: 5.8px;
-    opacity: 85%;
-  }
-
   .card__right__content__body__top__right__more {
     position: relative;
   }
@@ -610,23 +586,9 @@
     border-radius: 50%;
   }
 
-  .card__right__content__body__time {
-    font-size: var(--small-font-size);
-    color: var(--text-accent);
-    margin-top: -0.2rem;
-    margin-bottom: 0.5rem;
-  }
-
   .card__right__content__body__content {
     overflow-wrap: break-word;
     overflow: hidden;
-  }
-
-  .card__right__content__body__content__loader {
-    width: 100%;
-    height: 5rem;
-    border-radius: 10px;
-    margin-top: 1rem;
   }
 
   .card__footer {
@@ -638,12 +600,6 @@
 
   .card__footer__left {
     gap: 0.5rem;
-  }
-
-  .card__footer__left__loader {
-    width: 15rem;
-    height: 2rem;
-    border-radius: 5px;
   }
 
   .card__footer__left__reaction {
@@ -715,11 +671,6 @@
 
     .card__right {
       width: 100%;
-    }
-
-    .card__right__content {
-      //height: auto;
-      //max-height: 11rem;
     }
   }
 </style>

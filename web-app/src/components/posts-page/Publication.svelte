@@ -35,6 +35,7 @@
   import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
   import getPictureURLUtil from "../../utils/get-picture-URL.util";
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
   const { VITE_APP_LENS_ID } = import.meta.env;
 
   const { addNotification } = getNotificationsContext();
@@ -53,11 +54,13 @@
 
   $: if (postPubId !== $page.data.postPubId) {
     postPubId = $page.data.postPubId;
-    promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
-      postPubId,
-      LimitType.Ten,
-      CommentFilterType.CommentsById
-    );
+    if (postPubId !== undefined) {
+      promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
+        postPubId,
+        LimitType.Ten,
+        CommentFilterType.CommentsById
+      );
+    }
   }
 
   onMount(() => {
@@ -212,6 +215,10 @@
     downVoteCount = passedDownVoteCount;
     return "";
   };
+
+  const getHandle = (comment: CommentsPublicationLensModel) => {
+    return comment.by?.handle?.fullHandle.substring(5);
+  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -229,7 +236,7 @@
     </div>
   {:then comments}
     <div class="comment">
-      <div class="comment__pic">
+      <a href={`/profile/${getHandle(comments[0])}`} class="comment__pic">
         <img
           src={getPictureURLUtil(
             comments[0]?.by?.metadata?.picture?.optimized?.uri,
@@ -237,19 +244,25 @@
           )}
           alt="avatar"
         />
-      </div>
+      </a>
       <div class="comment__body">
         <div class="CenterRowFlex comment__body__top">
           <div class="CenterRowFlex comment__body__top__left">
             {#if comments[0]?.by?.metadata?.displayName !== undefined}
-              <div class="comment__body__top__left__name">
+              <a
+                href={`/profile/${getHandle(comments[0])}`}
+                class="comment__body__top__left__name"
+              >
                 {comments[0]?.by?.metadata?.displayName}
-              </div>
+              </a>
               <div class="comment__body__top__left__dot" />
             {/if}
-            <div class="comment__body__top__left__handle">
-              {comments[0]?.by?.handle?.fullHandle.substring(5)}
-            </div>
+            <a
+              href={`/profile/${getHandle(comments[0])}`}
+              class="comment__body__top__left__handle"
+            >
+              {getHandle(comments[0])}
+            </a>
             {#if comments[0]?.by?.id === VITE_APP_LENS_ID}
               <Tooltip
                 content="This post was made by an anonymous user!"
@@ -379,7 +392,6 @@
 <Login bind:showLoginModal />
 
 <!----------------------------------------------------------------->
-
 
 <!----------------------------- STYLE ----------------------------->
 <style lang="scss">
