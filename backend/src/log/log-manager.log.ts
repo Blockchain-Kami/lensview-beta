@@ -1,5 +1,5 @@
 import winston from "winston";
-import { getNamespace } from "continuation-local-storage";
+import { getNamespace } from "cls-hooked";
 import { logConfiguration } from "./log-config.log";
 
 const winstonLogger = winston.createLogger(logConfiguration);
@@ -20,11 +20,11 @@ export const logger = {
   warn: (message: string) => {
     winstonLogger.warn(formatMessage(message));
   },
-  verbose: (message: string) => {
-    winstonLogger.verbose(formatMessage(message));
-  },
   info: (message: string) => {
     winstonLogger.info(formatMessage(message));
+  },
+  verbose: (message: string) => {
+    winstonLogger.verbose(formatMessage(message));
   },
   debug: (message: string) => {
     winstonLogger.debug(formatMessage(message));

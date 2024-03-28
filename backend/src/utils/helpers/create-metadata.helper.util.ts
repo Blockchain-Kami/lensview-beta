@@ -15,6 +15,7 @@ import {
   TAG_USER_POST,
   TAG_USER_PUB
 } from "../../config/env.config";
+import { logger } from "../../log/log-manager.log";
 import { createTagsHelperUtil } from "./helpers.helpers.util";
 import { MetadataObjectModel } from "../../models/metadata-object.model";
 
@@ -26,6 +27,13 @@ import { MetadataObjectModel } from "../../models/metadata-object.model";
  * @return {any} - The generated metadata.
  */
 export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForUrlHelperUtil: Execution Started."
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForUrlHelperUtil: Input Parameter: urlObj: " +
+      JSON.stringify(urlObj)
+  );
   let tags: string[];
   const userTags = urlObj.tags;
   const URLtags = [urlObj.hashedURL, urlObj.hostname, urlObj.domain];
@@ -41,7 +49,7 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
 
   tags = [...new Set(tags)];
 
-  return link({
+  const linkMetadata = link({
     locale: "en-US",
     tags: tags,
     appId: SOURCE_APP_ID,
@@ -74,6 +82,14 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
     // "encryptedWith": PublicationMetadataLitEncryption,
     // "hideFromFeed": true,
   });
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForUrlHelperUtil: Metadata for Link Publication: " +
+      JSON.stringify(linkMetadata)
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForUrlHelperUtil: Execution Ended."
+  );
+  return linkMetadata;
 };
 
 export const createMetaDataForAnonymousCommentHelperUtil = (
@@ -82,13 +98,24 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
   mainPostImageUrl: string,
   isThisComment: boolean
 ) => {
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Execution Started."
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Input Parameters: " +
+      JSON.stringify({
+        comment,
+        mainPostImageUrl,
+        isThisComment
+      })
+  );
   const tags = [TAG_ANONYMOUS_PUB];
   if (isThisComment) {
     tags.push(TAG_USER_COMMENT);
   } else {
     tags.push(TAG_USER_POST);
   }
-  return textOnly({
+  const textOnlyMetadata = textOnly({
     locale: "en-US",
     tags,
     appId: SOURCE_APP_ID,
@@ -129,12 +156,27 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
     // encryptedWith: PublicationMetadataLitEncryption,
     // hideFromFeed: false,
   });
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Metadata for Comment Publication: " +
+      JSON.stringify(textOnlyMetadata)
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Execution Ended."
+  );
+  return textOnlyMetadata;
 };
 
 export const createMetaDataForImageCommentHelperUtil = (
   urlObj: MetadataObjectModel
 ) => {
-  return image({
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Execution Started."
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Input Parameters: " +
+      JSON.stringify(urlObj)
+  );
+  const imageMetadata = image({
     locale: "en-US",
     tags: [TAG_IMAGE_PUB],
     appId: SOURCE_APP_ID,
@@ -182,4 +224,12 @@ export const createMetaDataForImageCommentHelperUtil = (
     // hideFromFeed: true,
     // encryptedWith: PublicationMetadataLitEncryption,
   });
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Metadata for Comment Publication: " +
+      JSON.stringify(imageMetadata)
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Execution Ended."
+  );
+  return imageMetadata;
 };

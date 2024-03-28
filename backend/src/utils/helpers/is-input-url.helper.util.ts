@@ -1,4 +1,5 @@
 import { URL } from "url";
+import { logger } from "../../log/log-manager.log";
 
 /**
  * Checks if the input string is a valid URL.
@@ -7,6 +8,13 @@ import { URL } from "url";
  * @returns The input string if it is a valid URL, otherwise null.
  */
 export const isInputTypeURLHelperUtil = (url: string) => {
+  logger.info(
+    "is-input-url.helper.util.ts: isInputTypeURLHelperUtil: Execution Started"
+  );
+  logger.info(
+    "is-input-url.helper.util.ts: isInputTypeURLHelperUtil: Function Input Parameters: " +
+      url
+  );
   let urlRequest = url;
   try {
     // remove whitespaces and the fragment(#) part of the URL
@@ -29,10 +37,21 @@ export const isInputTypeURLHelperUtil = (url: string) => {
     }
     // make the string a URL object if possible, otherwise throw an error
     new URL(urlRequest);
+    logger.info(
+      "is-input-url.helper.util.ts: isInputTypeURLHelperUtil: Input Type is URL. urlRequest object: " +
+        JSON.stringify(urlRequest)
+    );
   } catch (error) {
+    logger.info(
+      "is-input-url.helper.util.ts: isInputTypeURLHelperUtil: Input Type is not URL. error: " +
+        error
+    );
     // return null if error was thrown
     return null;
   }
+  logger.info(
+    "is-input-url.helper.util.ts: isInputTypeURLHelperUtil: Execution Completed"
+  );
   return urlRequest;
 };
 

@@ -3,6 +3,7 @@ import { NFT_STORAGE_TOKEN } from "../../config/env.config";
 import { NFTStorage, Blob, CIDString } from "nft.storage";
 import { minimal_args } from "../../config/puppetteer.config";
 import { InternalServerError } from "../../errors/internal-server-error.error";
+import { logger } from "../../log/log-manager.log";
 // import { CIDString, Web3Storage, File } from "web3.storage";
 // import { Blob } from "buffer";
 
@@ -13,20 +14,34 @@ import { InternalServerError } from "../../errors/internal-server-error.error";
  * @return {Promise<string>} - A promise that resolves to the URL of the uploaded image on IPFS.
  */
 export const fetchScreenshotAndUploadToIPFSJobUtil = async (url: string) => {
+  logger.info(
+    "fetch-screenshot-and-upload-to-ipfs.job.ts: fetchScreenshotAndUploadToIPFSJobUtil: Execution Started."
+  );
+  logger.info(
+    "fetch-screenshot-and-upload-to-ipfs.job.ts: fetchScreenshotAndUploadToIPFSJobUtil: URL: " +
+      url
+  );
   // const imgName = "image.jpg";
   const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
 
   try {
     const screenshot = await Screenshot(url);
-    console.log("Screenshot taken successfully");
     const screenshotBlob = new Blob([screenshot]);
     // const file = new File([screenshotBlob as BlobPart], imgName);
     // const client = new Web3Storage({ token: WEB3STORAGE_TOKEN });
     // const imgCID = await client.put([file], { name: imgName });
     const imgCID = await client.storeBlob(screenshotBlob);
-    console.log("Screenshot image stored: " + makeGatewayURLImage(imgCID));
+    const imgCIDURL = makeGatewayURLImage(imgCID);
+    logger.info(
+      "fetch-screenshot-and-upload-to-ipfs.job.ts: fetchScreenshotAndUploadToIPFSJobUtil: Execution Ended. Image CID: " +
+        imgCIDURL
+    );
     return makeGatewayURLImage(imgCID);
   } catch (error) {
+    logger.error(
+      "fetch-screenshot-and-upload-to-ipfs.job.ts: fetchScreenshotAndUploadToIPFSJobUtil: Execution Ended. Error in Execution: " +
+        error
+    );
     throw new InternalServerError(
       "Error while uploading screenshot to IPFS: " + error,
       500,
@@ -54,7 +69,17 @@ const makeGatewayURLImage = (imgCID: CIDString) => {
  * @throws {InternalServerError} If there is an error while taking the screenshot.
  */
 const Screenshot = async (url: string) => {
+  logger.info(
+    "fetch-screenshot-and-upload-to-ipfs.job.ts: Screenshot: Execution Started."
+  );
+  logger.info(
+    "fetch-screenshot-and-upload-to-ipfs.job.ts: Screenshot: Fetching screenshot for URL: " +
+      url
+  );
   try {
+    logger.info(
+      "fetch-screenshot-and-upload-to-ipfs.job.ts: Screenshot: Lauching Puppeteer"
+    );
     const browser = await puppeteer.launch({
       headless: true,
       args: minimal_args
@@ -72,15 +97,25 @@ const Screenshot = async (url: string) => {
         request.continue();
       }
     });
-
+    logger.info(
+      "fetch-screenshot-and-upload-to-ipfs.job.ts: Screenshot: Navigating to URL: " +
+        url
+    );
     await page.goto(url, { waitUntil: "networkidle2" });
     await page.setViewport({ width: 1400, height: 3000 });
     await page.waitForTimeout(3000);
     const screenshot = await page.screenshot({ type: "jpeg" });
     await page.close();
     await browser.close();
+    logger.info(
+      "fetch-screenshot-and-upload-to-ipfs.job.ts: Screenshot: Execution Ended. Screenshot taken successfully."
+    );
     return screenshot;
   } catch (error) {
+    logger.error(
+      "fetch-screenshot-and-upload-to-ipfs.job.ts: Screenshot: Execution Ended. Error in taking screenshot: " +
+        error
+    );
     throw new InternalServerError(
       "Error while taking screenshot",
       500,
