@@ -10,10 +10,11 @@
   import getPictureURLUtil from "../../utils/get-picture-URL.util";
   import { profileUserStore } from "../../stores/user/profile.user.store";
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
-  import commentOnChainPublicationUtil from "../../utils/publications/comment-onchain.publication.util";
+  // import commentOnChainPublicationUtil from "../../utils/publications/comment-onchain.publication.util";
   import updateCommentAnonymouslyAppService from "../../services/app/update-comment-anonymously.app.service";
   import { mainPostImageUrlStore } from "../../stores/main-post-image-url.store";
   import { mainPostUrlStore } from "../../stores/main-post-url.store";
+  import commentOnMomokaPublicationUtil from "../../utils/publications/comment-on-momoka.publication.util";
   const { VITE_USER_COMMENT } = import.meta.env;
   const { VITE_USER_POST } = import.meta.env;
 
@@ -118,7 +119,7 @@
         });
         unsub2();
 
-        await commentOnChainPublicationUtil(
+        await commentOnMomokaPublicationUtil(
           pubId,
           userEnteredContent,
           postOrCommentHash,
