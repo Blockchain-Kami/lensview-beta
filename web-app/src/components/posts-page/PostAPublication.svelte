@@ -10,10 +10,10 @@
   import getPictureURLUtil from "../../utils/get-picture-URL.util";
   import { profileUserStore } from "../../stores/user/profile.user.store";
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
-  // import commentOnChainPublicationUtil from "../../utils/publications/comment-onchain.publication.util";
   import updateCommentAnonymouslyAppService from "../../services/app/update-comment-anonymously.app.service";
   import { mainPostImageUrlStore } from "../../stores/main-post-image-url.store";
   import { mainPostUrlStore } from "../../stores/main-post-url.store";
+  import commentOnMomokaLensProfileManagerPublicationUtil from "../../utils/publications/comment-on-momoka-lens-profile-manager.publication.util";
   import commentOnMomokaPublicationUtil from "../../utils/publications/comment-on-momoka.publication.util";
   const { VITE_USER_COMMENT } = import.meta.env;
   const { VITE_USER_POST } = import.meta.env;
@@ -119,13 +119,30 @@
         });
         unsub2();
 
-        await commentOnMomokaPublicationUtil(
-          pubId,
-          userEnteredContent,
-          postOrCommentHash,
-          mainPostUrl,
-          mainPostImageUrl
-        );
+        let isSignLessEnabled = false;
+        const unsub3 = profileUserStore.subscribe((_profile) => {
+          isSignLessEnabled = !!_profile?.signless;
+        });
+        unsub3;
+
+        if (isSignLessEnabled) {
+          await commentOnMomokaLensProfileManagerPublicationUtil(
+            pubId,
+            userEnteredContent,
+            postOrCommentHash,
+            mainPostUrl,
+            mainPostImageUrl
+          );
+        } else {
+          await commentOnMomokaPublicationUtil(
+            pubId,
+            userEnteredContent,
+            postOrCommentHash,
+            mainPostUrl,
+            mainPostImageUrl
+          );
+        }
+
         isPublishing = false;
         userEnteredContent = "";
         reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());

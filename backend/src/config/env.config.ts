@@ -26,4 +26,4 @@ export const TAG_USER_PUB = process.env.TAG_USER_PUB as string;
 export const TAG_ANONYMOUS_PUB = process.env.TAG_ANONYMOUS_PUB as string;
 export const TAG_USER_POST = process.env.TAG_USER_POST as string;
 export const TAG_USER_COMMENT = process.env.TAG_USER_COMMENT as string;
-export const POST_AND_COMMENT_CONFIG = POST_AND_COMMENT_TYPES.ON_CHAIN;
+export const POST_AND_COMMENT_CONFIG = POST_AND_COMMENT_TYPES.PROFILE_MANAGER;
