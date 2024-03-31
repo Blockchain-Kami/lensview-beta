@@ -23,6 +23,8 @@
   import { reloadAPublication } from "../../stores/reload-publication.store";
   import { onMount } from "svelte";
   import unfollowFollowUtil from "../../utils/follow/unfollow.follow.util";
+  import followLensProfileManagerFollowUtil from "../../utils/follow/follow-lens-profile-manager.follow.util";
+  import unfollowLensProfileManagerFollowUtil from "../../utils/follow/unfollow-lens-profile-manager.follow.util";
 
   let showLoginModal = false;
   const { addNotification } = getNotificationsContext();
@@ -48,7 +50,17 @@
     } else {
       disableActive = true;
       try {
-        await followFollowUtil($page.data.profileId);
+        let isSignLessEnabled = false;
+        const unsub3 = profileUserStore.subscribe((_profile) => {
+          isSignLessEnabled = !!_profile?.signless;
+        });
+        unsub3;
+
+        if (isSignLessEnabled) {
+          await followLensProfileManagerFollowUtil($page.data.profileId);
+        } else {
+          await followFollowUtil($page.data.profileId);
+        }
         isFollowing = true;
         disableActive = false;
       } catch (_error) {
@@ -77,7 +89,17 @@
     } else {
       disableActive = true;
       try {
-        await unfollowFollowUtil($page.data.profileId);
+        let isSignLessEnabled = false;
+        const unsub3 = profileUserStore.subscribe((_profile) => {
+          isSignLessEnabled = !!_profile?.signless;
+        });
+        unsub3;
+
+        if (isSignLessEnabled) {
+          await unfollowLensProfileManagerFollowUtil($page.data.profileId);
+        } else {
+          await unfollowFollowUtil($page.data.profileId);
+        }
         isFollowing = false;
         disableActive = false;
       } catch (_error) {
