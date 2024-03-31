@@ -36,7 +36,7 @@
   let isContentInvalid = true;
   let showLoginModal = false;
   export let userEnteredUrl = "";
-  let isUrlInvalid = true;
+  export let isUrlInvalid = true;
   let urlInvalidReason = "";
   let showGetTestMaticModal = false;
 
@@ -325,7 +325,7 @@
         <div class="CenterRowFlex footer__right">
           <button
             on:click={postAnonymously}
-            disabled={isContentInvalid}
+            disabled={isContentInvalid || isUrlInvalid}
             class="btn-alt"
             style="--btn-alt-color: #1e4748;"
           >
