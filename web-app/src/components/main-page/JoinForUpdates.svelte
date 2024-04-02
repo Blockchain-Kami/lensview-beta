@@ -3,7 +3,7 @@
   import { backInOut } from "svelte/easing";
   import Twitter from "$lib/assets/Twitter.svg";
   import Linkedin from "$lib/assets/Linkedin.svg";
-  import Mail from "$lib/assets/Mail.svg";
+  import Substack from "$lib/assets/Substack.svg";
   import Discord from "$lib/assets/Discord.svg";
   import Instagram from "$lib/assets/Instagram.svg";
   import Reddit from "$lib/assets/Reddit.svg";
@@ -40,8 +40,12 @@
         <a href="https://www.linkedin.com/company/lensviewio" target="_blank">
           <img src={Linkedin} alt="" />
         </a>
-        <a href="https://getwaitlist.com/waitlist/8129" target="_blank">
-          <img src={Mail} alt="" />
+        <a
+          class="body__substack"
+          href="https://lensview.substack.com/"
+          target="_blank"
+        >
+          <img src={Substack} alt="" />
         </a>
         <a href="https://www.instagram.com/lensview.io/" target="_blank">
           <img src={Instagram} alt="" />
@@ -82,5 +86,10 @@
   .body img {
     width: 4rem;
     height: 4rem;
+  }
+
+  .body__substack {
+    background: white;
+    border-radius: 50px;
   }
 </style>

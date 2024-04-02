@@ -44,6 +44,8 @@ const profileQueryGraphql = graphql(`
           value
         }
       }
+      signless
+      sponsor
     }
   }
 `);

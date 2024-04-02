@@ -450,6 +450,10 @@
     background: #fff;
   }
 
+  .comment__body__top__left__name {
+    font-weight: var(--medium-font-weight);
+  }
+
   .comment__body__top__left__handle {
     padding: 0.2rem 0.5rem;
     background: var(--bg-solid-2);

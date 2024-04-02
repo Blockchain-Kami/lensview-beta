@@ -495,9 +495,14 @@
                 <div class="main-post__content__bottom__added-by__label">
                   Added by:
                 </div>
-                <div class="main-post__content__bottom__added-by__handle">
+                <a
+                  href={`/profile/${mainPostPub?.metadata?.attributes[0]?.value.substring(
+                    5
+                  )}`}
+                  class="main-post__content__bottom__added-by__handle"
+                >
                   {mainPostPub?.metadata?.attributes[0]?.value}
-                </div>
+                </a>
               </div>
             </div>
           </a>

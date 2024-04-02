@@ -16,9 +16,11 @@
   import GetTestMatic from "../GetTestMatic.svelte";
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
   import addUrlAppService from "../../services/app/add-url.app.service";
-  import commentOnChainPublicationUtil from "../../utils/publications/comment-onchain.publication.util";
   import createCommentAnonymouslyAppService from "../../services/app/create-comment-anonymously.app.service";
   import getRandomIdHelperUtil from "../../utils/helper/get-random-id.helper.util";
+  import commentOnMomokaPublicationUtil from "../../utils/publications/comment-on-momoka.publication.util";
+  import { profileUserStore } from "../../stores/user/profile.user.store";
+  import commentOnMomokaLensProfileManagerPublicationUtil from "../../utils/publications/comment-on-momoka-lens-profile-manager.publication.util";
   const { VITE_USER_POST } = import.meta.env;
 
   const { addNotification, removeNotification } = getNotificationsContext();
@@ -34,7 +36,7 @@
   let isContentInvalid = true;
   let showLoginModal = false;
   export let userEnteredUrl = "";
-  let isUrlInvalid = true;
+  export let isUrlInvalid = true;
   let urlInvalidReason = "";
   let showGetTestMaticModal = false;
 
@@ -115,24 +117,40 @@
         const { publicationID, mainPostImageUrl } = await addUrlAppService(
           userEnteredUrl
         );
-
         removeNotification(userPostNotificationId);
-        addNotification({
-          position: "top-right",
-          heading: "Metamask approval needed",
-          description:
-            "Kindly fulfill upcoming Metamask dialog request to seamlessly publish your post on LensView.",
-          type: signature,
-          removeAfter: 10000
-        });
 
-        await commentOnChainPublicationUtil(
-          publicationID,
-          userEnteredContent,
-          VITE_USER_POST,
-          userEnteredUrl,
-          mainPostImageUrl ? mainPostImageUrl : "empty"
-        );
+        let isSignLessEnabled = false;
+        const unsub3 = profileUserStore.subscribe((_profile) => {
+          isSignLessEnabled = !!_profile?.signless;
+        });
+        unsub3;
+
+        if (isSignLessEnabled) {
+          await commentOnMomokaLensProfileManagerPublicationUtil(
+            publicationID,
+            userEnteredContent,
+            VITE_USER_POST,
+            userEnteredUrl,
+            mainPostImageUrl ? mainPostImageUrl : "empty"
+          );
+        } else {
+          addNotification({
+            position: "top-right",
+            heading: "Metamask approval needed",
+            description:
+              "Kindly fulfill upcoming Metamask dialog request to seamlessly publish your post on LensView.",
+            type: signature,
+            removeAfter: 10000
+          });
+
+          await commentOnMomokaPublicationUtil(
+            publicationID,
+            userEnteredContent,
+            VITE_USER_POST,
+            userEnteredUrl,
+            mainPostImageUrl ? mainPostImageUrl : "empty"
+          );
+        }
 
         userEnteredContent = "";
         userEnteredUrl = "";
@@ -307,7 +325,7 @@
         <div class="CenterRowFlex footer__right">
           <button
             on:click={postAnonymously}
-            disabled={isContentInvalid}
+            disabled={isContentInvalid || isUrlInvalid}
             class="btn-alt"
             style="--btn-alt-color: #1e4748;"
           >

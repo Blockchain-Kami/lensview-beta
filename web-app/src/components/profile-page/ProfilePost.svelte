@@ -37,6 +37,7 @@
   import { reloadAPublication } from "../../stores/reload-publication.store";
   import { onMount } from "svelte";
   import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
+  import NoWebPageImg from "$lib/assets/NoWebPageImg.png";
 
   type PostMoreStatus = {
     [key: string]: boolean;
@@ -250,7 +251,16 @@
             <div class="card__left">
               <div
                 class="card__left__image"
-                style="background-image: url({imageUrl})"
+                style="background-image: url({imageUrl
+                  ? imageUrl
+                  : NoWebPageImg})"
+              />
+            </div>
+          {:catch _error}
+            <div class="card__left">
+              <div
+                class="card__left__image"
+                style="background-image: url({NoWebPageImg})"
               />
             </div>
           {/await}
@@ -411,7 +421,7 @@
                 </div>
                 <div class="CenterRowFlex card__footer__left__posts-count">
                   <Icon d={modeComment} />
-                  5
+                  {post?.stats?.comments}
                 </div>
               </div>
               <div class="card__footer__right">
@@ -511,7 +521,7 @@
     background: #1e4748;
     border-radius: 10px 10px 0 0;
     width: 100%;
-    //height: 11rem;
+    min-height: 10rem;
   }
 
   .card__right__content__pic {
@@ -529,7 +539,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    gap: 0.5rem;
+    gap: 1rem;
   }
 
   .card__right__content__body__top {
@@ -547,11 +557,20 @@
     background: #fff;
   }
 
+  .card__right__content__body__top__left__name {
+    font-weight: var(--medium-font-weight);
+  }
+
   .card__right__content__body__top__left__handle {
     padding: 0.2rem 0.5rem;
     background: var(--bg-solid-2);
     border-radius: 5px;
     color: var(--primary);
+  }
+
+  .card__right__content__body__top__left__date {
+    font-size: var(--small-font-size);
+    color: var(--text-accent);
   }
 
   .card__right__content__body__top__right {
@@ -589,6 +608,7 @@
   .card__right__content__body__content {
     overflow-wrap: break-word;
     overflow: hidden;
+    max-width: 75rem;
   }
 
   .card__footer {
@@ -671,6 +691,10 @@
 
     .card__right {
       width: 100%;
+    }
+
+    .card__right__content {
+      min-height: unset;
     }
   }
 </style>
