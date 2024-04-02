@@ -1,12 +1,13 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import { createNamespace } from "continuation-local-storage";
+import { createNamespace } from "cls-hooked";
 import { v4 as uuidv4 } from "uuid";
 import routes from "./routes/index.route";
 
 import { IS_PROD, PORT } from "./config/env.config";
 import { ALLOWED_ORIGINS } from "./config/app-config.config";
+import { logger } from "./log/log-manager.log";
 
 const app = express();
 const myRequest = createNamespace("lensview-app");
@@ -51,5 +52,5 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`LensView server started at http://localhost:${PORT}`);
+  logger.info(`LensView server started at http://localhost:${PORT}`);
 });

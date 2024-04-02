@@ -36,6 +36,7 @@
   import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
   import addReactionLensService from "../../services/lens/add-reaction.lens.service";
   import { mainPostImageUrlStore } from "../../stores/main-post-image-url.store";
+  import { mainPostUrlStore } from "../../stores/main-post-url.store";
 
   const { addNotification } = getNotificationsContext();
   let mainPostPubId = $page.data.mainPostPubId;
@@ -214,6 +215,13 @@
 
     return "";
   };
+
+  const updateMainPostUrlStore = (url: string | undefined) => {
+    if (url === undefined) mainPostUrlStore.setMainPostUrl("empty");
+    else mainPostUrlStore.setMainPostUrl(url);
+
+    return "";
+  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -263,6 +271,7 @@
             href={mainPostPub?.metadata?.sharingLink}
             target="_blank"
           >
+            {updateMainPostUrlStore(mainPostPub?.metadata?.sharingLink)}
             {updateMetaTagsTitle(mainPostPub?.metadata?.sharingLink)}
             <Icon d={redirect} />
             {mainPostPub?.metadata?.sharingLink.substring(0, 40)}
@@ -399,6 +408,7 @@
                 target="_blank"
                 class="CenterRowFlex"
               >
+                {updateMainPostUrlStore(mainPostPub?.metadata?.sharingLink)}
                 {updateMetaTagsTitle(mainPostPub?.metadata?.sharingLink)}
                 <div class="CenterRowFlex main-post__content__top__redirect">
                   <Icon d={redirect} />
@@ -485,9 +495,14 @@
                 <div class="main-post__content__bottom__added-by__label">
                   Added by:
                 </div>
-                <div class="main-post__content__bottom__added-by__handle">
+                <a
+                  href={`/profile/${mainPostPub?.metadata?.attributes[0]?.value.substring(
+                    5
+                  )}`}
+                  class="main-post__content__bottom__added-by__handle"
+                >
                   {mainPostPub?.metadata?.attributes[0]?.value}
-                </div>
+                </a>
               </div>
             </div>
           </a>
@@ -521,12 +536,12 @@
   }
 
   .tablet__main-post {
-    background: #123439;
+    background: var(--bg-solid-2);
     border-radius: 10.8px;
   }
 
   .tablet__main-post__loader {
-    background: #123439;
+    background: var(--bg-solid-2);
     width: 100%;
     border-radius: 10.8px;
   }
@@ -545,7 +560,7 @@
 
   .tablet__main-post__url {
     padding: 0.75rem;
-    background: #123439;
+    background: var(--bg-solid-2);
     justify-content: flex-start;
     gap: 0.5rem;
   }
@@ -618,7 +633,7 @@
 
   .tablet__main-post__info__bottom__added-by__handle {
     padding: 0.2rem 0.5rem;
-    background: #18393a;
+    background: var(--bg-solid-2);
     border-radius: 5px;
     color: var(--primary);
   }
@@ -689,7 +704,7 @@
   }
 
   .main-post__content__top {
-    background: #18393a;
+    background: var(--bg-solid-2);
     padding: 1rem;
     gap: 0.5rem;
     width: 100%;
@@ -711,7 +726,7 @@
   }
 
   .main-post__content__bottom__reaction {
-    background: #18393a;
+    background: var(--bg-solid-2);
     border-radius: 6.8px;
     opacity: 70%;
   }
@@ -727,7 +742,7 @@
   }
 
   .main-post__content__bottom__posts-count {
-    background: #18393a;
+    background: var(--bg-solid-2);
     padding: 0.5rem 0.7rem;
     gap: 0.5rem;
     border-radius: 5.8px;
@@ -736,7 +751,7 @@
 
   .main-post__content__bottom__share {
     border-radius: 50%;
-    background: #18393a;
+    background: var(--bg-solid-2);
     padding: 0.5rem;
   }
 
@@ -751,7 +766,7 @@
 
   .main-post__content__bottom__added-by__handle {
     padding: 0.2rem 0.5rem;
-    background: #18393a;
+    background: var(--bg-solid-2);
     border-radius: 5px;
     color: var(--primary);
   }

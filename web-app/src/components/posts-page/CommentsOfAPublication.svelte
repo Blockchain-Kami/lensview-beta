@@ -39,6 +39,7 @@
   import addReactionLensService from "../../services/lens/add-reaction.lens.service";
   import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
   import MediaQuery from "$lib/MediaQuery.svelte";
+  import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
   const { VITE_APP_LENS_ID } = import.meta.env;
 
   type CommentMoreStatus = {
@@ -246,6 +247,10 @@
     metaTagsDescription.setMetaTagsDescription(description);
     return "";
   };
+
+  const getHandle = (comment: CommentsPublicationLensModel) => {
+    return comment.by?.handle?.fullHandle.substring(5);
+  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -305,12 +310,12 @@
           </div>
         </div>
       {:then commentsData}
-        {#each commentsData?.items as comment, index}
+        {#each commentsData as comment, index}
           <a
             href={`/posts/${$page.data.mainPostPubId}/${comment?.id}`}
             class="comment"
           >
-            <div class="comment__pic">
+            <a href={`/profile/${getHandle(comment)}`} class="comment__pic">
               <img
                 src={getPictureURLUtil(
                   comment?.by?.metadata?.picture?.optimized?.uri,
@@ -318,12 +323,15 @@
                 )}
                 alt="avatar"
               />
-            </div>
+            </a>
             <div class="comment__body">
               <div class="CenterRowFlex comment__body__top">
                 <div class="CenterRowFlex comment__body__top__left">
                   {#if comment?.by?.metadata?.displayName !== undefined && comment?.by?.metadata?.displayName !== null}
-                    <div class="comment__body__top__left__name">
+                    <a
+                      href={`/profile/${getHandle(comment)}`}
+                      class="comment__body__top__left__name"
+                    >
                       {#if matches}
                         {comment?.by?.metadata?.displayName.substring(0, 5)}
                         {#if comment?.by?.metadata?.displayName.length > 5}..{/if}
@@ -331,12 +339,15 @@
                         {comment?.by?.metadata?.displayName.substring(0, 15)}
                         {#if comment?.by?.metadata?.displayName.length > 15}..{/if}
                       {/if}
-                    </div>
+                    </a>
                     <div class="comment__body__top__left__dot" />
                   {/if}
-                  <div class="comment__body__top__left__handle">
-                    {comment?.by?.handle?.fullHandle.substring(5)}
-                  </div>
+                  <a
+                    href={`/profile/${getHandle(comment)}`}
+                    class="comment__body__top__left__handle"
+                  >
+                    {getHandle(comment)}
+                  </a>
                   {#if comment?.by?.id === VITE_APP_LENS_ID}
                     <Tooltip
                       content="This post was made by an anonymous user!"
@@ -590,15 +601,19 @@
     background: #fff;
   }
 
+  .comment__body__top__left__name {
+    font-weight: var(--medium-font-weight);
+  }
+
   .comment__body__top__left__handle {
     padding: 0.2rem 0.5rem;
-    background: #18393a;
+    background: var(--bg-solid-2);
     border-radius: 5px;
     color: var(--primary);
   }
 
   .comment__body__top__left__anon-comment {
-    background: #132e2e;
+    background: var(--bg-solid-3);
     border-radius: 50%;
     padding: 0.25rem;
   }
@@ -614,7 +629,7 @@
   }
 
   .comment__body__top__right__reaction {
-    background: #18393a;
+    background: var(--bg-solid-2);
     border-radius: 6.8px;
     opacity: 70%;
   }
@@ -630,7 +645,7 @@
   }
 
   .comment__body__top__right__posts-count {
-    background: #18393a;
+    background: var(--bg-solid-2);
     padding: 0.5rem 0.7rem;
     gap: 0.5rem;
     border-radius: 5.8px;

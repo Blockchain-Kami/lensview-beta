@@ -1,6 +1,6 @@
+import type { AttributeKeyType } from "../../config/app-constants.config";
+
 export interface CommentsPublicationLensModel {
-  __typename: "PaginatedPublicationsResult";
-  items: {
     __typename: "Comment";
     id: string;
     createdAt: string;
@@ -25,6 +25,10 @@ export interface CommentsPublicationLensModel {
     metadata: {
       __typename: "TextOnlyMetadataV3";
       content: string;
+      attributes: {
+        value: string;
+        key: AttributeKeyType;
+      }[]
     };
     stats: {
       comments: number;
@@ -35,5 +39,8 @@ export interface CommentsPublicationLensModel {
       hasUpVoted: boolean;
       hasDownVoted: boolean;
     };
-  }[];
+    root: {
+      __typename: "Post";
+      id: string;
+    }
 }

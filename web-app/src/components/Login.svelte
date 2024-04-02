@@ -117,6 +117,7 @@
       await setProfileAuthenticationUtil();
       isLoggedInUserStore.setLoggedInStatus(true);
       loggingIn = false;
+      setReloadMethods();
       dialog.close();
       addNotification({
         position: "top-right",
@@ -277,7 +278,7 @@
 
   .head {
     justify-content: space-between;
-    background: #18393a;
+    background: var(--bg-solid-2);
     padding: 1.2rem;
     color: var(--primary);
     border-radius: 10px 10px 0 0;

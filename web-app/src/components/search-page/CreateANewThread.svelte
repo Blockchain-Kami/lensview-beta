@@ -24,6 +24,7 @@
 </section>
 
 <AddNewPost
+        isUrlInvalid={false}
   userEnteredUrl={$page.data.userEnteredUrlOrKeywords}
   bind:showAddNewPostModal
 />
