@@ -26,6 +26,7 @@
   import getPictureURLUtil from "../../utils/get-picture-URL.util";
   import getRelatedPostPubIdsAppService from "../../services/app/get-related-post-pub-ids.app.service";
   import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
+  import NoWebPageImg from "$lib/assets/NoWebPageImg.png";
   const { VITE_APP_LENS_ID } = import.meta.env;
 
   type KeyStringValBoolean = {
@@ -123,7 +124,9 @@
               {:then imageUrl}
                 <div
                   class="card__image"
-                  style="background-image: url({imageUrl})"
+                  style="background-image: url({imageUrl
+                    ? imageUrl
+                    : NoWebPageImg})"
                   class:card__image__hover-effect={isInView[mainPostPubId] &&
                     matches}
                 >
@@ -158,7 +161,7 @@
               {:catch _error}
                 <div
                   class="card__image"
-                  style="background-image: url('https://media.istockphoto.com/id/1392182937/vector/no-image-available-photo-coming-soon.jpg?s=170667a&w=0&k=20&c=HOCGNLwt3LkB92ZlyHAupxbwHY5X2143KDlbA-978dE=')"
+                  style="background-image: url({NoWebPageImg})"
                 />
               {/await}
               <div class="CenterRowFlex card__info">

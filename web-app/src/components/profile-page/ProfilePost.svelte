@@ -37,6 +37,7 @@
   import { reloadAPublication } from "../../stores/reload-publication.store";
   import { onMount } from "svelte";
   import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
+  import NoWebPageImg from "$lib/assets/NoWebPageImg.png";
 
   type PostMoreStatus = {
     [key: string]: boolean;
@@ -250,7 +251,16 @@
             <div class="card__left">
               <div
                 class="card__left__image"
-                style="background-image: url({imageUrl})"
+                style="background-image: url({imageUrl
+                  ? imageUrl
+                  : NoWebPageImg})"
+              />
+            </div>
+          {:catch _error}
+            <div class="card__left">
+              <div
+                class="card__left__image"
+                style="background-image: url({NoWebPageImg})"
               />
             </div>
           {/await}
@@ -547,7 +557,7 @@
     background: #fff;
   }
 
-  .card__right__content__body__top__left__name{
+  .card__right__content__body__top__left__name {
     font-weight: var(--medium-font-weight);
   }
 
@@ -651,12 +661,6 @@
     background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);
     background-size: 200% 100%;
     animation: 1s shine linear infinite;
-  }
-
-  @media only screen and (min-width: 1500px){
-    .card__right__content {
-      min-height: 15rem;
-    }
   }
 
   @media only screen and (max-width: 1024px) {
