@@ -243,203 +243,216 @@
         <div class="card__right card__right-loader" />
       </div>
     {:then postData}
-      {#each postData as post}
-        <a href={`/posts/${post?.root?.id}/${post?.id}`} class="card">
-          {#await getImageCommentLensService(post?.root?.id)}
-            <div class="card__left card__left-loader" />
-          {:then imageUrl}
-            <div class="card__left">
-              <div
-                class="card__left__image"
-                style="background-image: url({imageUrl
-                  ? imageUrl
-                  : NoWebPageImg})"
-              />
-            </div>
-          {:catch _error}
-            <div class="card__left">
-              <div
-                class="card__left__image"
-                style="background-image: url({NoWebPageImg})"
-              />
-            </div>
-          {/await}
-          <div class="card__right">
-            <div class="card__right__content">
-              <div class="card__right__content__pic">
-                <img
-                  src={getPictureURLUtil(
-                    post?.by?.metadata?.picture?.optimized?.uri,
-                    post?.by?.ownedBy?.address
-                  )}
-                  alt="avatar"
+      {#if postData.length > 0}
+        {#each postData as post}
+          <a href={`/posts/${post?.root?.id}/${post?.id}`} class="card">
+            {#await getImageCommentLensService(post?.root?.id)}
+              <div class="card__left card__left-loader" />
+            {:then imageUrl}
+              <div class="card__left">
+                <div
+                  class="card__left__image"
+                  style="background-image: url({imageUrl
+                    ? imageUrl
+                    : NoWebPageImg})"
                 />
               </div>
-              <div class="card__right__content__body">
-                <div class="CenterRowFlex card__right__content__body__top">
-                  <div
-                    class="CenterRowFlex card__right__content__body__top__left"
-                  >
-                    {#if post?.by?.metadata?.displayName !== undefined && post?.by?.metadata?.displayName !== null}
-                      <div class="card__right__content__body__top__left__name">
-                        {#if matches}
-                          {post?.by?.metadata?.displayName.substring(0, 5)}
-                          {#if post?.by?.metadata?.displayName.length > 5}..{/if}
-                        {:else}
-                          {post?.by?.metadata?.displayName.substring(0, 15)}
-                          {#if post?.by?.metadata?.displayName.length > 15}..{/if}
-                        {/if}
+            {:catch _error}
+              <div class="card__left">
+                <div
+                  class="card__left__image"
+                  style="background-image: url({NoWebPageImg})"
+                />
+              </div>
+            {/await}
+            <div class="card__right">
+              <div class="card__right__content">
+                <div class="card__right__content__pic">
+                  <img
+                    src={getPictureURLUtil(
+                      post?.by?.metadata?.picture?.optimized?.uri,
+                      post?.by?.ownedBy?.address
+                    )}
+                    alt="avatar"
+                  />
+                </div>
+                <div class="card__right__content__body">
+                  <div class="CenterRowFlex card__right__content__body__top">
+                    <div
+                      class="CenterRowFlex card__right__content__body__top__left"
+                    >
+                      {#if post?.by?.metadata?.displayName !== undefined && post?.by?.metadata?.displayName !== null}
+                        <div
+                          class="card__right__content__body__top__left__name"
+                        >
+                          {#if matches}
+                            {post?.by?.metadata?.displayName.substring(0, 5)}
+                            {#if post?.by?.metadata?.displayName.length > 5}..{/if}
+                          {:else}
+                            {post?.by?.metadata?.displayName.substring(0, 15)}
+                            {#if post?.by?.metadata?.displayName.length > 15}..{/if}
+                          {/if}
+                        </div>
+                        <div
+                          class="card__right__content__body__top__left__dot"
+                        />
+                      {/if}
+
+                      <div
+                        class="card__right__content__body__top__left__handle"
+                      >
+                        {post?.by?.handle?.fullHandle.substring(5)}
                       </div>
                       <div class="card__right__content__body__top__left__dot" />
-                    {/if}
-
-                    <div class="card__right__content__body__top__left__handle">
-                      {post?.by?.handle?.fullHandle.substring(5)}
+                      <div class="card__right__content__body__top__left__date">
+                        {getFormattedDateHelperUtil(post?.createdAt)}
+                      </div>
                     </div>
-                    <div class="card__right__content__body__top__left__dot" />
-                    <div class="card__right__content__body__top__left__date">
-                      {getFormattedDateHelperUtil(post?.createdAt)}
-                    </div>
-                  </div>
-                  <div
-                    class="CenterRowFlex card__right__content__body__top__right"
-                  >
-                    <div class="card__right__content__body__top__right__more">
-                      <button
-                        on:click={(event) => openClosePostMore(event, post?.id)}
-                      >
-                        <Icon d={moreVert} size="1.65em" />
-                      </button>
-                      {#if isPostMoreOpen[post?.id]}
-                        <div
-                          class="CenterColumnFlex card__right__content__body__more"
+                    <div
+                      class="CenterRowFlex card__right__content__body__top__right"
+                    >
+                      <div class="card__right__content__body__top__right__more">
+                        <button
+                          on:click={(event) =>
+                            openClosePostMore(event, post?.id)}
                         >
-                          <button
-                            on:click={(event) =>
-                              sharePost(event, post?.root?.id, post?.id)}
-                            class="CenterRowFlex card__right__content__body__more__share"
+                          <Icon d={moreVert} size="1.65em" />
+                        </button>
+                        {#if isPostMoreOpen[post?.id]}
+                          <div
+                            class="CenterColumnFlex card__right__content__body__more"
                           >
-                            <span
-                              class="CenterRowFlex card__right__content__body__more__share__icon"
+                            <button
+                              on:click={(event) =>
+                                sharePost(event, post?.root?.id, post?.id)}
+                              class="CenterRowFlex card__right__content__body__more__share"
                             >
-                              <Icon d={share} size="1.2em" />
-                            </span>
-                            Share
-                          </button>
-                        </div>
-                      {/if}
+                              <span
+                                class="CenterRowFlex card__right__content__body__more__share__icon"
+                              >
+                                <Icon d={share} size="1.2em" />
+                              </span>
+                              Share
+                            </button>
+                          </div>
+                        {/if}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div class="card__right__content__body__content">
-                  <!--eslint-disable-next-line svelte/no-at-html-tags -->
-                  {@html Autolinker.link(
-                    DOMPurify.sanitize(post?.metadata?.content),
-                    {
-                      className: "links"
-                    }
-                  )}
-                  <blockquote
-                    class="twitter-tweet"
-                    data-conversation="none"
-                    data-theme="dark"
-                  >
+                  <div class="card__right__content__body__content">
+                    <!--eslint-disable-next-line svelte/no-at-html-tags -->
+                    {@html Autolinker.link(
+                      DOMPurify.sanitize(post?.metadata?.content),
+                      {
+                        className: "links"
+                      }
+                    )}
+                    <blockquote
+                      class="twitter-tweet"
+                      data-conversation="none"
+                      data-theme="dark"
+                    >
+                      <a
+                        href={`https://twitter.com/username/status/${getLinkPreviewHtmlHelperUtil(
+                          DOMPurify.sanitize(post?.metadata?.content)
+                        )}`}>&nbsp;</a
+                      >
+                    </blockquote>
+                    <script
+                      async
+                      src="https://platform.twitter.com/widgets.js"
+                      charset="utf-8"
+                    ></script>
+                  </div>
+                </div>
+              </div>
+              <div class="CenterRowFlex card__footer">
+                <div class="CenterRowFlex card__footer__left">
+                  <div class="CenterRowFlex card__footer__left__reaction">
+                    {updateReactionDetails(post)}
+                    {#if reactionDetails[post?.id]["reaction"] === AppReactionType.UpVote}
+                      <button
+                        on:click={(event) =>
+                          callRemoveReaction(
+                            event,
+                            post?.id,
+                            AppReactionType.UpVote
+                          )}
+                        class="CenterRowFlex card__footer__left__reaction__val"
+                      >
+                        <Icon d={thumbUp} />
+                        {reactionDetails[post?.id]["upVoteCount"]}
+                      </button>
+                    {:else}
+                      <button
+                        on:click={(event) =>
+                          callAddReaction(
+                            event,
+                            post?.id,
+                            AppReactionType.UpVote
+                          )}
+                        class="CenterRowFlex card__footer__left__reaction__val"
+                      >
+                        <Icon d={thumbUpAlt} />
+                        {reactionDetails[post?.id]["upVoteCount"]}
+                      </button>
+                    {/if}
+                    <div class="card__footer__left__reaction__vertical-line" />
+                    {#if reactionDetails[post?.id]["reaction"] === AppReactionType.DownVote}
+                      <button
+                        on:click={(event) =>
+                          callRemoveReaction(
+                            event,
+                            post?.id,
+                            AppReactionType.DownVote
+                          )}
+                        class="CenterRowFlex card__footer__left__reaction__val"
+                      >
+                        <Icon d={thumbDown} />
+                        {reactionDetails[post?.id]["downVoteCount"]}
+                      </button>
+                    {:else}
+                      <button
+                        on:click={(event) =>
+                          callAddReaction(
+                            event,
+                            post?.id,
+                            AppReactionType.DownVote
+                          )}
+                        class="CenterRowFlex card__footer__left__reaction__val"
+                      >
+                        <Icon d={thumbDownAlt} />
+                        {reactionDetails[post?.id]["downVoteCount"]}
+                      </button>
+                    {/if}
+                  </div>
+                  <div class="CenterRowFlex card__footer__left__posts-count">
+                    <Icon d={modeComment} />
+                    {post?.stats?.comments}
+                  </div>
+                </div>
+                <div class="card__footer__right">
+                  {#if getMainPostUrl(post)}
                     <a
-                      href={`https://twitter.com/username/status/${getLinkPreviewHtmlHelperUtil(
-                        DOMPurify.sanitize(post?.metadata?.content)
-                      )}`}>&nbsp;</a
+                      href={getMainPostUrl(post)}
+                      target="_blank"
+                      class="CenterRowFlex card__footer__right__url"
                     >
-                  </blockquote>
-                  <script
-                    async
-                    src="https://platform.twitter.com/widgets.js"
-                    charset="utf-8"
-                  ></script>
+                      <Icon d={redirect} />
+                      {getMainPostUrl(post)?.substring(0, 30)}...
+                    </a>
+                  {/if}
                 </div>
               </div>
             </div>
-            <div class="CenterRowFlex card__footer">
-              <div class="CenterRowFlex card__footer__left">
-                <div class="CenterRowFlex card__footer__left__reaction">
-                  {updateReactionDetails(post)}
-                  {#if reactionDetails[post?.id]["reaction"] === AppReactionType.UpVote}
-                    <button
-                      on:click={(event) =>
-                        callRemoveReaction(
-                          event,
-                          post?.id,
-                          AppReactionType.UpVote
-                        )}
-                      class="CenterRowFlex card__footer__left__reaction__val"
-                    >
-                      <Icon d={thumbUp} />
-                      {reactionDetails[post?.id]["upVoteCount"]}
-                    </button>
-                  {:else}
-                    <button
-                      on:click={(event) =>
-                        callAddReaction(
-                          event,
-                          post?.id,
-                          AppReactionType.UpVote
-                        )}
-                      class="CenterRowFlex card__footer__left__reaction__val"
-                    >
-                      <Icon d={thumbUpAlt} />
-                      {reactionDetails[post?.id]["upVoteCount"]}
-                    </button>
-                  {/if}
-                  <div class="card__footer__left__reaction__vertical-line" />
-                  {#if reactionDetails[post?.id]["reaction"] === AppReactionType.DownVote}
-                    <button
-                      on:click={(event) =>
-                        callRemoveReaction(
-                          event,
-                          post?.id,
-                          AppReactionType.DownVote
-                        )}
-                      class="CenterRowFlex card__footer__left__reaction__val"
-                    >
-                      <Icon d={thumbDown} />
-                      {reactionDetails[post?.id]["downVoteCount"]}
-                    </button>
-                  {:else}
-                    <button
-                      on:click={(event) =>
-                        callAddReaction(
-                          event,
-                          post?.id,
-                          AppReactionType.DownVote
-                        )}
-                      class="CenterRowFlex card__footer__left__reaction__val"
-                    >
-                      <Icon d={thumbDownAlt} />
-                      {reactionDetails[post?.id]["downVoteCount"]}
-                    </button>
-                  {/if}
-                </div>
-                <div class="CenterRowFlex card__footer__left__posts-count">
-                  <Icon d={modeComment} />
-                  {post?.stats?.comments}
-                </div>
-              </div>
-              <div class="card__footer__right">
-                {#if getMainPostUrl(post)}
-                  <a
-                    href={getMainPostUrl(post)}
-                    target="_blank"
-                    class="CenterRowFlex card__footer__right__url"
-                  >
-                    <Icon d={redirect} />
-                    {getMainPostUrl(post)?.substring(0, 30)}...
-                  </a>
-                {/if}
-              </div>
-            </div>
-          </div>
-        </a>
-      {/each}
+          </a>
+        {/each}
+      {:else}
+        <div class="msg">This profile has no LensView post's yet!</div>
+      {/if}
+    {:catch _error}
+      <div class="msg">Something went wrong!</div>
     {/await}
   </section>
 </MediaQuery>
@@ -460,6 +473,14 @@
     padding: 1rem 1.5rem;
     border-radius: 10px;
     margin: 2rem;
+  }
+
+  .msg {
+    font-size: var(--medium-font-size);
+    color: var(--text-accent);
+    display: flex;
+    justify-content: center;
+    padding: 5rem 0;
   }
 
   .card {

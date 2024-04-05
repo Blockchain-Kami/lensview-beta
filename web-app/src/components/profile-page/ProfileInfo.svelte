@@ -462,6 +462,7 @@
     border-radius: 15px;
     justify-content: space-evenly;
     flex-wrap: wrap;
+    min-width: 33rem;
   }
 
   .stats__box {
