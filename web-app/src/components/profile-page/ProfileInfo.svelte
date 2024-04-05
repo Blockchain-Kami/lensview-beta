@@ -315,7 +315,7 @@
         <div class="CenterColumnFlex stats__box__right">
           <div class="stats__box__right__title">LensView Contribution</div>
           <div class="stats__box__right__value">
-            {response?.data?.profile?.stats?.publications}
+            {response?.data?.profile?.lensviewStats?.publications}
           </div>
         </div>
       </div>
@@ -462,6 +462,7 @@
     border-radius: 15px;
     justify-content: space-evenly;
     flex-wrap: wrap;
+    min-width: 33rem;
   }
 
   .stats__box {
