@@ -627,7 +627,7 @@
   }
 
   .card__right__content__body__content {
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
     overflow: hidden;
     max-width: 75rem;
   }
