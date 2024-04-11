@@ -19,21 +19,17 @@ import { getPolygonGasPriceHelperUtil } from "../utils/helpers/get-polygon-gas-p
 import { splitSignatureHelperUtil } from "../utils/helpers/split-signature.helper.utils";
 import { createContractHelperUtils } from "../utils/helpers/create-contract.helper.utils";
 import { hasTransactionBeenIndexedIndexerUtil } from "../utils/indexer/has-transaction-been-indexed.indexer.util";
-import { makeGatewayURLImage } from "../utils/jobs/fetch-screenshot-and-upload-to-ipfs.job.util";
-import { createMetaDataForImageCommentHelperUtil } from "../utils/helpers/create-metadata.helper.util";
+import { getCommentMethod } from "../config/app-config.config";
+import { uploadImageFromDisk } from "../utils/helpers/upload-image-from-disk.helper.util";
 import { httpStatusCodes } from "../config/app-constants.config";
 import {
   APP_ADDRESS,
   APP_LENS_HANDLE,
   APP_LENS_ID,
   LENS_HUB_CONTRACT_ADDRESS,
-  NFT_STORAGE_TOKEN,
   USE_GASLESS
 } from "../config/env.config";
 import { logger } from "../log/log-manager.log";
-import * as fs from "fs";
-import { Blob, NFTStorage } from "nft.storage";
-import { getCommentMethod } from "../config/app-config.config";
 
 /**
  * Adds an image to a post in the admin controller.
@@ -209,11 +205,14 @@ export const approveSignlessAdminController = async (
   }
 };
 
-export const updatePostImageController = async (
+export const updateMainPostImageController = async (
   req: Request,
   res: Response
 ) => {
   try {
+    logger.info(
+      "admin.controller.ts : updateMainPostImageController: Execution Started."
+    );
     const { url, filename } = req.body;
     const urlString = isInputTypeURLHelperUtil(url);
     const urlObj = preprocessURLAndCreateMetadataObjectHelperUtil(
@@ -225,18 +224,19 @@ export const updatePostImageController = async (
     const publicationExists = await relatedParentPublicationsLensService([
       urlObj.hashedURL
     ]);
-    const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
-    const image = fs.readFileSync(__dirname + "/" + filename + ".png");
-    const screenshotBlob = new Blob([image]);
-    const imgCID = await client.storeBlob(screenshotBlob);
-    urlObj.image = makeGatewayURLImage(imgCID);
-    const imageMetadata = createMetaDataForImageCommentHelperUtil(urlObj);
+    const imageMetadata = await uploadImageFromDisk(filename, urlObj);
     await getCommentMethod()(publicationExists.items[0].id, imageMetadata);
-    return res.status(200).send({
-      message: "Added"
+    logger.info(
+      "admin.controller.ts : updateMainPostImageController: Image Updated. Execution Ended."
+    );
+    return res.status(httpStatusCodes.OK).send({
+      message: "Image updated"
     });
   } catch (error) {
-    return res.status(200).send({
+    logger.info(
+      "admin.controller.ts : updateMainPostImageController: Failed. Execution Ended."
+    );
+    return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
       message: "Failed: " + error
     });
   }
