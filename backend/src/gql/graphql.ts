@@ -5799,6 +5799,41 @@ export type PublicationsQuery = {
   };
 };
 
+export type TextOnlyPublicationsQueryVariables = Exact<{
+  request: PublicationsRequest;
+}>;
+
+export type TextOnlyPublicationsQuery = {
+  __typename?: "Query";
+  publications: {
+    __typename?: "PaginatedPublicationsResult";
+    items: Array<
+      | {
+          __typename?: "Comment";
+          metadata:
+            | { __typename?: "ArticleMetadataV3" }
+            | { __typename?: "AudioMetadataV3" }
+            | { __typename?: "CheckingInMetadataV3" }
+            | { __typename?: "EmbedMetadataV3" }
+            | { __typename?: "EventMetadataV3" }
+            | { __typename?: "ImageMetadataV3" }
+            | { __typename?: "LinkMetadataV3" }
+            | { __typename?: "LiveStreamMetadataV3" }
+            | { __typename?: "MintMetadataV3" }
+            | { __typename?: "SpaceMetadataV3" }
+            | { __typename?: "StoryMetadataV3" }
+            | { __typename?: "TextOnlyMetadataV3"; content: any }
+            | { __typename?: "ThreeDMetadataV3" }
+            | { __typename?: "TransactionMetadataV3" }
+            | { __typename?: "VideoMetadataV3" };
+        }
+      | { __typename?: "Mirror" }
+      | { __typename?: "Post" }
+      | { __typename?: "Quote" }
+    >;
+  };
+};
+
 export type LensTransactionStatusQueryVariables = Exact<{
   request: LensTransactionStatusRequest;
 }>;
@@ -7366,6 +7401,111 @@ export const PublicationsDocument = {
     }
   ]
 } as unknown as DocumentNode<PublicationsQuery, PublicationsQueryVariables>;
+export const TextOnlyPublicationsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "TextOnlyPublications" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "request" }
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "PublicationsRequest" }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "publications" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "request" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "request" }
+                }
+              }
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "items" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "InlineFragment",
+                        typeCondition: {
+                          kind: "NamedType",
+                          name: { kind: "Name", value: "Comment" }
+                        },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "metadata" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "InlineFragment",
+                                    typeCondition: {
+                                      kind: "NamedType",
+                                      name: {
+                                        kind: "Name",
+                                        value: "TextOnlyMetadataV3"
+                                      }
+                                    },
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "content"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  TextOnlyPublicationsQuery,
+  TextOnlyPublicationsQueryVariables
+>;
 export const LensTransactionStatusDocument = {
   kind: "Document",
   definitions: [
