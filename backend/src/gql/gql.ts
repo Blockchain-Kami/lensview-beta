@@ -39,6 +39,8 @@ const documents = {
     types.GetPublicationsImageDocument,
   "\n  query Publications($request: PublicationsRequest!) {\n    publications(request: $request) {\n      items {\n        ... on Post {\n          id\n        }\n      }\n    }\n  }\n":
     types.PublicationsDocument,
+  "\n  query TextOnlyPublications($request: PublicationsRequest!) {\n    publications(request: $request) {\n      items {\n        ... on Comment {\n          metadata {\n            ... on TextOnlyMetadataV3 {\n              content\n            }\n          }\n        }\n      }\n    }\n  }\n":
+    types.TextOnlyPublicationsDocument,
   "\n  query lensTransactionStatus($request: LensTransactionStatusRequest!) {\n    lensTransactionStatus(request: $request) {\n      status\n      txHash\n      reason\n      extraInfo\n    }\n  }\n":
     types.LensTransactionStatusDocument
 };
@@ -135,6 +137,12 @@ export function graphql(
 export function graphql(
   source: "\n  query Publications($request: PublicationsRequest!) {\n    publications(request: $request) {\n      items {\n        ... on Post {\n          id\n        }\n      }\n    }\n  }\n"
 ): (typeof documents)["\n  query Publications($request: PublicationsRequest!) {\n    publications(request: $request) {\n      items {\n        ... on Post {\n          id\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query TextOnlyPublications($request: PublicationsRequest!) {\n    publications(request: $request) {\n      items {\n        ... on Comment {\n          metadata {\n            ... on TextOnlyMetadataV3 {\n              content\n            }\n          }\n        }\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query TextOnlyPublications($request: PublicationsRequest!) {\n    publications(request: $request) {\n      items {\n        ... on Comment {\n          metadata {\n            ... on TextOnlyMetadataV3 {\n              content\n            }\n          }\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
