@@ -16,7 +16,8 @@ import { getCommentMethod, getPostMethod } from "../config/app-config.config";
 import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
 import { getTextOnlyCommentsOnPublicationLensService } from "../services/lens/get-text-only-comments-on-publication.lens.service";
 import { getTextOnlyCommentsInputDataHelperUtil } from "../utils/helpers/get-text-only-comments-input-data.helper.util";
-import { ayfieTextSummaryService } from "../services/ayfie-text-summary.service";
+// import { ayfieTextSummaryService } from "../services/ayfie-text-summary.service";
+import { geminiTextSummartService } from "../services/gemini-text-summart.service";
 import { httpStatusCodes } from "../config/app-constants.config";
 import { APP_LENS_HANDLE } from "../config/env.config";
 import { imageQueue } from "../jobs/add-image-queue.job";
@@ -200,6 +201,7 @@ export const getSummaryCommentController = async (
     await getTextOnlyCommentsOnPublicationLensService(publicationId);
   const textOnlyCommentsInputString =
     getTextOnlyCommentsInputDataHelperUtil(textOnlyComments);
-  const summary = await ayfieTextSummaryService(textOnlyCommentsInputString);
+  // const summary = await ayfieTextSummaryService(textOnlyCommentsInputString);
+  const summary = await geminiTextSummartService(textOnlyCommentsInputString);
   res.status(httpStatusCodes.OK).send(summary);
 };

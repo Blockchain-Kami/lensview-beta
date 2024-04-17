@@ -1,4 +1,5 @@
 import axios from "axios";
+import { AYFIE_API_KEY } from "../config/env.config";
 export const ayfieTextSummaryService = async (text: string) => {
   const data = JSON.stringify({
     language: "auto",
@@ -11,7 +12,7 @@ export const ayfieTextSummaryService = async (text: string) => {
     maxBodyLength: Infinity,
     url: "https://portal.ayfie.com/api/summarize",
     headers: {
-      "X-API-Key": "HhhAIjxIXMjZOvpLNsVAYGbYLcgrLdIOLMCRGGspDqdGWfkuGN",
+      "X-API-Key": AYFIE_API_KEY,
       "Content-Type": "application/json"
     },
     data: data
