@@ -1,14 +1,24 @@
 import { GetTextOnlyCommentsLensModel } from "../../models/lens/get-text-only-comments.lens.model";
 
-export const getTextOnlyCommentsInputDataHelperUtil = (
+export const formatTextOnlyInputDataHelperUtil = (
   texOnlyComments: GetTextOnlyCommentsLensModel
 ) => {
-  let inputString = "";
-  texOnlyComments.items.forEach((comment) => {
+  const rankWiseComments = sortComments(texOnlyComments.items);
+  return getCommentsFromObject(rankWiseComments);
+};
+
+const sortComments = (comments: GetTextOnlyCommentsLensModel["items"]) => {
+  return comments.sort((a, b) => b.stats.upvotes - a.stats.upvotes);
+};
+
+const getCommentsFromObject = (
+  comments: GetTextOnlyCommentsLensModel["items"]
+) => {
+  let inputString = ``;
+  comments.forEach((comment, index) => {
     const userComment = removeTags(comment.metadata.content);
-    inputString += userComment + ". ";
+    inputString += "user" + index + ": " + userComment + ".\n ";
   });
-  console.log("input string", inputString);
   return inputString;
 };
 

@@ -1,7 +1,10 @@
 import { graphql } from "../../gql";
 
 const getTextOnlyCommentsOnPublicationQueryGraphql = graphql(/* GraphQL */ `
-  query TextOnlyPublications($request: PublicationsRequest!) {
+  query TextOnlyPublications(
+    $request: PublicationsRequest!
+    $reactionsRequest2: PublicationStatsReactionArgs
+  ) {
     publications(request: $request) {
       items {
         ... on Comment {
@@ -9,6 +12,9 @@ const getTextOnlyCommentsOnPublicationQueryGraphql = graphql(/* GraphQL */ `
             ... on TextOnlyMetadataV3 {
               content
             }
+          }
+          stats {
+            upvotes: reactions(request: $reactionsRequest2)
           }
         }
       }

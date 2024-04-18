@@ -1,7 +1,9 @@
 import {
   LimitType,
   PublicationMetadataMainFocusType,
+  PublicationReactionType,
   PublicationsRequest,
+  PublicationStatsReactionArgs,
   PublicationsWhere
 } from "../../gql/graphql";
 import { InternalServerError } from "../../errors/internal-server-error.error";
@@ -36,6 +38,10 @@ export const getTextOnlyCommentsOnPublicationLensService = async (
       where: publicationsWhere
     };
 
+    const publicationStatsReactionArgs: PublicationStatsReactionArgs = {
+      type: PublicationReactionType.Upvote
+    };
+
     logger.info(
       "get-text-only-comments-on-publication.lens.service.ts: getTextOnlyCommentsOnPublicationLensService: publicationsRequest: " +
         JSON.stringify(publicationsRequest)
@@ -43,7 +49,8 @@ export const getTextOnlyCommentsOnPublicationLensService = async (
 
     const result = await getBaseClientHelperUtil
       .query(getTextOnlyCommentsOnPublicationQueryGraphql, {
-        request: publicationsRequest
+        request: publicationsRequest,
+        reactionsRequest2: publicationStatsReactionArgs
       })
       .toPromise();
 

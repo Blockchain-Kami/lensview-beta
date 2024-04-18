@@ -5801,6 +5801,7 @@ export type PublicationsQuery = {
 
 export type TextOnlyPublicationsQueryVariables = Exact<{
   request: PublicationsRequest;
+  reactionsRequest2?: InputMaybe<PublicationStatsReactionArgs>;
 }>;
 
 export type TextOnlyPublicationsQuery = {
@@ -5826,6 +5827,7 @@ export type TextOnlyPublicationsQuery = {
             | { __typename?: "ThreeDMetadataV3" }
             | { __typename?: "TransactionMetadataV3" }
             | { __typename?: "VideoMetadataV3" };
+          stats: { __typename?: "PublicationStats"; upvotes: number };
         }
       | { __typename?: "Mirror" }
       | { __typename?: "Post" }
@@ -7422,6 +7424,17 @@ export const TextOnlyPublicationsDocument = {
               name: { kind: "Name", value: "PublicationsRequest" }
             }
           }
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "reactionsRequest2" }
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "PublicationStatsReactionArgs" }
+          }
         }
       ],
       selectionSet: {
@@ -7485,6 +7498,36 @@ export const TextOnlyPublicationsDocument = {
                                         }
                                       ]
                                     }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "stats" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    alias: { kind: "Name", value: "upvotes" },
+                                    name: { kind: "Name", value: "reactions" },
+                                    arguments: [
+                                      {
+                                        kind: "Argument",
+                                        name: {
+                                          kind: "Name",
+                                          value: "request"
+                                        },
+                                        value: {
+                                          kind: "Variable",
+                                          name: {
+                                            kind: "Name",
+                                            value: "reactionsRequest2"
+                                          }
+                                        }
+                                      }
+                                    ]
                                   }
                                 ]
                               }
