@@ -15,7 +15,7 @@ import { getMainPublicationImageLensService } from "../services/lens/get-main-pu
 import { getCommentMethod, getPostMethod } from "../config/app-config.config";
 import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
 import { getTextOnlyCommentsOnPublicationLensService } from "../services/lens/get-text-only-comments-on-publication.lens.service";
-import { getTextOnlyCommentsInputDataHelperUtil } from "../utils/helpers/get-text-only-comments-input-data.helper.util";
+import { formatTextOnlyInputDataHelperUtil } from "../utils/helpers/format-text-only-input-data.helper.util";
 // import { ayfieTextSummaryService } from "../services/ayfie-text-summary.service";
 import { geminiTextSummartService } from "../services/gemini-text-summart.service";
 import { httpStatusCodes } from "../config/app-constants.config";
@@ -196,12 +196,16 @@ export const getSummaryCommentController = async (
   req: Request,
   res: Response
 ) => {
-  const publicationId = req.body.pubId;
-  const textOnlyComments =
-    await getTextOnlyCommentsOnPublicationLensService(publicationId);
-  const textOnlyCommentsInputString =
-    getTextOnlyCommentsInputDataHelperUtil(textOnlyComments);
-  // const summary = await ayfieTextSummaryService(textOnlyCommentsInputString);
-  const summary = await geminiTextSummartService(textOnlyCommentsInputString);
-  res.status(httpStatusCodes.OK).send(summary);
+  try {
+    const publicationId = req.body.pubId;
+    const textOnlyComments =
+      await getTextOnlyCommentsOnPublicationLensService(publicationId);
+    const textOnlyCommentsInputString =
+      formatTextOnlyInputDataHelperUtil(textOnlyComments);
+    // const summary = await ayfieTextSummaryService(textOnlyCommentsInputString);
+    const summary = await geminiTextSummartService(textOnlyCommentsInputString);
+    res.status(httpStatusCodes.OK).send(summary);
+  } catch (error) {
+    res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send(error);
+  }
 };

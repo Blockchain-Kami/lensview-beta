@@ -6,5 +6,9 @@ export interface GetTextOnlyCommentsLensModel {
       __typename: "TextOnlyMetadataV3";
       content: string;
     };
+    stats: {
+      __typename: "PublicationStats";
+      upvotes: number;
+    };
   }[];
 }
