@@ -1,8 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { GEMINI_API_KEY } from "../config/env.config";
 import { InternalServerError } from "../errors/internal-server-error.error";
+import { GEMINI_API_KEY } from "../config/env.config";
+import { logger } from "../log/log-manager.log";
+import { generationConfig, safetySettings } from "../config/gen-ai.config";
 
 export const geminiTextSummartService = async (text: string) => {
+  logger.info(
+    "gemini-text-summart.service.ts: geminiTextSummartService: Execution Started."
+  );
   try {
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
@@ -14,22 +19,43 @@ export const geminiTextSummartService = async (text: string) => {
       "Here are the comments-" +
       text;
 
-    const summaryResponse = await model.generateContent(summaryPrompt);
+    const chat = model.startChat({ safetySettings, generationConfig });
+    const summaryResponse = await chat.sendMessage(summaryPrompt);
     const summaryResult = summaryResponse.response;
     const summary = summaryResult.text();
 
-    const sentimentPrompt =
-      "Classify the sentiment of the following paragraph as positive, negative, or neutral-" +
-      summary;
-
-    const sentimentResponse = await model.generateContent(sentimentPrompt);
+    const sentimentResponse = await chat.sendMessage(
+      "Classify the sentiment of the response as positive, negative, or neutral"
+    );
     const sentimentResult = sentimentResponse.response;
     const sentiment = sentimentResult.text();
-    return {
+
+    // const summaryResponse = await model.generateContent(summaryPrompt);
+    // const summaryResult = summaryResponse.response;
+    // const summary = summaryResult.text();
+
+    // const sentimentPrompt =
+    //   "Classify the sentiment of the following paragraph as positive, negative, or neutral-" +
+    //   summary;
+    //
+    // const sentimentResponse = await model.generateContent(sentimentPrompt);
+    // const sentimentResult = sentimentResponse.response;
+    // const sentiment = sentimentResult.text();
+
+    const responseObject = {
       summary: summary,
       sentiment: sentiment
     };
+    logger.info(
+      "gemini-text-summart.service.ts: geminiTextSummartService: Execution Completed. Response Object: " +
+        responseObject
+    );
+    return responseObject;
   } catch (error) {
+    logger.error(
+      "gemini-text-summart.service.ts: geminiTextSummartService: Error in execution. " +
+        error
+    );
     throw new InternalServerError("Could not Fetch Summary From Gemini", 500);
   }
 };

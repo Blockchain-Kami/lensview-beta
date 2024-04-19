@@ -197,15 +197,31 @@ export const getSummaryCommentController = async (
   res: Response
 ) => {
   try {
+    logger.info(
+      "comments.controller.ts: getSummaryCommentController: Execution Started."
+    );
     const publicationId = req.body.pubId;
     const textOnlyComments =
       await getTextOnlyCommentsOnPublicationLensService(publicationId);
+    if (textOnlyComments.items.length === 0) {
+      logger.info(
+        "comments.controller.ts: getSummaryCommentController: No comments found. Sending 204."
+      );
+      res.status(httpStatusCodes.NO_CONTENT).send(null);
+    }
     const textOnlyCommentsInputString =
       formatTextOnlyInputDataHelperUtil(textOnlyComments);
     // const summary = await ayfieTextSummaryService(textOnlyCommentsInputString);
     const summary = await geminiTextSummartService(textOnlyCommentsInputString);
+    logger.info(
+      "comments.controller.ts: getSummaryCommentController: Execution Ended."
+    );
     res.status(httpStatusCodes.OK).send(summary);
   } catch (error) {
+    logger.error(
+      "comments.controller.ts: getSummaryCommentController: Error in Execution: " +
+        error
+    );
     res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send(error);
   }
 };
