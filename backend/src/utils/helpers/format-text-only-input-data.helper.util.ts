@@ -1,19 +1,33 @@
 import { GetTextOnlyCommentsLensModel } from "../../models/lens/get-text-only-comments.lens.model";
+import { logger } from "../../log/log-manager.log";
 
 export const formatTextOnlyInputDataHelperUtil = (
   texOnlyComments: GetTextOnlyCommentsLensModel
 ) => {
+  logger.info(
+    "format-text-only-input-data.helper.util.ts: formatTextOnlyInputDataHelperUtil: Execution Started."
+  );
   const rankWiseComments = sortComments(texOnlyComments.items);
-  return getCommentsFromObject(rankWiseComments);
+  const commentString = getCommentsFromObject(rankWiseComments);
+  logger.info(
+    "format-text-only-input-data.helper.util.ts: formatTextOnlyInputDataHelperUtil: Execution Ended."
+  );
+  return commentString;
 };
 
 const sortComments = (comments: GetTextOnlyCommentsLensModel["items"]) => {
+  logger.info(
+    "format-text-only-input-data.helper.util.ts: sortComments: Sorting comments based on upvote."
+  );
   return comments.sort((a, b) => b.stats.upvotes - a.stats.upvotes);
 };
 
 const getCommentsFromObject = (
   comments: GetTextOnlyCommentsLensModel["items"]
 ) => {
+  logger.info(
+    "format-text-only-input-data.helper.util.ts: getCommentsFromObject: Creating input string."
+  );
   let inputString = ``;
   comments.forEach((comment, index) => {
     const userComment = removeTags(comment.metadata.content);
