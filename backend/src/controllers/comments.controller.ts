@@ -15,18 +15,15 @@ import { relatedParentPublicationsLensService } from "../services/lens/related-p
 import { getMainPublicationImageLensService } from "../services/lens/get-main-publication-image.lens.service";
 import { getCommentMethod, getPostMethod } from "../config/app-config.config";
 import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
-import { getTextOnlyCommentsOnPublicationLensService } from "../services/lens/get-text-only-comments-on-publication.lens.service";
-import { formatTextOnlyInputDataHelperUtil } from "../utils/helpers/format-text-only-input-data.helper.util";
-// import { ayfieTextSummaryService } from "../services/ayfie-text-summary.service";
-import { geminiTextSummartService } from "../services/gemini-text-summart.service";
-import { httpStatusCodes } from "../config/app-constants.config";
-import { APP_LENS_HANDLE } from "../config/env.config";
-import { imageQueue } from "../jobs/add-image-queue.job";
-import { logger } from "../log/log-manager.log";
 import { addCommentsSummaryDbUtil } from "../utils/db/add-comments-summary.db.util";
 import { getPublicationDbUtil } from "../utils/db/get-publication.db.util";
 import { getDifferenceInDaysHelperUtil } from "../utils/helpers/get-difference-in-days.helper.util";
 import { updateCommentsSummaryDbUtil } from "../utils/db/update-comments-summary.db.util";
+import { getCommentsAndGenerateSummaryHelperUtil } from "../utils/helpers/get-comments-and-generate-summary.helper.util";
+import { httpStatusCodes } from "../config/app-constants.config";
+import { APP_LENS_HANDLE } from "../config/env.config";
+import { imageQueue } from "../jobs/add-image-queue.job";
+import { logger } from "../log/log-manager.log";
 
 /**
  * Adds a URL or a post comment to the system.
@@ -199,7 +196,7 @@ export const putAnonymousCommentController = async (
 
 export const getSummaryCommentController = async (
   req: Request,
-  res: Response
+  res: Response<CommentsSummaryResponseModel>
 ) => {
   try {
     logger.info(
@@ -221,52 +218,48 @@ export const getSummaryCommentController = async (
         };
         res.status(httpStatusCodes.OK).send(response);
       } else {
-        console.log("Updating DB");
-        const textOnlyComments =
-          await getTextOnlyCommentsOnPublicationLensService(publicationId);
-        if (textOnlyComments.items.length === 0) {
+        const response =
+          await getCommentsAndGenerateSummaryHelperUtil(publicationId);
+        if (!response && response === null) {
+          res.status(httpStatusCodes.NO_CONTENT).send({
+            summary: "",
+            sentiment: ""
+          });
+        } else {
+          console.log("Updating DB");
+          const summary = response;
+          await updateCommentsSummaryDbUtil(publicationId, summary);
           logger.info(
-            "comments.controller.ts: getSummaryCommentController: No comments found. Sending 204."
+            "comments.controller.ts: getSummaryCommentController: Execution Ended."
           );
-          res.status(httpStatusCodes.NO_CONTENT).send(null);
+          res.status(httpStatusCodes.OK).send(summary);
         }
-        const textOnlyCommentsInputString =
-          formatTextOnlyInputDataHelperUtil(textOnlyComments);
-        // const summary = await ayfieTextSummaryService(textOnlyCommentsInputString);
-        const summary: CommentsSummaryResponseModel =
-          await geminiTextSummartService(textOnlyCommentsInputString);
-        await updateCommentsSummaryDbUtil(publicationId, summary);
+      }
+    } else {
+      const response =
+        await getCommentsAndGenerateSummaryHelperUtil(publicationId);
+      if (!response && response === null) {
+        res.status(httpStatusCodes.NO_CONTENT).send({
+          summary: "",
+          sentiment: ""
+        });
+      } else {
+        const summary = response;
+        await addCommentsSummaryDbUtil(publicationId, summary);
         logger.info(
           "comments.controller.ts: getSummaryCommentController: Execution Ended."
         );
         res.status(httpStatusCodes.OK).send(summary);
       }
-    } else {
-      console.log("adding to DB");
-      const textOnlyComments =
-        await getTextOnlyCommentsOnPublicationLensService(publicationId);
-      if (textOnlyComments.items.length === 0) {
-        logger.info(
-          "comments.controller.ts: getSummaryCommentController: No comments found. Sending 204."
-        );
-        res.status(httpStatusCodes.NO_CONTENT).send(null);
-      }
-      const textOnlyCommentsInputString =
-        formatTextOnlyInputDataHelperUtil(textOnlyComments);
-      // const summary = await ayfieTextSummaryService(textOnlyCommentsInputString);
-      const summary: CommentsSummaryResponseModel =
-        await geminiTextSummartService(textOnlyCommentsInputString);
-      await addCommentsSummaryDbUtil(publicationId, summary);
-      logger.info(
-        "comments.controller.ts: getSummaryCommentController: Execution Ended."
-      );
-      res.status(httpStatusCodes.OK).send(summary);
     }
   } catch (error) {
     logger.error(
       "comments.controller.ts: getSummaryCommentController: Error in Execution: " +
         error
     );
-    res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send(error);
+    res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
+      summary: "",
+      sentiment: ""
+    });
   }
 };
