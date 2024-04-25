@@ -25,7 +25,7 @@ export const geminiTextSummartService = async (text: string) => {
     const summary = summaryResult.text();
 
     const sentimentResponse = await chat.sendMessage(
-      "Classify the sentiment of the response as either positive, negative, or neutral, in one word only.ß"
+      "Classify the sentiment of the response as either positive, negative, or neutral, in one word only."
     );
     const sentimentResult = sentimentResponse.response;
     const sentiment = sentimentResult.text();

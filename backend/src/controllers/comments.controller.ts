@@ -206,27 +206,38 @@ export const getSummaryCommentController = async (
     const publicationData = await getPublicationDbUtil(publicationId);
     if (publicationData) {
       logger.info(
-        "comments.controller.ts: getSummaryCommentController: Publication found in DB. Sending 200."
+        "comments.controller.ts: getSummaryCommentController: Publication found in DB."
       );
       const daysDiff = getDifferenceInDaysHelperUtil(publicationData.updatedAt);
 
       if (daysDiff < 15) {
-        console.log("Sending From DB");
         const response = {
           summary: publicationData.summary,
           sentiment: publicationData.sentiment
         };
+        logger.info(
+          "comments.controller.ts: getSummaryCommentController: Execution End. Publication summary updated less than 15 days ago. Summary: " +
+            response.summary
+        );
         res.status(httpStatusCodes.OK).send(response);
       } else {
+        logger.info(
+          "comments.controller.ts: getSummaryCommentController: Publication found in DB. Publication summary updated more than 15 days ago. Updating summary."
+        );
         const response =
           await getCommentsAndGenerateSummaryHelperUtil(publicationId);
         if (!response && response === null) {
+          logger.info(
+            "comments.controller.ts: getSummaryCommentController: Execution End "
+          );
           res.status(httpStatusCodes.NO_CONTENT).send({
             summary: "",
             sentiment: ""
           });
         } else {
-          console.log("Updating DB");
+          logger.info(
+            "comments.controller.ts: getSummaryCommentController: Updating DB with updated summary."
+          );
           const summary = response;
           await updateCommentsSummaryDbUtil(publicationId, summary);
           logger.info(
@@ -236,14 +247,23 @@ export const getSummaryCommentController = async (
         }
       }
     } else {
+      logger.info(
+        "comments.controller.ts: getSummaryCommentController: Publication not found in DB. Adding summary."
+      );
       const response =
         await getCommentsAndGenerateSummaryHelperUtil(publicationId);
       if (!response && response === null) {
+        logger.info(
+          "comments.controller.ts: getSummaryCommentController: Execution End "
+        );
         res.status(httpStatusCodes.NO_CONTENT).send({
           summary: "",
           sentiment: ""
         });
       } else {
+        logger.info(
+          "comments.controller.ts: getSummaryCommentController: Updating DB with summary."
+        );
         const summary = response;
         await addCommentsSummaryDbUtil(publicationId, summary);
         logger.info(
