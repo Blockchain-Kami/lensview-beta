@@ -449,7 +449,7 @@
           </a>
         {/each}
       {:else}
-        <div class="msg">This profile has no LensView post's yet!</div>
+        <div class="msg">This profile has no LensView posts yet!</div>
       {/if}
     {:catch _error}
       <div class="msg">Something went wrong!</div>

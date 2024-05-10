@@ -49,7 +49,7 @@
   const { addNotification } = getNotificationsContext();
   let commentPubId = $page.data.commentPubId;
   let isCommentMoreOpen: CommentMoreStatus = {};
-  let selectedFilterType = CommentFilterType.MostLikedComments;
+  let selectedFilterType = CommentFilterType.LatestComments;
   let showLoginModal = false;
   let reactionDetails: ReactionDetailsModel = {};
 
