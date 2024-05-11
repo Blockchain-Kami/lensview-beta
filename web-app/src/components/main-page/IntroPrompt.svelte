@@ -83,7 +83,7 @@
 
   @media only screen and (max-width: 1024px) {
     section {
-      min-width: 27rem;
+      min-width: 33rem;
       flex-direction: column;
       padding: 2rem;
     }

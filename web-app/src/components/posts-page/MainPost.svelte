@@ -37,6 +37,7 @@
   import addReactionLensService from "../../services/lens/add-reaction.lens.service";
   import { mainPostImageUrlStore } from "../../stores/main-post-image-url.store";
   import { mainPostUrlStore } from "../../stores/main-post-url.store";
+  import NoWebPageImg from "$lib/assets/NoWebPageImg.png";
 
   const { addNotification } = getNotificationsContext();
   let mainPostPubId = $page.data.mainPostPubId;
@@ -259,11 +260,19 @@
         <a href={`/posts/${mainPostPubId}`} class="tablet__main-post">
           {#await getImageCommentLensService(mainPostPub?.id)}
             <div class="tablet__main-post__image__loader" />
-          {:then imageUrl}
-            {updateMainPostImageUrlStore(imageUrl)}
-            {updateMetaTagsImageUrl(imageUrl)}
-            <div class="tablet__main-post__image">
-              <img src={imageUrl} alt="" />
+          {:then fetchedImageUrl}
+            {updateMainPostImageUrlStore(fetchedImageUrl)}
+            {updateMetaTagsImageUrl(fetchedImageUrl)}
+            <div
+              class="tablet__main-post__image"
+              style={fetchedImageUrl
+                ? ` height: ${30}rem `
+                : ` height: ${23}rem `}
+            >
+              <img
+                src={fetchedImageUrl ? fetchedImageUrl : NoWebPageImg}
+                alt=""
+              />
             </div>
           {/await}
           <a
