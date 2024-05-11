@@ -3,18 +3,22 @@
 LensView is revolutionizing the way people interact with the internet by creating an omnipresent comment section. With billions trillions of webpages out there, one crucial element is often missing—people's views about them. That's where Lensview comes in. Unlike traditional centralized comment sections limited to a few platforms, Lensview is a decentralized platform built on the Lens Protocol. It empowers users to transform any webpage into a dynamic source of discussion, enabling them to share diverse perspectives—whether they are positive, negative, or neutral. Join us in shaping the future of online discourse with Lensview.
 
 ## 📽️ Demo & Presentation Video
-
-[![img_1.png](images/demo.png)](https://youtu.be/Q-Ni7IC5kxI?si=dfqsBttH0AzZ1RgL)
+<a href="https://youtu.be/Q-Ni7IC5kxI?si=dfqsBttH0AzZ1RgL"  target="_blank">
+<img src="images/demo.png" alt="lensview demo"/>
+</a>
 
 
 ## 🏆Awards/Recognitions
 
-### [Witness the moment](https://www.youtube.com/watch?v=O5WXx-31A9I&t=2790s)🔗
+### <a href="https://www.youtube.com/watch?v=O5WXx-31A9I&t=2790s"  target="_blank">Witness the moment</a>🔗
+
 
 ![encode-prize.jpg](images/encode-prize.jpg)
 ![eth-global.jpg](images/eth-global.jpg)
 
-### [lensview.io/gitcoin](https://lensview.io/gitcoin)🔗
+### <a href="https://lensview.io/gitcoin"  target="_blank">lensview.io/gitcoin</a>🔗
+
+[//]: # (### [lensview.io/gitcoin]&#40;https://lensview.io/gitcoin&#41;🔗)
 
 ![gitcoin1.jpg](images/gitcoin1.jpg)
 ![gitcoin2.png](images/gitcoin2.png)
@@ -44,7 +48,7 @@ Proof-of-Stake blockchain.
 
 ## 💕 Contributors
 
-We love contributors! Feel free to contribute to this project.
+We love contributors! Feel free to contribute to this project
 
 <a href="https://github.com/BlockchainKami/lensview-beta/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=BlockchainKami/lensview-beta" alt="Contributors" />
