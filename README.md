@@ -4,9 +4,21 @@ LensView is revolutionizing the way people interact with the internet by creatin
 
 ## 📽️ Demo & Presentation Video
 
-<a href="https://youtu.be/Q-Ni7IC5kxI?si=dfqsBttH0AzZ1RgL">
-    <img src="https://i.postimg.cc/t4qFqNSD/img-2.png" width="60" height="60" style="border-radius: 10px">
-</a>
+[![img_1.png](images/demo.png)](https://youtu.be/Q-Ni7IC5kxI?si=dfqsBttH0AzZ1RgL)
+
+
+## 🏆Awards/Recognitions
+
+### [Witness the moment](https://www.youtube.com/watch?v=O5WXx-31A9I&t=2790s)🔗
+
+![encode-prize.jpg](images/encode-prize.jpg)
+![eth-global.jpg](images/eth-global.jpg)
+
+### [lensview.io/gitcoin](https://lensview.io/gitcoin)🔗
+
+![gitcoin1.jpg](images/gitcoin1.jpg)
+![gitcoin2.png](images/gitcoin2.png)
+
 
 ## 🌟 Join for updates
 
@@ -20,7 +32,7 @@ Lensview has garnered an impressive following among <b>notable individuals on tw
 ## 💪 Powered By
 
 <a href="https://www.lens.xyz/">
-<img src="https://i.postimg.cc/g2P3fDpg/Icon-Black-1x.png" width="60px" style="border-radius: 10px" />
+<img src="https://i.postimg.cc/g2P3fDpg/Icon-Black-1x.png" width="60px" style="border-radius: 10px" alt="lens protocol logo" />
 </a>
 
 <a href="https://github.com/lens-protocol/core.git">Lens Protocol</a>  is a Web3 social graph on the Polygon
@@ -35,7 +47,7 @@ Proof-of-Stake blockchain.
 We love contributors! Feel free to contribute to this project.
 
 <a href="https://github.com/BlockchainKami/lensview-beta/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=BlockchainKami/lensview-beta" />
+  <img src="https://contrib.rocks/image?repo=BlockchainKami/lensview-beta" alt="Contributors" />
 </a>
 
 ## 🎨 Figma Design File
