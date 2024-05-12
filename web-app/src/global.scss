@@ -149,7 +149,6 @@ body {
   background: var(--bg) fixed;
   line-height: 1.3em;
   color: var(--text);
-  position: absolute;
 }
 
 ::backdrop {
@@ -288,4 +287,11 @@ a {
   --tooltip-padding: 0.5rem;
   --tooltip-z-index: 100;
   --tooltip-arrow-size: 10px;
+}
+
+
+@media only screen and (max-width: 1024px){
+  body{
+    position: absolute;
+  }
 }
