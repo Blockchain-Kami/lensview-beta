@@ -142,12 +142,14 @@ option:hover {
   --bg-solid-2: #18393a;
   --bg-solid-3: #132e2e;
   --btn-bg: linear-gradient(121deg, #23f9ff 0%, #dbf1ff 100%);
+  background: #1f4045;
 }
 
 body {
   background: var(--bg) fixed;
   line-height: 1.3em;
   color: var(--text);
+  position: absolute;
 }
 
 ::backdrop {
