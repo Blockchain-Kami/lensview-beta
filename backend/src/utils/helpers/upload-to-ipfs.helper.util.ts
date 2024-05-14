@@ -79,7 +79,7 @@ function makeFileObjects(data: string): File[] {
 
     return [
       new File(["contents-of-file-1"], "plain-utf8.txt"),
-      new File([blob] as [BlobPart], "metaData.json")
+      new File([blob], "metaData.json")
     ];
   } catch (error) {
     logger.error(
