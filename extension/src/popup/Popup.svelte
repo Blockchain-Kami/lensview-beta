@@ -1,9 +1,12 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import getChallengeInfoLensService from "../services/lens/get-challenge-info.lens.service";
+  import searchPublicationAppService from "../services/app/search-publication.app.service";
 
   onMount(() => {
     test();
+
+    testlensviewAPI();
   });
 
   const test = async () => {
@@ -12,6 +15,11 @@
       "0x018776"
     );
     console.log("challenge: ", challenge);
+  };
+
+  const testlensviewAPI = async () => {
+    const resp = await searchPublicationAppService("https://revoke.cash/");
+    console.log("resp : ", resp);
   };
 </script>
 
