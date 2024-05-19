@@ -171,7 +171,7 @@
               <br />
               <br />
               Handle linked to
-              <span class="body__address"
+              <span class="italic-text"
                 >{$addressUserStore.substring(0, 5) +
                   "..." +
                   $addressUserStore.slice(-5)}</span
@@ -189,7 +189,7 @@
             </div>
           {:else}
             <div class="CenterRowFlex head">
-              <div class="h3">Post your thoughts, anonymously</div>
+              <div class="h3">Oops, you don't have a Lens Handle</div>
               <div class="head__close-btn">
                 <button on:click={() => dialog.close()}>
                   <Icon d={close} />
@@ -198,21 +198,22 @@
             </div>
             <div class="body">
               <div style="font-weight: bold">
-                Join our waitlist now to unlock the full experience of LensView.
+                But that's okay, let's get you one to unlock your full LensView
+                experience
               </div>
               <br />
-              But this doesn't stop your voice from being heard, feel free to post
-              your opinions anonymously with no sign-ins with the "Post Anonymously"
-              button. We eagerly await your contributions!
+              If you don’t wish to claim a handle, you can still use LensView in
+              the anonymous mode by sharing your views using the
+              <span class="italic-text">“Post Anonymously”</span> button. We eagerly
+              await your contributions.
             </div>
             <div class="line" />
             <div class="footer">
               <button
-                on:click={() =>
-                  window.open("https://waitlist.lens.xyz/", "_blank")}
+                on:click={() => window.open("https://lens.xyz/mint", "_blank")}
                 class="btn"
               >
-                Join Waitlist
+                Claim your handle
               </button>
             </div>
             <!--            <div class="body">-->
@@ -241,7 +242,7 @@
             <br />
             <br />
             Handle linked to
-            <span class="body__address"
+            <span class="italic-text"
               >{$addressUserStore.substring(0, 5) +
                 "..." +
                 $addressUserStore.slice(-5)}</span
@@ -289,7 +290,7 @@
     min-width: 25rem;
   }
 
-  .body__address {
+  .italic-text {
     font-style: italic;
   }
 

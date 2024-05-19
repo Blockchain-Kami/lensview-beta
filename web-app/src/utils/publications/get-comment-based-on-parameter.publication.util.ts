@@ -9,7 +9,7 @@ const { VITE_ANONYMOUS_PUB } = import.meta.env;
 const getCommentBasedOnParameterPublicationUtil = async (
   publicationId: string,
   limit: LimitType,
-  filterBy = CommentFilterType.MostLikedComments
+  filterBy = CommentFilterType.LatestComments
 ) => {
   try {
     let request: PublicationsRequest;
@@ -48,7 +48,7 @@ const getCommentBasedOnParameterPublicationUtil = async (
           commentOn: {
             id: publicationId,
             ranking: {
-              filter: CommentRankingFilterType.Relevant
+              filter: CommentRankingFilterType.All
             }
           },
           metadata: {

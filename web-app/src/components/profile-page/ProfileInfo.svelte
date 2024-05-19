@@ -158,7 +158,7 @@
           <Icon d={followers} size="1.7em" />
         </div>
         <div class="CenterRowFlex stats__box__right">
-          <div class="stats__box__right__title">Number of followers</div>
+          <div class="stats__box__right__title">Followers</div>
           <div class="stats__box__right__value-loader" />
         </div>
       </div>
@@ -167,7 +167,7 @@
           <img src={LensLogo} alt="" />
         </div>
         <div class="CenterColumnFlex stats__box__right">
-          <div class="stats__box__right__title">Number of posts</div>
+          <div class="stats__box__right__title">Lens Contributions</div>
           <div class="stats__box__right__value-loader" />
         </div>
       </div>
@@ -176,7 +176,7 @@
           <img src={LensviewLogoFlat} alt="" />
         </div>
         <div class="CenterColumnFlex stats__box__right">
-          <div class="stats__box__right__title">Number of comments</div>
+          <div class="stats__box__right__title">LensView Contributions</div>
           <div class="stats__box__right__value-loader" />
         </div>
       </div>
@@ -185,7 +185,7 @@
           <Icon d={star} size="1.7em" />
         </div>
         <div class="CenterColumnFlex stats__box__right">
-          <div class="stats__box__right__title">Reaction count</div>
+          <div class="stats__box__right__title">Impressions</div>
           <div class="stats__box__right__value-loader" />
         </div>
       </div>
@@ -291,7 +291,7 @@
           <Icon d={followers} size="1.7em" />
         </div>
         <div class="CenterRowFlex stats__box__right">
-          <div class="stats__box__right__title">Number of followers</div>
+          <div class="stats__box__right__title">Followers</div>
           <div class="stats__box__right__value">
             {response?.data?.profile?.stats?.followers}
           </div>
@@ -302,7 +302,7 @@
           <img src={LensLogo} alt="" />
         </div>
         <div class="CenterColumnFlex stats__box__right">
-          <div class="stats__box__right__title">Lens Contribution</div>
+          <div class="stats__box__right__title">Lens Contributions</div>
           <div class="stats__box__right__value">
             {response?.data?.profile?.stats?.publications}
           </div>
@@ -313,9 +313,9 @@
           <img src={LensviewLogoFlat} alt="" />
         </div>
         <div class="CenterColumnFlex stats__box__right">
-          <div class="stats__box__right__title">LensView Contribution</div>
+          <div class="stats__box__right__title">LensView Contributions</div>
           <div class="stats__box__right__value">
-            {response?.data?.profile?.stats?.publications}
+            {response?.data?.profile?.lensviewStats?.publications}
           </div>
         </div>
       </div>
@@ -324,7 +324,7 @@
           <Icon d={star} size="1.7em" />
         </div>
         <div class="CenterColumnFlex stats__box__right">
-          <div class="stats__box__right__title">Reaction count</div>
+          <div class="stats__box__right__title">Impressions</div>
           <div class="stats__box__right__value">
             {response?.data?.profile?.stats?.reactions}
           </div>
@@ -462,6 +462,7 @@
     border-radius: 15px;
     justify-content: space-evenly;
     flex-wrap: wrap;
+    min-width: 33rem;
   }
 
   .stats__box {
@@ -485,8 +486,8 @@
   }
 
   .stats__box__img img {
-    width: 4rem;
-    height: 4rem;
+    width: 3.5rem;
+    height: 3.5rem;
     border-radius: 50%;
   }
 
@@ -577,6 +578,9 @@
 
     .stats__box {
       width: 50%;
+      display: flex;
+      justify-content: flex-start;
+      padding-left: 3.5rem;
     }
   }
 </style>
