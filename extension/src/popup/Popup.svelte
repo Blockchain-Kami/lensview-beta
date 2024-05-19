@@ -121,4 +121,8 @@
   button.active {
     border-bottom: 2px solid var(--primary);
   }
+
+  section {
+    padding: 1rem;
+  }
 </style>

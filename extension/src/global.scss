@@ -131,7 +131,7 @@ option:hover {
   --large-font-size: 36.75px;
   --semi-large-font-size: 31.5px;
   --medium-font-size: 19.25px;
-  --semi-medium-font-size: 14px;
+  --semi-medium-font-size: 13px;
   --small-font-size: 10.5px;
   --semi-small-font-size: 8px;
   --semi-medium-font-weight: 500;
@@ -141,14 +141,15 @@ option:hover {
   --bg-solid-1: #0d171d94;
   --bg-solid-2: #18393a;
   --bg-solid-3: #132e2e;
+  --bg-solid-4: #1e4748;
   --btn-bg: linear-gradient(121deg, #23f9ff 0%, #dbf1ff 100%);
 }
 
 body {
   background: var(--bg) fixed;
-  line-height: 1.3em;
+  line-height: 1.9em;
   color: var(--text);
-  width: 357px;
+  width: 390px;
   height: 600px;
 }
 
@@ -274,6 +275,13 @@ a {
   font-family: "mona-sans", "DM Sans", sans-serif;
   font-size: var(--medium-font-size);
   font-weight: var(--semi-medium-font-weight);
+}
+
+.dot{
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
 }
 
 .tooltip.custom-tooltip {
