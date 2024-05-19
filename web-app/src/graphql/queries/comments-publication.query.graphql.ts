@@ -34,6 +34,7 @@ const commentsPublicationQueryGraphql = graphql(`
           metadata {
             ... on TextOnlyMetadataV3 {
               content
+              tags
               attributes {
                 value
                 key
@@ -41,6 +42,7 @@ const commentsPublicationQueryGraphql = graphql(`
             }
             ... on ImageMetadataV3 {
               content
+              tags
             }
           }
           operations {

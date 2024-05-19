@@ -294,8 +294,6 @@
 
 <AddNewPost bind:showAddNewPostModal />
 
-}
-
 <!----------------------------------------------------------------->
 
 <!---------------------------------------------------------------->
@@ -554,7 +552,7 @@
 
   .card__post__info__body {
     height: 5.2rem;
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
     overflow: hidden;
   }
 

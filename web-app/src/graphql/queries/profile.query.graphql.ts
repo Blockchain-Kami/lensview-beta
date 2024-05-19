@@ -27,6 +27,9 @@ const profileQueryGraphql = graphql(`
       ownedBy {
         address
       }
+      lensviewStats: stats(request: { forApps: ["LensView"] }) {
+        publications
+      }
       stats {
         followers
         following
