@@ -64,7 +64,7 @@
   }
 
   .card__header__info__loader {
-    height: 3.5rem;
+    height: 3rem;
     width: 100%;
     border-radius: 5px;
   }

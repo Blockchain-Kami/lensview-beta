@@ -1,74 +1,138 @@
-<script>
-  import { thumbDown, thumbUp } from "../../../utils/app-icon.util";
+<script lang="ts">
+  import { person, thumbDown, thumbUp } from "../../../utils/app-icon.util";
   import Icon from "../../../lib/Icon.svelte";
+  import getCommentBasedOnParameterPublicationUtil from "../../../utils/publications/get-comment-based-on-parameter.publication.util";
+  import { LimitType } from "../../../gql/graphql";
+  import PostsListLoader from "./PostsListLoader.svelte";
+  import getPictureURLUtil from "../../../utils/get-picture-URL.util";
+  import type { CommentsPublicationLensModel } from "../../../models/lens/comments-publication.lens.model";
+  import getFormattedDateHelperUtil from "../../../utils/helper/get-formatted-date.helper.util";
+  import Autolinker from "autolinker";
+  import DOMPurify from "dompurify";
+  import { tooltip } from "@svelte-plugins/tooltips";
+  const { VITE_APP_LENS_ID } = import.meta.env;
+  const { VITE_IMAGE_PUB } = import.meta.env;
+
+  export let commentPubId;
+
+  let promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
+    commentPubId,
+    LimitType.Fifty
+  );
+
+  const getHandle = (comment: CommentsPublicationLensModel) => {
+    return comment.by?.handle?.fullHandle.substring(5);
+  };
 </script>
 
 <!---------------------------- HTML -------------------------------->
 
-<ul>
-  <li>
-    <article
-      class="CenterColumnFlex card"
-      aria-labelledby="post-title-1"
-      aria-describedby="post-content-1"
-    >
-      <header class="card__header">
-        <img
-          class="card__header__profile-pic"
-          src="https://ik.imagekit.io/lens/media-snapshot/0ad60fb5ee609a3d844cac958c05404389b7f2d4a15d051a8b709d1a203af6c8.jpg"
-          alt=""
-        />
-        <div class="card__header__info">
-          <div class="CenterRowFlex card__header__info__top">
-            <div class="card__header__info__top__name" id="post-title-1">
-              Nader Dabit
-            </div>
-            <div class="CenterRowFlex card__header__info__top__reaction">
-              <div
-                class="CenterRowFlex card__header__info__top__reaction__val"
-                aria-label="6 likes"
-              >
-                <Icon d={thumbUp} />
-                {4}
-              </div>
-              <div
-                class="card__header__info__top__reaction__vertical-line"
-                aria-hidden="true"
+{#await promiseOfGetComments}
+  <PostsListLoader />
+{:then commentsData}
+  <ul>
+    {#each commentsData as comment, index}
+      {#if !comment?.metadata?.tags.includes(VITE_IMAGE_PUB)}
+        <li>
+          <article
+            class="card"
+            aria-labelledby="post-title-1"
+            aria-describedby="post-content-1"
+          >
+            <header class="card__header">
+              <img
+                class="card__header__profile-pic"
+                src={getPictureURLUtil(
+                  comment?.by?.metadata?.picture?.optimized?.uri,
+                  comment?.by?.ownedBy?.address
+                )}
+                alt={getHandle(comment) + "'s profile picture"}
               />
-              <div
-                class="CenterRowFlex card__header__info__top__reaction__val"
-                aria-label="6 dislikes"
-              >
-                <Icon d={thumbDown} />
-                {6}
+              <div class="card__header__info">
+                <div class="CenterRowFlex card__header__info__top">
+                  <div class="card__header__info__top__name" id="post-title-1">
+                    {comment?.by?.metadata?.displayName
+                      ? comment?.by?.metadata?.displayName
+                      : ""}
+                  </div>
+                </div>
+                <div class="CenterRowFlex card__header__info__bottom">
+                  <div
+                    class="card__header__info__bottom__username"
+                    aria-label="username"
+                  >
+                    {getHandle(comment)}
+                  </div>
+                  {#if comment?.by?.id === VITE_APP_LENS_ID}
+                    <div
+                      use:tooltip={{
+                        content: "This post was made by an anonymous user!",
+                        position: "bottom",
+                        autoPosition: true,
+                        align: "center",
+                        animation: "slide",
+                        theme: "custom-tooltip"
+                      }}
+                      class="CenterRowFlex card__header__info__bottom__anon-comment"
+                    >
+                      <Icon d={person} size="1.05em" />
+                    </div>
+                  {/if}
+                  <div class="dot" aria-hidden="true" />
+                  <div
+                    class="card__header__info__bottom__time"
+                    aria-label={comment?.createdAt + "ago"}
+                  >
+                    {getFormattedDateHelperUtil(comment?.createdAt)}
+                  </div>
+                </div>
               </div>
+              <div class="CenterRowFlex card__header__reaction">
+                <div
+                  class="CenterRowFlex card__header__reaction__val"
+                  aria-label="6 likes"
+                >
+                  <Icon d={thumbUp} />
+                  {comment?.stats?.upvotes}
+                </div>
+                <div
+                  class="card__header__reaction__vertical-line"
+                  aria-hidden="true"
+                />
+                <div
+                  class="CenterRowFlex card__header__reaction__val"
+                  aria-label="6 dislikes"
+                >
+                  <Icon d={thumbDown} />
+                  {comment?.stats?.downvotes}
+                </div>
+              </div>
+            </header>
+            <div class="card__body" id="post-content-1">
+              <!--eslint-disable-next-line svelte/no-at-html-tags -->
+              {@html Autolinker.link(
+                DOMPurify.sanitize(comment?.metadata?.content),
+                {
+                  className: "links"
+                }
+              )}
             </div>
-          </div>
-          <div class="CenterRowFlex card__header__info__bottom">
-            <div
-              class="card__header__info__bottom__username"
-              aria-label="username"
-            >
-              @naderdabit
-            </div>
-            <div class="dot" aria-hidden="true" />
-            <div class="card__header__info__bottom__time">8 hours ago</div>
-          </div>
-        </div>
-      </header>
-      <p class="card__body" id="post-content-1">
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium
-        asperiores dolore dolores enim eum fugiat illo inventore laboriosam
-        maiores maxime minima nobis obcaecati perspiciatis ratione, suscipit
-        unde, ut. Ex, mollitia!
-      </p>
-    </article>
-  </li>
-</ul>
+          </article>
+        </li>
+      {/if}
+    {/each}
+  </ul>
+{/await}
 
 <!----------------------------------- style -------------------------------->
 
 <style lang="scss">
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
   .card {
     display: flex;
     flex-direction: column;
@@ -83,6 +147,7 @@
     flex-direction: row;
     gap: 0.7rem;
     width: 100%;
+    align-items: center;
   }
 
   .card__header__profile-pic {
@@ -108,18 +173,18 @@
     font-weight: var(--medium-font-weight);
   }
 
-  .card__header__info__top__reaction {
+  .card__header__reaction {
     gap: 0.5rem;
     border-radius: 6.8px;
     opacity: 70%;
     max-width: fit-content;
   }
 
-  .card__header__info__top__reaction__val {
+  .card__header__reaction__val {
     gap: 0.4rem;
   }
 
-  .card__header__info__top__reaction__vertical-line {
+  .card__header__reaction__vertical-line {
     border-left: 1px solid #ffffff45;
     height: 21px;
   }
@@ -134,6 +199,12 @@
     background: #113232;
     border-radius: 5px;
     color: var(--primary);
+  }
+
+  .card__header__info__bottom__anon-comment {
+    background: var(--bg-solid-3);
+    border-radius: 50%;
+    padding: 0.25rem;
   }
 
   .card__header__info__bottom__time {

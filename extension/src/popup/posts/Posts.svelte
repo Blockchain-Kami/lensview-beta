@@ -11,7 +11,7 @@
   <PostsListLoader />
 {:then pubId}
   {#if pubId}
-    <PostsList />
+    <PostsList commentPubId={pubId} />
   {:else}
     <NoPost />
   {/if}
