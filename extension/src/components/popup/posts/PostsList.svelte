@@ -12,6 +12,7 @@
   import { tooltip } from "@svelte-plugins/tooltips";
   const { VITE_APP_LENS_ID } = import.meta.env;
   const { VITE_IMAGE_PUB } = import.meta.env;
+  const { VITE_DOMAIN_NAME } = import.meta.env;
 
   export let commentPubId;
 
@@ -22,6 +23,10 @@
 
   const getHandle = (comment: CommentsPublicationLensModel) => {
     return comment.by?.handle?.fullHandle.substring(5);
+  };
+
+  const redirectToPost = () => {
+    window.open(`https://${VITE_DOMAIN_NAME}/posts/${commentPubId}`, "_blank");
   };
 </script>
 
@@ -36,8 +41,8 @@
         <li>
           <article
             class="card"
-            aria-labelledby="post-title-1"
-            aria-describedby="post-content-1"
+            aria-labelledby={"post-title-" + index}
+            aria-describedby={"post-content-" + index}
           >
             <header class="card__header">
               <img
@@ -50,7 +55,10 @@
               />
               <div class="card__header__info">
                 <div class="CenterRowFlex card__header__info__top">
-                  <div class="card__header__info__top__name" id="post-title-1">
+                  <div
+                    class="card__header__info__top__name"
+                    id={"post-title-" + index}
+                  >
                     {comment?.by?.metadata?.displayName
                       ? comment?.by?.metadata?.displayName
                       : ""}
@@ -108,7 +116,7 @@
                 </div>
               </div>
             </header>
-            <div class="card__body" id="post-content-1">
+            <div class="card__body" id={"post-content-" + index}>
               <!--eslint-disable-next-line svelte/no-at-html-tags -->
               {@html Autolinker.link(
                 DOMPurify.sanitize(comment?.metadata?.content),
@@ -122,6 +130,9 @@
       {/if}
     {/each}
   </ul>
+  <div class="add-post">
+    <button on:click={redirectToPost} class="btn">Add your post</button>
+  </div>
 {/await}
 
 <!----------------------------------- style -------------------------------->
@@ -131,6 +142,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    padding: 1rem 1rem 5rem 1rem;
   }
 
   .card {
@@ -216,5 +228,17 @@
     overflow-wrap: anywhere;
     overflow: hidden;
     font-size: var(--semi-medium-font-size);
+  }
+
+  .add-post {
+    position: fixed;
+    bottom: 0;
+    padding: 4rem 1.5rem 1.5rem 1.5rem;
+    width: 100%;
+    background: linear-gradient(360deg, #0d171d 39.31%, #22454b12 82%);
+  }
+
+  .add-post button {
+    width: 94%;
   }
 </style>

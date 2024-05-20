@@ -17,6 +17,7 @@
     "@crxjs/vite-plugin": "^2.0.0-beta.18",
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/client-preset": "^4.1.0",
+    "@types/dompurify": "^3.0.2",
     "@parcel/watcher": "^2.3.0",
     "@tsconfig/svelte": "^5.0.2",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
