@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import getChallengeInfoLensService from "../services/lens/get-challenge-info.lens.service";
-  import searchPublicationAppService from "../services/app/search-publication.app.service";
+  import getPublicationIdAppService from "../services/app/get-publication-id.app.service";
   import Icon from "../lib/Icon.svelte";
   import { feather, notificationNone } from "../utils/app-icon.util";
   import { NavItems } from "../config/app-constants.config";
@@ -30,7 +30,7 @@
   };
 
   const testlensviewAPI = async () => {
-    const resp = await searchPublicationAppService("https://revoke.cash/");
+    const resp = await getPublicationIdAppService();
     console.log("resp : ", resp);
   };
 </script>
@@ -124,5 +124,6 @@
 
   section {
     padding: 1rem;
+    width: 100%;
   }
 </style>

@@ -21,6 +21,7 @@
     "@tsconfig/svelte": "^5.0.2",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
+    "@types/chrome": "^0.0.268",
     "@sveltejs/vite-plugin-svelte": "^2.0.0",
     "@svelte-plugins/tooltips": "^3.0.1",
     "@urql/svelte": "^3.0.1",

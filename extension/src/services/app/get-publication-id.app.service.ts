@@ -2,24 +2,28 @@ import clientAxiosUtil from "../../utils/axios/client.axios.util";
 import type { AxiosResponse } from "axios";
 import type { UrlValidateResponseAppModel } from "../../models/app/responses/url-validate.response.app.model";
 
-const searchPublicationAppService = async (searchURLOrKeywords: string) => {
-  console.log(
-    "searchPublicationAppService searchURLOrKeywords:",
-    searchURLOrKeywords
-  );
-
+const getPublicationIdAppService = async () => {
   try {
+    const [tab] = await chrome.tabs.query({ active: true });
+    console.log("tab : ", tab);
+
+    if (!tab || !tab?.url) {
+      throw new Error("tab not found");
+    }
+    console.log("tab?.url : ", typeof tab?.url);
+    console.log("tab?.url : ", tab?.url);
+
     return await clientAxiosUtil
       .get("url/validate", {
         params: {
-          search_query: searchURLOrKeywords
+          search_query: tab?.url
         }
       })
       .then(
         (
           resp: AxiosResponse<UrlValidateResponseAppModel>
-        ): UrlValidateResponseAppModel => {
-          return resp.data;
+        ): string | undefined => {
+          return resp.data?.publicationID;
         }
       );
   } catch (err) {
@@ -30,4 +34,4 @@ const searchPublicationAppService = async (searchURLOrKeywords: string) => {
   }
 };
 
-export default searchPublicationAppService;
+export default getPublicationIdAppService;

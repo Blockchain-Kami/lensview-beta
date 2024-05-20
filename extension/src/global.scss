@@ -297,3 +297,9 @@ a {
   --tooltip-z-index: 100;
   --tooltip-arrow-size: 10px;
 }
+
+@keyframes shine {
+  to {
+    background-position-x: -200%;
+  }
+}
