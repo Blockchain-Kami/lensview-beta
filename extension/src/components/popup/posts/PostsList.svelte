@@ -39,8 +39,10 @@
     {#each commentsData as comment, index}
       {#if !comment?.metadata?.tags.includes(VITE_IMAGE_PUB)}
         <li>
-          <article
+          <a
             class="card"
+            href={`https://${VITE_DOMAIN_NAME}/posts/${commentPubId}/${comment?.id}`}
+            target="_blank"
             aria-labelledby={"post-title-" + index}
             aria-describedby={"post-content-" + index}
           >
@@ -125,7 +127,7 @@
                 }
               )}
             </div>
-          </article>
+          </a>
         </li>
       {/if}
     {/each}
