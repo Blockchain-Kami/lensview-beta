@@ -14,10 +14,10 @@
   const { VITE_IMAGE_PUB } = import.meta.env;
   const { VITE_DOMAIN_NAME } = import.meta.env;
 
-  export let commentPubId;
+  export let pubId;
 
   let promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
-    commentPubId,
+    pubId,
     LimitType.Fifty
   );
 
@@ -26,7 +26,7 @@
   };
 
   const redirectToPost = () => {
-    window.open(`https://${VITE_DOMAIN_NAME}/posts/${commentPubId}`, "_blank");
+    window.open(`https://${VITE_DOMAIN_NAME}/posts/${pubId}`, "_blank");
   };
 </script>
 
@@ -41,7 +41,7 @@
         <li>
           <a
             class="card"
-            href={`https://${VITE_DOMAIN_NAME}/posts/${commentPubId}/${comment?.id}`}
+            href={`https://${VITE_DOMAIN_NAME}/posts/${pubId}/${comment?.id}`}
             target="_blank"
             aria-labelledby={"post-title-" + index}
             aria-describedby={"post-content-" + index}

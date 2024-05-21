@@ -31,8 +31,9 @@
 </article>
 
 <footer class="action">
-  <button on:click={redirectToPostCreation} class="btn">Share your view</button>
-  <button on:click={redirectToApp} class="btn btn-alt"
+  <button on:click={redirectToPostCreation} class="btn">Share your views</button
+  >
+  <button on:click={redirectToApp} class="checkout-btn"
     >Check out LensView</button
   >
 </footer>
@@ -75,5 +76,14 @@
 
   .action button {
     width: 94%;
+  }
+
+  .checkout-btn {
+    padding: 0.7em 1.2em;
+    font-weight: var(--semi-medium-font-weight);
+    border: 1px solid var(--primary);
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
   }
 </style>

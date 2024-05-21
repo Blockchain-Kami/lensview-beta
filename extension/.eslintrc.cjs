@@ -1,4 +1,7 @@
 module.exports = {
+  globals: {
+    chrome: 'readonly'
+  },
   root: true,
   extends: [
     "eslint:recommended",
