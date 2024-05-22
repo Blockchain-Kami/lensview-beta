@@ -2,7 +2,10 @@
   const { VITE_DOMAIN_NAME } = import.meta.env;
 
   const redirectToPostCreation = async () => {
-    const [tab] = await chrome.tabs.query({ active: true });
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    });
     console.log("tab : ", tab);
 
     if (!tab || !tab?.url) {

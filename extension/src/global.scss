@@ -113,7 +113,14 @@ option:hover {
 
 @font-face {
   font-family: "mona-sans";
-  src: url("lib/assets/Mona-Sans-SemiBoldWide.woff2") format("woff2");
+  src: url("./lib/assets/MonaSansExpanded-Regular.woff2") format("woff2");
+  font-weight: 200 900;
+  font-stretch: 75% 125%;
+}
+
+@font-face {
+  font-family: "mona-sans-semi-bold";
+  src: url("./lib/assets/MonaSansExpanded-SemiBold.woff2") format("woff2");
   font-weight: 200 900;
   font-stretch: 75% 125%;
 }
@@ -125,6 +132,7 @@ option:hover {
   --primary: #32f9ff;
   --secondary: #0d7377;
   --special-font: "mona-sans", "DM Sans", sans-serif;
+  --special-font-semi-bold: "mona-sans-semi-bold", "DM Sans", sans-serif;
   --text: #fff;
   --text-accent: #a1a1a1;
   --text-opacity: 0.7099999785423279;

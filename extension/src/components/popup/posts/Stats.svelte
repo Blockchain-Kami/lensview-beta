@@ -74,11 +74,13 @@
 
   .stats__list__item__count {
     font-size: var(--medium-font-size);
+    font-family: var(--special-font);
     margin-left: 0.5rem;
   }
 
   .stats__list__item__text {
     font-size: var(--small-font-size);
+    font-family: var(--special-font);
     color: var(--text-accent);
     margin-top: 0.4rem;
   }

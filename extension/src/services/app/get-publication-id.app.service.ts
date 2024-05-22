@@ -4,7 +4,10 @@ import type { UrlValidateResponseAppModel } from "../../models/app/responses/url
 
 const getPublicationIdAppService = async () => {
   try {
-    const [tab] = await chrome.tabs.query({ active: true });
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    });
     console.log("tab : ", tab);
 
     if (!tab || !tab?.url) {
