@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+
 import { putAnonymousCommentBodyRequestModel } from "../models/requests/body/put-anonymous-comment.body.request.model";
 import {
   PublicationResponseModel,
@@ -213,7 +214,8 @@ export const getSummaryCommentController = async (
       if (daysDiff < 15) {
         const response = {
           summary: publicationData.summary,
-          sentiment: publicationData.sentiment
+          sentiment: publicationData.sentiment,
+          lastUpdatedAt: daysDiff - 1
         };
         logger.info(
           "comments.controller.ts: getSummaryCommentController: Execution End. Publication summary updated less than 15 days ago. Summary: " +
@@ -231,8 +233,9 @@ export const getSummaryCommentController = async (
             "comments.controller.ts: getSummaryCommentController: Execution End "
           );
           res.status(httpStatusCodes.NO_CONTENT).send({
-            summary: "",
-            sentiment: ""
+            summary: "Sorry! We failed to generate a summary for this thread",
+            sentiment: "",
+            lastUpdatedAt: null
           });
         } else {
           logger.info(
@@ -257,8 +260,9 @@ export const getSummaryCommentController = async (
           "comments.controller.ts: getSummaryCommentController: Execution End "
         );
         res.status(httpStatusCodes.NO_CONTENT).send({
-          summary: "",
-          sentiment: ""
+          summary: "Sorry! We failed to generate a summary for this thread",
+          sentiment: "",
+          lastUpdatedAt: null
         });
       } else {
         logger.info(
@@ -278,8 +282,9 @@ export const getSummaryCommentController = async (
         error
     );
     res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
-      summary: "",
-      sentiment: ""
+      summary: "Sorry! We failed to generate a summary for this thread",
+      sentiment: "",
+      lastUpdatedAt: null
     });
   }
 };

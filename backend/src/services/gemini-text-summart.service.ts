@@ -1,8 +1,10 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+
 import { InternalServerError } from "../errors/internal-server-error.error";
 import { GEMINI_API_KEY } from "../config/env.config";
 import { logger } from "../log/log-manager.log";
 import { generationConfig, safetySettings } from "../config/gen-ai.config";
+import { summarySentiment } from "../config/app-constants.config";
 
 export const geminiTextSummartService = async (text: string) => {
   logger.info(
@@ -44,7 +46,8 @@ export const geminiTextSummartService = async (text: string) => {
 
     const responseObject = {
       summary: summary,
-      sentiment: sentiment
+      sentiment: translateSummarySentiment(sentiment.toUpperCase()),
+      lastUpdatedAt: 0
     };
     logger.info(
       "gemini-text-summart.service.ts: geminiTextSummartService: Execution Completed. Response Object: " +
@@ -57,5 +60,15 @@ export const geminiTextSummartService = async (text: string) => {
         error
     );
     throw new InternalServerError("Could not Fetch Summary From Gemini", 500);
+  }
+};
+
+const translateSummarySentiment = (sentiment: string) => {
+  if (sentiment === summarySentiment.POSITIVE) {
+    return "People are in support";
+  } else if (sentiment === summarySentiment.NEGATIVE) {
+    return "People are unimpressed";
+  } else {
+    return "Mixed bag of opinions";
   }
 };

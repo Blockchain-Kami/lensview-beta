@@ -10,3 +10,9 @@ export const httpStatusCodes = {
   INTERNAL_SERVER_ERROR: 500,
   SERVER_TIMEOUT: 504
 };
+
+export const summarySentiment = {
+  POSITIVE: "POSITIVE",
+  NEGATIVE: "NEGATIVE",
+  NEUTRAL: "NEUTRAL"
+};
