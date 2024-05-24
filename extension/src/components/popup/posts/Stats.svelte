@@ -36,7 +36,7 @@
         <p class="stats__list__item__text">Posts</p>
       </li>
     </ul>
-    <button on:click={redirectToPost}> Check out this on LensView </button>
+    <!--    <button on:click={redirectToPost}> Check this out on LensView </button>-->
   </section>
 {/await}
 

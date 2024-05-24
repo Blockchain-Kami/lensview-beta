@@ -29,7 +29,7 @@
   <p>
     It’s quiet in here, but you could <span style="color: var(--primary)"
       >share your view</span
-    > meanwhile to help out others!
+    > to help out others!
   </p>
 </article>
 

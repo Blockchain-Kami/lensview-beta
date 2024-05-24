@@ -40,7 +40,9 @@
       <p class="stats__list__item__text">Posts</p>
     </li>
   </ul>
-  <button on:click={redirectToAppSearch}> Check out this on LensView </button>
+  <button on:click={redirectToAppSearch}>
+    Taking too long? Check this out on LensView
+  </button>
 </section>
 
 <!------------------------------- STYLE ----------------------------->
