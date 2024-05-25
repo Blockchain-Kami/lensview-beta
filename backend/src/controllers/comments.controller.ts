@@ -215,7 +215,7 @@ export const getSummaryCommentController = async (
         const response = {
           summary: publicationData.summary,
           sentiment: publicationData.sentiment,
-          lastUpdatedAt: daysDiff - 1
+          lastUpdatedAt: publicationData.updatedAt
         };
         logger.info(
           "comments.controller.ts: getSummaryCommentController: Execution End. Publication summary updated less than 15 days ago. Summary: " +

@@ -20,7 +20,7 @@ export const updateCommentsSummaryDbUtil = async (
         "update-comments-summary.db.util.ts: updateCommentsSummaryDbUtil: Publication found in DB. Updating summary."
       );
       publicationToUpdate.summary = summary.summary;
-      publicationToUpdate.sentiment = summary.sentiment.toLowerCase();
+      publicationToUpdate.sentiment = summary.sentiment.toUpperCase();
       await publicationToUpdate.save();
     }
     logger.info(

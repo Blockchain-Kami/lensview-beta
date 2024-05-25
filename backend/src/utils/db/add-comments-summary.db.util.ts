@@ -15,7 +15,7 @@ export const addCommentsSummaryDbUtil = async (
     const newPublication = new Publication({
       id: publicationId,
       summary: summary.summary,
-      sentiment: summary.sentiment.toLowerCase()
+      sentiment: summary.sentiment.toUpperCase()
     });
     await newPublication.save();
     logger.info(

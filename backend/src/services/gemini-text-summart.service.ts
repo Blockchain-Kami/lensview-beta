@@ -47,7 +47,7 @@ export const geminiTextSummartService = async (text: string) => {
     const responseObject = {
       summary: summary,
       sentiment: translateSummarySentiment(sentiment.toUpperCase()),
-      lastUpdatedAt: 0
+      lastUpdatedAt: null
     };
     logger.info(
       "gemini-text-summart.service.ts: geminiTextSummartService: Execution Completed. Response Object: " +
@@ -64,11 +64,11 @@ export const geminiTextSummartService = async (text: string) => {
 };
 
 const translateSummarySentiment = (sentiment: string) => {
-  if (sentiment === summarySentiment.POSITIVE) {
-    return "People are in support";
-  } else if (sentiment === summarySentiment.NEGATIVE) {
-    return "People are unimpressed";
+  if (sentiment == summarySentiment.POSITIVE) {
+    return summarySentiment.POSITIVE;
+  } else if (sentiment == summarySentiment.NEGATIVE) {
+    return summarySentiment.NEGATIVE;
   } else {
-    return "Mixed bag of opinions";
+    return summarySentiment.NEUTRAL;
   }
 };
