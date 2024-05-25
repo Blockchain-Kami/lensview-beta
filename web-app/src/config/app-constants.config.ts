@@ -21,5 +21,5 @@ export enum AttributeKeyType {
   app = "app",
   createdOn = "createdOn",
   mainPostImageUrl = "mainPostImageUrl",
-  mainPostUrl = "mainPostUrl",
+  mainPostUrl = "mainPostUrl"
 }

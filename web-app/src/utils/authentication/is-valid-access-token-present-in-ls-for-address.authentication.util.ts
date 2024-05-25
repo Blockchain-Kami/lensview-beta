@@ -61,6 +61,7 @@ const ableToStoreIDsAndHandles = async (address: string) => {
     !profilesManagedItems ||
     (profilesManagedItems && profilesManagedItems.length === 0)
   ) {
+    idsAndHandlesUserStore.setUserIDsAndHandles([]);
     return false;
   } else {
     const idsAndHandles: IdAndHandleModel[] = [];

@@ -109,7 +109,7 @@
         position: "top-right",
         heading: "Post on its way!",
         description:
-          "Your post is getting polished and please wait for Metamask approval! Thanks for your patience.",
+          "Your post is getting polished! Thanks for your patience.",
         type: sendClock
       });
 

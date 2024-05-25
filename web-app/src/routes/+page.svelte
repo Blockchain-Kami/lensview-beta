@@ -36,6 +36,7 @@
   import type { CommentsPublicationLensModel } from "../models/lens/comments-publication.lens.model";
   import { goto } from "$app/navigation";
   import NoWebPageImg from "$lib/assets/NoWebPageImg.png";
+  import { page } from "$app/stores";
   const { VITE_APP_LENS_ID } = import.meta.env;
 
   type KeyStringValBoolean = {
@@ -50,8 +51,12 @@
     threshold: 1
   };
   let isInView: KeyStringValBoolean = {};
+  let userEnteredUrl = "";
+  let isUrlInvalid = true;
 
   onMount(() => {
+    checkSearchQueryForOpeningCreateModal();
+
     metaTagsTitle.setMetaTagsTitle("LensView");
     metaTagsDescription.setMetaTagsDescription(
       "The omnipresent comment section to discuss, fact-check, and share your views about any web page"
@@ -61,6 +66,16 @@
     );
     metaTagsImageAlt.setMetaTagsImageAlt("LensView Banner Image");
   });
+
+  const checkSearchQueryForOpeningCreateModal = () => {
+    const composeVal = $page.url.searchParams.get("compose");
+
+    if (composeVal) {
+      showAddNewPostModal = true;
+      userEnteredUrl = decodeURI(composeVal);
+      isUrlInvalid = false;
+    }
+  };
 
   const handleChange = (
     event: CustomEvent<ObserverEventDetails>,
@@ -292,9 +307,7 @@
   </section>
 </MediaQuery>
 
-<AddNewPost bind:showAddNewPostModal />
-
-}
+<AddNewPost {userEnteredUrl} {isUrlInvalid} bind:showAddNewPostModal />
 
 <!----------------------------------------------------------------->
 
@@ -554,7 +567,7 @@
 
   .card__post__info__body {
     height: 5.2rem;
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
     overflow: hidden;
   }
 
