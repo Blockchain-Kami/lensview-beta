@@ -55,9 +55,9 @@ const getRoughDate = (date: string) => {
   } else if (diffDays < 365) {
     const diffMonths = Math.floor(diffDays / 30);
     if (diffMonths === 1) {
-      return `${diffMonths}m`;
+      return `${diffMonths}mo`;
     } else {
-      return `${diffMonths}m`;
+      return `${diffMonths}mo`;
     }
   } else {
     const diffYears = Math.floor(diffDays / 365);

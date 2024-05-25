@@ -10,11 +10,13 @@
   import Autolinker from "autolinker";
   import DOMPurify from "dompurify";
   import { tooltip } from "@svelte-plugins/tooltips";
+  import { TotalImagePostsStore } from "../../../stores/total-image-posts.store";
   const { VITE_APP_LENS_ID } = import.meta.env;
   const { VITE_IMAGE_PUB } = import.meta.env;
   const { VITE_DOMAIN_NAME } = import.meta.env;
 
   export let pubId;
+  let totalImagePostCount = 0;
 
   let promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
     pubId,
@@ -27,6 +29,12 @@
 
   const redirectToPost = () => {
     window.open(`https://${VITE_DOMAIN_NAME}/posts/${pubId}`, "_blank");
+  };
+
+  const updateTotalImagePosts = () => {
+    totalImagePostCount++;
+    TotalImagePostsStore.setTotalImagePosts(totalImagePostCount);
+    return "";
   };
 </script>
 
@@ -129,6 +137,8 @@
             </div>
           </a>
         </li>
+      {:else}
+        {updateTotalImagePosts()}
       {/if}
     {/each}
   </ul>

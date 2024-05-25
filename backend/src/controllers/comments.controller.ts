@@ -25,6 +25,7 @@ import { httpStatusCodes } from "../config/app-constants.config";
 import { APP_LENS_HANDLE } from "../config/env.config";
 import { imageQueue } from "../jobs/add-image-queue.job";
 import { logger } from "../log/log-manager.log";
+import { SummaryQueryRequestModel } from "../models/requests/query/summary.query.request.model";
 
 /**
  * Adds a URL or a post comment to the system.
@@ -196,14 +197,14 @@ export const putAnonymousCommentController = async (
 };
 
 export const getSummaryCommentController = async (
-  req: Request,
+  req: Request<unknown, unknown, unknown, SummaryQueryRequestModel>,
   res: Response<CommentsSummaryResponseModel>
 ) => {
   try {
     logger.info(
       "comments.controller.ts: getSummaryCommentController: Execution Started."
     );
-    const publicationId = req.body.pubId;
+    const publicationId = req.query.pubId;
     const publicationData = await getPublicationDbUtil(publicationId);
     if (publicationData) {
       logger.info(

@@ -3,15 +3,11 @@
   import { feather, thumbUpAlt } from "../../../utils/app-icon.util";
   import getLinkPublicationLensService from "../../../services/lens/get-link-publication.lens.service";
   import StatsLoader from "./StatsLoader.svelte";
-  const { VITE_DOMAIN_NAME } = import.meta.env;
+  import { TotalImagePostsStore } from "../../../stores/total-image-posts.store";
 
   export let pubId;
 
   let promiseOfGetMainPost = getLinkPublicationLensService(pubId);
-
-  const redirectToPost = () => {
-    window.open(`https://${VITE_DOMAIN_NAME}/posts/${pubId}`, "_blank");
-  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -32,11 +28,12 @@
         <div class="CenterRowFlex stats__list__item__icon">
           <Icon d={feather} size="2em" fill="black" />
         </div>
-        <p class="stats__list__item__count">{mainPostPub?.stats?.comments}</p>
+        <p class="stats__list__item__count">
+          {mainPostPub?.stats?.comments - $TotalImagePostsStore}
+        </p>
         <p class="stats__list__item__text">Posts</p>
       </li>
     </ul>
-    <!--    <button on:click={redirectToPost}> Check this out on LensView </button>-->
   </section>
 {/await}
 

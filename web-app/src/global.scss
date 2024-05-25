@@ -289,6 +289,11 @@ a {
   --tooltip-arrow-size: 10px;
 }
 
+@keyframes shine {
+  to {
+    background-position-x: -200%;
+  }
+}
 
 @media only screen and (max-width: 600px){
   body{

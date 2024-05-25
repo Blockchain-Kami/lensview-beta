@@ -41,30 +41,30 @@ const getRoughDate = (date: string) => {
       const diffMinutes = Math.floor(diffTime / (1000 * 60));
       if (diffMinutes === 0) {
         const diffSeconds = Math.floor(diffTime / 1000);
-        return `${diffSeconds} sec ago`;
+        return `${diffSeconds}s`;
       } else {
-        return `${diffMinutes} min ago`;
+        return `${diffMinutes}m`;
       }
     } else {
-      return `${diffHours} hours ago`;
+      return `${diffHours}h`;
     }
   } else if (diffDays === 1) {
-    return `${diffDays} day ago`;
+    return `${diffDays}d`;
   } else if (diffDays < 30) {
-    return `${diffDays} days ago`;
+    return `${diffDays}d`;
   } else if (diffDays < 365) {
     const diffMonths = Math.floor(diffDays / 30);
     if (diffMonths === 1) {
-      return `${diffMonths} month ago`;
+      return `${diffMonths}mo`;
     } else {
-      return `${diffMonths} months ago`;
+      return `${diffMonths}mo`;
     }
   } else {
     const diffYears = Math.floor(diffDays / 365);
     if (diffYears === 1) {
-      return `${diffYears} year ago`;
+      return `${diffYears}y`;
     } else {
-      return `${diffYears} years ago`;
+      return `${diffYears}y`;
     }
   }
 };
