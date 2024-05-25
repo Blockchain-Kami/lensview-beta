@@ -11,8 +11,8 @@ export const httpStatusCodes = {
   SERVER_TIMEOUT: 504
 };
 
-export const summarySentiment = {
-  POSITIVE: "POSITIVE",
-  NEGATIVE: "NEGATIVE",
-  NEUTRAL: "NEUTRAL"
-};
+export enum summarySentiment {
+  POSITIVE = "POSITIVE",
+  NEGATIVE = "NEGATIVE",
+  NEUTRAL = "NEUTRAL"
+}
