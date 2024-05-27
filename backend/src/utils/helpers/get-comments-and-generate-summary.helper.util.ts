@@ -28,7 +28,10 @@ export const getCommentsAndGenerateSummaryHelperUtil = async (
       "get-comments-and-generate-summary.helper.util.ts: getCommentsAndGenerateSummaryHelperUtil: Execution Ended. Summary: " +
         JSON.stringify(summary)
     );
-    return summary;
+    return {
+      summary: summary,
+      commentCount: textOnlyComments.items.length
+    };
   } catch (error) {
     logger.error(
       "get-comments-and-generate-summary.helper.util.ts: getCommentsAndGenerateSummaryHelperUtil: Failed to generate summary. Error: " +
