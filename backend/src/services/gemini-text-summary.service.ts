@@ -6,9 +6,9 @@ import { logger } from "../log/log-manager.log";
 import { generationConfig, safetySettings } from "../config/gen-ai.config";
 import { summarySentiment } from "../config/app-constants.config";
 
-export const geminiTextSummartService = async (text: string) => {
+export const geminiTextSummaryService = async (text: string) => {
   logger.info(
-    "gemini-text-summart.service.ts: geminiTextSummartService: Execution Started."
+    "gemini-text-summary.service.ts: geminiTextSummartService: Execution Started."
   );
   try {
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
@@ -47,16 +47,16 @@ export const geminiTextSummartService = async (text: string) => {
     const responseObject = {
       summary: summary,
       sentiment: translateSummarySentiment(sentiment.toUpperCase()),
-      lastUpdatedAt: null
+      lastUpdatedAt: new Date()
     };
     logger.info(
-      "gemini-text-summart.service.ts: geminiTextSummartService: Execution Completed. Response Object: " +
+      "gemini-text-summary.service.ts: geminiTextSummartService: Execution Completed. Response Object: " +
         responseObject
     );
     return responseObject;
   } catch (error) {
     logger.error(
-      "gemini-text-summart.service.ts: geminiTextSummartService: Error in execution. " +
+      "gemini-text-summary.service.ts: geminiTextSummartService: Error in execution. " +
         error
     );
     throw new InternalServerError("Could not Fetch Summary From Gemini", 500);
