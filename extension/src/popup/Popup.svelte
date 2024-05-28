@@ -1,7 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import getChallengeInfoLensService from "../services/lens/get-challenge-info.lens.service";
-  import getPublicationIdAppService from "../services/app/get-publication-id.app.service";
   import Icon from "../lib/Icon.svelte";
   import { feather, notificationNone } from "../utils/app-icon.util";
   import { NavItems } from "../config/app-constants.config";
@@ -13,25 +10,6 @@
 
   const handleItemClick = (item: NavItems) => {
     activeItem = item;
-  };
-
-  onMount(() => {
-    test();
-
-    testlensviewAPI();
-  });
-
-  const test = async () => {
-    const challenge = await getChallengeInfoLensService(
-      "0xa03dbDA93D960BBDa97B9a2F74729de186C22638",
-      "0x018776"
-    );
-    console.log("challenge: ", challenge);
-  };
-
-  const testlensviewAPI = async () => {
-    const resp = await getPublicationIdAppService();
-    console.log("resp : ", resp);
   };
 </script>
 
