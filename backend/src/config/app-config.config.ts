@@ -14,7 +14,10 @@ export const ALLOWED_ORIGINS = {
     "https://testnet.lensview.io",
     "chrome-extension://nofkbijjbdeenhlekpehmkdoopfccdkf"
   ],
-  PRODUCTION: ["https://lensview.io"]
+  PRODUCTION: [
+    "https://lensview.io",
+    "chrome-extension://bhbcbfcabkodjhgkjccnoflnffcfkfnd"
+  ]
 };
 
 export const getPostMethod = () => {
