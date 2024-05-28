@@ -6,7 +6,8 @@ import { httpStatusCodes } from "../../config/app-constants.config";
 
 export const updateCommentsSummaryDbUtil = async (
   publicationId: string,
-  summary: CommentsSummaryResponseModel
+  summary: CommentsSummaryResponseModel,
+  newCommentCount: number
 ) => {
   logger.info(
     "update-comments-summary.db.util.ts: updateCommentsSummaryDbUtil: Execution Started."
@@ -21,6 +22,7 @@ export const updateCommentsSummaryDbUtil = async (
       );
       publicationToUpdate.summary = summary.summary;
       publicationToUpdate.sentiment = summary.sentiment.toUpperCase();
+      publicationToUpdate.commentCount = newCommentCount;
       await publicationToUpdate.save();
     }
     logger.info(
