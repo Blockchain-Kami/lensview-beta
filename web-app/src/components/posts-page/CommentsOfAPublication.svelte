@@ -1,5 +1,6 @@
 <script lang="ts">
   import {
+    ai,
     copy,
     cross,
     login,
@@ -40,6 +41,8 @@
   import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
   import MediaQuery from "$lib/MediaQuery.svelte";
   import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
+  import SummarizePublications from "./SummarizePublications.svelte";
+  import { TotalImagePostsStore } from "../../stores/total-image-posts.store";
   const { VITE_APP_LENS_ID } = import.meta.env;
   const { VITE_IMAGE_PUB } = import.meta.env;
 
@@ -53,6 +56,8 @@
   let selectedFilterType = CommentFilterType.LatestComments;
   let showLoginModal = false;
   let reactionDetails: ReactionDetailsModel = {};
+  let isSummaryOpen = false;
+  let totalImagePostCount = 0;
 
   let promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
     commentPubId,
@@ -252,6 +257,12 @@
   const getHandle = (comment: CommentsPublicationLensModel) => {
     return comment.by?.handle?.fullHandle.substring(5);
   };
+
+  const updateTotalImagePosts = () => {
+    totalImagePostCount++;
+    TotalImagePostsStore.setTotalImagePosts(totalImagePostCount);
+    return "";
+  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -270,15 +281,28 @@
         </select>
       </div>
       <hr class="filter__line" />
-      <div class="filter__comment-count">
+      <button
+        on:click={() => {
+          isSummaryOpen = true;
+        }}
+        disabled={isSummaryOpen}
+        class="CenterRowFlex filter__comment-count btn-alt"
+      >
+        <span class="CenterRowFlex">
+          <Icon d={ai} size="1.7em" viewBox="-2 -2 24 24" />
+        </span>
+        Summarize
         {#if $page.data.postPubId === undefined}
-          {$totalPostsStore} &nbsp;Posts
+          {$totalPostsStore - $TotalImagePostsStore} Posts
         {:else}
-          {$totalCommentsStore} &nbsp;Comments
+          {$totalCommentsStore - $TotalImagePostsStore} Comments
         {/if}
-      </div>
+      </button>
     </div>
     <div class="CenterColumnFlex body">
+      {#if isSummaryOpen}
+        <SummarizePublications mainPubId={commentPubId} />
+      {/if}
       {#await promiseOfGetComments}
         <div class="comment">
           <div class="comment__pic__loader" />
@@ -501,6 +525,8 @@
                 </div>
               </div>
             </a>
+          {:else}
+            {updateTotalImagePosts()}
           {/if}
         {/each}
       {/await}
@@ -541,6 +567,8 @@
   }
 
   .filter__comment-count {
+    gap: 0.7rem;
+    padding: 0.3em 1.2em;
     margin-left: auto;
     min-width: fit-content;
   }
@@ -701,12 +729,6 @@
     height: 5rem;
     border-radius: 10px;
     margin-top: 1rem;
-  }
-
-  @keyframes shine {
-    to {
-      background-position-x: -200%;
-    }
   }
 
   .comment__body__top__left__loader,
