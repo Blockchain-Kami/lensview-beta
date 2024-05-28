@@ -6,7 +6,7 @@ export default defineManifest(() => ({
   version: "1.0.0",
   description:
     "The omnipresent comment section to discuss, fact-check, and share your views about any web page",
-  permissions: ["tabs"],
+  permissions: ["activeTab"],
   action: {
     default_title: "Share on LensView",
     default_icon: {
