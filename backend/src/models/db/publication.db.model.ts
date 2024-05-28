@@ -20,6 +20,15 @@ const PublicationSchema = new Schema(
       type: Number,
       default: 0,
       required: true
+    },
+    commentCount: {
+      type: Number,
+      default: 0,
+      required: true
+    },
+    isHidden: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }
