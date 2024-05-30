@@ -1,4 +1,7 @@
-## [lensview.io](https://lensview.io/)🔗
+<br>
+<div align="center">
+    <a href="https://lensview.io/" style="font-size: x-large" target="_blank"><b>lensview.io↗️</b></a>
+</div>
 
 ## 🌿 About LensView
 
