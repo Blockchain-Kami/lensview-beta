@@ -72,7 +72,8 @@
 
     if (composeVal) {
       showAddNewPostModal = true;
-      userEnteredUrl = decodeURI(composeVal);
+      userEnteredUrl = decodeURIComponent(composeVal);
+      // console.log("userEnteredUrl : ", userEnteredUrl);
       isUrlInvalid = false;
     }
   };
@@ -117,7 +118,7 @@
 <!----------------------------- HTML ----------------------------->
 <div class="youtube-link">
   <u class="youtube-link__video">
-    <a href="https://youtu.be/Q-Ni7IC5kxI?si=Y7yhWSOSFbW1U6jD" target="_blank">
+    <a href="https://www.youtube.com/watch?v=k5HQXqcYkRA" target="_blank">
       Check out this video
     </a>
   </u>

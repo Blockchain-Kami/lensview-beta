@@ -14,7 +14,7 @@ const getFormattedDateHelperUtil = (
     return getExactDate(date);
   }
 
-  return getRoughDate(date);
+  return getRoughDate(date)
 };
 
 /**
@@ -41,30 +41,30 @@ const getRoughDate = (date: string) => {
       const diffMinutes = Math.floor(diffTime / (1000 * 60));
       if (diffMinutes === 0) {
         const diffSeconds = Math.floor(diffTime / 1000);
-        return `${diffSeconds}s`;
+        return `${diffSeconds}s ago`;
       } else {
-        return `${diffMinutes}m`;
+        return `${diffMinutes}m ago`;
       }
     } else {
-      return `${diffHours}h`;
+      return `${diffHours}h ago`;
     }
   } else if (diffDays === 1) {
-    return `${diffDays}d`;
+    return `${diffDays}d ago`;
   } else if (diffDays < 30) {
-    return `${diffDays}d`;
+    return `${diffDays}d ago`;
   } else if (diffDays < 365) {
     const diffMonths = Math.floor(diffDays / 30);
     if (diffMonths === 1) {
-      return `${diffMonths}mo`;
+      return `${diffMonths}mo ago`;
     } else {
-      return `${diffMonths}mo`;
+      return `${diffMonths}mo ago`;
     }
   } else {
     const diffYears = Math.floor(diffDays / 365);
     if (diffYears === 1) {
-      return `${diffYears}y`;
+      return `${diffYears}y ago`;
     } else {
-      return `${diffYears}y`;
+      return `${diffYears}y ago`;
     }
   }
 };

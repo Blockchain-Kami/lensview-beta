@@ -65,6 +65,7 @@
   );
 
   const updatedpromiseOfGetComments = () => {
+    resetTotalImagePosts();
     promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
       commentPubId,
       LimitType.Fifty,
@@ -73,6 +74,7 @@
   };
 
   $: if (commentPubId !== $page.data.commentPubId) {
+    resetTotalImagePosts();
     commentPubId = $page.data.commentPubId;
     promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
       commentPubId,
@@ -83,6 +85,8 @@
   }
 
   onMount(() => {
+    console.log("On Mount called for commentsOfPublication");
+    resetTotalImagePosts();
     reloadCommentOfAPublication.subscribe((val) => {
       console.log("Reloaded comment of a publication" + val);
       promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
@@ -263,6 +267,12 @@
     TotalImagePostsStore.setTotalImagePosts(totalImagePostCount);
     return "";
   };
+
+  const resetTotalImagePosts = () => {
+    isSummaryOpen = false;
+    totalImagePostCount = 0;
+    TotalImagePostsStore.setTotalImagePosts(0);
+  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -281,27 +291,30 @@
         </select>
       </div>
       <hr class="filter__line" />
-      <button
-        on:click={() => {
-          isSummaryOpen = true;
-        }}
-        disabled={isSummaryOpen}
-        class="CenterRowFlex filter__comment-count btn-alt"
-      >
-        <span class="CenterRowFlex">
-          <Icon d={ai} size="1.7em" viewBox="-2 -2 24 24" />
-        </span>
-        Summarize
-        {#if $page.data.postPubId === undefined}
+      {#if $page.data.postPubId === undefined}
+        <button
+          on:click={() => {
+            isSummaryOpen = true;
+          }}
+          disabled={isSummaryOpen ||
+            $totalPostsStore - $TotalImagePostsStore === 0}
+          class="CenterRowFlex filter__comment-count btn-alt"
+        >
+          <span class="CenterRowFlex">
+            <Icon d={ai} size="1.7em" viewBox="-2 -2 24 24" />
+          </span>
+          Summarize
           {$totalPostsStore - $TotalImagePostsStore} Posts
-        {:else}
-          {$totalCommentsStore - $TotalImagePostsStore} Comments
-        {/if}
-      </button>
+        </button>
+      {:else}
+        <div class="filter__comment-count">
+          {$totalCommentsStore} &nbsp;Comment(s)
+        </div>
+      {/if}
     </div>
     <div class="CenterColumnFlex body">
       {#if isSummaryOpen}
-        <SummarizePublications mainPubId={commentPubId} />
+        <SummarizePublications mainPubId={commentPubId} bind:isSummaryOpen />
       {/if}
       {#await promiseOfGetComments}
         <div class="comment">
