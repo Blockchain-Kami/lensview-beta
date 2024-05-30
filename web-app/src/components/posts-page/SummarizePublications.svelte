@@ -4,7 +4,8 @@
   import {
     positiveSentiment,
     neutralSentiment,
-    negativeSentiment
+    negativeSentiment,
+    cross
   } from "../../utils/app-icon.util";
   import LensViewAI from "$lib/assets/lensview-ai.jpg";
   import summarizePublicationsAppService from "../../services/app/summarize-publications.app.service";
@@ -12,12 +13,15 @@
     SentimentColor,
     summarySentiment
   } from "../../config/app-constants.config";
+  import { getNotificationsContext } from "svelte-notifications";
 
   export let mainPubId;
+  export let isSummaryOpen;
   let sentimentColor = SentimentColor.neutral;
   let sentimentIcon = neutralSentiment;
   const promiseOfSummarizePublications =
     summarizePublicationsAppService(mainPubId);
+  const { addNotification } = getNotificationsContext();
 
   const updateSentimentVariable = (sentiment: summarySentiment) => {
     if (sentiment === summarySentiment.positive) {
@@ -32,6 +36,17 @@
     }
 
     return "";
+  };
+
+  const showErrorNotification = () => {
+    isSummaryOpen = false;
+    addNotification({
+      position: "top-right",
+      heading: "Failed To Summarize",
+      description: "Please try again to get the summary",
+      type: cross,
+      removeAfter: 20000
+    });
   };
 </script>
 
@@ -99,6 +114,8 @@
       {summaryResponse.summary}
     </div>
   </article>
+{:catch _error}
+  {showErrorNotification()}
 {/await}
 
 <!----------------------------- STYLE ----------------------------->

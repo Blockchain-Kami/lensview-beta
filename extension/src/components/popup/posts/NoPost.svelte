@@ -12,7 +12,7 @@
       throw new Error("tab not found");
     }
     window.open(
-      `https://${VITE_DOMAIN_NAME}?compose=${encodeURI(tab?.url)}`,
+      `https://${VITE_DOMAIN_NAME}?compose=${encodeURIComponent(tab?.url)}`,
       "_blank"
     );
   };
