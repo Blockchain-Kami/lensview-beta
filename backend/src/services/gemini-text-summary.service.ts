@@ -1,10 +1,11 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-import { InternalServerError } from "../errors/internal-server-error.error";
-import { GEMINI_API_KEY } from "../config/env.config";
-import { logger } from "../log/log-manager.log";
-import { generationConfig, safetySettings } from "../config/gen-ai.config";
-import { summarySentiment } from "../config/app-constants.config";
+import { InternalServerError } from "../errors/internal-server-error.error.js";
+import { summarySentiment } from "../config/app-constants.config.js";
+
+import { GEMINI_API_KEY } from "../config/env.config.js";
+import { logger } from "../log/log-manager.log.js";
+import { generationConfig, safetySettings } from "../config/gen-ai.config.js";
 
 export const geminiTextSummaryService = async (text: string) => {
   logger.info(

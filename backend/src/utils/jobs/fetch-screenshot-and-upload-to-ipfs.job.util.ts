@@ -1,9 +1,11 @@
 import puppeteer from "puppeteer";
-import { NFT_STORAGE_TOKEN } from "../../config/env.config";
 import { NFTStorage, Blob, CIDString } from "nft.storage";
-import { minimal_args } from "../../config/puppetteer.config";
-import { InternalServerError } from "../../errors/internal-server-error.error";
-import { logger } from "../../log/log-manager.log";
+
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
+
+import { NFT_STORAGE_TOKEN } from "../../config/env.config.js";
+import { minimal_args } from "../../config/puppetteer.config.js";
+import { logger } from "../../log/log-manager.log.js";
 // import { CIDString, Web3Storage, File } from "web3.storage";
 // import { Blob } from "buffer";
 

@@ -1,4 +1,5 @@
 import { HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+
 export const generationConfig = {
   temperature: 0.9,
   topK: 1,

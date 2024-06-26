@@ -1,10 +1,13 @@
 import fs from "fs";
 import { Blob, NFTStorage } from "nft.storage";
-import { MetadataObjectModel } from "../../models/metadata-object.model";
-import { makeGatewayURLImage } from "../jobs/fetch-screenshot-and-upload-to-ipfs.job.util";
-import { createMetaDataForImageCommentHelperUtil } from "./create-metadata.helper.util";
-import { NFT_STORAGE_TOKEN } from "../../config/env.config";
-import { logger } from "../../log/log-manager.log";
+
+import { MetadataObjectModel } from "../../models/metadata-object.model.js";
+
+import { makeGatewayURLImage } from "../jobs/fetch-screenshot-and-upload-to-ipfs.job.util.js";
+import { createMetaDataForImageCommentHelperUtil } from "./create-metadata.helper.util.js";
+
+import { NFT_STORAGE_TOKEN } from "../../config/env.config.js";
+import { logger } from "../../log/log-manager.log.js";
 
 export const uploadImageFromDisk = async (
   filename: string,

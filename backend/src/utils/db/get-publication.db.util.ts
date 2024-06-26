@@ -1,7 +1,8 @@
-import { InternalServerError } from "../../errors/internal-server-error.error";
-import Publication from "../../models/db/publication.db.model";
-import { httpStatusCodes } from "../../config/app-constants.config";
-import { logger } from "../../log/log-manager.log";
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
+
+import Publication from "../../models/db/publication.db.model.js";
+import { httpStatusCodes } from "../../config/app-constants.config.js";
+import { logger } from "../../log/log-manager.log.js";
 
 export const getPublicationDbUtil = async (publicationId: string) => {
   try {

@@ -1,7 +1,9 @@
-import broadcastOnchainMutationGraphql from "../../graphql/mutations/broadcast-onchain.mutation.graphql";
-import { logger } from "../../log/log-manager.log";
 import type { BroadcastRequest } from "../../gql/graphql";
-import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util";
+
+import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util.js";
+
+import broadcastOnchainMutationGraphql from "../../graphql/mutations/broadcast-onchain.mutation.graphql.js";
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Broadcasts the given request onchain using the lens service.

@@ -1,30 +1,35 @@
-import type {
-  CreateOnchainPostBroadcastItemResult,
-  OnchainPostRequest,
-  RelayError,
-  RelaySuccess
-} from "../../gql/graphql";
-import {
-  USE_GASLESS,
-  APP_ADDRESS,
-  LENS_HUB_CONTRACT_ADDRESS
-} from "../../config/env.config";
-import LENS_HUB_ABI from "../../abis/lens-hub-contract.abi.json";
-import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util";
-import createOnchainPostTypedDataLensService from "../../services/lens/create-onchain-post-typed-data.lens.service";
-import broadcastOnchainRequestService from "../../services/lens/broadcast-onchain-request.lens.service";
-import { waitUntilBroadcastIsCompleteTransactionUtil } from "../transaction/wait-until-broadcast-is-complete.transaction.util";
-import { signedTypeDataForPostHelperUtil } from "../helpers/sign-type-data.helper.util";
-import { splitSignatureHelperUtil } from "../helpers/split-signature.helper.utils";
-import { createContractHelperUtils } from "../helpers/create-contract.helper.utils";
-import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util";
-import { getPolygonGasPriceHelperUtil } from "../helpers/get-polygon-gas-price.helper.utils";
 import {
   ImageMetadata,
   LinkMetadata,
   TextOnlyMetadata
 } from "@lens-protocol/metadata";
-import { logger } from "../../log/log-manager.log";
+
+import type {
+  CreateOnchainPostBroadcastItemResult,
+  OnchainPostRequest,
+  RelayError,
+  RelaySuccess
+} from "../../gql/graphql.js";
+
+import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util.js";
+import createOnchainPostTypedDataLensService from "../../services/lens/create-onchain-post-typed-data.lens.service.js";
+import broadcastOnchainRequestService from "../../services/lens/broadcast-onchain-request.lens.service.js";
+import { waitUntilBroadcastIsCompleteTransactionUtil } from "../transaction/wait-until-broadcast-is-complete.transaction.util.js";
+import { signedTypeDataForPostHelperUtil } from "../helpers/sign-type-data.helper.util.js";
+import { splitSignatureHelperUtil } from "../helpers/split-signature.helper.utils.js";
+import { createContractHelperUtils } from "../helpers/create-contract.helper.utils.js";
+import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util.js";
+import { getPolygonGasPriceHelperUtil } from "../helpers/get-polygon-gas-price.helper.utils.js";
+
+// @ts-expect-error known issue
+import LENS_HUB_ABI from "../../abis/lens-hub-contract.abi.json" assert { type: "json" };
+
+import {
+  USE_GASLESS,
+  APP_ADDRESS,
+  LENS_HUB_CONTRACT_ADDRESS
+} from "../../config/env.config.js";
+import { logger } from "../../log/log-manager.log.js";
 
 const postOnChainPublicationUtil = async (
   metadata: LinkMetadata | TextOnlyMetadata | ImageMetadata

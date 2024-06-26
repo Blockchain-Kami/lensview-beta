@@ -1,10 +1,11 @@
-import lensTransactionStatusQueryGraphql from "../../graphql/queries/lens-transaction-status.query.graphql";
-import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util";
-import { logger } from "../../log/log-manager.log";
 import type {
   LensTransactionStatusQuery,
   LensTransactionStatusRequest
-} from "../../gql/graphql";
+} from "../../gql/graphql.js";
+
+import lensTransactionStatusQueryGraphql from "../../graphql/queries/lens-transaction-status.query.graphql.js";
+import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util.js";
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Checks if a transaction has been indexed in the Lens service.

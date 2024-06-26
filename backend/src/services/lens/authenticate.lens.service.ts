@@ -1,7 +1,8 @@
-import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util";
-import authenticateGraphql from "../../graphql/mutations/authenticate.query.graphql";
-import { logger } from "../../log/log-manager.log";
-import { SignedAuthChallenge } from "../../gql/graphql";
+import { SignedAuthChallenge } from "../../gql/graphql.js";
+
+import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util.js";
+import authenticateGraphql from "../../graphql/mutations/authenticate.query.graphql.js";
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Authenticate the service using a signed authentication challenge.

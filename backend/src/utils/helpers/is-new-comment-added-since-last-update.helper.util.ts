@@ -1,4 +1,4 @@
-import { getTextOnlyCommentsOnPublicationLensService } from "../../services/lens/get-text-only-comments-on-publication.lens.service";
+import { getTextOnlyCommentsOnPublicationLensService } from "../../services/lens/get-text-only-comments-on-publication.lens.service.js";
 
 export const isNewCommentAddedSinceLastUpdateHelperUtil = async (
   currentCommentCount: number,

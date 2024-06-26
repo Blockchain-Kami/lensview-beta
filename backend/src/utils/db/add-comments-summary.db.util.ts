@@ -1,8 +1,9 @@
-import { CommentsSummaryResponseModel } from "../../models/response/comments-summary.response.model";
-import { InternalServerError } from "../../errors/internal-server-error.error";
-import Publication from "../../models/db/publication.db.model";
-import { logger } from "../../log/log-manager.log";
-import { httpStatusCodes } from "../../config/app-constants.config";
+import { CommentsSummaryResponseModel } from "../../models/response/comments-summary.response.model.js";
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
+
+import Publication from "../../models/db/publication.db.model.js";
+import { logger } from "../../log/log-manager.log.js";
+import { httpStatusCodes } from "../../config/app-constants.config.js";
 
 export const addCommentsSummaryDbUtil = async (
   publicationId: string,

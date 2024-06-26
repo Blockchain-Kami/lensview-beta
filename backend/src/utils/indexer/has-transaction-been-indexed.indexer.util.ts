@@ -1,7 +1,11 @@
-import hasTxBeenIndexedLensService from "../../services/lens/has-tx-been-indexed.lens.service";
-import { LensTransactionStatusType } from "../../gql/graphql";
-import type { LensTransactionStatusQuery } from "../../gql/graphql";
-import { logger } from "../../log/log-manager.log";
+import {
+  LensTransactionStatusType,
+  LensTransactionStatusQuery
+} from "../../gql/graphql.js";
+
+import hasTxBeenIndexedLensService from "../../services/lens/has-tx-been-indexed.lens.service.js";
+
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Waits until the specified transaction is complete and returns the transaction status query.

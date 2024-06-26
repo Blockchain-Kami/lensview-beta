@@ -1,8 +1,10 @@
-import { preprocessURLHelperUtil } from "../helpers/preprocess-url.helper.util";
-import { relatedParentPublicationsLensService } from "../../services/lens/related-parent-publications.lens.service";
-import { InternalServerError } from "../../errors/internal-server-error.error";
-import { logger } from "../../log/log-manager.log";
-import { FAILURE, SUCCESS } from "../../config/app-constants.config";
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
+
+import { preprocessURLHelperUtil } from "../helpers/preprocess-url.helper.util.js";
+import { relatedParentPublicationsLensService } from "../../services/lens/related-parent-publications.lens.service.js";
+
+import { logger } from "../../log/log-manager.log.js";
+import { FAILURE, SUCCESS } from "../../config/app-constants.config.js";
 
 /**
  * Retrieves the publications related to a given URL.

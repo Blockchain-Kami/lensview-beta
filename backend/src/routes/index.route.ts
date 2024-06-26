@@ -1,8 +1,9 @@
 import express, { Request, Response } from "express";
-import publicationRoutes from "./publications.route";
-import commentRoutes from "./comments.route";
-import urlRoutes from "./url.route";
-import adminRoutes from "./admin.route";
+
+import publicationRoutes from "./publications.route.js";
+import commentRoutes from "./comments.route.js";
+import urlRoutes from "./url.route.js";
+import adminRoutes from "./admin.route.js";
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
-import { graphql } from "../../gql";
+import { gql } from "@urql/core";
 
-const broadcastOnchainMutationGraphql = graphql(`
+const broadcastOnchainMutationGraphql = gql(/*GraphQL*/ `
   mutation BroadcastOnchain($request: BroadcastRequest!) {
     broadcastOnchain(request: $request) {
       ... on RelaySuccess {

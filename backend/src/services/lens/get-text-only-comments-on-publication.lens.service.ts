@@ -5,13 +5,14 @@ import {
   PublicationsRequest,
   PublicationStatsReactionArgs,
   PublicationsWhere
-} from "../../gql/graphql";
-import { InternalServerError } from "../../errors/internal-server-error.error";
-import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util";
-import { httpStatusCodes } from "../../config/app-constants.config";
-import { logger } from "../../log/log-manager.log";
-import getTextOnlyCommentsOnPublicationQueryGraphql from "../../graphql/queries/get-text-only-comments-on-publication.query.graphql";
-import { GetTextOnlyCommentsLensModel } from "../../models/lens/get-text-only-comments.lens.model";
+} from "../../gql/graphql.js";
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
+import { GetTextOnlyCommentsLensModel } from "../../models/lens/get-text-only-comments.lens.model.js";
+
+import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util.js";
+import { httpStatusCodes } from "../../config/app-constants.config.js";
+import { logger } from "../../log/log-manager.log.js";
+import getTextOnlyCommentsOnPublicationQueryGraphql from "../../graphql/queries/get-text-only-comments-on-publication.query.graphql.js";
 
 export const getTextOnlyCommentsOnPublicationLensService = async (
   pubId: string

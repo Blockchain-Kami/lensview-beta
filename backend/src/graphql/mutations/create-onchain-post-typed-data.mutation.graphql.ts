@@ -1,6 +1,6 @@
-import { graphql } from "../../gql";
+import { gql } from "@urql/core";
 
-const createOnchainPostTypedDataMutationGraphql = graphql(`
+const createOnchainPostTypedDataMutationGraphql = gql(/*GraphQL*/ `
   mutation CreateOnchainPostTypedData($request: OnchainPostRequest!) {
     createOnchainPostTypedData(request: $request) {
       id
