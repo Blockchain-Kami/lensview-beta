@@ -3,12 +3,15 @@ import {
   LinkMetadata,
   TextOnlyMetadata
 } from "@lens-protocol/metadata";
-import { MomokaCommentRequest } from "../../gql/graphql";
-import { InternalServerError } from "../../errors/internal-server-error.error";
-import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util";
-import createMomokaCommentWithProfileManagerLensService from "../../services/lens/create-momoka-comment-with-profile-manager.lens.service";
-import { logger } from "../../log/log-manager.log";
-import { httpStatusCodes } from "../../config/app-constants.config";
+
+import { MomokaCommentRequest } from "../../gql/graphql.js";
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
+
+import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util.js";
+import createMomokaCommentWithProfileManagerLensService from "../../services/lens/create-momoka-comment-with-profile-manager.lens.service.js";
+
+import { logger } from "../../log/log-manager.log.js";
+import { httpStatusCodes } from "../../config/app-constants.config.js";
 
 export const commentMomokaProfileManagerPublicationUtil = async (
   parentPubId: string,

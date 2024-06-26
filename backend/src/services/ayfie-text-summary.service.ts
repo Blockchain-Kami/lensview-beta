@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AYFIE_API_KEY } from "../config/env.config";
+import { AYFIE_API_KEY } from "../config/env.config.js";
 export const ayfieTextSummaryService = async (text: string) => {
   const data = JSON.stringify({
     language: "auto",

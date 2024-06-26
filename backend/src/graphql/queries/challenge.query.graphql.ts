@@ -1,6 +1,6 @@
-import { graphql } from "../../gql";
+import { gql } from "@urql/core";
 
-const challengeQueryGraphql = graphql(`
+const challengeQueryGraphql = gql(/*GraphQL*/ `
   query Challenge($request: ChallengeRequest!) {
     challenge(request: $request) {
       text

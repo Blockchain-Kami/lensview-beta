@@ -1,15 +1,18 @@
 import { cacheExchange, Client, createClient, fetchExchange } from "@urql/core";
-import getBaseClientHelperUtil from "../helpers/get-base-client.helper.util";
+
+import { ChallengeRequest, SignedAuthChallenge } from "../../gql/graphql.js";
+
+import authenticateService from "../../services/lens/authenticate.lens.service.js";
+import getChallengeInfoLensService from "../../services/lens/get-challenge-info.lens.service.js";
+
+import getBaseClientHelperUtil from "../helpers/get-base-client.helper.util.js";
 import {
   APP_ADDRESS,
   APP_LENS_ID,
   LENS_API_URL
-} from "../../config/env.config";
-import { logger } from "../../log/log-manager.log";
-import { signer } from "../helpers/get-signer.helper.util";
-import authenticateService from "../../services/lens/authenticate.lens.service";
-import { ChallengeRequest, SignedAuthChallenge } from "../../gql/graphql";
-import getChallengeInfoLensService from "../../services/lens/get-challenge-info.lens.service";
+} from "../../config/env.config.js";
+import { signer } from "../helpers/get-signer.helper.util.js";
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Returns an authenticated client that can be used to make authenticated requests to the API server.

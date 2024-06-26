@@ -1,7 +1,9 @@
-import { MomokaCommentRequest } from "../../gql/graphql";
-import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util";
-import createMomokaCommentProfileManagerGraphql from "../../graphql/mutations/create-momoka-comment-profile-manager.mutation.graphql";
-import { logger } from "../../log/log-manager.log";
+import { MomokaCommentRequest } from "../../gql/graphql.js";
+
+import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util.js";
+
+import createMomokaCommentProfileManagerGraphql from "../../graphql/mutations/create-momoka-comment-profile-manager.mutation.graphql.js";
+import { logger } from "../../log/log-manager.log.js";
 
 const createMomokaCommentWithProfileManagerLensService = async (
   request: MomokaCommentRequest

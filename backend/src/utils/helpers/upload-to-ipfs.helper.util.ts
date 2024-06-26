@@ -1,8 +1,10 @@
 import { NFTStorage, File, Blob } from "nft.storage";
-import { NFT_STORAGE_TOKEN } from "../../config/env.config";
-import { logger } from "../../log/log-manager.log";
-import { InternalServerError } from "../../errors/internal-server-error.error";
-import { httpStatusCodes } from "../../config/app-constants.config";
+
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
+
+import { NFT_STORAGE_TOKEN } from "../../config/env.config.js";
+import { logger } from "../../log/log-manager.log.js";
+import { httpStatusCodes } from "../../config/app-constants.config.js";
 // import { Web3Storage, File } from "web3.storage";
 
 /**
@@ -79,7 +81,7 @@ function makeFileObjects(data: string): File[] {
 
     return [
       new File(["contents-of-file-1"], "plain-utf8.txt"),
-      new File([blob] as [BlobPart], "metaData.json")
+      new File([blob], "metaData.json")
     ];
   } catch (error) {
     logger.error(

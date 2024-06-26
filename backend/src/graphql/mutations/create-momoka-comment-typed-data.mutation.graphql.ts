@@ -1,6 +1,6 @@
-import { graphql } from "../../gql";
+import { gql } from "@urql/core";
 
-const createMomokaCommentTypedDataMutationGraphql = graphql(`
+const createMomokaCommentTypedDataMutationGraphql = gql(/*GraphQL*/ `
   mutation CreateMomokaCommentTypedData($request: MomokaCommentRequest!) {
     createMomokaCommentTypedData(request: $request) {
       id

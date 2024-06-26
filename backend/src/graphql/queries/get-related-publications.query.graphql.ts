@@ -1,6 +1,6 @@
-import { graphql } from "../../gql";
+import { gql } from "@urql/core";
 
-const getRelatedPubsQuery = graphql(/* GraphQL */ `
+const getRelatedPubsQuery = gql(/* GraphQL */ `
   query Publications($request: PublicationsRequest!) {
     publications(request: $request) {
       items {

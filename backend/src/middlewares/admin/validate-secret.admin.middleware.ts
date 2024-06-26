@@ -1,13 +1,16 @@
 import { Request, Response, NextFunction } from "express";
+
 import {
   AddImageToPostAdminRouteBodyRequestModel,
   ApproveSignlessAdminRouteBodyRequestModel,
   UpdateImageToPostAdminRouteBodyRequestModel
-} from "../../models/requests/body/admin-route.body.request.model";
-import { ClientError } from "../../errors/client-error.error";
-import { createHashHelperUtil } from "../../utils/helpers/create-hash.helper.util";
-import { logger } from "../../log/log-manager.log";
-import { httpStatusCodes } from "../../config/app-constants.config";
+} from "../../models/requests/body/admin-route.body.request.model.js";
+import { ClientError } from "../../errors/client-error.error.js";
+
+import { createHashHelperUtil } from "../../utils/helpers/create-hash.helper.util.js";
+
+import { logger } from "../../log/log-manager.log.js";
+import { httpStatusCodes } from "../../config/app-constants.config.js";
 
 /**
  * Validates the secret key and URL in the request body and throws an error if they are invalid.

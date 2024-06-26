@@ -1,8 +1,10 @@
-import { PolygonGasPriceResponseModel } from "../models/response/polygon-gas-price.response.model";
 import axios from "axios";
 import { ethers } from "ethers";
-import { GASSTATION_URL } from "../config/env.config";
-import { logger } from "../log/log-manager.log";
+
+import { PolygonGasPriceResponseModel } from "../models/response/polygon-gas-price.response.model.js";
+
+import { GASSTATION_URL } from "../config/env.config.js";
+import { logger } from "../log/log-manager.log.js";
 
 export const polygonGasPriceService = async () => {
   let data: PolygonGasPriceResponseModel;
