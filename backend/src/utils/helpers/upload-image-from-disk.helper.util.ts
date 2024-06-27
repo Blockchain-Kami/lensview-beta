@@ -1,5 +1,7 @@
 import fs from "fs";
 import { Blob, NFTStorage } from "nft.storage";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import { MetadataObjectModel } from "../../models/metadata-object.model.js";
 
@@ -17,6 +19,9 @@ export const uploadImageFromDisk = async (
     "upload-image-from-disk.helper.util.ts: uploadImageFromDisk: Execution Started"
   );
   const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
+  // @ts-expect-error expected
+  const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+  const __dirname = path.dirname(__filename);
   const image = fs.readFileSync(__dirname + "/" + filename + ".png");
   const screenshotBlob = new Blob([image]);
   const imgCID = await client.storeBlob(screenshotBlob);
