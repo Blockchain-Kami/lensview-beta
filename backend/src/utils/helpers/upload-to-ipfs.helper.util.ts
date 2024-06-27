@@ -1,10 +1,11 @@
-import { NFTStorage, File, Blob } from "nft.storage";
+import { create } from "@web3-storage/w3up-client";
+import { File, Blob } from "nft.storage";
 
 import { InternalServerError } from "../../errors/internal-server-error.error.js";
 
-import { NFT_STORAGE_TOKEN } from "../../config/env.config.js";
-import { logger } from "../../log/log-manager.log.js";
 import { httpStatusCodes } from "../../config/app-constants.config.js";
+import { WEB3_STORAGE_DID_KEY } from "../../config/env.config.js";
+import { logger } from "../../log/log-manager.log.js";
 // import { Web3Storage, File } from "web3.storage";
 
 /**
@@ -21,9 +22,11 @@ export const uploadToIPFSHelperUtil = async (data: string): Promise<string> => {
     "upload-to-ipfs.helper.util.ts: uploadToIPFSHelperUtil: Input parameters: " +
       JSON.stringify(data)
   );
-  const client = makeStorageClient();
-  const cid = await client.storeDirectory(makeFileObjects(data));
-  const uri = `https://${cid}.ipfs.nftstorage.link/metaData.json`;
+  const client = await create();
+  await client.setCurrentSpace(`did:key:${WEB3_STORAGE_DID_KEY}`);
+  const files = makeFileObjects(data);
+  const cid = await client.uploadDirectory(files);
+  const uri = `https://${cid}.ipfs.w3s.link/metaData.json`;
   logger.info(
     "upload-to-ipfs.helper.util.ts: uploadToIPFSHelperUtil: Stored publication metadata. URI: " +
       uri
@@ -33,31 +36,6 @@ export const uploadToIPFSHelperUtil = async (data: string): Promise<string> => {
   );
   return uri;
 };
-
-if (!NFT_STORAGE_TOKEN) {
-  throw new Error("Must define NFT_STORAGE_TOKEN in the .env to run this");
-}
-
-/**
- * Creates a new instance of the StorageClient class.
- *
- * @return {NFTStorage} A new instance of the StorageClient class.
- */
-function makeStorageClient(): NFTStorage {
-  // return new Web3Storage({ token: WEB3STORAGE_TOKEN });
-  try {
-    return new NFTStorage({ token: NFT_STORAGE_TOKEN });
-  } catch (error) {
-    logger.error(
-      "upload-to-ipfs.helper.util.ts: makeStorageClient: Error while creating storage client: " +
-        error
-    );
-    throw new InternalServerError(
-      "Error while creating storage client",
-      httpStatusCodes.INTERNAL_SERVER_ERROR
-    );
-  }
-}
 
 /**
  * Creates File objects from binary data.
