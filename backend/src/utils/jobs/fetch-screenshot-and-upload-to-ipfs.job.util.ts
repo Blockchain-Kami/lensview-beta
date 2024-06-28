@@ -1,13 +1,12 @@
 import puppeteer from "puppeteer";
-import { NFTStorage, Blob, CIDString } from "nft.storage";
+import { create } from "@web3-storage/w3up-client";
+import { Blob } from "nft.storage";
 
 import { InternalServerError } from "../../errors/internal-server-error.error.js";
 
-import { NFT_STORAGE_TOKEN } from "../../config/env.config.js";
+import { WEB3_STORAGE_DID_KEY } from "../../config/env.config.js";
 import { minimal_args } from "../../config/puppetteer.config.js";
 import { logger } from "../../log/log-manager.log.js";
-// import { CIDString, Web3Storage, File } from "web3.storage";
-// import { Blob } from "buffer";
 
 /**
  * Fetches a screenshot from the given URL and uploads it to IPFS.
@@ -24,7 +23,8 @@ export const fetchScreenshotAndUploadToIPFSJobUtil = async (url: string) => {
       url
   );
   // const imgName = "image.jpg";
-  const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
+  const client = await create();
+  await client.setCurrentSpace(`did:key:${WEB3_STORAGE_DID_KEY}`);
 
   try {
     const screenshot = await Screenshot(url);
@@ -32,13 +32,13 @@ export const fetchScreenshotAndUploadToIPFSJobUtil = async (url: string) => {
     // const file = new File([screenshotBlob as BlobPart], imgName);
     // const client = new Web3Storage({ token: WEB3STORAGE_TOKEN });
     // const imgCID = await client.put([file], { name: imgName });
-    const imgCID = await client.storeBlob(screenshotBlob);
-    const imgCIDURL = makeGatewayURLImage(imgCID);
+    const imgCID = await client.uploadFile(screenshotBlob);
+    const imgCIDURL = `https://${imgCID}.ipfs.w3s.link/`;
     logger.info(
       "fetch-screenshot-and-upload-to-ipfs.job.ts: fetchScreenshotAndUploadToIPFSJobUtil: Execution Ended. Image CID: " +
         imgCIDURL
     );
-    return makeGatewayURLImage(imgCID);
+    return imgCIDURL;
   } catch (error) {
     logger.error(
       "fetch-screenshot-and-upload-to-ipfs.job.ts: fetchScreenshotAndUploadToIPFSJobUtil: Execution Ended. Error in Execution: " +
@@ -51,16 +51,6 @@ export const fetchScreenshotAndUploadToIPFSJobUtil = async (url: string) => {
       false
     );
   }
-};
-
-/**
- * Generates a gateway URL for an image based on the image CID and image name.
- *
- * @param {CIDString} imgCID - The CID of the image.
- * @return {string} The generated gateway URL for the image.
- */
-export const makeGatewayURLImage = (imgCID: CIDString) => {
-  return `https://${imgCID}.ipfs.nftstorage.link`;
 };
 
 /**
