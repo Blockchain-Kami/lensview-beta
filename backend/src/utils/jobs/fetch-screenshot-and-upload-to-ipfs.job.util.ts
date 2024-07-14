@@ -1,6 +1,5 @@
 import puppeteer from "puppeteer";
 import { create } from "@web3-storage/w3up-client";
-import { Blob } from "nft.storage";
 
 import { InternalServerError } from "../../errors/internal-server-error.error.js";
 

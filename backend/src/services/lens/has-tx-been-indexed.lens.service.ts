@@ -3,7 +3,7 @@ import type {
   LensTransactionStatusRequest
 } from "../../gql/graphql.js";
 
-import lensTransactionStatusQueryGraphql from "../../graphql/queries/lens-transaction-status.query.graphql.js";
+import LensTransactionStatusQueryGraphql from "../../graphql/queries/lens-transaction-status.query.graphql.js";
 import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util.js";
 import { logger } from "../../log/log-manager.log.js";
 
@@ -21,7 +21,7 @@ const hasTxBeenIndexedLensService = async (
       JSON.stringify(request)
   );
   const result = await getBaseClientHelperUtil
-    .query(lensTransactionStatusQueryGraphql, { request })
+    .query(LensTransactionStatusQueryGraphql, { request })
     .toPromise();
   const response = result.data;
   logger.info(

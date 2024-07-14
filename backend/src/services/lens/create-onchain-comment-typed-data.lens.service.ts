@@ -2,7 +2,7 @@ import type { OnchainCommentRequest } from "../../gql/graphql.js";
 
 import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util.js";
 
-import createOnchainCommentTypedDataMutationGraphql from "../../graphql/mutations/create-onchain-comment-typed-data.mutation.graphql.js";
+import CreateOnchainCommentTypedDataMutationGraphql from "../../graphql/mutations/create-onchain-comment-typed-data.mutation.graphql.js";
 import { logger } from "../../log/log-manager.log.js";
 
 const createOnchainCommentTypedDataLensService = async (
@@ -17,7 +17,7 @@ const createOnchainCommentTypedDataLensService = async (
   );
   const client = await getAuthenticatedClientAuthenticationUtil();
   const result = await client
-    .mutation(createOnchainCommentTypedDataMutationGraphql, { request })
+    .mutation(CreateOnchainCommentTypedDataMutationGraphql, { request })
     .toPromise();
   logger.info(
     "comment-onchain-comment-typed-data.lens.service.ts: createOnchainCommentTypedDataLensService: Execution End."

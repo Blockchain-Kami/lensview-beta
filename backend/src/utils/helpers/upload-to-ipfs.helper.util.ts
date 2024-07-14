@@ -1,12 +1,10 @@
 import { create } from "@web3-storage/w3up-client";
-import { File, Blob } from "nft.storage";
 
 import { InternalServerError } from "../../errors/internal-server-error.error.js";
 
 import { httpStatusCodes } from "../../config/app-constants.config.js";
 import { WEB3_STORAGE_DID_KEY } from "../../config/env.config.js";
 import { logger } from "../../log/log-manager.log.js";
-// import { Web3Storage, File } from "web3.storage";
 
 /**
  * Uploads a file to IPFS and returns the URI of the uploaded file.

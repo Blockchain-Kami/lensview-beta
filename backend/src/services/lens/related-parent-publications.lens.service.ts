@@ -8,7 +8,7 @@ import {
 import { GetRelatedPubsLensModel } from "../../models/lens/get-related-pubs.lens.model.js";
 
 import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util.js";
-import getRelatedPubsQuery from "../../graphql/queries/get-related-publications.query.graphql.js";
+import GetRelatedPubsQuery from "../../graphql/queries/get-related-publications.query.graphql.js";
 import { APP_LENS_ID, SOURCE_APP_ID } from "../../config/env.config.js";
 import { logger } from "../../log/log-manager.log.js";
 
@@ -50,7 +50,7 @@ export const relatedParentPublicationsLensService = async (tags: string[]) => {
         JSON.stringify(publicationsRequest)
     );
     const result = await getBaseClientHelperUtil
-      .query(getRelatedPubsQuery, {
+      .query(GetRelatedPubsQuery, {
         request: publicationsRequest
       })
       .toPromise();

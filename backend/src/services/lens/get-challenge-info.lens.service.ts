@@ -1,7 +1,7 @@
 import { ChallengeRequest } from "../../gql/graphql.js";
 
 import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util.js";
-import challengeQueryGraphql from "../../graphql/queries/challenge.query.graphql.js";
+import ChallengeQueryGraphql from "../../graphql/queries/challenge.query.graphql.js";
 import { logger } from "../../log/log-manager.log.js";
 
 /**
@@ -24,7 +24,7 @@ const getChallengeInfoLensService = async (request: ChallengeRequest) => {
         request.for
     );
     return await getBaseClientHelperUtil
-      .query(challengeQueryGraphql, { request })
+      .query(ChallengeQueryGraphql, { request })
       .toPromise();
   } catch (error) {
     logger.error(

@@ -1,6 +1,6 @@
-import { gql } from "@urql/core";
+import { graphql } from "../../gql/index.js";
 
-const BroadcastOnMomokaMutationGraphql = gql(/*GraphQL*/ `
+const BroadcastOnMomokaMutationGraphql = graphql(`
   mutation BroadcastOnMomoka($request: BroadcastRequest!) {
     broadcastOnMomoka(request: $request) {
       ... on CreateMomokaPublicationResult {

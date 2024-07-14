@@ -1,7 +1,7 @@
 import { SignedAuthChallenge } from "../../gql/graphql.js";
 
 import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util.js";
-import authenticateGraphql from "../../graphql/mutations/authenticate.query.graphql.js";
+import AuthenticateGraphql from "../../graphql/mutations/authenticate.query.graphql.js";
 import { logger } from "../../log/log-manager.log.js";
 
 /**
@@ -15,7 +15,7 @@ const authenticateService = async (request: SignedAuthChallenge) => {
     "authenticate.lens.service.ts: authenticateService: Execution Started."
   );
   return await getBaseClientHelperUtil
-    .mutation(authenticateGraphql, { request })
+    .mutation(AuthenticateGraphql, { request })
     .toPromise();
 };
 

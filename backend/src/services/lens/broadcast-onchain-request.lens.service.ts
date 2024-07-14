@@ -2,7 +2,7 @@ import type { BroadcastRequest } from "../../gql/graphql";
 
 import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util.js";
 
-import broadcastOnchainMutationGraphql from "../../graphql/mutations/broadcast-onchain.mutation.graphql.js";
+import BroadcastOnchainMutationGraphql from "../../graphql/mutations/broadcast-onchain.mutation.graphql.js";
 import { logger } from "../../log/log-manager.log.js";
 
 /**
@@ -18,7 +18,7 @@ const broadcastOnchainRequestService = async (request: BroadcastRequest) => {
   );
   const authenticateClient = await getAuthenticatedClientAuthenticationUtil();
   const result = await authenticateClient
-    .mutation(broadcastOnchainMutationGraphql, { request })
+    .mutation(BroadcastOnchainMutationGraphql, { request })
     .toPromise();
 
   return result.data?.broadcastOnchain;
