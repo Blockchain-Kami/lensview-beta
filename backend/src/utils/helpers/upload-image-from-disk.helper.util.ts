@@ -1,14 +1,13 @@
 import fs from "fs";
-import { Blob, NFTStorage } from "nft.storage";
+import { create } from "@web3-storage/w3up-client";
 import path from "path";
 import { fileURLToPath } from "url";
 
 import { MetadataObjectModel } from "../../models/metadata-object.model.js";
 
-import { makeGatewayURLImage } from "../jobs/fetch-screenshot-and-upload-to-ipfs.job.util.js";
 import { createMetaDataForImageCommentHelperUtil } from "./create-metadata.helper.util.js";
 
-import { NFT_STORAGE_TOKEN } from "../../config/env.config.js";
+import { WEB3_STORAGE_DID_KEY } from "../../config/env.config.js";
 import { logger } from "../../log/log-manager.log.js";
 
 export const uploadImageFromDisk = async (
@@ -18,17 +17,19 @@ export const uploadImageFromDisk = async (
   logger.info(
     "upload-image-from-disk.helper.util.ts: uploadImageFromDisk: Execution Started"
   );
-  const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
+  const client = await create();
+  await client.setCurrentSpace(`did:key:${WEB3_STORAGE_DID_KEY}`);
   // @ts-expect-error expected
   const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
   const __dirname = path.dirname(__filename);
   const image = fs.readFileSync(__dirname + "/" + filename + ".png");
   const screenshotBlob = new Blob([image]);
-  const imgCID = await client.storeBlob(screenshotBlob);
-  urlObj.image = makeGatewayURLImage(imgCID);
+  const imgCID = await client.uploadFile(screenshotBlob);
+  const imgCIDURL = `https://${imgCID}.ipfs.w3s.link/`;
+  urlObj.image = imgCIDURL;
   logger.info(
     "upload-image-from-disk.helper.util.ts: uploadImageFromDisk: Execution Ended. Image Stored at: " +
-      makeGatewayURLImage(imgCID)
+      imgCIDURL
   );
   return createMetaDataForImageCommentHelperUtil(urlObj);
 };

@@ -1,6 +1,6 @@
-import { gql } from "@urql/core";
+import { graphql } from "../../gql/index.js";
 
-const getTextOnlyCommentsOnPublicationQueryGraphql = gql(/* GraphQL */ `
+const GetTextOnlyCommentsOnPublicationQueryGraphql = graphql(/* GraphQL */ `
   query TextOnlyPublications(
     $request: PublicationsRequest!
     $reactionsRequest2: PublicationStatsReactionArgs
@@ -22,4 +22,4 @@ const getTextOnlyCommentsOnPublicationQueryGraphql = gql(/* GraphQL */ `
   }
 `);
 
-export default getTextOnlyCommentsOnPublicationQueryGraphql;
+export default GetTextOnlyCommentsOnPublicationQueryGraphql;

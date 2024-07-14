@@ -1,6 +1,6 @@
-import { gql } from "@urql/core";
+import { graphql } from "../../gql/index.js";
 
-const createOnchainCommentTypedDataMutationGraphql = gql(/*GraphQL*/ `
+const CreateOnchainCommentTypedDataMutationGraphql = graphql(`
   mutation CreateOnchainCommentTypedData($request: OnchainCommentRequest!) {
     createOnchainCommentTypedData(request: $request) {
       id
@@ -38,4 +38,4 @@ const createOnchainCommentTypedDataMutationGraphql = gql(/*GraphQL*/ `
   }
 `);
 
-export default createOnchainCommentTypedDataMutationGraphql;
+export default CreateOnchainCommentTypedDataMutationGraphql;

@@ -38,7 +38,7 @@ export const commentMomokaProfileManagerPublicationUtil = async (
 
     const result = await createCommentOnMomoka(request);
 
-    if (result.__typename !== "CreateMomokaPublicationResult") {
+    if (result?.__typename !== "CreateMomokaPublicationResult") {
       logger.error(
         "comment-momoka-profile-manager.publication.util.ts: commentMomokaProfileManagerPublicationUtil: Execution ended. Failed to create comment on Momoka. Dispatcher Result: " +
           JSON.stringify(result)

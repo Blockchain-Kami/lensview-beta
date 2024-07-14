@@ -46,11 +46,8 @@ export const getAuthenticatedClientAuthenticationUtil: () => Promise<Client> =
       };
 
       // Authenticate the user and extract accessToken from authentication response
-      const {
-        data: {
-          authenticate: { accessToken }
-        }
-      } = await authenticateService(request);
+      const authenticationResponse = await authenticateService(request);
+      const accessToken = authenticationResponse.data?.authenticate.accessToken;
 
       // Create and return authenticated client
       const authenticatedClient = createClient({

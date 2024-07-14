@@ -1,6 +1,6 @@
-import { gql } from "@urql/core";
+import { graphql } from "../../gql/index.js";
 
-const getMainPublicationImageQueryGraphql = gql(/* GraphQL */ `
+const GetMainPublicationImageQueryGraphql = graphql(/* GraphQL */ `
   query GetPublicationsImage($request: PublicationsRequest!) {
     publications(request: $request) {
       items {
@@ -22,4 +22,4 @@ const getMainPublicationImageQueryGraphql = gql(/* GraphQL */ `
   }
 `);
 
-export default getMainPublicationImageQueryGraphql;
+export default GetMainPublicationImageQueryGraphql;

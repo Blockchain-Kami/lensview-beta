@@ -1,6 +1,6 @@
-import { gql } from "@urql/core";
+import { graphql } from "../../gql/index.js";
 
-const challengeQueryGraphql = gql(/*GraphQL*/ `
+const ChallengeQueryGraphql = graphql(`
   query Challenge($request: ChallengeRequest!) {
     challenge(request: $request) {
       text
@@ -9,4 +9,4 @@ const challengeQueryGraphql = gql(/*GraphQL*/ `
   }
 `);
 
-export default challengeQueryGraphql;
+export default ChallengeQueryGraphql;

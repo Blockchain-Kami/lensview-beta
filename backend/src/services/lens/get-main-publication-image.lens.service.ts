@@ -9,7 +9,7 @@ import { TAG_IMAGE_PUB } from "../../config/env.config.js";
 import { logger } from "../../log/log-manager.log.js";
 import { httpStatusCodes } from "../../config/app-constants.config.js";
 import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util.js";
-import getMainPublicationImageQueryGraphql from "../../graphql/queries/get-main-publication-image.query.graphql.js";
+import GetMainPublicationImageQueryGraphql from "../../graphql/queries/get-main-publication-image.query.graphql.js";
 
 export const getMainPublicationImageLensService = async (
   publicationID: string
@@ -40,7 +40,7 @@ export const getMainPublicationImageLensService = async (
     );
 
     const result = await getBaseClientHelperUtil
-      .query(getMainPublicationImageQueryGraphql, {
+      .query(GetMainPublicationImageQueryGraphql, {
         request: publicationsRequest
       })
       .toPromise();

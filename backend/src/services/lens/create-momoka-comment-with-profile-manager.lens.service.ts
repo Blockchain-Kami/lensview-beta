@@ -2,7 +2,7 @@ import { MomokaCommentRequest } from "../../gql/graphql.js";
 
 import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util.js";
 
-import createMomokaCommentProfileManagerGraphql from "../../graphql/mutations/create-momoka-comment-profile-manager.mutation.graphql.js";
+import CreateMomokaCommentProfileManagerGraphql from "../../graphql/mutations/create-momoka-comment-profile-manager.mutation.graphql.js";
 import { logger } from "../../log/log-manager.log.js";
 
 const createMomokaCommentWithProfileManagerLensService = async (
@@ -17,7 +17,7 @@ const createMomokaCommentWithProfileManagerLensService = async (
   );
   const authenticateClient = await getAuthenticatedClientAuthenticationUtil();
   const result = await authenticateClient
-    .mutation(createMomokaCommentProfileManagerGraphql, {
+    .mutation(CreateMomokaCommentProfileManagerGraphql, {
       request
     })
     .toPromise();
