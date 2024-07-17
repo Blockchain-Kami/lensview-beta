@@ -14,7 +14,7 @@ router.use("/admin", adminRoutes);
 
 router.use("/", (_req: Request, res: Response) => {
   res.status(200).send({
-    message: `Welcome to the Lens API. Visit https://testnet.lensview.io to use the app`
+    message: `Welcome to the LensView API. Visit https://lensview.io to use the app`
   });
 });
 

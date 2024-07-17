@@ -31,4 +31,4 @@ export const AYFIE_API_KEY = process.env.AYFIE_API_KEY as string;
 export const MONGODB_CONNECTION_STRING = process.env
   .MONGODB_CONNECTION_STRING as string;
 export const POST_AND_COMMENT_CONFIG = POST_AND_COMMENT_TYPES.PROFILE_MANAGER;
-export const WEB3_STORAGE_DID_KEY = process.env.WEB3_STORAGE_DID_KEY as string;
+export const THIRD_WEB_SECRET_KEY = process.env.THIRD_WEB_SECRET_KEY as string;
