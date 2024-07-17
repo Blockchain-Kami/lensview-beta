@@ -1,9 +1,8 @@
 import puppeteer from "puppeteer";
-import { create } from "@web3-storage/w3up-client";
 
 import { InternalServerError } from "../../errors/internal-server-error.error.js";
 
-import { WEB3_STORAGE_DID_KEY } from "../../config/env.config.js";
+import { storage } from "../../connections/get-thirdweb-client.connection.js";
 import { minimal_args } from "../../config/puppetteer.config.js";
 import { logger } from "../../log/log-manager.log.js";
 
@@ -22,17 +21,12 @@ export const fetchScreenshotAndUploadToIPFSJobUtil = async (url: string) => {
       url
   );
   // const imgName = "image.jpg";
-  const client = await create();
-  await client.setCurrentSpace(`did:key:${WEB3_STORAGE_DID_KEY}`);
 
   try {
     const screenshot = await Screenshot(url);
-    const screenshotBlob = new Blob([screenshot]);
-    // const file = new File([screenshotBlob as BlobPart], imgName);
-    // const client = new Web3Storage({ token: WEB3STORAGE_TOKEN });
-    // const imgCID = await client.put([file], { name: imgName });
-    const imgCID = await client.uploadFile(screenshotBlob);
-    const imgCIDURL = `https://${imgCID}.ipfs.w3s.link/`;
+
+    const uri = await storage.upload(screenshot);
+    const imgCIDURL = storage.resolveScheme(uri);
     logger.info(
       "fetch-screenshot-and-upload-to-ipfs.job.ts: fetchScreenshotAndUploadToIPFSJobUtil: Execution Ended. Image CID: " +
         imgCIDURL
