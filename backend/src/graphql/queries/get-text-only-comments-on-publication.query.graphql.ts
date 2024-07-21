@@ -1,6 +1,6 @@
-import { graphql } from "../../gql";
+import { graphql } from "../../gql/index.js";
 
-const getTextOnlyCommentsOnPublicationQueryGraphql = graphql(/* GraphQL */ `
+const GetTextOnlyCommentsOnPublicationQueryGraphql = graphql(/* GraphQL */ `
   query TextOnlyPublications(
     $request: PublicationsRequest!
     $reactionsRequest2: PublicationStatsReactionArgs
@@ -22,4 +22,4 @@ const getTextOnlyCommentsOnPublicationQueryGraphql = graphql(/* GraphQL */ `
   }
 `);
 
-export default getTextOnlyCommentsOnPublicationQueryGraphql;
+export default GetTextOnlyCommentsOnPublicationQueryGraphql;

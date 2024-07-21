@@ -1,13 +1,14 @@
 import express from "express";
+
 import {
   getSummaryCommentController,
   postAnonymousCommentController
-} from "../controllers/comments.controller";
-import { putAnonymousCommentController } from "../controllers/comments.controller";
+} from "../controllers/comments.controller.js";
+import { putAnonymousCommentController } from "../controllers/comments.controller.js";
 import {
   validatePostAnonymousCommentRequestMiddleware,
   validatePutAnonymousCommentRequestMiddleware
-} from "../middlewares/comments/validate-request.comments.middleware";
+} from "../middlewares/comments/validate-request.comments.middleware.js";
 
 const router = express.Router();
 

@@ -1,15 +1,16 @@
-import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util";
-import getRelatedPubsQuery from "../../graphql/queries/get-related-publications.query.graphql";
-import { APP_LENS_ID, SOURCE_APP_ID } from "../../config/env.config";
-import { logger } from "../../log/log-manager.log";
-import { InternalServerError } from "../../errors/internal-server-error.error";
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
 import {
   LimitType,
   PublicationsRequest,
   PublicationsWhere,
   PublicationType
-} from "../../gql/graphql";
-import { GetRelatedPubsLensModel } from "../../models/lens/get-related-pubs.lens.model";
+} from "../../gql/graphql.js";
+import { GetRelatedPubsLensModel } from "../../models/lens/get-related-pubs.lens.model.js";
+
+import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util.js";
+import GetRelatedPubsQuery from "../../graphql/queries/get-related-publications.query.graphql.js";
+import { APP_LENS_ID, SOURCE_APP_ID } from "../../config/env.config.js";
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Retrieves the related parent publications based on a given tag.
@@ -49,7 +50,7 @@ export const relatedParentPublicationsLensService = async (tags: string[]) => {
         JSON.stringify(publicationsRequest)
     );
     const result = await getBaseClientHelperUtil
-      .query(getRelatedPubsQuery, {
+      .query(GetRelatedPubsQuery, {
         request: publicationsRequest
       })
       .toPromise();

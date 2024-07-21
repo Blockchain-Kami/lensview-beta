@@ -1,7 +1,9 @@
-import { BroadcastRequest } from "../../gql/graphql";
-import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util";
-import BroadcastOnMomokaMutationGraphql from "../../graphql/mutations/broadcast-on-momoka.mutation.graphql";
-import { logger } from "../../log/log-manager.log";
+import { BroadcastRequest } from "../../gql/graphql.js";
+
+import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util.js";
+
+import BroadcastOnMomokaMutationGraphql from "../../graphql/mutations/broadcast-on-momoka.mutation.graphql.js";
+import { logger } from "../../log/log-manager.log.js";
 
 export const broadcastOnMomokaRequestLensService = async (
   request: BroadcastRequest

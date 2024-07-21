@@ -1,15 +1,18 @@
 import type { TypedDataDomain } from "@ethersproject/abstract-signer";
-import { omit } from "./helpers.helpers.util";
-import { signer } from "./get-signer.helper.util";
-import { logger } from "../../log/log-manager.log";
+
 import {
   CreateOnchainPostEip712TypedDataTypes,
   CreateOnchainCommentEip712TypedDataTypes,
   CreateMomokaPostEip712TypedDataTypes,
   CreateMomokaCommentEip712TypedDataTypes,
   CreateChangeProfileManagersEip712TypedDataTypes
-} from "../../gql/graphql";
-import { InternalServerError } from "../../errors/internal-server-error.error";
+} from "../../gql/graphql.js";
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
+
+import { omit } from "./helpers.helpers.util.js";
+
+import { signer } from "./get-signer.helper.util.js";
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Returns the signer for authentication.
