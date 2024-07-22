@@ -153,7 +153,7 @@
         addNotification({
           position: "top-right",
           heading: `Failed To ${pubBtnName}`,
-          description: `Your ${pubBtnName.toLowerCase()} was not ${pubBtnName.toLowerCase()}ed anonymously. Please try again`,
+          description: `Your ${pubBtnName.toLowerCase()} was not ${pubBtnName.toLowerCase()}ed. Please try again`,
           type: cross,
           removeAfter: 20000
         });

@@ -1,35 +1,21 @@
-import { NFTStorage } from "nft.storage";
-const { VITE_NFT_STORAGE_TOKEN } = import.meta.env;
-
-if (!VITE_NFT_STORAGE_TOKEN) {
-  throw new Error("Must define VITE_WEB3STORAGE_TOKEN in the .env to run this");
-}
-
-function makeFileObjects(data: string) {
-  // You can create File objects from a Blob of binary data
-  // see: https://developer.mozilla.org/en-US/docs/Web/API/Blob
-  // Here we're just storing a JSON object, but you can store images,
-  // audio, or whatever you want!
-  const blob = new Blob([data], {
-    type: "application/json"
-  });
-
-  return [
-    new File(["contents-of-file-1"], "plain-utf8.txt"),
-    new File([blob], "metaData.json")
-  ];
-}
-
-function makeStorageClient() {
-  return new NFTStorage({ token: VITE_NFT_STORAGE_TOKEN });
-}
+import { ThirdwebStorage } from "@thirdweb-dev/storage";
+const { VITE_THIRD_WEB_CLIENT_ID } = import.meta.env;
 
 export const uploadIpfs = async (data: string) => {
-  const client = makeStorageClient();
-  const cid = await client.storeDirectory(makeFileObjects(data));
-  console.log("stored files with cid:", cid);
-  const uri = `https://${cid}.ipfs.nftstorage.link/metaData.json`;
+  // First, instantiate the thirdweb IPFS storage
+  const storage = new ThirdwebStorage({
+    clientId: VITE_THIRD_WEB_CLIENT_ID
+  });
 
-  console.log("URI : " + uri);
-  return uri;
+  // Here we get the IPFS URI of where our metadata has been uploaded
+  const uri = await storage.upload(data);
+  // This will log a URL like ipfs://QmWgbcjKWCXhaLzMz4gNBxQpAHktQK6MkLvBkKXbsoWEEy/0
+  console.info(uri);
+
+  // Here we a URL with a gateway that we can look at in the browser
+  const url = await storage.resolveScheme(uri);
+  // This will log a URL like https://ipfs.thirdwebstorage.com/ipfs/QmWgbcjKWCXhaLzMz4gNBxQpAHktQK6MkLvBkKXbsoWEEy/0
+  console.info(url);
+
+  return url;
 };
