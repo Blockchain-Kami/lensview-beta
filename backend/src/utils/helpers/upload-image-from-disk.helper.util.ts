@@ -1,10 +1,13 @@
 import fs from "fs";
-import { Blob, NFTStorage } from "nft.storage";
-import { MetadataObjectModel } from "../../models/metadata-object.model";
-import { makeGatewayURLImage } from "../jobs/fetch-screenshot-and-upload-to-ipfs.job.util";
-import { createMetaDataForImageCommentHelperUtil } from "./create-metadata.helper.util";
-import { NFT_STORAGE_TOKEN } from "../../config/env.config";
-import { logger } from "../../log/log-manager.log";
+import path from "path";
+import { fileURLToPath } from "url";
+
+import { MetadataObjectModel } from "../../models/metadata-object.model.js";
+
+import { createMetaDataForImageCommentHelperUtil } from "./create-metadata.helper.util.js";
+
+import { storage } from "../../connections/get-thirdweb-client.connection.js";
+import { logger } from "../../log/log-manager.log.js";
 
 export const uploadImageFromDisk = async (
   filename: string,
@@ -13,14 +16,17 @@ export const uploadImageFromDisk = async (
   logger.info(
     "upload-image-from-disk.helper.util.ts: uploadImageFromDisk: Execution Started"
   );
-  const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
+  // @ts-expect-error expected
+  const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+  const __dirname = path.dirname(__filename);
+
   const image = fs.readFileSync(__dirname + "/" + filename + ".png");
-  const screenshotBlob = new Blob([image]);
-  const imgCID = await client.storeBlob(screenshotBlob);
-  urlObj.image = makeGatewayURLImage(imgCID);
+  const uri = await storage.upload(image);
+  const imgCIDURL = storage.resolveScheme(uri);
+  urlObj.image = imgCIDURL;
   logger.info(
     "upload-image-from-disk.helper.util.ts: uploadImageFromDisk: Execution Ended. Image Stored at: " +
-      makeGatewayURLImage(imgCID)
+      imgCIDURL
   );
   return createMetaDataForImageCommentHelperUtil(urlObj);
 };

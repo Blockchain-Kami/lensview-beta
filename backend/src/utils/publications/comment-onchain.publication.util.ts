@@ -1,30 +1,36 @@
-import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util";
-import type {
-  CreateOnchainCommentBroadcastItemResult,
-  OnchainCommentRequest
-} from "../../gql/graphql";
-import {
-  APP_ADDRESS,
-  LENS_HUB_CONTRACT_ADDRESS,
-  USE_GASLESS
-} from "../../config/env.config";
-import { logger } from "../../log/log-manager.log";
-import createOnchainCommentTypedDataLensService from "../../services/lens/create-onchain-comment-typed-data.lens.service";
-import { signedTypeDataForCommentHelperUtil } from "../helpers/sign-type-data.helper.util";
-import broadcastOnchainRequestService from "../../services/lens/broadcast-onchain-request.lens.service";
-import { waitUntilBroadcastIsCompleteTransactionUtil } from "../transaction/wait-until-broadcast-is-complete.transaction.util";
-import type { RelayError, RelaySuccess } from "../../gql/graphql";
-import { getPolygonGasPriceHelperUtil } from "../helpers/get-polygon-gas-price.helper.utils";
-import { splitSignatureHelperUtil } from "../helpers/split-signature.helper.utils";
-import { createContractHelperUtils } from "../helpers/create-contract.helper.utils";
-import LENS_HUB_ABI from "../../abis/lens-hub-contract.abi.json";
-import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util";
 import {
   ImageMetadata,
   LinkMetadata,
   TextOnlyMetadata
 } from "@lens-protocol/metadata";
-import { InternalServerError } from "../../errors/internal-server-error.error";
+
+import type {
+  CreateOnchainCommentBroadcastItemResult,
+  OnchainCommentRequest,
+  RelayError,
+  RelaySuccess
+} from "../../gql/graphql.js";
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
+
+import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util.js";
+import createOnchainCommentTypedDataLensService from "../../services/lens/create-onchain-comment-typed-data.lens.service.js";
+import { signedTypeDataForCommentHelperUtil } from "../helpers/sign-type-data.helper.util.js";
+import broadcastOnchainRequestService from "../../services/lens/broadcast-onchain-request.lens.service.js";
+import { waitUntilBroadcastIsCompleteTransactionUtil } from "../transaction/wait-until-broadcast-is-complete.transaction.util.js";
+import { getPolygonGasPriceHelperUtil } from "../helpers/get-polygon-gas-price.helper.utils.js";
+import { splitSignatureHelperUtil } from "../helpers/split-signature.helper.utils.js";
+import { createContractHelperUtils } from "../helpers/create-contract.helper.utils.js";
+import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util.js";
+
+// @ts-expect-error known issue
+import LENS_HUB_ABI from "../../abis/lens-hub-contract.abi.json" assert { type: "json" };
+
+import {
+  APP_ADDRESS,
+  LENS_HUB_CONTRACT_ADDRESS,
+  USE_GASLESS
+} from "../../config/env.config.js";
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Generates a comment on the blockchain publication with the given parent publication ID

@@ -1,6 +1,8 @@
 import Queue from "bull";
-import { addImageToPublicationJobUtil } from "../utils/jobs/add-image-to-publication.job.util";
-import { logger } from "../log/log-manager.log";
+
+import { addImageToPublicationJobUtil } from "../utils/jobs/add-image-to-publication.job.util.js";
+
+import { logger } from "../log/log-manager.log.js";
 
 export const imageQueue = new Queue("imageQueue");
 

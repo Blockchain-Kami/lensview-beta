@@ -21,6 +21,7 @@
     "@ethersproject/abstract-signer": "^5.7.0",
     "@google/generative-ai": "^0.7.1",
     "@lens-protocol/metadata": "^1.0.5",
+    "@thirdweb-dev/storage": "^2.0.15",
     "@urql/core": "^4.1.3",
     "axios": "^1.6.2",
     "body-parser": "^1.20.2",
@@ -33,7 +34,6 @@
     "express-logger-unique-req-id": "^1.0.4",
     "graphql": "^16.8.1",
     "mongoose": "^8.3.2",
-    "nft.storage": "^7.1.1",
     "omit-deep": "^0.3.0",
     "puppeteer": "^21.5.2",
     "uuid": "^9.0.1",
@@ -63,5 +63,6 @@
     "onchange": "^7.1.0",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2"
-  }
+  },
+  "type": "module"
 }

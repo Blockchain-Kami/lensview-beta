@@ -1,10 +1,12 @@
-import { InternalServerError } from "../../errors/internal-server-error.error";
-import { CommentsSummaryResponseModel } from "../../models/response/comments-summary.response.model";
-import { getTextOnlyCommentsOnPublicationLensService } from "../../services/lens/get-text-only-comments-on-publication.lens.service";
-import { formatTextOnlyInputDataHelperUtil } from "./format-text-only-input-data.helper.util";
-import { geminiTextSummaryService } from "../../services/gemini-text-summary.service";
-import { logger } from "../../log/log-manager.log";
-import { httpStatusCodes } from "../../config/app-constants.config";
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
+import { CommentsSummaryResponseModel } from "../../models/response/comments-summary.response.model.js";
+
+import { getTextOnlyCommentsOnPublicationLensService } from "../../services/lens/get-text-only-comments-on-publication.lens.service.js";
+import { formatTextOnlyInputDataHelperUtil } from "./format-text-only-input-data.helper.util.js";
+import { geminiTextSummaryService } from "../../services/gemini-text-summary.service.js";
+
+import { logger } from "../../log/log-manager.log.js";
+import { httpStatusCodes } from "../../config/app-constants.config.js";
 
 export const getCommentsAndGenerateSummaryHelperUtil = async (
   publicationId: string
