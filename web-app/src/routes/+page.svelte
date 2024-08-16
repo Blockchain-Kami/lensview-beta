@@ -118,11 +118,18 @@
 <!----------------------------- HTML ----------------------------->
 <div class="youtube-link">
   <u class="youtube-link__video">
-    <a href="https://www.youtube.com/watch?v=k5HQXqcYkRA" target="_blank">
-      Check out this video
+    <span>
+      <a href="https://explorer.gitcoin.co/#/round/10/44/89" target="_blank">
+      Donate to LensView on Gitcoin
     </a>
+    </span>
+    <span>&nbsp; | &nbsp;</span>
+    <span>
+      <a href="https://www.youtube.com/watch?v=k5HQXqcYkRA" target="_blank">
+      Learn more 📽️
+    </a>
+    </span>
   </u>
-  to navigate your way around
 </div>
 <MediaQuery query="(max-width: 825px)" let:matches>
   <section>

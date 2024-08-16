@@ -29,7 +29,7 @@ LensView is revolutionizing the way people interact with the internet by creatin
 ![encode-prize.jpg](images/encode-prize.jpg)
 ![eth-global.jpg](images/eth-global.jpg)
 
-### <a href="https://lensview.io/gitcoin"  target="_blank">lensview.io/gitcoin</a>🔗
+### <a href="https://lensview.io/gitcoin/stats"  target="_blank">lensview.io/gitcoin/stats</a>🔗
 
 [//]: # (### [lensview.io/gitcoin]&#40;https://lensview.io/gitcoin&#41;🔗)
 
