@@ -3,6 +3,8 @@ import getChallengeInfoLensService from "../../services/lens/get-challenge-info.
 import { idsAndHandlesUserStore } from "../../stores/user/ids-and-handles.user.store";
 import getAccessTokenUsingChallengeLensService from "../../services/lens/get-access-token-using-challenge.lens.service";
 import { getSigner } from "../ethers.util";
+import { signMessage } from "@wagmi/core";
+import { wagmiConfig } from "../web3modal.util";
 
 const retrieveAccessTokenAuthenticationUtil = async () => {
   try {
@@ -27,10 +29,11 @@ const retrieveAccessTokenAuthenticationUtil = async () => {
 
     if (!challengeInfo?.data?.challenge) return new Error("No challenge found");
 
-    const signer = getSigner();
-    const signature = await signer.signMessage(
-      challengeInfo.data.challenge.text
-    );
+        
+
+    const signature = await signMessage(wagmiConfig, {
+      message: challengeInfo.data.challenge.text
+    });
 
     const authData = await getAccessTokenUsingChallengeLensService(
       challengeInfo?.data?.challenge?.id,

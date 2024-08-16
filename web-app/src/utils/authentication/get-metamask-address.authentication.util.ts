@@ -2,6 +2,8 @@ import { cross, wallet } from "../app-icon.util";
 import { addressUserStore } from "../../stores/user/address.user.store";
 import stringifyNotificationObjectWithFunctionUtil from "../stringify-notification-object-with-function.util";
 import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+import web3Modal, { wagmiConfig } from "../web3modal.util";
+import { getAccount } from "@wagmi/core";
 const { VITE_CHAIN_ID } = import.meta.env;
 const { VITE_CHAIN_NAME } = import.meta.env;
 const { VITE_RPC_URL } = import.meta.env;
@@ -10,78 +12,92 @@ const { VITE_BLOCK_EXPLORER_URL } = import.meta.env;
 const getMetamaskAddressAuthenticationUtil = async (
   isStartUpSignedInCheck: boolean
 ) => {
-  if (typeof window.ethereum === "undefined") {
-    if (isStartUpSignedInCheck) {
-      isLoggedInUserStore.setLoggedInStatus(false);
+  // if (typeof window.ethereum === "undefined") {
+  //   if (isStartUpSignedInCheck) {
+  //     isLoggedInUserStore.setLoggedInStatus(false);
+  //     return;
+  //   }
+  //
+  //   const errorDetails = {
+  //     position: "top-right",
+  //     heading: "Please install Metamask",
+  //     description:
+  //       "Please install metamask to post as yourself, you can still view others posts and post anonymously",
+  //     type: wallet,
+  //     removeAfter: 15000,
+  //     ctaBtnName: "Install Metamask",
+  //     ctaFunction: () => {
+  //       window.open("https://metamask.io/", "_blank");
+  //     }
+  //   };
+  //
+  //   throw new Error(stringifyNotificationObjectWithFunctionUtil(errorDetails));
+  // } else {
+  /* this allows the user to connect their wallet */
+  try {
+    // const isUserSwitchedToCorrectChain = await switchUserToCorrectChain(
+    //   isStartUpSignedInCheck
+    // );
+    // console.log("isUserSwitchedToCorrectChain", isUserSwitchedToCorrectChain);
+    //
+    // if (isStartUpSignedInCheck && !isUserSwitchedToCorrectChain) {
+    //   isLoggedInUserStore.setLoggedInStatus(false);
+    //   return;
+    // }
+
+    // const addressesWithoutMetaMaskPrompt = await window.ethereum.request({
+    //   method: "eth_accounts"
+    // });
+
+    const addressesWithoutMetaMaskPrompt = getAccount(wagmiConfig).address;
+    console.log(
+      "addressesWithoutMetaMaskPrompt",
+      addressesWithoutMetaMaskPrompt
+    );
+
+    if (addressesWithoutMetaMaskPrompt) {
+      addressUserStore.setUserAddress(addressesWithoutMetaMaskPrompt);
+      console.log(
+        "addressesWithoutMetaMaskPrompt : " +
+          JSON.stringify(addressesWithoutMetaMaskPrompt)
+      );
       return;
     }
 
+    if (isStartUpSignedInCheck && addressesWithoutMetaMaskPrompt) return;
+
+    await web3Modal.open();
+
+    web3Modal.subscribeState((newState) => {
+      console.log("newState : ", newState);
+      const address = getAccount(wagmiConfig).address!;
+      addressUserStore.setUserAddress(address);
+      console.log("Account address: ", address);
+    });
+
+    // const addressesWithMetaMaskPrompt = await window.ethereum.request({
+    //   method: "eth_requestAccounts"
+    // });
+    //
+    // if (addressesWithMetaMaskPrompt.length) {
+    //   addressUserStore.setUserAddress(addressesWithMetaMaskPrompt[0]);
+    // }
+    //
+    // console.log("Account : " + JSON.stringify(addressesWithMetaMaskPrompt));
+  } catch (error) {
+    console.log(error);
+
     const errorDetails = {
       position: "top-right",
-      heading: "Please install Metamask",
-      description:
-        "Please install metamask to post as yourself, you can still view others posts and post anonymously",
-      type: wallet,
-      removeAfter: 15000,
-      ctaBtnName: "Install Metamask",
-      ctaFunction: () => {
-        window.open("https://metamask.io/", "_blank");
-      }
+      heading: "Error while connecting wallet",
+      description: "Please try again to connect",
+      type: cross,
+      removeAfter: 3000
     };
 
-    throw new Error(stringifyNotificationObjectWithFunctionUtil(errorDetails));
-  } else {
-    /* this allows the user to connect their wallet */
-    try {
-      const isUserSwitchedToCorrectChain = await switchUserToCorrectChain(
-        isStartUpSignedInCheck
-      );
-      console.log("isUserSwitchedToCorrectChain", isUserSwitchedToCorrectChain);
-
-      if (isStartUpSignedInCheck && !isUserSwitchedToCorrectChain) {
-        isLoggedInUserStore.setLoggedInStatus(false);
-        return;
-      }
-
-      const addressesWithoutMetaMaskPrompt = await window.ethereum.request({
-        method: "eth_accounts"
-      });
-
-      if (addressesWithoutMetaMaskPrompt.length > 0) {
-        addressUserStore.setUserAddress(addressesWithoutMetaMaskPrompt[0]);
-        console.log(
-          "addressesWithoutMetaMaskPrompt : " +
-            JSON.stringify(addressesWithoutMetaMaskPrompt)
-        );
-        return;
-      }
-
-      if (isStartUpSignedInCheck && addressesWithoutMetaMaskPrompt.length === 0)
-        return;
-
-      const addressesWithMetaMaskPrompt = await window.ethereum.request({
-        method: "eth_requestAccounts"
-      });
-
-      if (addressesWithMetaMaskPrompt.length) {
-        addressUserStore.setUserAddress(addressesWithMetaMaskPrompt[0]);
-      }
-
-      console.log("Account : " + JSON.stringify(addressesWithMetaMaskPrompt));
-    } catch (error) {
-      console.log(error);
-
-      const errorDetails = {
-        position: "top-right",
-        heading: "Error while connecting wallet",
-        description: "Please try again to connect",
-        type: cross,
-        removeAfter: 3000
-      };
-
-      throw new Error(JSON.stringify(errorDetails));
-    }
+    throw new Error(JSON.stringify(errorDetails));
   }
+  // }
 };
 
 export default getMetamaskAddressAuthenticationUtil;
