@@ -2,7 +2,7 @@ import profileManagedQueryGraphql from "../../graphql/queries/profile-managed.qu
 import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
 
 const getUserIdsAndHandlesLensService = async (address: string) => {
-  console.log("getUserIdsAndHandlesLensService address", address);
+  // console.log("getUserIdsAndHandlesLensService address", address);
   return await baseClientAuthenticationUtil
     .query(profileManagedQueryGraphql, {
       request: {

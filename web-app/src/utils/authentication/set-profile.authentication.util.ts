@@ -12,7 +12,7 @@ const setProfileAuthenticationUtil = async () => {
   if (id !== "") {
     try {
       const response = await getProfileUsingIdLensService(id);
-      console.log("getProfileUsingIdLensService response", response);
+      // console.log("getProfileUsingIdLensService response", response);
       if (response?.data?.profile) {
         profileUserStore.setUserProfile(response?.data?.profile);
       }

@@ -13,7 +13,7 @@ export const followLensProfileManagerFollowUtil = async (profileId: string) => {
       }
     ]
   })) as RelaySuccess | LensProfileManagerRelayError;
-  console.log("follow lens profile manager: result", result);
+  // console.log("follow lens profile manager: result", result);
   await waitUntilLensManagerTransactionIsComplete(result, "follow");
 };
 

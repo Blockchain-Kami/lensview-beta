@@ -7,8 +7,8 @@ const addReactionLensService = async (
   publicationId: string,
   reaction: AppReactionType
 ) => {
-  console.log("addReactionLensService publicationId", publicationId);
-  console.log("addReactionLensService reaction", reaction);
+  // console.log("addReactionLensService publicationId", publicationId);
+  // console.log("addReactionLensService reaction", reaction);
 
   const userReaction =
     reaction === AppReactionType.UpVote

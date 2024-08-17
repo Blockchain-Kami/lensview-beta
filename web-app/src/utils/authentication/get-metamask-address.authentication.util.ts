@@ -2,8 +2,8 @@ import { cross, wallet } from "../app-icon.util";
 import { addressUserStore } from "../../stores/user/address.user.store";
 import stringifyNotificationObjectWithFunctionUtil from "../stringify-notification-object-with-function.util";
 import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
-import web3Modal, { wagmiConfig } from "../web3modal.util";
-import { getAccount } from "@wagmi/core";
+import web3Modal, {wagmiConfig} from "../web3modal.util";
+import { getAccount } from '@wagmi/core'
 const { VITE_CHAIN_ID } = import.meta.env;
 const { VITE_CHAIN_NAME } = import.meta.env;
 const { VITE_RPC_URL } = import.meta.env;
@@ -50,6 +50,7 @@ const getMetamaskAddressAuthenticationUtil = async (
     // });
 
     const addressesWithoutMetaMaskPrompt = getAccount(wagmiConfig).address;
+    // const addressesWithoutMetaMaskPrompt = web3Modal.getAddress();
     console.log(
       "addressesWithoutMetaMaskPrompt",
       addressesWithoutMetaMaskPrompt

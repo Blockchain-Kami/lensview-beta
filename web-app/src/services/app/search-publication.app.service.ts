@@ -3,10 +3,10 @@ import type { AxiosResponse } from "axios";
 import type { UrlValidateResponseAppModel } from "../../models/app/responses/url-validate.response.app.model";
 
 const searchPublicationAppService = async (searchURLOrKeywords: string) => {
-  console.log(
-    "searchPublicationAppService searchURLOrKeywords:",
-    searchURLOrKeywords
-  );
+  // console.log(
+  //   "searchPublicationAppService searchURLOrKeywords:",
+  //   searchURLOrKeywords
+  // );
 
   try {
     return await clientAxiosUtil

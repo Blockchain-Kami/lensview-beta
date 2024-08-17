@@ -15,8 +15,8 @@ export const load = (async ({ url }: LoadEvent) => {
     isInputUrlBoolean = isInputUrlString === "true";
   }
 
-  console.log("userEnteredUrlOrKeywordsDecode", userEnteredUrlOrKeywordsDecode);
-  console.log("isInputUrlBoolean", isInputUrlBoolean);
+  // console.log("userEnteredUrlOrKeywordsDecode", userEnteredUrlOrKeywordsDecode);
+  // console.log("isInputUrlBoolean", isInputUrlBoolean);
 
   return {
     userEnteredUrlOrKeywords: userEnteredUrlOrKeywordsDecode,

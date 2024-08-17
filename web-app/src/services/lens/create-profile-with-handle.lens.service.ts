@@ -3,7 +3,7 @@ import createProfileWithHandleMutationGraphql from "../../graphql/mutations/crea
 import { addressUserStore } from "../../stores/user/address.user.store";
 
 const createProfileWithHandleLensService = async (handle: string) => {
-  console.log("createProfileWithHandleLensService handle", handle);
+  // console.log("createProfileWithHandleLensService handle", handle);
 
   let address;
 
@@ -11,7 +11,7 @@ const createProfileWithHandleLensService = async (handle: string) => {
     address = _address;
   });
   unsub();
-  console.log("createProfileWithHandleLensService address", address);
+  // console.log("createProfileWithHandleLensService address", address);
 
   return await baseClientAuthenticationUtil
     .mutation(createProfileWithHandleMutationGraphql, {

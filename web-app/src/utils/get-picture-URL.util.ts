@@ -1,5 +1,5 @@
 const getPictureURLUtil = (fetchedLensURL: string, ownedByAddress: string) => {
-  console.log("fetchedLensURL", typeof fetchedLensURL);
+  // console.log("fetchedLensURL", typeof fetchedLensURL);
   if (
     fetchedLensURL === "" ||
     fetchedLensURL === undefined ||

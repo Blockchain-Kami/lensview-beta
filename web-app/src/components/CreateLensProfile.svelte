@@ -42,7 +42,7 @@
         const txId = createProfileWithHandleData?.txId;
 
         await waitUntilComplete({ forTxId: txId }, Date.now());
-        console.log("waiting for tx to be indexed");
+        // console.log("waiting for tx to be indexed");
         await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
         await retrieveAccessTokenAuthenticationUtil();
         await setProfileAuthenticationUtil();

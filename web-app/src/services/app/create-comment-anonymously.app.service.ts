@@ -6,11 +6,11 @@ const createCommentAnonymouslyAppService = async (
   url: string,
   userEnteredContent: string
 ) => {
-  console.log("createPostAnonymouslyAppService url:", url);
-  console.log(
-    "createPostAnonymouslyAppService userEnteredContent:",
-    userEnteredContent
-  );
+  // console.log("createPostAnonymouslyAppService url:", url);
+  // console.log(
+  //   "createPostAnonymouslyAppService userEnteredContent:",
+  //   userEnteredContent
+  // );
 
   try {
     return await clientAxiosUtil

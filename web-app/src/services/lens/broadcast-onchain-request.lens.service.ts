@@ -5,7 +5,7 @@ import authenticatedClientAuthenticationUtil from "../../utils/authentication/au
 const broadcastOnchainRequestLensService = async (
   request: BroadcastRequest
 ) => {
-  console.log("broadcastOnchainRequestLensService request", request);
+  // console.log("broadcastOnchainRequestLensService request", request);
 
   const result = await authenticatedClientAuthenticationUtil()
     .mutation(broadcastOnchainMutationGraphql, { request })

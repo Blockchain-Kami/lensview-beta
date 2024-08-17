@@ -42,6 +42,7 @@
   let postPubId = $page.data.postPubId;
   let isPostMoreOpen = false;
   let showLoginModal = false;
+  let onLoginIntialization: () => Promise<void>;
   let reaction = AppReactionType.NoReaction;
   let upVoteCount = 0;
   let downVoteCount = 0;
@@ -65,7 +66,7 @@
 
   onMount(() => {
     reloadAPublication.subscribe((val) => {
-      console.log("Reloaded a publication" + val);
+      // console.log("Reloaded a publication" + val);
       promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
         postPubId,
         LimitType.Ten,
@@ -197,6 +198,7 @@
       ctaBtnName: "Login",
       ctaFunction: () => {
         showLoginModal = true;
+        onLoginIntialization();
       }
     });
   };
@@ -389,7 +391,7 @@
   {/await}
 </section>
 
-<Login bind:showLoginModal />
+<Login bind:showLoginModal bind:onLoginIntialization/>
 
 <!----------------------------------------------------------------->
 

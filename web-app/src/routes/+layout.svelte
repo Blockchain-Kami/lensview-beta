@@ -48,7 +48,7 @@
   let currentPath = "/";
 
   $: if (currentPath !== $page.url.pathname) {
-    console.log("$page.url.pathname : " + $page.url.pathname);
+    // console.log("$page.url.pathname : " + $page.url.pathname);
     currentPath = $page.url.pathname;
     isThisHomePage = currentPath === "/";
   }
@@ -71,10 +71,10 @@
           const isValidAccessTokenPresentInLocalStorage =
             await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
 
-          console.log(
-            "isValidAccessTokenPresentInLocalStorage : " +
-              isValidAccessTokenPresentInLocalStorage
-          );
+          // console.log(
+          //   "isValidAccessTokenPresentInLocalStorage : " +
+          //     isValidAccessTokenPresentInLocalStorage
+          // );
 
           if (isValidAccessTokenPresentInLocalStorage) {
             await setProfileAuthenticationUtil();
@@ -88,7 +88,7 @@
         console.log(error);
       }
 
-      accountAndChainChangedMethods();
+      // accountAndChainChangedMethods();
     }
   });
 
@@ -103,8 +103,8 @@
 
     addressUserStore.subscribe((address) => {
       window.ethereum.on("accountsChanged", (switchedAddress: string) => {
-        console.log("account changed: " + switchedAddress);
-        console.log("address: " + address);
+        // console.log("account changed: " + switchedAddress);
+        // console.log("address: " + address);
         if (address !== null && switchedAddress !== address) {
           window.location.reload();
         }

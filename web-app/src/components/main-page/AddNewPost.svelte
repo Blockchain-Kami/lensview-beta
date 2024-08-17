@@ -35,6 +35,7 @@
   const wordLimit = 1000;
   let isContentInvalid = true;
   let showLoginModal = false;
+  let onLoginIntialization: () => Promise<void>;
   export let userEnteredUrl = "";
   export let isUrlInvalid = true;
   let urlInvalidReason = "";
@@ -100,6 +101,7 @@
   let postThroughUser = async () => {
     if (!checkIsLoggedIn()) {
       showLoginModal = true;
+      onLoginIntialization();
     } else {
       dialog.close();
 
@@ -343,7 +345,7 @@
   {/if}
 </dialog>
 
-<Login bind:showLoginModal />
+<Login bind:showLoginModal bind:onLoginIntialization/>
 <GetTestMatic bind:showGetTestMaticModal />
 
 <style lang="scss">

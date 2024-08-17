@@ -3,7 +3,7 @@ import imageCommentPublicationQueryGraphql from "../../graphql/queries/image-com
 const { VITE_IMAGE_PUB } = import.meta.env;
 
 const getImageCommentLensService = async (id: string) => {
-  console.log("getImageCommentLensService id", id);
+  // console.log("getImageCommentLensService id", id);
   const result = await baseClientAuthenticationUtil
     .query(imageCommentPublicationQueryGraphql, {
       request: {

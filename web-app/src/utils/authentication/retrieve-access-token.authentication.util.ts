@@ -2,9 +2,8 @@ import { addressUserStore } from "../../stores/user/address.user.store";
 import getChallengeInfoLensService from "../../services/lens/get-challenge-info.lens.service";
 import { idsAndHandlesUserStore } from "../../stores/user/ids-and-handles.user.store";
 import getAccessTokenUsingChallengeLensService from "../../services/lens/get-access-token-using-challenge.lens.service";
-import { getSigner } from "../ethers.util";
-import { signMessage } from "@wagmi/core";
-import { wagmiConfig } from "../web3modal.util";
+import web3Modal, {wagmiConfig} from "../web3modal.util";
+import { signMessage } from '@wagmi/core'
 
 const retrieveAccessTokenAuthenticationUtil = async () => {
   try {
@@ -35,6 +34,11 @@ const retrieveAccessTokenAuthenticationUtil = async () => {
       message: challengeInfo.data.challenge.text
     });
 
+    // const signer = getSigner()!;
+    // const signature = await signer.signMessage(
+    //     challengeInfo.data.challenge.text
+    // );
+
     const authData = await getAccessTokenUsingChallengeLensService(
       challengeInfo?.data?.challenge?.id,
       signature
@@ -54,6 +58,7 @@ const retrieveAccessTokenAuthenticationUtil = async () => {
       localStorage.setItem("IDS_AUTH_DATA", JSON.stringify(updatedIdsAuthData));
     }
   } catch (error) {
+    web3Modal.disconnect();
     console.log("retrieveAccessTokenAuthenticationUtil error", error);
     throw new Error("Failed to retrieve access token");
   }

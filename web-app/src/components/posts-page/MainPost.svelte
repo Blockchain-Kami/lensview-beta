@@ -44,6 +44,7 @@
   let mainPostPubId = $page.data.mainPostPubId;
   let relatedPostsActive = false;
   let showLoginModal = false;
+  let onLoginIntialization: () => Promise<void>;
   let reaction = AppReactionType.NoReaction;
   let upVoteCount = 0;
   let downVoteCount = 0;
@@ -57,7 +58,7 @@
 
   onMount(() => {
     reloadMainPost.subscribe((val) => {
-      console.log("Reloaded main post" + val);
+      // console.log("Reloaded main post" + val);
       promiseOfGetMainPost = getLinkPublicationLensService(mainPostPubId);
     });
   });
@@ -179,6 +180,7 @@
       ctaBtnName: "Login",
       ctaFunction: () => {
         showLoginModal = true;
+        onLoginIntialization();
       }
     });
   };
@@ -530,7 +532,7 @@
   {/if}
 </MediaQuery>
 
-<Login bind:showLoginModal />
+<Login bind:showLoginModal bind:onLoginIntialization/>
 
 <!----------------------------------------------------------------->
 

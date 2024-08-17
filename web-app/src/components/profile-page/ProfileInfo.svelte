@@ -27,6 +27,7 @@
   import unfollowLensProfileManagerFollowUtil from "../../utils/follow/unfollow-lens-profile-manager.follow.util";
 
   let showLoginModal = false;
+  let onLoginIntialization: () => Promise<void>;
   const { addNotification } = getNotificationsContext();
   let promiseOfGetProfile = getProfileUsingIdLensService($page.data.profileId);
   let isFollowing = false;
@@ -132,6 +133,7 @@
       ctaBtnName: "Login",
       ctaFunction: () => {
         showLoginModal = true;
+        onLoginIntialization();
       }
     });
   };
@@ -336,7 +338,7 @@
   {/await}
 </section>
 
-<Login bind:showLoginModal />
+<Login bind:showLoginModal bind:onLoginIntialization/>
 
 <!---------------------------------------------------------------->
 

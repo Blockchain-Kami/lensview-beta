@@ -51,6 +51,7 @@
     true
   );
   let showLoginModal = false;
+  let onLoginIntialization: () => Promise<void>;
   let isPostMoreOpen: PostMoreStatus = {};
 
   onMount(() => {
@@ -182,6 +183,7 @@
       ctaBtnName: "Login",
       ctaFunction: () => {
         showLoginModal = true;
+        onLoginIntialization();
       }
     });
   };
@@ -457,7 +459,7 @@
   </section>
 </MediaQuery>
 
-<Login bind:showLoginModal />
+<Login bind:showLoginModal bind:onLoginIntialization/>
 
 <!----------------------------------------------------------------->
 

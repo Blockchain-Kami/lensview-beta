@@ -5,7 +5,7 @@ import linkPublicationQueryGraphql from "../../graphql/queries/link-publication.
 import type { LinkPublicationLensModel } from "../../models/lens/link-publication.lens.model";
 
 const getLinkPublicationLensService = async (publicationId: string) => {
-  console.log("getLinkPublicationLensService publicationId", publicationId);
+  // console.log("getLinkPublicationLensService publicationId", publicationId);
 
   let isUserLoggedIn = false;
   const unsub = isLoggedInUserStore.subscribe((status) => {

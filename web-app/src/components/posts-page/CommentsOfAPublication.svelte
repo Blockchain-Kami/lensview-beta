@@ -55,6 +55,7 @@
   let isCommentMoreOpen: CommentMoreStatus = {};
   let selectedFilterType = CommentFilterType.LatestComments;
   let showLoginModal = false;
+  let onLoginIntialization: () => Promise<void>;
   let reactionDetails: ReactionDetailsModel = {};
   let isSummaryOpen = false;
   let totalImagePostCount = 0;
@@ -231,6 +232,7 @@
       ctaBtnName: "Login",
       ctaFunction: () => {
         showLoginModal = true;
+        onLoginIntialization();
       }
     });
   };
@@ -547,7 +549,7 @@
   </section>
 </MediaQuery>
 
-<Login bind:showLoginModal />
+<Login bind:showLoginModal bind:onLoginIntialization/>
 
 <!---------------------------------------------------------------->
 

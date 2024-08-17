@@ -53,7 +53,7 @@
 
   onMount(async () => {
     fetchingFoundedMainPostPubIds = true;
-    console.log("searchURLOrKeywords", searchURLOrKeywords);
+    // console.log("searchURLOrKeywords", searchURLOrKeywords);
     if (searchURLOrKeywords !== "") {
       try {
         const resp = await getRelatedPostPubIdsAppService(searchURLOrKeywords);

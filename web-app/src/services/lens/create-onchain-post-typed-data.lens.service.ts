@@ -5,7 +5,7 @@ import authenticatedClientAuthenticationUtil from "../../utils/authentication/au
 const createOnchainPostTypedDataLensService = async (
   request: OnchainPostRequest
 ) => {
-  console.log("createOnchainPostTypedDataLensService request", request);
+  // console.log("createOnchainPostTypedDataLensService request", request);
 
   const result = await authenticatedClientAuthenticationUtil()
     .mutation(createOnchainPostTypedDataMutationGraphql, {

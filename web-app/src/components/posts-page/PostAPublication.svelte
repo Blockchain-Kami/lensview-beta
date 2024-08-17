@@ -24,6 +24,7 @@
   const wordLimit = 1000;
   let isInputInvalid = true;
   let showLoginModal = false;
+  let onLoginIntialization: () => Promise<void>;
   let postPubId = $page.data.postPubId;
   let isThisComment = postPubId !== undefined;
   let pubId = isThisComment ? postPubId : $page.data.mainPostPubId;
@@ -98,6 +99,7 @@
   let postThroughUser = async () => {
     if (!checkIsLoggedIn()) {
       showLoginModal = true;
+      onLoginIntialization();
     } else {
       isPublishing = true;
       try {
@@ -315,7 +317,7 @@
   </div>
 </section>
 
-<Login bind:showLoginModal />
+<Login bind:showLoginModal bind:onLoginIntialization/>
 <GetTestMatic bind:showGetTestMaticModal />
 
 <!----------------------------------------------------------------->

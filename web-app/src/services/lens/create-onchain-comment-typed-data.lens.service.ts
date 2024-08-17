@@ -5,7 +5,7 @@ import type { OnchainCommentRequest } from "../../gql/graphql";
 const createOnchainCommentTypedDataLensService = async (
   request: OnchainCommentRequest
 ) => {
-  console.log("createOnchainCommentTypedDataLensService request", request);
+  // console.log("createOnchainCommentTypedDataLensService request", request);
   const result = await authenticatedClientAuthenticationUtil()
     .mutation(createOnchainCommentTypedDataMutationGraphql, { request })
     .toPromise();

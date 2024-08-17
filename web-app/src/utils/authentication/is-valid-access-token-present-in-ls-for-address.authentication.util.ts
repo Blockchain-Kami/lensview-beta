@@ -32,7 +32,7 @@ const isValidAccessTokenPresentInLsForAddressAuthenticationUtil = async () => {
   try {
     const isAbleToStoreIDsAndHandles = await ableToStoreIDsAndHandles(address);
     if (isAbleToStoreIDsAndHandles) {
-      console.log("able to store ids and handles");
+      // console.log("able to store ids and handles");
       return isValidAccessTokenPresentInLocalStorageAuthenticationUtil();
     } else {
       return false;

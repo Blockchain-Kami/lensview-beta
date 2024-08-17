@@ -3,10 +3,10 @@ import type { RelatedPublicationsResponseAppModel } from "../../models/app/respo
 import type { AxiosResponse } from "axios";
 
 const getRelatedPostPubIdsAppService = async (searchURLOrKeywords: string) => {
-  console.log(
-    "getRelatedPostPubIdsAppService searchURLOrKeywords:",
-    searchURLOrKeywords
-  );
+  // console.log(
+  //   "getRelatedPostPubIdsAppService searchURLOrKeywords:",
+  //   searchURLOrKeywords
+  // );
 
   try {
     return await clientAxiosUtil

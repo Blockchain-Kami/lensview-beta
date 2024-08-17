@@ -6,7 +6,7 @@ import baseClientAuthenticationUtil from "../../utils/authentication/base-client
 import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
 
 const getCommentLensService = async (request: PublicationsRequest) => {
-  console.log("getCommentLensService request", request);
+  // console.log("getCommentLensService request", request);
 
   let isUserLoggedIn = false;
   const unsub = isLoggedInUserStore.subscribe((status) => {

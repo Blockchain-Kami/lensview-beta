@@ -19,8 +19,8 @@
   import { idsAndHandlesUserStore } from "../stores/user/ids-and-handles.user.store";
   import retrieveAccessTokenAuthenticationUtil from "../utils/authentication/retrieve-access-token.authentication.util";
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
-  import web3Modal, { wagmiConfig } from "../utils/web3modal.util";
-  import { getAccount } from "@wagmi/core";
+  import web3Modal, {wagmiConfig} from "../utils/web3modal.util";
+  import { getAccount } from '@wagmi/core'
 
   const { addNotification } = getNotificationsContext();
   export let showLoginModal: boolean;
@@ -29,26 +29,33 @@
 
   let loggingIn = false;
   let showCreateLensProfileModal = false;
+  let connectedAddress: string | null = null;
 
   export const onLoginIntialization = async () => {
 
-    console.log("onLoginIntialization");
+    // console.log("onLoginIntialization");
     try {
-      const connected = await getMetamaskAddressAuthenticationUtil(true);
+      await getMetamaskAddressAuthenticationUtil(true);
       dialog.close();
 
       web3Modal.subscribeState((newState) => {
         console.log("newState : ", newState);
         const address = getAccount(wagmiConfig).address!;
+        // const address = web3Modal.getAddress();
         addressUserStore.setUserAddress(address);
         showLoginModal = true;
         console.log("Account address: ", address);
 
-        console.log("Wallet connected: " + connected);
-        loggedUserInIfAccessTokenPresent();
+        if(connectedAddress !== address) {
+          connectedAddress = address;
+          loggedUserInIfAccessTokenPresent();
+        }
       });
 
+      await loggedUserInIfAccessTokenPresent();
+
     } catch (error) {
+      await web3Modal.disconnect();
       dialog.close();
       console.log(error);
       addNotification(
@@ -123,6 +130,7 @@
   // };
 
   const loggedUserInIfAccessTokenPresent = async () => {
+    showLoginModal = true;
     const isValidAccessTokenPresentInLocalStorage =
       await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
     console.log(

@@ -11,12 +11,12 @@ export const load = (async ({ params }: LoadEvent) => {
     postPubId = postInfo[1];
   }
 
-  console.log("mainPostPubId", mainPostPubId);
-  console.log("postPubId", postPubId);
+  // console.log("mainPostPubId", mainPostPubId);
+  // console.log("postPubId", postPubId);
 
   const commentPubId = postPubId !== undefined && postPubId !== "" ? postPubId : mainPostPubId;
 
-  console.log("commentPubId", commentPubId);
+  // console.log("commentPubId", commentPubId);
 
   return {
     mainPostPubId: mainPostPubId,

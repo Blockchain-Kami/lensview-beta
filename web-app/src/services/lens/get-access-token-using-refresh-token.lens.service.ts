@@ -4,7 +4,7 @@ import baseClientAuthenticationUtil from "../../utils/authentication/base-client
 const getAccessTokenUsingRefreshTokenLensService = async (
   refreshToken: string
 ) => {
-  console.log("refreshToken", refreshToken);
+  // console.log("refreshToken", refreshToken);
   return await baseClientAuthenticationUtil
     .mutation(refreshMutationGraphql, {
       request: {

@@ -3,7 +3,7 @@ import profileIdQueryGraphql from "../../graphql/queries/profile-id.query.graphq
 const { VITE_LENS_DOMAIN } = import.meta.env;
 
 const getProfileIdUsingHandleLensService = async (handle: string) => {
-  console.log("getProfileUsingHandleLensService handle", handle);
+  // console.log("getProfileUsingHandleLensService handle", handle);
 
   return await baseClientAuthenticationUtil
     .query(profileIdQueryGraphql, {

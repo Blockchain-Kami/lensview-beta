@@ -5,8 +5,8 @@ const getLensTransactionStatusLensService = async (
   txId: string | null,
   txHash: string | null
 ) => {
-  console.log("getLensTransactionStatusLensService txId", txId);
-  console.log("getLensTransactionStatusLensService txHash", txHash);
+  // console.log("getLensTransactionStatusLensService txId", txId);
+  // console.log("getLensTransactionStatusLensService txHash", txHash);
 
   if (!txId && !txHash) {
     throw new Error("txId or txHash is required");

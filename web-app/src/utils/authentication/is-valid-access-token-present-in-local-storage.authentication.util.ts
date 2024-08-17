@@ -19,14 +19,14 @@ const isValidAccessTokenPresentInLocalStorageAuthenticationUtil = async () => {
   if (!idsAuthData) return false;
 
   const parsedIdsAuthData = JSON.parse(idsAuthData);
-  console.log("parsedIdsAuthData", parsedIdsAuthData);
+  // console.log("parsedIdsAuthData", parsedIdsAuthData);
 
   if (!parsedIdsAuthData?.[id]) return false;
 
   const { accessToken, refreshToken } = parsedIdsAuthData[id];
 
-  console.log("accessToken", accessToken);
-  console.log("refreshToken", refreshToken);
+  // console.log("accessToken", accessToken);
+  // console.log("refreshToken", refreshToken);
 
   const isAccessTokenExpired = await isAccessTokenExpiredInLocalStorage(
     accessToken,
@@ -45,9 +45,9 @@ const isAccessTokenExpiredInLocalStorage = async (
   id: string
 ) => {
   const accessTokenExp = parseJwtToGetExpirationDate(accessToken);
-  console.log("accessTokenExp", accessTokenExp);
+  // console.log("accessTokenExp", accessTokenExp);
 
-  console.log("isTokenExpired(accessTokenExp)", isTokenExpired(accessTokenExp));
+  // console.log("isTokenExpired(accessTokenExp)", isTokenExpired(accessTokenExp));
   if (!isTokenExpired(accessTokenExp)) return false;
 
   const refreshTokenExp = parseJwtToGetExpirationDate(refreshToken);

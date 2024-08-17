@@ -9,11 +9,11 @@ const updateCommentAnonymouslyAppService = async (
   mainPostUrl: string,
   mainPostImageUrl: string
 ) => {
-  console.log("createPostAnonymouslyAppService pubId:", pubId);
-  console.log(
-    "createPostAnonymouslyAppService userEnteredContent:",
-    userEnteredContent
-  );
+  // console.log("createPostAnonymouslyAppService pubId:", pubId);
+  // console.log(
+  //   "createPostAnonymouslyAppService userEnteredContent:",
+  //   userEnteredContent
+  // );
 
   try {
     return await clientAxiosUtil

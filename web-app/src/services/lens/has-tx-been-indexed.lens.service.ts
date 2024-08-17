@@ -8,7 +8,7 @@ import baseClientAuthenticationUtil from "../../utils/authentication/base-client
 const hasTxBeenIndexedLensService = async (
   request: LensTransactionStatusRequest
 ): Promise<LensTransactionStatusQuery | undefined> => {
-  console.log("hasTxBeenIndexedLensService request", request);
+  // console.log("hasTxBeenIndexedLensService request", request);
 
   const result = await baseClientAuthenticationUtil
     .query(lensTransactionStatusQueryGraphql, { request })

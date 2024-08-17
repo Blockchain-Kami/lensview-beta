@@ -7,8 +7,8 @@ const removeReactionLensService = async (
   publicationId: string,
   reaction: AppReactionType
 ) => {
-  console.log("removeReactionLensService publicationId", publicationId);
-  console.log("removeReactionLensService reaction", reaction);
+  // console.log("removeReactionLensService publicationId", publicationId);
+  // console.log("removeReactionLensService reaction", reaction);
 
   const userReaction =
     reaction === AppReactionType.UpVote
