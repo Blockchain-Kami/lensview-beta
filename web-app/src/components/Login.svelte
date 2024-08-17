@@ -19,6 +19,8 @@
   import { idsAndHandlesUserStore } from "../stores/user/ids-and-handles.user.store";
   import retrieveAccessTokenAuthenticationUtil from "../utils/authentication/retrieve-access-token.authentication.util";
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
+  import web3Modal, { wagmiConfig } from "../utils/web3modal.util";
+  import { getAccount } from "@wagmi/core";
 
   const { addNotification } = getNotificationsContext();
   export let showLoginModal: boolean;
@@ -29,10 +31,23 @@
   let showCreateLensProfileModal = false;
 
   export const onLoginIntialization = async () => {
+
     console.log("onLoginIntialization");
     try {
-      await getMetamaskAddressAuthenticationUtil(true);
-      await loggedUserInIfAccessTokenPresent();
+      const connected = await getMetamaskAddressAuthenticationUtil(true);
+      dialog.close();
+
+      web3Modal.subscribeState((newState) => {
+        console.log("newState : ", newState);
+        const address = getAccount(wagmiConfig).address!;
+        addressUserStore.setUserAddress(address);
+        showLoginModal = true;
+        console.log("Account address: ", address);
+
+        console.log("Wallet connected: " + connected);
+        loggedUserInIfAccessTokenPresent();
+      });
+
     } catch (error) {
       dialog.close();
       console.log(error);
@@ -79,7 +94,8 @@
 
   const connect = async () => {
     try {
-      await getMetamaskAddressAuthenticationUtil(false);
+      const connected = await getMetamaskAddressAuthenticationUtil(true);
+      console.log("Wallet connected: " + connected);
       await loggedUserInIfAccessTokenPresent();
     } catch (error) {
       console.log("connect error : ", error);
@@ -141,21 +157,7 @@
       on:click|stopPropagation
       transition:fly={{ y: 40, easing: backInOut, duration: 700 }}
     >
-      {#if !$addressUserStore}
-        <div class="CenterRowFlex head">
-          <div class="h3">Login</div>
-          <div class="head__close-btn">
-            <button on:click={() => dialog.close()}>
-              <Icon d={close} />
-            </button>
-          </div>
-        </div>
-        <div class="body">Please connect your wallet to continue</div>
-        <div class="line" />
-        <div class="footer">
-          <button on:click={connect} class="btn"> Connect wallet</button>
-        </div>
-      {:else if !$isLoggedInUserStore}
+      {#if $addressUserStore && !$isLoggedInUserStore}
         {#if !loggingIn}
           {#if $idsAndHandlesUserStore.length > 0}
             <div class="CenterRowFlex head">

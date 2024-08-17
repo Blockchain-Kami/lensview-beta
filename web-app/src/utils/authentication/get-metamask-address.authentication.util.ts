@@ -68,12 +68,7 @@ const getMetamaskAddressAuthenticationUtil = async (
 
     await web3Modal.open();
 
-    web3Modal.subscribeState((newState) => {
-      console.log("newState : ", newState);
-      const address = getAccount(wagmiConfig).address!;
-      addressUserStore.setUserAddress(address);
-      console.log("Account address: ", address);
-    });
+
 
     // const addressesWithMetaMaskPrompt = await window.ethereum.request({
     //   method: "eth_requestAccounts"
