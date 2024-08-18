@@ -43,6 +43,11 @@
   import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
   import SummarizePublications from "./SummarizePublications.svelte";
   import { TotalImagePostsStore } from "../../stores/total-image-posts.store";
+  import { getAccount } from "@wagmi/core";
+  import { wagmiConfig } from "../../utils/web3modal.util";
+  import getMetamaskAddressAuthenticationUtil from "../../utils/authentication/get-metamask-address.authentication.util";
+  import Tip from "../Tip.svelte";
+  import TipImage from "$lib/assets/Tip.svg";
   const { VITE_APP_LENS_ID } = import.meta.env;
   const { VITE_IMAGE_PUB } = import.meta.env;
 
@@ -59,6 +64,10 @@
   let reactionDetails: ReactionDetailsModel = {};
   let isSummaryOpen = false;
   let totalImagePostCount = 0;
+  let toHandle: string;
+  let toAddress: string;
+  let showTippingModal = false;
+  let dialog: HTMLDialogElement;
 
   let promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
     commentPubId,
@@ -275,6 +284,22 @@
     totalImagePostCount = 0;
     TotalImagePostsStore.setTotalImagePosts(0);
   };
+
+  const initiateTippingProcess = async (event, commentDetails) => {
+    console.log("------------sendTip--------------");
+    console.log("commentDetails", commentDetails);
+    event.preventDefault();
+    event.stopPropagation();
+    let address = getAccount(wagmiConfig).address;
+    if (address) {
+      toHandle = commentDetails.by.handle.fullHandle.split("/")[1];
+      toAddress = commentDetails.by.ownedBy.address;
+      showTippingModal = true;
+    } else {
+      await getMetamaskAddressAuthenticationUtil(true);
+      dialog.close();
+    }
+  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -408,6 +433,14 @@
                     {/if}
                   </div>
                   <div class="CenterRowFlex comment__body__top__right">
+                    <div>
+                      <button
+                        on:click={(event) =>
+                          initiateTippingProcess(event, comment)}
+                      >
+                        <img src={TipImage} alt="tip" />
+                      </button>
+                    </div>
                     <div
                       class="CenterRowFlex comment__body__top__right__reaction"
                     >
@@ -549,7 +582,8 @@
   </section>
 </MediaQuery>
 
-<Login bind:showLoginModal bind:onLoginIntialization/>
+<Login bind:showLoginModal bind:onLoginIntialization />
+<Tip {toAddress} {toHandle} bind:showTippingModal />
 
 <!---------------------------------------------------------------->
 

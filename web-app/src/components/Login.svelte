@@ -19,8 +19,8 @@
   import { idsAndHandlesUserStore } from "../stores/user/ids-and-handles.user.store";
   import retrieveAccessTokenAuthenticationUtil from "../utils/authentication/retrieve-access-token.authentication.util";
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
-  import web3Modal, {wagmiConfig} from "../utils/web3modal.util";
-  import { getAccount } from '@wagmi/core'
+  import web3Modal, { wagmiConfig } from "../utils/web3modal.util";
+  import { getAccount } from "@wagmi/core";
 
   const { addNotification } = getNotificationsContext();
   export let showLoginModal: boolean;
@@ -32,13 +32,12 @@
   let connectedAddress: string | null = null;
 
   export const onLoginIntialization = async () => {
-
     // console.log("onLoginIntialization");
     try {
       await getMetamaskAddressAuthenticationUtil(true);
       dialog.close();
 
-      web3Modal.subscribeState((newState) => {
+      const unsub = web3Modal.subscribeState((newState) => {
         console.log("newState : ", newState);
         const address = getAccount(wagmiConfig).address!;
         // const address = web3Modal.getAddress();
@@ -46,9 +45,10 @@
         showLoginModal = true;
         console.log("Account address: ", address);
 
-        if(connectedAddress !== address) {
+        if (connectedAddress !== address) {
           connectedAddress = address;
           loggedUserInIfAccessTokenPresent();
+          unsub();
         }
       });
 

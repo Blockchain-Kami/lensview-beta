@@ -37,7 +37,8 @@ const web3Modal = createWeb3Modal({
   wagmiConfig: wagmiConfig,
   projectId,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
-  enableOnramp: true // Optional - false as default
+  enableOnramp: true, // Optional - false as default
+  enableSwaps: true // Optional - false as default
 });
 
 export default web3Modal;

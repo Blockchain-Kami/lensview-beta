@@ -8,6 +8,7 @@
     star
   } from "../../utils/app-icon.util";
   import Icon from "$lib/Icon.svelte";
+  import TipImage from "$lib/assets/Tip.svg";
   import { page } from "$app/stores";
   import getPictureURLUtil from "../../utils/get-picture-URL.util";
   import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
@@ -25,8 +26,16 @@
   import unfollowFollowUtil from "../../utils/follow/unfollow.follow.util";
   import followLensProfileManagerFollowUtil from "../../utils/follow/follow-lens-profile-manager.follow.util";
   import unfollowLensProfileManagerFollowUtil from "../../utils/follow/unfollow-lens-profile-manager.follow.util";
+  import getMetamaskAddressAuthenticationUtil from "../../utils/authentication/get-metamask-address.authentication.util";
+  import { getAccount } from "@wagmi/core";
+  import { wagmiConfig } from "../../utils/web3modal.util";
+  import Tip from "../Tip.svelte";
 
   let showLoginModal = false;
+  let showTippingModal = false;
+  let toHandle: string;
+  let toAddress: string;
+  let dialog: HTMLDialogElement;
   let onLoginIntialization: () => Promise<void>;
   const { addNotification } = getNotificationsContext();
   let promiseOfGetProfile = getProfileUsingIdLensService($page.data.profileId);
@@ -137,6 +146,18 @@
       }
     });
   };
+
+  const initiateTippingProcess = async (profileDetails) => {
+    let address = getAccount(wagmiConfig).address;
+    if (address) {
+      toHandle = profileDetails.data.profile.handle.localName;
+      toAddress = profileDetails.data.profile.ownedBy.address;
+      showTippingModal = true;
+    } else {
+      await getMetamaskAddressAuthenticationUtil(true);
+      dialog.close();
+    }
+  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -246,6 +267,9 @@
               {/if}
             </div>
           {/if}
+          <div on:click={initiateTippingProcess(response)} style="cursor: pointer">
+            <img src={TipImage} alt="tip" />
+          </div>
         </div>
         <div class="CenterRowFlex profile-details__right__middle">
           <div class="profile-details__right__middle__handle">
@@ -338,7 +362,8 @@
   {/await}
 </section>
 
-<Login bind:showLoginModal bind:onLoginIntialization/>
+<Login bind:showLoginModal bind:onLoginIntialization />
+<Tip {toAddress} {toHandle} bind:showTippingModal />
 
 <!---------------------------------------------------------------->
 

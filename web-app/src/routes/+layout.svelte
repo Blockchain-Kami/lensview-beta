@@ -26,9 +26,9 @@
   } from "../stores/reload-publication.store";
   import { MetaTags } from "svelte-meta-tags";
   import { metaTagsTitle } from "../services/metaTags";
+  import web3Modal from "../utils/web3modal.util";
 
   import Login from "../components/Login.svelte";
-  import getMetamaskAddressAuthenticationUtil from "../utils/authentication/get-metamask-address.authentication.util";
   import isValidAccessTokenPresentInLsForAddressAuthenticationUtil from "../utils/authentication/is-valid-access-token-present-in-ls-for-address.authentication.util";
   import { addressUserStore } from "../stores/user/address.user.store";
   import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
@@ -59,7 +59,7 @@
       typeof window.ethereum !== "undefined"
     ) {
       try {
-        await getMetamaskAddressAuthenticationUtil(true);
+        // await getMetamaskAddressAuthenticationUtil(true);
 
         let address;
         const unsub = addressUserStore.subscribe((_address) => {
@@ -149,6 +149,10 @@
       //TODO: Ask user to try again or visit the website after sometime
     }
   };
+
+  const openWalletConnectModal = async () => {
+    await web3Modal.open();
+  }
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -241,6 +245,21 @@
             </div>
             Home
           </a>
+          <!--                <a href="https-proxy-agent" class="CenterRowFlex menu__options__item">-->
+          <!--                    <div >About</div>-->
+          <!--                </a>-->
+        </div>
+
+        <div class="menu__options">
+          <button
+            on:click={openWalletConnectModal}
+            class="CenterRowFlex menu__options__item"
+          >
+            <div class="menu__options__item__icon">
+              <DualToneIcon d1={home} d2={homeDualTone} />
+            </div>
+            Wallet
+          </button>
           <!--                <a href="https-proxy-agent" class="CenterRowFlex menu__options__item">-->
           <!--                    <div >About</div>-->
           <!--                </a>-->
