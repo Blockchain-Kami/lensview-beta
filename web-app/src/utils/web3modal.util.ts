@@ -4,9 +4,9 @@ import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi";
 
 import { polygon } from "viem/chains";
 import { reconnect } from "@wagmi/core";
+const { VITE_WALLET_CONNECT_PROJECT_ID } = import.meta.env;
 
 // Your WalletConnect Cloud project ID
-export const projectId = "f3a8f998349e6c371f43455f47000302";
 
 // Create a metadata object
 const metadata = {
@@ -20,7 +20,7 @@ const metadata = {
 const chains = [polygon] as const;
 export const wagmiConfig = defaultWagmiConfig({
   chains,
-  projectId,
+  projectId: VITE_WALLET_CONNECT_PROJECT_ID,
   metadata,
   auth: {
     email: true,
@@ -35,7 +35,7 @@ reconnect(wagmiConfig);
 
 const web3Modal = createWeb3Modal({
   wagmiConfig: wagmiConfig,
-  projectId,
+  projectId: VITE_WALLET_CONNECT_PROJECT_ID,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
   enableOnramp: true, // Optional - false as default
   enableSwaps: true // Optional - false as default
