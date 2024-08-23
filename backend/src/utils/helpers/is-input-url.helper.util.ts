@@ -1,5 +1,6 @@
 import { URL } from "url";
-import { logger } from "../../log/log-manager.log";
+
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Checks if the input string is a valid URL.

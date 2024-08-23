@@ -1,11 +1,14 @@
 import { Request, Response } from "express";
-import { PublicationsResponseModel } from "../models/response/publications.response.model";
-import { SearchQueryRequestModel } from "../models/requests/query/search.query.request.model";
-import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util";
-import { getPublicationsForURLPublicationUtil } from "../utils/publications/get-publications-for-url-publication.util";
-import { getPublicationsForTagPublicationUtil } from "../utils/publications/get-publications-for-tag.publication.util";
-import { SUCCESS, httpStatusCodes } from "../config/app-constants.config";
-import { logger } from "../log/log-manager.log";
+
+import { PublicationsResponseModel } from "../models/response/publications.response.model.js";
+import { SearchQueryRequestModel } from "../models/requests/query/search.query.request.model.js";
+
+import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util.js";
+import { getPublicationsForURLPublicationUtil } from "../utils/publications/get-publications-for-url-publication.util.js";
+import { getPublicationsForTagPublicationUtil } from "../utils/publications/get-publications-for-tag.publication.util.js";
+
+import { SUCCESS, httpStatusCodes } from "../config/app-constants.config.js";
+import { logger } from "../log/log-manager.log.js";
 
 /**
  * Retrieves related publications based on the given search query.

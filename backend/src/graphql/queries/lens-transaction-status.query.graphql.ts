@@ -1,6 +1,6 @@
-import { graphql } from "../../gql";
+import { graphql } from "../../gql/index.js";
 
-const lensTransactionStatusQueryGraphql = graphql(`
+const LensTransactionStatusQueryGraphql = graphql(`
   query lensTransactionStatus($request: LensTransactionStatusRequest!) {
     lensTransactionStatus(request: $request) {
       status
@@ -11,4 +11,4 @@ const lensTransactionStatusQueryGraphql = graphql(`
   }
 `);
 
-export default lensTransactionStatusQueryGraphql;
+export default LensTransactionStatusQueryGraphql;

@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { SearchQueryRequestModel } from "../models/requests/query/search.query.request.model";
-import { ClientError } from "../errors/client-error.error";
-import { logger } from "../log/log-manager.log";
+
+import { SearchQueryRequestModel } from "../models/requests/query/search.query.request.model.js";
+import { ClientError } from "../errors/client-error.error.js";
+
+import { logger } from "../log/log-manager.log.js";
 
 /**
  * Validate the requests query parameter 'search_query'.

@@ -6,6 +6,11 @@ import {
   MetadataLicenseType,
   textOnly
 } from "@lens-protocol/metadata";
+
+import { MetadataObjectModel } from "../../models/metadata-object.model.js";
+
+import { createTagsHelperUtil } from "./helpers.helpers.util.js";
+
 import {
   SOURCE_APP_ID,
   APP_LENS_HANDLE,
@@ -14,10 +19,8 @@ import {
   TAG_USER_COMMENT,
   TAG_USER_POST,
   TAG_USER_PUB
-} from "../../config/env.config";
-import { logger } from "../../log/log-manager.log";
-import { createTagsHelperUtil } from "./helpers.helpers.util";
-import { MetadataObjectModel } from "../../models/metadata-object.model";
+} from "../../config/env.config.js";
+import { logger } from "../../log/log-manager.log.js";
 
 // TODO: Check size limit allowed for individual tags in Lens Docs and reject tags larger than the allowed size
 /**

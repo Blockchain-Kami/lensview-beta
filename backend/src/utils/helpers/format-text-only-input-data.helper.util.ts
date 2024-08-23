@@ -1,5 +1,6 @@
-import { GetTextOnlyCommentsLensModel } from "../../models/lens/get-text-only-comments.lens.model";
-import { logger } from "../../log/log-manager.log";
+import { GetTextOnlyCommentsLensModel } from "../../models/lens/get-text-only-comments.lens.model.js";
+
+import { logger } from "../../log/log-manager.log.js";
 
 export const formatTextOnlyInputDataHelperUtil = (
   texOnlyComments: GetTextOnlyCommentsLensModel

@@ -1,13 +1,14 @@
 import express from "express";
+
 import {
   validateSecretAdminMiddleware,
   validateUpdatePostImageMiddleware
-} from "../middlewares/admin/validate-secret.admin.middleware";
+} from "../middlewares/admin/validate-secret.admin.middleware.js";
 import {
   addImageToPostAdminController,
   approveSignlessAdminController,
   updateMainPostImageController
-} from "../controllers/admin.controller";
+} from "../controllers/admin.controller.js";
 
 const router = express.Router();
 

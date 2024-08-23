@@ -1,31 +1,36 @@
 import { Request, Response } from "express";
 
-import { putAnonymousCommentBodyRequestModel } from "../models/requests/body/put-anonymous-comment.body.request.model";
+import { putAnonymousCommentBodyRequestModel } from "../models/requests/body/put-anonymous-comment.body.request.model.js";
 import {
   PublicationResponseModel,
   PublicationResponseModelForPostAnonymousComment
-} from "../models/response/publication.response.model";
-import PostAnonymousCommentRequestBodyModel from "../models/requests/body/post-anonymous-comment.body.request.model";
-import { CommentsSummaryResponseModel } from "../models/response/comments-summary.response.model";
+} from "../models/response/publication.response.model.js";
+import PostAnonymousCommentRequestBodyModel from "../models/requests/body/post-anonymous-comment.body.request.model.js";
+import { CommentsSummaryResponseModel } from "../models/response/comments-summary.response.model.js";
+import { SummaryQueryRequestModel } from "../models/requests/query/summary.query.request.model.js";
+
 import {
   createMetaDataForAnonymousCommentHelperUtil,
   createMetaDataForUrlHelperUtil
-} from "../utils/helpers/create-metadata.helper.util";
-import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util";
-import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service";
-import { getMainPublicationImageLensService } from "../services/lens/get-main-publication-image.lens.service";
-import { getCommentMethod, getPostMethod } from "../config/app-config.config";
-import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
-import { addCommentsSummaryDbUtil } from "../utils/db/add-comments-summary.db.util";
-import { getPublicationDbUtil } from "../utils/db/get-publication.db.util";
-import { updateCommentsSummaryDbUtil } from "../utils/db/update-comments-summary.db.util";
-import { getCommentsAndGenerateSummaryHelperUtil } from "../utils/helpers/get-comments-and-generate-summary.helper.util";
-import { httpStatusCodes } from "../config/app-constants.config";
-import { APP_LENS_HANDLE } from "../config/env.config";
-import { imageQueue } from "../jobs/add-image-queue.job";
-import { logger } from "../log/log-manager.log";
-import { SummaryQueryRequestModel } from "../models/requests/query/summary.query.request.model";
-import { isNewCommentAddedSinceLastUpdateHelperUtil } from "../utils/helpers/is-new-comment-added-since-last-update.helper.util";
+} from "../utils/helpers/create-metadata.helper.util.js";
+import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util.js";
+import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service.js";
+import { getMainPublicationImageLensService } from "../services/lens/get-main-publication-image.lens.service.js";
+import {
+  getCommentMethod,
+  getPostMethod
+} from "../config/app-config.config.js";
+import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util.js";
+import { addCommentsSummaryDbUtil } from "../utils/db/add-comments-summary.db.util.js";
+import { getPublicationDbUtil } from "../utils/db/get-publication.db.util.js";
+import { updateCommentsSummaryDbUtil } from "../utils/db/update-comments-summary.db.util.js";
+import { getCommentsAndGenerateSummaryHelperUtil } from "../utils/helpers/get-comments-and-generate-summary.helper.util.js";
+import { isNewCommentAddedSinceLastUpdateHelperUtil } from "../utils/helpers/is-new-comment-added-since-last-update.helper.util.js";
+
+import { httpStatusCodes } from "../config/app-constants.config.js";
+import { APP_LENS_HANDLE } from "../config/env.config.js";
+import { imageQueue } from "../jobs/add-image-queue.job.js";
+import { logger } from "../log/log-manager.log.js";
 
 /**
  * Adds a URL or a post comment to the system.
