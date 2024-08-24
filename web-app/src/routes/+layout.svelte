@@ -36,6 +36,8 @@
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
   import getPictureURLUtil from "../utils/get-picture-URL.util";
   import searchPublicationAppService from "../services/app/search-publication.app.service";
+  import updateLoggedInStatusAuthenticationUtil
+    from "../utils/authentication/update-logged-in-status.authentication.util";
   const { VITE_CHAIN_ID } = import.meta.env;
 
   let userEnteredUrlOrKeywords = "";
@@ -59,30 +61,31 @@
       typeof window.ethereum !== "undefined"
     ) {
       try {
-        await getMetamaskAddressAuthenticationUtil(true);
-
-        let address;
-        const unsub = addressUserStore.subscribe((_address) => {
-          address = _address;
-        });
-        unsub();
-
-        if (address) {
-          const isValidAccessTokenPresentInLocalStorage =
-            await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
-
-          console.log(
-            "isValidAccessTokenPresentInLocalStorage : " +
-              isValidAccessTokenPresentInLocalStorage
-          );
-
-          if (isValidAccessTokenPresentInLocalStorage) {
-            await setProfileAuthenticationUtil();
-            isLoggedInUserStore.setLoggedInStatus(true);
-
-            setReloadMethods();
-          }
-        }
+        await updateLoggedInStatusAuthenticationUtil();
+        // await getMetamaskAddressAuthenticationUtil(true);
+        //
+        // let address;
+        // const unsub = addressUserStore.subscribe((_address) => {
+        //   address = _address;
+        // });
+        // unsub();
+        //
+        // if (address) {
+        //   const isValidAccessTokenPresentInLocalStorage =
+        //     await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
+        //
+        //   console.log(
+        //     "isValidAccessTokenPresentInLocalStorage : " +
+        //       isValidAccessTokenPresentInLocalStorage
+        //   );
+        //
+        //   if (isValidAccessTokenPresentInLocalStorage) {
+        //     await setProfileAuthenticationUtil();
+        //     isLoggedInUserStore.setLoggedInStatus(true);
+        //
+        //     setReloadMethods();
+        //   }
+        // }
       } catch (error) {
         showLoginModal = false;
         console.log(error);

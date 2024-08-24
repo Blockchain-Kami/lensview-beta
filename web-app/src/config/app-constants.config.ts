@@ -35,3 +35,7 @@ export enum summarySentiment {
   negative = "NEGATIVE",
   neutral = "NEUTRAL"
 }
+
+export enum localStorageKeys {
+  authData = "AUTH_DATA"
+}
