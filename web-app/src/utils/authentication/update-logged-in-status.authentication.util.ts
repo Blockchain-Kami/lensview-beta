@@ -11,6 +11,7 @@ const resetToDefaultStoreValue = () => {
   idUserStore.setId(null);
   profileUserStore.setUserProfile(null);
   isLoggedInUserStore.setLoggedInStatus(false);
+  localStorage.removeItem(localStorageKeys.authData);
 };
 const updateLoggedInStatusAuthenticationUtil = async () => {
   const ls = localStorage || window.localStorage;
