@@ -91,7 +91,7 @@
         console.log(error);
       }
 
-      accountAndChainChangedMethods();
+      // accountAndChainChangedMethods();
     }
   });
 
@@ -269,7 +269,7 @@
     </div>
   </main>
 
-  <Login bind:showLoginModal bind:onLoginIntialization />
+  <Login bind:onLoginIntialization />
 
   <JoinForUpdates bind:showJoinForUpdatesModal />
 </Notifications>

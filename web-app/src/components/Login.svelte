@@ -1,8 +1,7 @@
 <script lang="ts">
   import Icon from "$lib/Icon.svelte";
   import { close, cross, tick } from "../utils/app-icon.util";
-  import Loader from "$lib/Loader.svelte";
-  import CreateLensProfile from "./CreateLensProfile.svelte";
+  // import Loader from "$lib/Loader.svelte";
   import { fly } from "svelte/transition";
   import { backInOut } from "svelte/easing";
   import { getNotificationsContext } from "svelte-notifications";
@@ -16,29 +15,40 @@
   import { addressUserStore } from "../stores/user/address.user.store";
   import parseNotificationObjectWithFunctionUtil from "../utils/parse-notification-object-with-function.util";
   import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
-  import { idsAndHandlesUserStore } from "../stores/user/ids-and-handles.user.store";
   import retrieveAccessTokenAuthenticationUtil from "../utils/authentication/retrieve-access-token.authentication.util";
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
+  import web3ModalUtil, { wagmiConfig } from "../utils/web3modal.util";
+  import { getAccount } from "@wagmi/core";
+  import getProfileListUsingAddressLensService from "../services/lens/get-profile-list-using-address.lens.service";
 
   const { addNotification } = getNotificationsContext();
-  export let showLoginModal: boolean;
+  export let showLoginModal = false;
   let dialog: HTMLDialogElement;
   $: if (dialog && showLoginModal) dialog.showModal();
 
   let loggingIn = false;
-  let showCreateLensProfileModal = false;
 
-  export const onLoginIntialization = async () => {
-    console.log("onLoginIntialization");
+  export const onLoginIntialization = () => {
     try {
-      await getMetamaskAddressAuthenticationUtil(true);
-      await loggedUserInIfAccessTokenPresent();
+      const connectedAddress = getAccount(wagmiConfig).address;
+      if (connectedAddress) {
+        showLoginModal = true;
+        addressUserStore.setUserAddress(connectedAddress);
+      } else {
+        web3ModalUtil.open();
+        web3ModalUtil.subscribeState((newState) => {
+          console.log("newState : ", newState);
+          const address = getAccount(wagmiConfig).address;
+          console.log("Account address: ", address);
+
+          if (address) {
+            showLoginModal = true;
+            addressUserStore.setUserAddress(address);
+          }
+        });
+      }
     } catch (error) {
-      dialog.close();
-      console.log(error);
-      addNotification(
-        parseNotificationObjectWithFunctionUtil((error as Error).message)
-      );
+      console.log("onLoginIntialization error: ", error);
     }
   };
 
@@ -101,11 +111,6 @@
     });
   };
 
-  // const openCreateLensProfileModal = () => {
-  //   showCreateLensProfileModal = true;
-  //   dialog.close();
-  // };
-
   const loggedUserInIfAccessTokenPresent = async () => {
     const isValidAccessTokenPresentInLocalStorage =
       await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
@@ -141,94 +146,18 @@
       on:click|stopPropagation
       transition:fly={{ y: 40, easing: backInOut, duration: 700 }}
     >
-      {#if !$addressUserStore}
-        <div class="CenterRowFlex head">
-          <div class="h3">Login</div>
-          <div class="head__close-btn">
-            <button on:click={() => dialog.close()}>
-              <Icon d={close} />
-            </button>
+      {#if $addressUserStore}
+        {#await getProfileListUsingAddressLensService($addressUserStore)}
+          <div class="CenterRowFlex head">
+            <div class="h3">Login</div>
+            <div class="head__close-btn">
+              <button on:click={() => dialog.close()}>
+                <Icon d={close} />
+              </button>
+            </div>
           </div>
-        </div>
-        <div class="body">Please connect your wallet to continue</div>
-        <div class="line" />
-        <div class="footer">
-          <button on:click={connect} class="btn"> Connect wallet</button>
-        </div>
-      {:else if !$isLoggedInUserStore}
-        {#if !loggingIn}
-          {#if $idsAndHandlesUserStore.length > 0}
-            <div class="CenterRowFlex head">
-              <div class="h3">Login</div>
-              <div class="head__close-btn">
-                <button on:click={() => dialog.close()}>
-                  <Icon d={close} />
-                </button>
-              </div>
-            </div>
-            <div class="body">
-              Please login with Lens
-              <br />
-              <br />
-              Handle linked to
-              <span class="italic-text"
-                >{$addressUserStore.substring(0, 5) +
-                  "..." +
-                  $addressUserStore.slice(-5)}</span
-              >
-              is
-              <span class="body__handle"
-                >{$idsAndHandlesUserStore[0].handle.substring(5)}</span
-              >
-            </div>
-            <div class="line" />
-            <div class="footer">
-              <button on:click={logInWithLens} class="btn">
-                Login With Lens
-              </button>
-            </div>
-          {:else}
-            <div class="CenterRowFlex head">
-              <div class="h3">Oops, you don't have a Lens Handle</div>
-              <div class="head__close-btn">
-                <button on:click={() => dialog.close()}>
-                  <Icon d={close} />
-                </button>
-              </div>
-            </div>
-            <div class="body">
-              <div style="font-weight: bold">
-                But that's okay, let's get you one to unlock your full LensView
-                experience
-              </div>
-              <br />
-              If you don’t wish to claim a handle, you can still use LensView in
-              the anonymous mode by sharing your views using the
-              <span class="italic-text">“Post Anonymously”</span> button. We eagerly
-              await your contributions.
-            </div>
-            <div class="line" />
-            <div class="footer">
-              <button
-                on:click={() => window.open("https://lens.xyz/mint", "_blank")}
-                class="btn"
-              >
-                Claim your handle
-              </button>
-            </div>
-            <!--            <div class="body">-->
-            <!--              No Account found!-->
-            <!--              <br />-->
-            <!--              Please create Lens Profile to continue-->
-            <!--            </div>-->
-            <!--            <div class="line" />-->
-            <!--            <div class="footer">-->
-            <!--              <button on:click={openCreateLensProfileModal} class="btn">-->
-            <!--                Create Lens Profile-->
-            <!--              </button>-->
-            <!--            </div>-->
-          {/if}
-        {:else}
+          <div class="body">Fetching Profiles...</div>
+        {:then profilesData}
           <div class="CenterRowFlex head">
             <div class="h3">Login</div>
             <div class="head__close-btn">
@@ -238,34 +167,140 @@
             </div>
           </div>
           <div class="body">
-            Please login with Lens
-            <br />
-            <br />
-            Handle linked to
-            <span class="italic-text"
-              >{$addressUserStore.substring(0, 5) +
-                "..." +
-                $addressUserStore.slice(-5)}</span
-            >
-            is
-            <span class="body__handle"
-              >{$idsAndHandlesUserStore[0].handle.substring(5)}</span
-            >
+            {JSON.stringify(
+              profilesData.data?.profilesManaged?.items[0]?.handle?.fullHandle
+            )}
           </div>
           <div class="line" />
           <div class="footer">
-            <button class="btn" disabled>
-              Logging In &nbsp;
-              <Loader />
-            </button>
+            <button on:click={connect} class="btn"> Connect wallet</button>
           </div>
-        {/if}
+        {/await}
       {/if}
+
+      <!--{#if !$addressUserStore}-->
+      <!--  <div class="CenterRowFlex head">-->
+      <!--    <div class="h3">Login</div>-->
+      <!--    <div class="head__close-btn">-->
+      <!--      <button on:click={() => dialog.close()}>-->
+      <!--        <Icon d={close} />-->
+      <!--      </button>-->
+      <!--    </div>-->
+      <!--  </div>-->
+      <!--  <div class="body">Please connect your wallet to continue</div>-->
+      <!--  <div class="line" />-->
+      <!--  <div class="footer">-->
+      <!--    <button on:click={connect} class="btn"> Connect wallet</button>-->
+      <!--  </div>-->
+      <!--{:else if !$isLoggedInUserStore}-->
+      <!--  {#if !loggingIn}-->
+      <!--    {#if $idsAndHandlesUserStore.length > 0}-->
+      <!--      <div class="CenterRowFlex head">-->
+      <!--        <div class="h3">Login</div>-->
+      <!--        <div class="head__close-btn">-->
+      <!--          <button on:click={() => dialog.close()}>-->
+      <!--            <Icon d={close} />-->
+      <!--          </button>-->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--      <div class="body">-->
+      <!--        Please login with Lens-->
+      <!--        <br />-->
+      <!--        <br />-->
+      <!--        Handle linked to-->
+      <!--        <span class="italic-text"-->
+      <!--        >{$addressUserStore.substring(0, 5) +-->
+      <!--        "..." +-->
+      <!--        $addressUserStore.slice(-5)}</span-->
+      <!--        >-->
+      <!--        is-->
+      <!--        <span class="body__handle"-->
+      <!--        >{$idsAndHandlesUserStore[0].handle.substring(5)}</span-->
+      <!--        >-->
+      <!--      </div>-->
+      <!--      <div class="line" />-->
+      <!--      <div class="footer">-->
+      <!--        <button on:click={logInWithLens} class="btn">-->
+      <!--          Login With Lens-->
+      <!--        </button>-->
+      <!--      </div>-->
+      <!--    {:else}-->
+      <!--      <div class="CenterRowFlex head">-->
+      <!--        <div class="h3">Oops, you don't have a Lens Handle</div>-->
+      <!--        <div class="head__close-btn">-->
+      <!--          <button on:click={() => dialog.close()}>-->
+      <!--            <Icon d={close} />-->
+      <!--          </button>-->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--      <div class="body">-->
+      <!--        <div style="font-weight: bold">-->
+      <!--          But that's okay, let's get you one to unlock your full LensView-->
+      <!--          experience-->
+      <!--        </div>-->
+      <!--        <br />-->
+      <!--        If you don’t wish to claim a handle, you can still use LensView in-->
+      <!--        the anonymous mode by sharing your views using the-->
+      <!--        <span class="italic-text">“Post Anonymously”</span> button. We eagerly-->
+      <!--        await your contributions.-->
+      <!--      </div>-->
+      <!--      <div class="line" />-->
+      <!--      <div class="footer">-->
+      <!--        <button-->
+      <!--                on:click={() => window.open("https://lens.xyz/mint", "_blank")}-->
+      <!--                class="btn"-->
+      <!--        >-->
+      <!--          Claim your handle-->
+      <!--        </button>-->
+      <!--      </div>-->
+      <!--      &lt;!&ndash;            <div class="body">&ndash;&gt;-->
+      <!--      &lt;!&ndash;              No Account found!&ndash;&gt;-->
+      <!--      &lt;!&ndash;              <br />&ndash;&gt;-->
+      <!--      &lt;!&ndash;              Please create Lens Profile to continue&ndash;&gt;-->
+      <!--      &lt;!&ndash;            </div>&ndash;&gt;-->
+      <!--      &lt;!&ndash;            <div class="line" />&ndash;&gt;-->
+      <!--      &lt;!&ndash;            <div class="footer">&ndash;&gt;-->
+      <!--      &lt;!&ndash;              <button on:click={openCreateLensProfileModal} class="btn">&ndash;&gt;-->
+      <!--      &lt;!&ndash;                Create Lens Profile&ndash;&gt;-->
+      <!--      &lt;!&ndash;              </button>&ndash;&gt;-->
+      <!--      &lt;!&ndash;            </div>&ndash;&gt;-->
+      <!--    {/if}-->
+      <!--  {:else}-->
+      <!--    <div class="CenterRowFlex head">-->
+      <!--      <div class="h3">Login</div>-->
+      <!--      <div class="head__close-btn">-->
+      <!--        <button on:click={() => dialog.close()}>-->
+      <!--          <Icon d={close} />-->
+      <!--        </button>-->
+      <!--      </div>-->
+      <!--    </div>-->
+      <!--    <div class="body">-->
+      <!--      Please login with Lens-->
+      <!--      <br />-->
+      <!--      <br />-->
+      <!--      Handle linked to-->
+      <!--      <span class="italic-text"-->
+      <!--      >{$addressUserStore.substring(0, 5) +-->
+      <!--      "..." +-->
+      <!--      $addressUserStore.slice(-5)}</span-->
+      <!--      >-->
+      <!--      is-->
+      <!--      <span class="body__handle"-->
+      <!--      >{$idsAndHandlesUserStore[0].handle.substring(5)}</span-->
+      <!--      >-->
+      <!--    </div>-->
+      <!--    <div class="line" />-->
+      <!--    <div class="footer">-->
+      <!--      <button class="btn" disabled>-->
+      <!--        Logging In &nbsp;-->
+      <!--        <Loader />-->
+      <!--      </button>-->
+      <!--    </div>-->
+      <!--  {/if}-->
+      <!--{/if}-->
     </main>
   {/if}
 </dialog>
-
-<CreateLensProfile bind:showCreateLensProfileModal />
 
 <style lang="scss">
   main {
