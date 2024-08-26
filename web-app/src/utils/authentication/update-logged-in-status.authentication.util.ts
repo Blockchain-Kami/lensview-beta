@@ -5,6 +5,9 @@ import { profileUserStore } from "../../stores/user/profile.user.store";
 import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
 import getProfileUsingIdLensService from "../../services/lens/get-profile-using-id.lens.service";
 import getAccessTokenUsingRefreshTokenLensService from "../../services/lens/get-access-token-using-refresh-token.lens.service";
+import getAccessRefreshTokenAuthenticationUtil from "./get-access-refresh-token.authentication.util";
+
+let updateAccessTokenTimeoutId: string | number | NodeJS.Timeout | undefined;
 
 const resetToDefaultStoreValue = () => {
   addressUserStore.setUserAddress(null);
@@ -14,20 +17,7 @@ const resetToDefaultStoreValue = () => {
   localStorage.removeItem(localStorageKeys.authData);
 };
 const updateLoggedInStatusAuthenticationUtil = async () => {
-  const ls = localStorage || window.localStorage;
-
-  if (!ls) {
-    throw new Error("LocalStorage is not available");
-  }
-
-  const authData = ls.getItem(localStorageKeys.authData);
-
-  if (!authData) {
-    resetToDefaultStoreValue();
-    return;
-  }
-
-  const parsedAuthData = JSON.parse(authData);
+  const parsedAuthData = getAccessRefreshTokenAuthenticationUtil();
 
   if (!parsedAuthData) {
     resetToDefaultStoreValue();
@@ -58,8 +48,8 @@ const updateLoggedInStatusAuthenticationUtil = async () => {
     addressUserStore.setUserAddress(evmAddress);
 
     try {
-      const response = await getProfileUsingIdLensService(id);
-      profileUserStore.setUserProfile(response?.data?.profile);
+      await getProfiles(id);
+      updateAccessTokenAfterEvery30Mins();
       isLoggedInUserStore.setLoggedInStatus(true);
     } catch (error) {
       resetToDefaultStoreValue();
@@ -110,4 +100,36 @@ const parseJwt = (token: string) => {
   );
 
   return JSON.parse(jsonPayload);
+};
+
+const getProfiles = async (idParam: string) => {
+  let id: string | null = null;
+  const unsub = profileUserStore.subscribe((_profile) => {
+    id = _profile?.id;
+  });
+  unsub();
+
+  /**
+   * We are only updating profile store and calling API if
+   * 1. User reload website
+   * 2. Switch profile
+   */
+  if (!id || id !== idParam) {
+    const response = await getProfileUsingIdLensService(idParam);
+    profileUserStore.setUserProfile(response?.data?.profile);
+  }
+};
+
+const updateAccessTokenAfterEvery30Mins = () => {
+  clearTimeout(updateAccessTokenTimeoutId);
+
+  updateAccessTokenTimeoutId = setTimeout(() => {
+    console.log(
+      "updateAccessTokenTimeoutId called for : ",
+      updateAccessTokenTimeoutId
+    );
+    updateLoggedInStatusAuthenticationUtil();
+  }, 1001 * 60 * 30);
+
+  console.log("updateAccessTokenTimeoutId : ", updateAccessTokenTimeoutId);
 };

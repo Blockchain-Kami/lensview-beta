@@ -15,11 +15,11 @@
   import { addressUserStore } from "../stores/user/address.user.store";
   import parseNotificationObjectWithFunctionUtil from "../utils/parse-notification-object-with-function.util";
   import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
-  import retrieveAccessTokenAuthenticationUtil from "../utils/authentication/retrieve-access-token.authentication.util";
   import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
   import web3ModalUtil, { wagmiConfig } from "../utils/web3modal.util";
   import { getAccount } from "@wagmi/core";
   import getProfileListUsingAddressLensService from "../services/lens/get-profile-list-using-address.lens.service";
+  import logUserInAuthenticationUtil from "../utils/authentication/log-user-in.authentication.util";
 
   const { addNotification } = getNotificationsContext();
   export let showLoginModal = false;
@@ -52,34 +52,43 @@
     }
   };
 
-  const logInWithLens = async () => {
-    loggingIn = true;
-    try {
-      await retrieveAccessTokenAuthenticationUtil();
-      await setProfileAuthenticationUtil();
-
-      isLoggedInUserStore.setLoggedInStatus(true);
-      setReloadMethods();
-      loggingIn = false;
-      successfullySignInNotification();
-
-      console.log(
-        "Local Storage: " +
-          JSON.parse(localStorage.getItem("IDS_AUTH_DATA") as string)
-      );
-    } catch (error) {
-      loggingIn = false;
-      dialog.close();
-      console.log("error: " + error);
-      addNotification({
-        position: "top-right",
-        heading: "Error while logging in",
-        description: (error as Error).message + ". Please try again",
-        type: cross,
-        removeAfter: 10000
-      });
+  const logInWithLens = async(address: string, id: string) => {
+    try{
+      await logUserInAuthenticationUtil(address, id);
     }
-  };
+    catch(error){
+      console.log("error: " + error);
+    }
+  }
+
+  // const logInWithLens = async () => {
+  //   loggingIn = true;
+  //   try {
+  //     await retrieveAccessTokenAuthenticationUtil();
+  //     await setProfileAuthenticationUtil();
+  //
+  //     isLoggedInUserStore.setLoggedInStatus(true);
+  //     setReloadMethods();
+  //     loggingIn = false;
+  //     successfullySignInNotification();
+  //
+  //     console.log(
+  //       "Local Storage: " +
+  //         JSON.parse(localStorage.getItem("IDS_AUTH_DATA") as string)
+  //     );
+  //   } catch (error) {
+  //     loggingIn = false;
+  //     dialog.close();
+  //     console.log("error: " + error);
+  //     addNotification({
+  //       position: "top-right",
+  //       heading: "Error while logging in",
+  //       description: (error as Error).message + ". Please try again",
+  //       type: cross,
+  //       removeAfter: 10000
+  //     });
+  //   }
+  // };
 
   const setReloadMethods = () => {
     reloadMainPost.setReloadMainPost(Date.now());
@@ -173,7 +182,7 @@
           </div>
           <div class="line" />
           <div class="footer">
-            <button on:click={connect} class="btn"> Connect wallet</button>
+            <button on:click={() => logInWithLens($addressUserStore, profilesData.data?.profilesManaged?.items[0]?.id)} class="btn">Login with Lens</button>
           </div>
         {/await}
       {/if}
