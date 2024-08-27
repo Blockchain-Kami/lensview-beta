@@ -4,16 +4,17 @@
   import { fly } from "svelte/transition";
   import { close } from "../utils/app-icon.util.js";
   import Icon from "$lib/Icon.svelte";
-  import {
-    sendTransaction,
-    getTransactionReceipt,
-    getBalance,
-    getAccount
-  } from "@wagmi/core";
-  import { parseEther } from "viem";
+  import { getAccount } from "@wagmi/core";
   import { wagmiConfig } from "../utils/web3modal.util";
   import web3Modal from "../utils/web3modal.util";
+  import { tokenSymbol } from "../config/app-constants.config";
   import { getNotificationsContext } from "svelte-notifications";
+  import { sendTipBonsai, sendTipMatic } from "../utils/tips/send.tip";
+  import {
+    getTokenBalanceMatic,
+    getTokenBalanceBonsai
+  } from "../utils/tips/get-token-balance.tip";
+  import { onMount } from "svelte";
 
   const { addNotification } = getNotificationsContext();
   let dialog: HTMLDialogElement;
@@ -21,12 +22,20 @@
   export let showTippingModal: boolean;
   export let toAddress: string;
   export let toHandle: string;
+  let maticBalance = 0;
+  let bonsaiBalance = 0;
+  let fromAddress: `0x${string}`;
+  let selectedToken: string;
   let userEnteredAmount = "";
   let isAmountInvalid = true;
   let tippingSuccess = false;
   let isSendingTip = false;
   let AmountInvalidReason = "";
   $: if (dialog && showTippingModal) dialog.showModal();
+
+  onMount(() => {
+    fromAddress = getAccount(wagmiConfig).address;
+  });
 
   const checkAmountIsValid = () => {
     if (userEnteredAmount.length === 0) {
@@ -60,71 +69,102 @@
 
   const sendTip = async () => {
     isSendingTip = true;
-    if (isAmountInvalid) {
-      console.log("Invalid amount entered");
-    }
-    const balance = await getBalance(wagmiConfig, {
-      address: getAccount(wagmiConfig).address
-    });
-    let hasBalance = +balance.formatted > userEnteredAmount;
-    if (hasBalance) {
-      console.log(userEnteredAmount);
-      sendTransaction(wagmiConfig, {
-        to: toAddress,
-        value: parseEther(userEnteredAmount)
-      })
-        .then((_txn) => {
-          console.log("transaction hash: ", _txn);
-          let transationReceipt = getTransactionReceipt(wagmiConfig, {
-            hash: _txn
-          });
-          isSendingTip = false;
-          if (transationReceipt) {
-            tippingSuccess = true;
-            setTimeout(() => {
-              dialog.close();
-            }, 5000);
-          } else {
-            dialog.close();
-            addNotification({
-              position: "top-right",
-              heading: "Error while sending tip",
-              description: "Failed to send tip, please try again",
-              type: cross,
-              removeAfter: 4000
-            });
-          }
-        })
-        .catch((error) => {
-          dialog.close();
-          console.log(error);
-          addNotification({
-            position: "top-right",
-            heading: "Error while sending tip",
-            description: error.description ? error.description : error.message,
-            type: cross,
-            removeAfter: 4000
-          });
-          tippingSuccess = false;
-          isSendingTip = false;
+    let tipDetails;
+    if (selectedToken == tokenSymbol.BONSAI) {
+      console.log("userEnteredAmount", userEnteredAmount);
+      console.log("bonsaiBalance", bonsaiBalance);
+      if (userEnteredAmount > bonsaiBalance) {
+        addNotification({
+          position: "top-right",
+          heading: "Insufficient Balance",
+          description:
+            "You do not have the required balance. Please buy some tokens before sending a tip",
+          type: wallet,
+          removeAfter: 4000
         });
-    } else {
-      addNotification({
-        position: "top-right",
-        heading: "Insufficient Balance",
-        description:
-          "You do not have the required balance. Please buy some tokens before sending a tip",
-        type: wallet,
-        removeAfter: 4000
-      });
-      setTimeout(async () => {
-        await web3Modal.open();
-      }, 2000);
-      dialog.close();
-      tippingSuccess = false;
-      isSendingTip = false;
-      return;
+        setTimeout(async () => {
+          await web3Modal.open();
+        }, 2000);
+        dialog.close();
+        tippingSuccess = false;
+        isSendingTip = false;
+        return;
+      }
+      tipDetails = await sendTipBonsai(
+        fromAddress,
+        toAddress,
+        userEnteredAmount
+      );
+      if (tipDetails.success) {
+        userEnteredAmount = "";
+        isSendingTip = false;
+        tippingSuccess = true;
+        setTimeout(() => {
+          dialog.close();
+        }, 5000);
+        return;
+      } else {
+        dialog.close();
+        addNotification({
+          position: "top-right",
+          heading: "Error while sending tip",
+          description: "Failed to send tip, please try again",
+          type: cross,
+          removeAfter: 4000
+        });
+        isSendingTip = false;
+        return;
+      }
+    } else if (selectedToken == tokenSymbol.MATIC) {
+      if (userEnteredAmount > maticBalance) {
+        addNotification({
+          position: "top-right",
+          heading: "Insufficient Balance",
+          description:
+            "You do not have the required balance. Please buy some tokens before sending a tip",
+          type: wallet,
+          removeAfter: 4000
+        });
+        setTimeout(async () => {
+          await web3Modal.open();
+        }, 2000);
+        dialog.close();
+        tippingSuccess = false;
+        isSendingTip = false;
+        return;
+      }
+      tipDetails = await sendTipMatic(toAddress, userEnteredAmount);
+      if (tipDetails.success) {
+        userEnteredAmount = "";
+        isSendingTip = false;
+        tippingSuccess = true;
+        setTimeout(() => {
+          dialog.close();
+        }, 5000);
+        return;
+      } else {
+        dialog.close();
+        addNotification({
+          position: "top-right",
+          heading: "Error while sending tip",
+          description: "Failed to send tip, please try again",
+          type: cross,
+          removeAfter: 4000
+        });
+        isSendingTip = false;
+        return;
+      }
     }
+  };
+
+  const setMaticBalance = (balance) => {
+    maticBalance = balance;
+    return Math.round(maticBalance * 100) / 100;
+  };
+
+  const setBonsaiBalance = (balance) => {
+    bonsaiBalance = balance;
+    return Math.round(bonsaiBalance * 100) / 100;
   };
 </script>
 
@@ -190,10 +230,46 @@
             Let your favourite Viewers know how much you appreciate their views
           </p>
           <p>
-            You are sending a tip to: <span style="font-weight: bold; color: #23f9ff"
-              >{toHandle}</span
+            You are sending a tip to: <span
+              style="font-weight: bold; color: #23f9ff">{toHandle}</span
             >
           </p>
+          <label for="tokens"> Select a token </label>
+          <div>
+            <select
+              name="tokens"
+              id="tokens"
+              style="background: #1f4045"
+              bind:value={selectedToken}
+            >
+              <option value="MATIC"
+                >MATIC
+                {#await getTokenBalanceMatic(fromAddress)}
+                  <span>Fetching token balance...</span>
+                {:then data}
+                  <span>
+                    (Available:
+                    {setMaticBalance(data)})
+                  </span>
+                {:catch _error}
+                  <span>Failed to load balace</span>
+                {/await}
+              </option>
+              <option value="BONSAI" selected
+                >BONSAI
+                {#await getTokenBalanceBonsai(fromAddress)}
+                  <span>Fetching token balance...</span>
+                {:then data}
+                  <span>
+                    (Available:
+                    {setBonsaiBalance(data)})
+                  </span>
+                {:catch _error}
+                  <span>Failed to load balace</span>
+                {/await}
+              </option>
+            </select>
+          </div>
         </div>
         <div class="body">
           <div class="input-box body__url">
@@ -224,14 +300,16 @@
           </div>
           <div class="CenterRowFlex footer__right">
             {#if !isSendingTip}
-            <button class="btn" on:click={sendTip} disabled={isAmountInvalid}>
+              <button
+                class="btn"
+                on:click={(event) => sendTip(event)}
+                disabled={isAmountInvalid}
+              >
                 Send
-            </button>
-              {:else }
-              <button class="btn" disabled>
-                Sending..
               </button>
-              {/if}
+            {:else}
+              <button class="btn" disabled> Sending.. </button>
+            {/if}
           </div>
         </div>
       {/if}
