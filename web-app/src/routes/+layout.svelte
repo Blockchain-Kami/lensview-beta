@@ -50,10 +50,6 @@
     }
   });
 
-  const openLoginModal = () => {
-    onLoginIntialization();
-  };
-
   const redirectToPostsOrSearchPage = async () => {
     console.log("Redirecting to posts or search page");
     isSearching = true;
@@ -161,7 +157,9 @@
               Hello friend! Welcome to LensView.
             </div>
             <div class="menu__connect-box__btn">
-              <button on:click={openLoginModal} class="btn"> Login </button>
+              <button on:click={onLoginIntialization} class="btn">
+                Login
+              </button>
             </div>
           </div>
         {/if}

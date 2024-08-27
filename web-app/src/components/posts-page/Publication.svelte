@@ -41,10 +41,10 @@
   const { addNotification } = getNotificationsContext();
   let postPubId = $page.data.postPubId;
   let isPostMoreOpen = false;
-  let showLoginModal = false;
   let reaction = AppReactionType.NoReaction;
   let upVoteCount = 0;
   let downVoteCount = 0;
+  let onLoginIntialization: () => Promise<void>;
 
   let promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
     postPubId,
@@ -196,7 +196,7 @@
       removeAfter: 10000,
       ctaBtnName: "Login",
       ctaFunction: () => {
-        showLoginModal = true;
+        onLoginIntialization();
       }
     });
   };
@@ -389,7 +389,7 @@
   {/await}
 </section>
 
-<Login bind:showLoginModal />
+<Login bind:onLoginIntialization />
 
 <!----------------------------------------------------------------->
 

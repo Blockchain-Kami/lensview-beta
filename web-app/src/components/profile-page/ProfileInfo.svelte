@@ -26,11 +26,11 @@
   import followLensProfileManagerFollowUtil from "../../utils/follow/follow-lens-profile-manager.follow.util";
   import unfollowLensProfileManagerFollowUtil from "../../utils/follow/unfollow-lens-profile-manager.follow.util";
 
-  let showLoginModal = false;
   const { addNotification } = getNotificationsContext();
   let promiseOfGetProfile = getProfileUsingIdLensService($page.data.profileId);
   let isFollowing = false;
   let disableActive = false;
+  let onLoginIntialization: () => Promise<void>;
 
   onMount(() => {
     reloadAPublication.subscribe(() => {
@@ -131,7 +131,7 @@
       removeAfter: 10000,
       ctaBtnName: "Login",
       ctaFunction: () => {
-        showLoginModal = true;
+        onLoginIntialization();
       }
     });
   };
@@ -336,7 +336,7 @@
   {/await}
 </section>
 
-<Login bind:showLoginModal />
+<Login bind:onLoginIntialization />
 
 <!---------------------------------------------------------------->
 

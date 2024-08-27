@@ -54,10 +54,10 @@
   let commentPubId = $page.data.commentPubId;
   let isCommentMoreOpen: CommentMoreStatus = {};
   let selectedFilterType = CommentFilterType.LatestComments;
-  let showLoginModal = false;
   let reactionDetails: ReactionDetailsModel = {};
   let isSummaryOpen = false;
   let totalImagePostCount = 0;
+  let onLoginIntialization: () => Promise<void>;
 
   let promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
     commentPubId,
@@ -230,7 +230,7 @@
       removeAfter: 10000,
       ctaBtnName: "Login",
       ctaFunction: () => {
-        showLoginModal = true;
+        onLoginIntialization();
       }
     });
   };
@@ -547,7 +547,7 @@
   </section>
 </MediaQuery>
 
-<Login bind:showLoginModal />
+<Login bind:onLoginIntialization />
 
 <!---------------------------------------------------------------->
 
