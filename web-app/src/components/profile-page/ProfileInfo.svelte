@@ -25,11 +25,19 @@
   import unfollowFollowUtil from "../../utils/follow/unfollow.follow.util";
   import followLensProfileManagerFollowUtil from "../../utils/follow/follow-lens-profile-manager.follow.util";
   import unfollowLensProfileManagerFollowUtil from "../../utils/follow/unfollow-lens-profile-manager.follow.util";
+  import { getAccount } from "@wagmi/core";
+  import web3ModalUtil, { wagmiConfig } from "../../utils/web3modal.util";
+  import TipImage from "$lib/assets/Tip.svg";
+  import Tip from "../Tip.svelte";
 
   const { addNotification } = getNotificationsContext();
   let promiseOfGetProfile = getProfileUsingIdLensService($page.data.profileId);
   let isFollowing = false;
   let disableActive = false;
+  let showTippingModal = false;
+  let toHandle: string;
+  let toAddress: string;
+  let dialog: HTMLDialogElement;
   let onLoginIntialization: () => Promise<void>;
 
   onMount(() => {
@@ -134,6 +142,18 @@
         onLoginIntialization();
       }
     });
+  };
+
+  const initiateTippingProcess = async (profileDetails) => {
+    let address = getAccount(wagmiConfig).address;
+    if (address) {
+      toHandle = profileDetails.data.profile.handle.localName;
+      toAddress = profileDetails.data.profile.ownedBy.address;
+      showTippingModal = true;
+    } else {
+      await web3ModalUtil.open();
+      dialog.close();
+    }
   };
 </script>
 
@@ -244,6 +264,12 @@
               {/if}
             </div>
           {/if}
+          <button
+            on:click={initiateTippingProcess(response)}
+            style="cursor: pointer"
+          >
+            <img src={TipImage} alt="tip" />
+          </button>
         </div>
         <div class="CenterRowFlex profile-details__right__middle">
           <div class="profile-details__right__middle__handle">
@@ -337,6 +363,7 @@
 </section>
 
 <Login bind:onLoginIntialization />
+<Tip {toAddress} {toHandle} bind:showTippingModal />
 
 <!---------------------------------------------------------------->
 
