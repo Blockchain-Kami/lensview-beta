@@ -19,32 +19,19 @@
   import { fly } from "svelte/transition";
   import { quintOut } from "svelte/easing";
   import LensviewLogo from "$lib/assets/LensviewLogo.svg";
-  import {
-    reloadAPublication,
-    reloadCommentOfAPublication,
-    reloadMainPost
-  } from "../stores/reload-publication.store";
   import { MetaTags } from "svelte-meta-tags";
   import { metaTagsTitle } from "../services/metaTags";
-
   import Login from "../components/Login.svelte";
-  import getMetamaskAddressAuthenticationUtil from "../utils/authentication/get-metamask-address.authentication.util";
-  import isValidAccessTokenPresentInLsForAddressAuthenticationUtil from "../utils/authentication/is-valid-access-token-present-in-ls-for-address.authentication.util";
-  import { addressUserStore } from "../stores/user/address.user.store";
   import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
   import { profileUserStore } from "../stores/user/profile.user.store";
-  import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
   import getPictureURLUtil from "../utils/get-picture-URL.util";
   import searchPublicationAppService from "../services/app/search-publication.app.service";
-  import updateLoggedInStatusAuthenticationUtil
-    from "../utils/authentication/update-logged-in-status.authentication.util";
-  const { VITE_CHAIN_ID } = import.meta.env;
+  import updateLoggedInStatusAuthenticationUtil from "../utils/authentication/update-logged-in-status.authentication.util";
 
   let userEnteredUrlOrKeywords = "";
   let showJoinForUpdatesModal = false;
   let menuActive = false;
   let isSearching = false;
-  let showLoginModal = false;
   let onLoginIntialization: () => Promise<void>;
   let isThisHomePage = true;
   let currentPath = "/";
@@ -56,73 +43,14 @@
   }
 
   onMount(async () => {
-    if (
-      typeof window !== "undefined" &&
-      typeof window.ethereum !== "undefined"
-    ) {
-      try {
-        await updateLoggedInStatusAuthenticationUtil();
-        // await getMetamaskAddressAuthenticationUtil(true);
-        //
-        // let address;
-        // const unsub = addressUserStore.subscribe((_address) => {
-        //   address = _address;
-        // });
-        // unsub();
-        //
-        // if (address) {
-        //   const isValidAccessTokenPresentInLocalStorage =
-        //     await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
-        //
-        //   console.log(
-        //     "isValidAccessTokenPresentInLocalStorage : " +
-        //       isValidAccessTokenPresentInLocalStorage
-        //   );
-        //
-        //   if (isValidAccessTokenPresentInLocalStorage) {
-        //     await setProfileAuthenticationUtil();
-        //     isLoggedInUserStore.setLoggedInStatus(true);
-        //
-        //     setReloadMethods();
-        //   }
-        // }
-      } catch (error) {
-        showLoginModal = false;
-        console.log(error);
-      }
-
-      // accountAndChainChangedMethods();
+    try {
+      await updateLoggedInStatusAuthenticationUtil();
+    } catch (error) {
+      console.log(error);
     }
   });
 
-  const accountAndChainChangedMethods = () => {
-    let chainIDToBeUsed = VITE_CHAIN_ID;
-
-    window.ethereum.on("chainChanged", (chainId: string) => {
-      if (chainId !== chainIDToBeUsed) {
-        window.location.reload();
-      }
-    });
-
-    addressUserStore.subscribe((address) => {
-      window.ethereum.on("accountsChanged", (switchedAddress: string) => {
-        console.log("account changed: " + switchedAddress);
-        console.log("address: " + address);
-        if (address !== null && switchedAddress !== address) {
-          window.location.reload();
-        }
-      });
-    });
-  };
-
-  const setReloadMethods = () => {
-    reloadMainPost.setReloadMainPost(Date.now());
-    reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
-    reloadAPublication.setReloadAPublication(Date.now());
-  };
-
   const openLoginModal = () => {
-    showLoginModal = true;
     onLoginIntialization();
   };
 

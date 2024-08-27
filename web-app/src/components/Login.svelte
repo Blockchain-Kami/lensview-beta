@@ -1,21 +1,10 @@
 <script lang="ts">
   import Icon from "$lib/Icon.svelte";
-  import { close, cross, tick } from "../utils/app-icon.util";
-  // import Loader from "$lib/Loader.svelte";
+  import { close, tick, error } from "../utils/app-icon.util";
   import { fly } from "svelte/transition";
   import { backInOut } from "svelte/easing";
   import { getNotificationsContext } from "svelte-notifications";
-  import {
-    reloadAPublication,
-    reloadCommentOfAPublication,
-    reloadMainPost
-  } from "../stores/reload-publication.store";
-  import getMetamaskAddressAuthenticationUtil from "../utils/authentication/get-metamask-address.authentication.util";
-  import isValidAccessTokenPresentInLsForAddressAuthenticationUtil from "../utils/authentication/is-valid-access-token-present-in-ls-for-address.authentication.util";
   import { addressUserStore } from "../stores/user/address.user.store";
-  import parseNotificationObjectWithFunctionUtil from "../utils/parse-notification-object-with-function.util";
-  import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
-  import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
   import web3ModalUtil, { wagmiConfig } from "../utils/web3modal.util";
   import { getAccount } from "@wagmi/core";
   import getProfileListUsingAddressLensService from "../services/lens/get-profile-list-using-address.lens.service";
@@ -77,9 +66,11 @@
 
       isLoggingIn = false;
       dialog.close();
+      successfullySignInNotification();
     } catch (error) {
       console.log("error: " + error);
       isLoggingIn = false;
+      errorSignInNotification();
     }
   };
 
@@ -105,54 +96,6 @@
     }
   };
 
-  // const logInWithLens = async () => {
-  //   isLoggingIn = true;
-  //   try {
-  //     await retrieveAccessTokenAuthenticationUtil();
-  //     await setProfileAuthenticationUtil();
-  //
-  //     isLoggedInUserStore.setLoggedInStatus(true);
-  //     setReloadMethods();
-  //     isLoggingIn = false;
-  //     successfullySignInNotification();
-  //
-  //     console.log(
-  //       "Local Storage: " +
-  //         JSON.parse(localStorage.getItem("IDS_AUTH_DATA") as string)
-  //     );
-  //   } catch (error) {
-  //     isLoggingIn = false;
-  //     dialog.close();
-  //     console.log("error: " + error);
-  //     addNotification({
-  //       position: "top-right",
-  //       heading: "Error while logging in",
-  //       description: (error as Error).message + ". Please try again",
-  //       type: cross,
-  //       removeAfter: 10000
-  //     });
-  //   }
-  // };
-
-  const setReloadMethods = () => {
-    reloadMainPost.setReloadMainPost(Date.now());
-    reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
-    reloadAPublication.setReloadAPublication(Date.now());
-  };
-
-  const connect = async () => {
-    try {
-      await getMetamaskAddressAuthenticationUtil(false);
-      await loggedUserInIfAccessTokenPresent();
-    } catch (error) {
-      console.log("connect error : ", error);
-      dialog.close();
-      addNotification(
-        parseNotificationObjectWithFunctionUtil((error as Error).message)
-      );
-    }
-  };
-
   const successfullySignInNotification = () => {
     dialog.close();
     addNotification({
@@ -164,27 +107,15 @@
     });
   };
 
-  const loggedUserInIfAccessTokenPresent = async () => {
-    const isValidAccessTokenPresentInLocalStorage =
-      await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
-    console.log(
-      "isValidAccessTokenPresentInLocalStorage: " +
-        isValidAccessTokenPresentInLocalStorage
-    );
-    if (isValidAccessTokenPresentInLocalStorage) {
-      await setProfileAuthenticationUtil();
-      isLoggedInUserStore.setLoggedInStatus(true);
-      isLoggingIn = false;
-      setReloadMethods();
-      dialog.close();
-      addNotification({
-        position: "top-right",
-        heading: "Successfully logged in",
-        description: "You are now logged in",
-        type: tick,
-        removeAfter: 10000
-      });
-    }
+  const errorSignInNotification = () => {
+    dialog.close();
+    addNotification({
+      position: "top-right",
+      heading: "Failed to login",
+      description: "Please try again to login",
+      type: error,
+      removeAfter: 6000
+    });
   };
 </script>
 
@@ -201,14 +132,22 @@
     >
       {#if fetchingProfilesList}
         <div class="CenterRowFlex head">
-          <div class="h3">Login</div>
+          <div class="h3">Fetching Profiles ...</div>
           <div class="head__close-btn">
             <button on:click={() => dialog.close()}>
               <Icon d={close} />
             </button>
           </div>
         </div>
-        <div class="body">Fetching Profiles...</div>
+        <div class="body-profiles">
+          <div class="body-profiles__profile body-profiles__profile-loader">
+            <div class="body-profiles__profile__pic-loader" />
+            <div class="body-profiles__profile__info">
+              <div class="body-profiles__profile__info__name-loader" />
+              <div class="body-profiles__profile__info__handle-loader" />
+            </div>
+          </div>
+        </div>
       {:else if profileList.length > 0}
         <div class="CenterRowFlex head">
           <div class="h3">Login</div>
@@ -269,7 +208,9 @@
               class="btn">Login with Lens</button
             >
           {:else}
-            <button class="btn" disabled>Logging in &nbsp;&nbsp; <Loader /></button>
+            <button class="btn" disabled
+              >Logging in &nbsp;&nbsp; <Loader /></button
+            >
           {/if}
         </div>
       {:else}
@@ -333,12 +274,6 @@
     font-style: italic;
   }
 
-  .body__handle {
-    font-weight: var(--semi-medium-font-weight);
-    color: var(--primary);
-    font-size: var(--medium-font-size);
-  }
-
   .body-profiles {
     display: flex;
     flex-direction: column;
@@ -357,10 +292,15 @@
     padding: 0.7rem;
   }
 
-  .body-profiles__profile-selected {
+  .body-profiles__profile-selected,
+  .body-profiles__profile-loader {
     background: #173b3e;
     border-radius: 10px;
     border: 1px solid var(--primary);
+  }
+
+  .body-profiles__profile-loader {
+    width: 23rem;
   }
 
   .body-profiles__profile__pic img {
@@ -370,15 +310,36 @@
     border: 2px solid #32f9ff;
   }
 
+  .body-profiles__profile__pic-loader {
+    height: 3em;
+    width: 3rem;
+    margin-bottom: auto;
+    border-radius: 50%;
+  }
+
   .body-profiles__profile__info__name {
+    font-weight: var(--semi-medium-font-weight);
     padding: 0.2rem 0.5rem;
+  }
+
+  .body-profiles__profile__info__name-loader {
+    width: 13rem;
+    height: 2rem;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
   }
 
   .body-profiles__profile__info__handle {
     padding: 0.2rem 0.5rem;
-    background: var(--bg-solid-2);
+    background: var(--bg-solid-3);
     border-radius: 5px;
     color: var(--primary);
+  }
+
+  .body-profiles__profile__info__handle-loader {
+    width: 9rem;
+    height: 1.5rem;
+    border-radius: 5px;
   }
 
   .line {
@@ -391,5 +352,13 @@
   .footer {
     margin-left: auto;
     padding: 1rem;
+  }
+
+  .body-profiles__profile__pic-loader,
+  .body-profiles__profile__info__name-loader,
+  .body-profiles__profile__info__handle-loader {
+    background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);
+    background-size: 200% 100%;
+    animation: 1s shine linear infinite;
   }
 </style>

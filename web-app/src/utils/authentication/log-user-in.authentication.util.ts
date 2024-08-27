@@ -4,11 +4,6 @@ import getAccessTokenUsingChallengeLensService from "../../services/lens/get-acc
 import { localStorageKeys } from "../../config/app-constants.config";
 import updateLoggedInStatusAuthenticationUtil from "./update-logged-in-status.authentication.util";
 import { signMessage } from "@wagmi/core";
-import {
-  reloadAPublication,
-  reloadCommentOfAPublication,
-  reloadMainPost
-} from "../../stores/reload-publication.store";
 
 const logUserInAuthenticationUtil = async (address: string, id: string) => {
   try {
@@ -35,8 +30,6 @@ const logUserInAuthenticationUtil = async (address: string, id: string) => {
     );
 
     await updateLoggedInStatusAuthenticationUtil();
-
-    setReloadMethods();
   } catch (error) {
     console.log("Error logging user in: " + error);
     throw new Error("Error logging user in");
@@ -44,9 +37,3 @@ const logUserInAuthenticationUtil = async (address: string, id: string) => {
 };
 
 export default logUserInAuthenticationUtil;
-
-const setReloadMethods = () => {
-  reloadMainPost.setReloadMainPost(Date.now());
-  reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
-  reloadAPublication.setReloadAPublication(Date.now());
-};

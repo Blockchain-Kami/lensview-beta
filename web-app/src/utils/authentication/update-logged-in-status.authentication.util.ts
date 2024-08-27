@@ -6,6 +6,11 @@ import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
 import getProfileUsingIdLensService from "../../services/lens/get-profile-using-id.lens.service";
 import getAccessTokenUsingRefreshTokenLensService from "../../services/lens/get-access-token-using-refresh-token.lens.service";
 import getAccessRefreshTokenAuthenticationUtil from "./get-access-refresh-token.authentication.util";
+import {
+  reloadAPublication,
+  reloadCommentOfAPublication,
+  reloadMainPost
+} from "../../stores/reload-publication.store";
 
 let updateAccessTokenTimeoutId: string | number | NodeJS.Timeout | undefined;
 
@@ -48,9 +53,9 @@ const updateLoggedInStatusAuthenticationUtil = async () => {
     addressUserStore.setUserAddress(evmAddress);
 
     try {
-      await getProfiles(id);
-      updateAccessTokenAfterEvery30Mins();
       isLoggedInUserStore.setLoggedInStatus(true);
+      await getProfilesAndUpdateData(id);
+      updateAccessTokenAfterEvery30Mins();
     } catch (error) {
       resetToDefaultStoreValue();
       console.log(error);
@@ -102,7 +107,7 @@ const parseJwt = (token: string) => {
   return JSON.parse(jsonPayload);
 };
 
-const getProfiles = async (idParam: string) => {
+const getProfilesAndUpdateData = async (idParam: string) => {
   let id: string | null = null;
   const unsub = profileUserStore.subscribe((_profile) => {
     id = _profile?.id;
@@ -117,18 +122,26 @@ const getProfiles = async (idParam: string) => {
   if (!id || id !== idParam) {
     const response = await getProfileUsingIdLensService(idParam);
     profileUserStore.setUserProfile(response?.data?.profile);
+    console.log("Reload called");
+    setReloadMethods();
   }
+};
+
+const setReloadMethods = () => {
+  reloadMainPost.setReloadMainPost(Date.now());
+  reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
+  reloadAPublication.setReloadAPublication(Date.now());
 };
 
 const updateAccessTokenAfterEvery30Mins = () => {
   clearTimeout(updateAccessTokenTimeoutId);
 
-  updateAccessTokenTimeoutId = setTimeout(() => {
+  updateAccessTokenTimeoutId = setTimeout(async () => {
     console.log(
       "updateAccessTokenTimeoutId called for : ",
       updateAccessTokenTimeoutId
     );
-    updateLoggedInStatusAuthenticationUtil();
+    await updateLoggedInStatusAuthenticationUtil();
   }, 1001 * 60 * 30);
 
   console.log("updateAccessTokenTimeoutId : ", updateAccessTokenTimeoutId);
