@@ -169,9 +169,9 @@
               on:click={onLoginIntialization}
               class="CenterRowFlex menu__options__item"
             >
-              <div class="menu__options__item__icon">
+              <span class="menu__options__item__icon">
                 <Icon d={person} />
-              </div>
+              </span>
               Manage Account
             </button>
           {/if}
@@ -179,9 +179,9 @@
             on:click={() => web3ModalUtil.open()}
             class="CenterRowFlex menu__options__item"
           >
-            <div class="menu__options__item__icon">
+            <span class="menu__options__item__icon">
               <Icon d={wallet} />
-            </div>
+            </span>
             Wallet
           </button>
 
