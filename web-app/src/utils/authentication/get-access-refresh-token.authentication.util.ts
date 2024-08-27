@@ -5,7 +5,7 @@ const getAccessRefreshTokenAuthenticationUtil = () => {
 
   const authData = ls.getItem(localStorageKeys.authData);
 
-  if (!authData) throw new Error("No auth data found");
+  if (!authData) return null;
 
   return JSON.parse(authData);
 };

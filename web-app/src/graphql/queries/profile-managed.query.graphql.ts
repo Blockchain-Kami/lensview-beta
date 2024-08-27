@@ -18,6 +18,9 @@ const profileManagedQueryGraphql = graphql(`
         handle {
           fullHandle
         }
+        ownedBy {
+          address
+        }
       }
     }
   }
