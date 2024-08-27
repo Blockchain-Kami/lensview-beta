@@ -242,38 +242,39 @@
           <label for="tokens"> Select a token </label>
           <div>
             <select
-              name="tokens"
-              id="tokens"
-              style="background: #1f4045"
-              bind:value={selectedToken}
+                    name="tokens"
+                    id="tokens"
+                    bind:value="{selectedToken}"
             >
-              <option value="MATIC"
-                >MATIC
-                {#await getTokenBalanceTipUtilMatic(fromAddress)}
-                  <span>Fetching token balance...</span>
-                {:then data}
-                  <span>
-                    (Available:
-                    {setMaticBalance(data)})
-                  </span>
-                {:catch _error}
-                  <span>Failed to load balace</span>
-                {/await}
-              </option>
-              <option value="BONSAI" selected
-                >BONSAI
-                {#await getTokenBalanceTipUtilBonsai(fromAddress)}
-                  <span>Fetching token balance...</span>
-                {:then data}
-                  <span>
-                    (Available:
-                    {setBonsaiBalance(data)})
-                  </span>
-                {:catch _error}
-                  <span>Failed to load balace</span>
-                {/await}
-              </option>
+              <option value="MATIC">MATIC</option>
+              <option value="BONSAI" selected>BONSAI</option>
             </select>
+
+            <div id="token-info">
+              {#if selectedToken === "MATIC"}
+                {#await getTokenBalanceTipUtilMatic(fromAddress)}
+                  <span class="fetching">Fetching token balance...</span>
+                {:then data}
+                  <span class="available">
+                    Available: {setMaticBalance(data)}
+                  </span>
+                {:catch _error}
+                  <span class="error">Failed to load balance</span>
+                {/await}
+              {/if}
+
+              {#if selectedToken === "BONSAI"}
+                {#await getTokenBalanceTipUtilBonsai(fromAddress)}
+                  <span class="fetching">Fetching token balance...</span>
+                {:then data}
+                  <span class="available">
+                    Available: {setBonsaiBalance(data)}
+                  </span>
+                {:catch _error}
+                  <span class="error">Failed to load balance</span>
+                {/await}
+              {/if}
+            </div>
           </div>
         </div>
         <div class="body">
@@ -388,5 +389,66 @@
     .body {
       min-width: 30rem;
     }
+  }
+  /* General Styling */
+  select {
+    background-color: #1f4045;
+    color: #fff;
+    font-size: 1rem;
+    padding: 0.5em;
+    border: none;
+    border-radius: 8px;
+    appearance: none; /* Remove default arrow */
+    width: 100%;
+    max-width: 300px; /* Adjust as needed */
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  option {
+    background-color: #1f4045;
+    color: #fff;
+    padding: 0.5em;
+  }
+
+  /* Custom Dropdown Icon */
+  select::after {
+    content: '▼'; /* Custom arrow */
+    position: absolute;
+    right: 1em;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #fff;
+  }
+
+  /* Option Hover Effect */
+  select:hover {
+    background-color: #2b5a60;
+  }
+
+  /* Loading and Error Styling */
+  .fetching,
+  .available,
+  .error {
+    display: block;
+    padding: 0.5em 0;
+    font-size: 0.85rem;
+    color: #ddd;
+  }
+
+  .fetching {
+    color: #ffd700; /* Gold color for fetching */
+    //margin-left: 225px;
+  }
+
+  .available {
+    color: #23f9ff; /* Spring green color for available */
+    //margin-left: 225px;
+  }
+
+  .error {
+    color: #ff4500; /* Orange red color for error */
+    //margin-left: 225px;
   }
 </style>
