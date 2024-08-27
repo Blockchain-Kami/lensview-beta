@@ -12,6 +12,8 @@
   import type { ProfileManagedLensModel } from "../models/lens/profile-managed.lens.model";
   import getPictureURLUtil from "../utils/get-picture-URL.util";
   import Loader from "$lib/Loader.svelte";
+  import { profileUserStore } from "../stores/user/profile.user.store";
+  import logUserOutAuthenticationUtil from "../utils/authentication/log-user-out.authentication.util";
 
   const { addNotification } = getNotificationsContext();
   export let showLoginModal = false;
@@ -74,6 +76,22 @@
     }
   };
 
+  const logUserOut = async () => {
+    try {
+      await logUserOutAuthenticationUtil();
+      dialog.close();
+    } catch (error) {
+      console.log("error: " + error);
+      addNotification({
+        position: "top-right",
+        heading: "Failed to log out",
+        description: "Please try again to log out",
+        type: error,
+        removeAfter: 6000
+      });
+    }
+  };
+
   const fetchProfilesList = async () => {
     try {
       fetchingProfilesList = true;
@@ -112,7 +130,7 @@
     addNotification({
       position: "top-right",
       heading: "Failed to login",
-      description: "Please try again to login",
+      description: "Something went wrong. Please try again",
       type: error,
       removeAfter: 6000
     });
@@ -197,6 +215,12 @@
                   {item?.handle?.fullHandle.slice(5)}
                 </div>
               </div>
+              {#if item?.id === $profileUserStore?.id}
+                <button
+                  on:click={logUserOut}
+                  class="btn body-profiles__profile__logout-btn">Log Out</button
+                >
+              {/if}
             </label>
           {/each}
         </div>
@@ -205,6 +229,7 @@
           {#if !isLoggingIn}
             <button
               on:click={() => logInWithLens(selectedProfileId)}
+              disabled={selectedProfileId === $profileUserStore?.id}
               class="btn">Login with Lens</button
             >
           {:else}
@@ -288,6 +313,7 @@
   .body-profiles__profile {
     display: flex;
     flex-direction: row;
+    align-items: center;
     gap: 1rem;
     padding: 0.7rem;
   }
@@ -340,6 +366,11 @@
     width: 9rem;
     height: 1.5rem;
     border-radius: 5px;
+  }
+
+  .body-profiles__profile__logout-btn {
+    margin-left: auto;
+    height: 1.2rem;
   }
 
   .line {

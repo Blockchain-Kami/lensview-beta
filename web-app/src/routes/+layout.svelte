@@ -4,14 +4,13 @@
   import { page } from "$app/stores";
   import { onMount } from "svelte";
   import {
-    home,
-    homeDualTone,
     menu,
     menuOpen,
-    search
+    search,
+    person,
+    wallet
   } from "../utils/app-icon.util";
   import Icon from "$lib/Icon.svelte";
-  import DualToneIcon from "$lib/DualToneIcon.svelte";
   import Loader from "$lib/Loader.svelte";
   import JoinForUpdates from "../components/main-page/JoinForUpdates.svelte";
   import Notifications from "svelte-notifications";
@@ -27,6 +26,7 @@
   import getPictureURLUtil from "../utils/get-picture-URL.util";
   import searchPublicationAppService from "../services/app/search-publication.app.service";
   import updateLoggedInStatusAuthenticationUtil from "../utils/authentication/update-logged-in-status.authentication.util";
+  import web3ModalUtil from "../utils/web3modal.util";
 
   let userEnteredUrlOrKeywords = "";
   let showJoinForUpdatesModal = false;
@@ -164,12 +164,27 @@
           </div>
         {/if}
         <div class="menu__options">
-          <a href="/" class="CenterRowFlex menu__options__item">
-            <div class="menu__options__item__icon">
-              <DualToneIcon d1={home} d2={homeDualTone} />
-            </div>
-            Home
-          </a>
+          {#if $isLoggedInUserStore}
+            <button
+              on:click={onLoginIntialization}
+              class="CenterRowFlex menu__options__item"
+            >
+              <span class="menu__options__item__icon">
+                <Icon d={person} />
+              </span>
+              Manage Account
+            </button>
+          {/if}
+          <button
+            on:click={() => web3ModalUtil.open()}
+            class="CenterRowFlex menu__options__item"
+          >
+            <span class="menu__options__item__icon">
+              <Icon d={wallet} />
+            </span>
+            Wallet
+          </button>
+
           <!--                <a href="https-proxy-agent" class="CenterRowFlex menu__options__item">-->
           <!--                    <div >About</div>-->
           <!--                </a>-->
@@ -347,7 +362,7 @@
   }
 
   .menu__options__item__icon {
-    padding: 0.35rem;
+    padding: 0.35rem 0.5rem;
     border-radius: 50%;
     background: #091b1e;
   }

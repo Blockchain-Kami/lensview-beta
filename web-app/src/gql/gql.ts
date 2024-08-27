@@ -26,6 +26,7 @@ const documents = {
     "\n  mutation Follow($request: FollowLensManagerRequest!) {\n    follow(request: $request) {\n      ... on RelaySuccess {\n        txHash\n        txId\n      }\n      ... on LensProfileManagerRelayError {\n        reason\n      }\n    }\n  }\n": types.FollowDocument,
     "\n  mutation Refresh($request: RefreshRequest!) {\n    refresh(request: $request) {\n      accessToken\n      refreshToken\n    }\n  }\n": types.RefreshDocument,
     "\n  mutation RemoveReaction($request: ReactionRequest!) {\n    removeReaction(request: $request)\n  }\n": types.RemoveReactionDocument,
+    "\n  mutation RevokeAuthentication($request: RevokeAuthenticationRequest!) {\n    revokeAuthentication(request: $request)\n  }\n": types.RevokeAuthenticationDocument,
     "\n  mutation Unfollow($request: UnfollowRequest!) {\n    unfollow(request: $request) {\n      ... on RelaySuccess {\n        txHash\n        txId\n      }\n      ... on LensProfileManagerRelayError {\n        reason\n      }\n    }\n  }\n": types.UnfollowDocument,
     "\n  query Challenge($request: ChallengeRequest!) {\n    challenge(request: $request) {\n      text\n      id\n    }\n  }\n": types.ChallengeDocument,
     "\n  query CommentsPublication($request: PublicationsRequest!) {\n    publications(request: $request) {\n      items {\n        ... on Comment {\n          id\n          createdAt\n          by {\n            id\n            handle {\n              fullHandle\n            }\n            metadata {\n              picture {\n                ... on ImageSet {\n                  optimized {\n                    uri\n                  }\n                }\n              }\n              displayName\n            }\n            ownedBy {\n              address\n            }\n          }\n          stats {\n            comments\n            upvotes: reactions(request: { type: UPVOTE })\n            downvotes: reactions(request: { type: DOWNVOTE })\n          }\n          metadata {\n            ... on TextOnlyMetadataV3 {\n              content\n              tags\n              attributes {\n                value\n                key\n              }\n            }\n            ... on ImageMetadataV3 {\n              content\n              tags\n            }\n          }\n          operations {\n            hasUpVoted: hasReacted(request: { type: UPVOTE })\n            hasDownVoted: hasReacted(request: { type: DOWNVOTE })\n          }\n          root {\n            ... on Post {\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n": types.CommentsPublicationDocument,
@@ -105,6 +106,10 @@ export function graphql(source: "\n  mutation Refresh($request: RefreshRequest!)
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation RemoveReaction($request: ReactionRequest!) {\n    removeReaction(request: $request)\n  }\n"): (typeof documents)["\n  mutation RemoveReaction($request: ReactionRequest!) {\n    removeReaction(request: $request)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation RevokeAuthentication($request: RevokeAuthenticationRequest!) {\n    revokeAuthentication(request: $request)\n  }\n"): (typeof documents)["\n  mutation RevokeAuthentication($request: RevokeAuthenticationRequest!) {\n    revokeAuthentication(request: $request)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
