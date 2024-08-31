@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { cross, wallet } from "../utils/app-icon.util";
+  import { wallet, error } from "../utils/app-icon.util";
   import { backInOut } from "svelte/easing";
   import { fly } from "svelte/transition";
   import { close } from "../utils/app-icon.util.js";
@@ -29,7 +29,7 @@
   let bonsaiBalance = 0;
   let fromAddress: `0x${string}`;
   let selectedToken: string;
-  let userEnteredAmount = "";
+  let userEnteredAmount: number;
   let isAmountInvalid = true;
   let tippingSuccess = false;
   let isSendingTip = false;
@@ -40,95 +40,65 @@
     fromAddress = getAccount(wagmiConfig).address;
   });
 
-  const checkAmountIsValid = () => {
-    if (
-      userEnteredAmount.length === 0 ||
-      userEnteredAmount.trim().length === 0
-    ) {
+  const checkAmountIsValid = (amount: number) => {
+    const enteredAmount = Number(amount);
+    console.log("enteredAmount", enteredAmount);
+    if (enteredAmount >= 0.00001) {
+      isAmountInvalid = false;
+      AmountInvalidReason = "";
+      return true;
+    } else if (enteredAmount === 0) {
       isAmountInvalid = true;
       AmountInvalidReason = "";
-      return;
-    }
-
-    if (Number(userEnteredAmount) <= 0.000001) {
+    } else if (enteredAmount < 0.00001) {
       isAmountInvalid = true;
       AmountInvalidReason = "Minimum Tip Amount is 0.000001";
-      return;
-    }
-
-    const indexOfSpace = userEnteredAmount.trim().indexOf(" ");
-    if (isNaN(Number(userEnteredAmount)) || indexOfSpace > -1) {
+    } else {
       isAmountInvalid = true;
-      AmountInvalidReason = "Please enter a valid amount.";
-      return;
+      AmountInvalidReason = "Please enter a valid amount";
     }
-
-    if (/^-?\d+$/.test(userEnteredAmount)) {
-      isAmountInvalid = false;
-      return;
-    }
-    isAmountInvalid = false;
-    return;
+    return false;
   };
 
   const sendTip = async () => {
-    userEnteredAmount = userEnteredAmount.trim();
+    userEnteredAmount = Number(userEnteredAmount);
+    if (!checkAmountIsValid(userEnteredAmount)) {
+      return;
+    }
     isSendingTip = true;
     let tipDetails;
     if (selectedToken == tokenSymbol.BONSAI) {
       if (userEnteredAmount > bonsaiBalance) {
-        addNotificationEvent(
-          "Insufficient Balance",
-          "You do not have the required balance. Please buy some tokens before sending a tip",
-          wallet,
-          4000
-        );
-        setTimeout(async () => {
-          await web3Modal.open();
-        }, 2000);
-        dialog.close();
-        tippingSuccess = false;
-        isSendingTip = false;
+        sendInsufficientBalanceEvent();
         return;
       }
       tipDetails = await sendTipUtilBonsai(
         fromAddress,
         toAddress,
-        userEnteredAmount
+        userEnteredAmount.toString()
       );
     } else if (selectedToken == tokenSymbol.MATIC) {
       if (userEnteredAmount > maticBalance) {
-        addNotificationEvent(
-          "Insufficient Balance",
-          "You do not have the required balance. Please buy some tokens before sending a tip",
-          wallet,
-          4000
-        );
-        setTimeout(async () => {
-          await web3Modal.open();
-        }, 2000);
-        dialog.close();
-        tippingSuccess = false;
-        isSendingTip = false;
+        sendInsufficientBalanceEvent();
         return;
       }
-      tipDetails = await sendTipUtilMatic(toAddress, userEnteredAmount);
+      tipDetails = await sendTipUtilMatic(
+        toAddress,
+        userEnteredAmount.toString()
+      );
     }
+
     if (tipDetails.success && !tipDetails.error) {
-      userEnteredAmount = "";
+      userEnteredAmount = null;
       isSendingTip = false;
       tippingSuccess = true;
-      setTimeout(() => {
-        tippingSuccess = false;
-        dialog.close();
-      }, 10000);
       return;
     } else {
       dialog.close();
       addNotificationEvent(
         "Error while sending tip",
         "Failed to send tip, please try again",
-        cross,
+        error,
         4000
       );
       isSendingTip = false;
@@ -146,6 +116,22 @@
     });
   };
 
+  const sendInsufficientBalanceEvent = () => {
+    addNotificationEvent(
+      "Insufficient Balance",
+      "You do not have the required balance. Please buy some tokens before sending a tip",
+      wallet,
+      4000
+    );
+    setTimeout(async () => {
+      await web3Modal.open();
+    }, 2000);
+    dialog.close();
+    tippingSuccess = false;
+    isSendingTip = false;
+    return;
+  };
+
   const setMaticBalance = (balance) => {
     maticBalance = balance;
     return Math.round(maticBalance * 100) / 100;
@@ -160,7 +146,11 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <dialog
   bind:this={dialog}
-  on:close={() => (showTippingModal = false)}
+  on:close={() => {
+    showTippingModal = false;
+    tippingSuccess = false;
+    return showTippingModal;
+  }}
   on:click|self={() => dialog.close()}
 >
   {#if showTippingModal}
@@ -261,8 +251,8 @@
             <div class="input-box__input body__url__input">
               <input
                 bind:value={userEnteredAmount}
-                on:input={checkAmountIsValid}
-                type="text"
+                on:input={() => checkAmountIsValid(userEnteredAmount)}
+                type="number"
               />
             </div>
             {#if isAmountInvalid}
@@ -277,11 +267,7 @@
           <div class="footer__left" />
           <div class="CenterRowFlex footer__right">
             {#if !isSendingTip}
-              <button
-                class="btn"
-                on:click={(event) => sendTip(event)}
-                disabled={isAmountInvalid}
-              >
+              <button class="btn" on:click={sendTip} disabled={isAmountInvalid}>
                 Send
               </button>
             {:else}
