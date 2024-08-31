@@ -41,24 +41,25 @@
   });
 
   const checkAmountIsValid = () => {
-    if (userEnteredAmount.length === 0) {
-      isAmountInvalid = false;
-      // urlInvalidReason = "URL cannot be empty";
+    if (
+      userEnteredAmount.length === 0 ||
+      userEnteredAmount.trim().length === 0
+    ) {
+      isAmountInvalid = true;
+      AmountInvalidReason = "";
       return;
     }
 
-    const indexOfSpace = userEnteredAmount.indexOf(" ");
-    if (indexOfSpace !== -1) {
+    if (Number(userEnteredAmount) <= 0.000001) {
       isAmountInvalid = true;
-      AmountInvalidReason = "Amount is not specified properly";
+      AmountInvalidReason = "Minimum Tip Amount is 0.000001";
       return;
     }
 
-    if (Number(userEnteredAmount) <= 0.000000000000000001) {
-      console.log("Entered amount", userEnteredAmount);
+    const indexOfSpace = userEnteredAmount.trim().indexOf(" ");
+    if (isNaN(Number(userEnteredAmount)) || indexOfSpace > -1) {
       isAmountInvalid = true;
-      AmountInvalidReason = "Amount cannot be negative or too small";
-      console.log(AmountInvalidReason);
+      AmountInvalidReason = "Please enter a valid amount.";
       return;
     }
 
@@ -71,20 +72,17 @@
   };
 
   const sendTip = async () => {
+    userEnteredAmount = userEnteredAmount.trim();
     isSendingTip = true;
     let tipDetails;
     if (selectedToken == tokenSymbol.BONSAI) {
-      console.log("userEnteredAmount", userEnteredAmount);
-      console.log("bonsaiBalance", bonsaiBalance);
       if (userEnteredAmount > bonsaiBalance) {
-        addNotification({
-          position: "top-right",
-          heading: "Insufficient Balance",
-          description:
-            "You do not have the required balance. Please buy some tokens before sending a tip",
-          type: wallet,
-          removeAfter: 4000
-        });
+        addNotificationEvent(
+          "Insufficient Balance",
+          "You do not have the required balance. Please buy some tokens before sending a tip",
+          wallet,
+          4000
+        );
         setTimeout(async () => {
           await web3Modal.open();
         }, 2000);
@@ -98,37 +96,14 @@
         toAddress,
         userEnteredAmount
       );
-      if (tipDetails.success) {
-        userEnteredAmount = "";
-        isSendingTip = false;
-        tippingSuccess = true;
-        setTimeout(() => {
-          tippingSuccess = false;
-          dialog.close();
-        }, 5000);
-        return;
-      } else {
-        dialog.close();
-        addNotification({
-          position: "top-right",
-          heading: "Error while sending tip",
-          description: "Failed to send tip, please try again",
-          type: cross,
-          removeAfter: 4000
-        });
-        isSendingTip = false;
-        return;
-      }
     } else if (selectedToken == tokenSymbol.MATIC) {
       if (userEnteredAmount > maticBalance) {
-        addNotification({
-          position: "top-right",
-          heading: "Insufficient Balance",
-          description:
-            "You do not have the required balance. Please buy some tokens before sending a tip",
-          type: wallet,
-          removeAfter: 4000
-        });
+        addNotificationEvent(
+          "Insufficient Balance",
+          "You do not have the required balance. Please buy some tokens before sending a tip",
+          wallet,
+          4000
+        );
         setTimeout(async () => {
           await web3Modal.open();
         }, 2000);
@@ -138,28 +113,37 @@
         return;
       }
       tipDetails = await sendTipUtilMatic(toAddress, userEnteredAmount);
-      if (tipDetails.success) {
-        userEnteredAmount = "";
-        isSendingTip = false;
-        tippingSuccess = true;
-        setTimeout(() => {
-          tippingSuccess = false;
-          dialog.close();
-        }, 5000);
-        return;
-      } else {
-        dialog.close();
-        addNotification({
-          position: "top-right",
-          heading: "Error while sending tip",
-          description: "Failed to send tip, please try again",
-          type: cross,
-          removeAfter: 4000
-        });
-        isSendingTip = false;
-        return;
-      }
     }
+    if (tipDetails.success && !tipDetails.error) {
+      userEnteredAmount = "";
+      isSendingTip = false;
+      tippingSuccess = true;
+      setTimeout(() => {
+        tippingSuccess = false;
+        dialog.close();
+      }, 10000);
+      return;
+    } else {
+      dialog.close();
+      addNotificationEvent(
+        "Error while sending tip",
+        "Failed to send tip, please try again",
+        cross,
+        4000
+      );
+      isSendingTip = false;
+      return;
+    }
+  };
+
+  const addNotificationEvent = (heading, description, type, removeAfter) => {
+    addNotification({
+      position: "top-right",
+      heading,
+      description,
+      type,
+      removeAfter
+    });
   };
 
   const setMaticBalance = (balance) => {
@@ -196,30 +180,28 @@
         <div class="body">
           <div class="input-box body__url">
             <div class="input-box__label body__url__label">
-              <p>Congratulations!! 🥳</p>
+              <p>
+                Your tip was successfully sent to
+                <span style="font-weight: bold; color: #23f9ff"
+                  >@{toHandle}</span
+                >.
+              </p>
+              <div
+                style="height: 80px; font-size: 100px; margin-top: 100px; text-align: center;"
+              >
+                🎉
+              </div>
               <br />
               <p>
-                Your tip <span style="font-weight: bold; color: #23f9ff"
-                  >{userEnteredAmount}</span
-                >
-                was successfully sent to
-                <span style="font-weight: bold; color: #23f9ff">{toHandle}</span
-                >. Your support means a lot and helps our viewers keep doing
-                what they love. We really appreciate it!
+                Your contributions help our Viewers to keep doing what they love
+                the most!
               </p>
             </div>
           </div>
         </div>
         <div class="line" />
         <div class="CenterRowFlex footer">
-          <div class="footer__left">
-            <!--          <button-->
-            <!--            class="footer__left__matic"-->
-            <!--            on:click={() => (showGetTestMaticModal = true)}-->
-            <!--          >-->
-            <!--            Get test MATIC-->
-            <!--          </button>-->
-          </div>
+          <div class="footer__left" />
         </div>
       {:else}
         <div class="CenterRowFlex head">
@@ -236,16 +218,12 @@
           </p>
           <p>
             You are sending a tip to: <span
-              style="font-weight: bold; color: #23f9ff">{toHandle}</span
+              style="font-weight: bold; color: #23f9ff">@{toHandle}</span
             >
           </p>
           <label for="tokens"> Select a token </label>
           <div>
-            <select
-                    name="tokens"
-                    id="tokens"
-                    bind:value="{selectedToken}"
-            >
+            <select name="tokens" id="tokens" bind:value={selectedToken}>
               <option value="MATIC">MATIC</option>
               <option value="BONSAI" selected>BONSAI</option>
             </select>
@@ -296,14 +274,7 @@
         </div>
         <div class="line" />
         <div class="CenterRowFlex footer">
-          <div class="footer__left">
-            <!--          <button-->
-            <!--            class="footer__left__matic"-->
-            <!--            on:click={() => (showGetTestMaticModal = true)}-->
-            <!--          >-->
-            <!--            Get test MATIC-->
-            <!--          </button>-->
-          </div>
+          <div class="footer__left" />
           <div class="CenterRowFlex footer__right">
             {#if !isSendingTip}
               <button
@@ -409,17 +380,6 @@
     background-color: #1f4045;
     color: #fff;
     padding: 0.5em;
-  }
-
-  /* Custom Dropdown Icon */
-  select::after {
-    content: '▼'; /* Custom arrow */
-    position: absolute;
-    right: 1em;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: #fff;
   }
 
   /* Option Hover Effect */
