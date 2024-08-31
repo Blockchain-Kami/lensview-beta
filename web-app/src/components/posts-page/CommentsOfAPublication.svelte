@@ -47,6 +47,8 @@
   import web3ModalUtil, { wagmiConfig } from "../../utils/web3modal.util";
   import Tip from "../Tip.svelte";
   import TipImage from "$lib/assets/Tip.svg";
+  import { tooltip } from "@svelte-plugins/tooltips";
+
   const { VITE_APP_LENS_ID } = import.meta.env;
   const { VITE_IMAGE_PUB } = import.meta.env;
 
@@ -434,6 +436,14 @@
                       <button
                         on:click={(event) =>
                           initiateTippingProcess(event, comment)}
+                        use:tooltip={{
+                          content: "Send A Tip",
+                          position: "left",
+                          autoPosition: true,
+                          align: "center",
+                          animation: "slide",
+                          theme: "custom-tooltip"
+                        }}
                       >
                         <img src={TipImage} alt="tip" />
                       </button>

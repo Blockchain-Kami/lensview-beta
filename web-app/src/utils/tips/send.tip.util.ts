@@ -31,7 +31,6 @@ export const sendTipUtilBonsai = async (
   to: `0x${string}`,
   amount: string
 ) => {
-  console.log("Hello from send bonsai", to, from);
   try {
     const result = await writeContract(wagmiConfig, {
       abi: BONSAI_TOKEN_ABI,
