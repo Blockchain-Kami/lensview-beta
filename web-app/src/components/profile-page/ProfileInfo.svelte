@@ -25,12 +25,21 @@
   import unfollowFollowUtil from "../../utils/follow/unfollow.follow.util";
   import followLensProfileManagerFollowUtil from "../../utils/follow/follow-lens-profile-manager.follow.util";
   import unfollowLensProfileManagerFollowUtil from "../../utils/follow/unfollow-lens-profile-manager.follow.util";
+  import { getAccount } from "@wagmi/core";
+  import web3ModalUtil, { wagmiConfig } from "../../utils/web3modal.util";
+  import TipImage from "$lib/assets/Tip.svg";
+  import Tip from "../Tip.svelte";
+  import { tooltip } from "@svelte-plugins/tooltips";
 
-  let showLoginModal = false;
   const { addNotification } = getNotificationsContext();
   let promiseOfGetProfile = getProfileUsingIdLensService($page.data.profileId);
   let isFollowing = false;
   let disableActive = false;
+  let showTippingModal = false;
+  let toHandle: string;
+  let toAddress: string;
+  let dialog: HTMLDialogElement;
+  let onLoginIntialization: () => Promise<void>;
 
   onMount(() => {
     reloadAPublication.subscribe(() => {
@@ -131,9 +140,21 @@
       removeAfter: 10000,
       ctaBtnName: "Login",
       ctaFunction: () => {
-        showLoginModal = true;
+        onLoginIntialization();
       }
     });
+  };
+
+  const initiateTippingProcess = async (profileDetails) => {
+    let address = getAccount(wagmiConfig).address;
+    if (address) {
+      toHandle = profileDetails.data.profile.handle.localName;
+      toAddress = profileDetails.data.profile.ownedBy.address;
+      showTippingModal = true;
+    } else {
+      await web3ModalUtil.open();
+      dialog.close();
+    }
   };
 </script>
 
@@ -244,6 +265,20 @@
               {/if}
             </div>
           {/if}
+          <button
+            on:click={initiateTippingProcess(response)}
+            style="cursor: pointer"
+            use:tooltip={{
+              content: "Send A Tip",
+              position: "right",
+              autoPosition: true,
+              align: "center",
+              animation: "slide",
+              theme: "custom-tooltip"
+            }}
+          >
+            <img src={TipImage} alt="tip" />
+          </button>
         </div>
         <div class="CenterRowFlex profile-details__right__middle">
           <div class="profile-details__right__middle__handle">
@@ -336,7 +371,8 @@
   {/await}
 </section>
 
-<Login bind:showLoginModal />
+<Login bind:onLoginIntialization />
+<Tip {toAddress} {toHandle} bind:showTippingModal />
 
 <!---------------------------------------------------------------->
 
