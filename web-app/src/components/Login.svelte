@@ -21,18 +21,32 @@
   $: if (dialog && showLoginModal) dialog.showModal();
 
   let isLoggingIn = false;
+  let isLoggingOut = false;
   let selectedProfileId: string;
   let fetchingProfilesList = false;
-  let profileList: ProfileManagedLensModel[];
+  let profileList: ProfileManagedLensModel[] = [];
   let prevConnectedAddress = "";
 
   export const onLoginIntialization = () => {
     try {
+      let loggedInAddress;
+      const unsub = profileUserStore.subscribe((response) => {
+        loggedInAddress = response?.ownedBy?.address;
+      });
+      unsub();
       const connectedAddress = getAccount(wagmiConfig).address;
-      if (connectedAddress) {
+
+      console.log("Login page: loggedInAddress: ", loggedInAddress);
+      console.log("Login page: connectedAddress: ", connectedAddress);
+
+      if (loggedInAddress) {
+        showLoginModal = true;
+        addressUserStore.setUserAddress(loggedInAddress);
+        fetchProfilesList(loggedInAddress);
+      } else if (connectedAddress) {
         showLoginModal = true;
         addressUserStore.setUserAddress(connectedAddress);
-        fetchProfilesList();
+        fetchProfilesList(connectedAddress);
       } else {
         web3ModalUtil.open();
         web3ModalUtil.subscribeState((newState) => {
@@ -45,7 +59,7 @@
             showLoginModal = true;
             web3ModalUtil.close();
             addressUserStore.setUserAddress(address);
-            fetchProfilesList();
+            fetchProfilesList(address);
           }
         });
       }
@@ -60,24 +74,27 @@
       const address = getAccount(wagmiConfig).address;
 
       if (!address) {
+        prevConnectedAddress = "";
         onLoginIntialization();
-        dialog.close();
+        return;
       }
 
       await logUserInAuthenticationUtil(address as string, id);
 
-      isLoggingIn = false;
-      dialog.close();
       successfullySignInNotification();
     } catch (error) {
       console.log("error: " + error);
-      isLoggingIn = false;
       errorSignInNotification();
+    } finally {
+      isLoggingIn = false;
+      dialog.close();
     }
   };
 
   const logUserOut = async () => {
     try {
+      isLoggingOut = true;
+      prevConnectedAddress = "";
       await logUserOutAuthenticationUtil();
       dialog.close();
     } catch (error) {
@@ -89,33 +106,33 @@
         type: error,
         removeAfter: 6000
       });
+    } finally {
+      isLoggingOut = false;
     }
   };
 
-  const fetchProfilesList = async () => {
+  const fetchProfilesList = async (address: `0x${string}`) => {
     try {
       fetchingProfilesList = true;
 
-      const connectedAddress = getAccount(wagmiConfig).address;
+      profileList = await getProfileListUsingAddressLensService(address);
 
-      if (!connectedAddress) {
-        onLoginIntialization();
-      } else {
-        profileList = await getProfileListUsingAddressLensService(
-          connectedAddress
-        );
-
-        if (profileList?.length > 0) selectedProfileId = profileList[0].id;
-
-        fetchingProfilesList = false;
-      }
+      if (profileList?.length > 0) selectedProfileId = profileList[0].id;
     } catch (error) {
+      console.log("error: " + error);
+      addNotification({
+        position: "top-right",
+        heading: "Failed to fetch profiles",
+        description: "Something went wrong. Please try again",
+        type: error,
+        removeAfter: 6000
+      });
+    } finally {
       fetchingProfilesList = false;
     }
   };
 
   const successfullySignInNotification = () => {
-    dialog.close();
     addNotification({
       position: "top-right",
       heading: "Successfully logged-in",
@@ -126,7 +143,6 @@
   };
 
   const errorSignInNotification = () => {
-    dialog.close();
     addNotification({
       position: "top-right",
       heading: "Failed to login",
@@ -216,10 +232,18 @@
                 </div>
               </div>
               {#if item?.id === $profileUserStore?.id}
-                <button
-                  on:click={logUserOut}
-                  class="btn body-profiles__profile__logout-btn">Log Out</button
-                >
+                {#if !isLoggingOut}
+                  <button
+                    on:click={logUserOut}
+                    class="btn body-profiles__profile__logout-btn"
+                    >Log Out</button
+                  >
+                {:else}
+                  <button
+                    class="btn body-profiles__profile__logout-btn"
+                    disabled>Logging out &nbsp;&nbsp; <Loader /></button
+                  >
+                {/if}
               {/if}
             </label>
           {/each}
