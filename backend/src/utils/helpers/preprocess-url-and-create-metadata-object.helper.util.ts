@@ -1,7 +1,9 @@
-import { preprocessURLHelperUtil } from "./preprocess-url.helper.util";
-import { createHashHelperUtil } from "./create-hash.helper.util";
-import { MetadataObjectModel } from "../../models/metadata-object.model";
-import { logger } from "../../log/log-manager.log";
+import { MetadataObjectModel } from "../../models/metadata-object.model.js";
+
+import { preprocessURLHelperUtil } from "./preprocess-url.helper.util.js";
+import { createHashHelperUtil } from "./create-hash.helper.util.js";
+
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Generates a metadata object based on the provided URL and other parameters.

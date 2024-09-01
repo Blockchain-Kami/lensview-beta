@@ -1,13 +1,15 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import { createNamespace } from "cls-hooked";
 import { v4 as uuidv4 } from "uuid";
-import routes from "./routes/index.route";
+import { createNamespace } from "cls-hooked";
 
-import { IS_PROD, PORT } from "./config/env.config";
-import { ALLOWED_ORIGINS } from "./config/app-config.config";
-import { logger } from "./log/log-manager.log";
+import { initializeModules } from "./connections/initialize-modules.connection.js";
+
+import routes from "./routes/index.route.js";
+import { IS_PROD, PORT } from "./config/env.config.js";
+import { ALLOWED_ORIGINS } from "./config/app-config.config.js";
+import { logger } from "./log/log-manager.log.js";
 
 const app = express();
 const myRequest = createNamespace("lensview-app");
@@ -47,10 +49,16 @@ app.use(
 
 app.use("/", routes);
 
-app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   res.status(404).json({ message: err.message });
 });
 
-app.listen(PORT, () => {
-  logger.info(`LensView server started at http://localhost:${PORT}`);
-});
+initializeModules()
+  .then(() => {
+    app.listen(PORT, () => {
+      logger.info(`LensView server started at http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    logger.error(error);
+  });

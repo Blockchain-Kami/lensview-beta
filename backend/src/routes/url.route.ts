@@ -1,8 +1,9 @@
 import express from "express";
-import { postNewPublicationController } from "../controllers/url.controller";
-import { validatePostNewPublicationMiddleware } from "../middlewares/url/validate-request.url.middleware";
-import { validateRequestQueryParametersMiddleware } from "../middlewares/validate-request-query-parameters.middleware";
-import { urlExistsValidationController } from "../controllers/url.controller";
+
+import { postNewPublicationController } from "../controllers/url.controller.js";
+import { validatePostNewPublicationMiddleware } from "../middlewares/url/validate-request.url.middleware.js";
+import { validateRequestQueryParametersMiddleware } from "../middlewares/validate-request-query-parameters.middleware.js";
+import { urlExistsValidationController } from "../controllers/url.controller.js";
 
 const router = express.Router();
 

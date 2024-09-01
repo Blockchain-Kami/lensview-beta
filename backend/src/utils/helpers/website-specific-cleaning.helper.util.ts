@@ -1,4 +1,4 @@
-import { logger } from "../../log/log-manager.log";
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Replaces the "m.youtube.com" domain with "YouTube.com" and removes the "&t=\d+s" parameter

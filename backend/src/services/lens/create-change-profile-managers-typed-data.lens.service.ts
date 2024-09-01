@@ -1,7 +1,9 @@
-import { ChangeProfileManagersRequest } from "../../gql/graphql";
-import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util";
-import CreateChangeProfileManagersTypedDataMutationGraphql from "../../graphql/mutations/create-change-profile-managers-typed-data.mutation.graphql";
-import { logger } from "../../log/log-manager.log";
+import { ChangeProfileManagersRequest } from "../../gql/graphql.js";
+
+import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util.js";
+
+import CreateChangeProfileManagersTypedDataMutationGraphql from "../../graphql/mutations/create-change-profile-managers-typed-data.mutation.graphql.js";
+import { logger } from "../../log/log-manager.log.js";
 
 const createChangeProfileManagersTypedDataLensService = async (
   request: ChangeProfileManagersRequest

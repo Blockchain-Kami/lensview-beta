@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { ClientError } from "../../errors/client-error.error";
-import { putAnonymousCommentBodyRequestModel } from "../../models/requests/body/put-anonymous-comment.body.request.model";
-import PostAnonymousCommentRequestBodyModel from "../../models/requests/body/post-anonymous-comment.body.request.model";
-import { logger } from "../../log/log-manager.log";
+
+import { ClientError } from "../../errors/client-error.error.js";
+import { putAnonymousCommentBodyRequestModel } from "../../models/requests/body/put-anonymous-comment.body.request.model.js";
+import PostAnonymousCommentRequestBodyModel from "../../models/requests/body/post-anonymous-comment.body.request.model.js";
+
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Middleware to validate the request body of a post anonymous comment request.

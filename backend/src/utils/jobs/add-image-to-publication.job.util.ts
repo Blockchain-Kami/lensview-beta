@@ -1,7 +1,10 @@
 import Queue from "bull";
-import { InternalServerError } from "../../errors/internal-server-error.error";
-import { uploadScreenshotAndCommentWithImageJobUtil } from "./upload-screenshot-and-comment-with-image.job.util";
-import { logger } from "../../log/log-manager.log";
+
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
+
+import { uploadScreenshotAndCommentWithImageJobUtil } from "./upload-screenshot-and-comment-with-image.job.util.js";
+
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Adds an image to a publication.

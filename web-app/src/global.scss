@@ -113,7 +113,7 @@ option:hover {
 
 @font-face {
   font-family: "mona-sans";
-  src: url("$lib/assets/Mona-Sans-SemiBoldWide.woff2") format("woff2");
+  src: url("$lib/assets/MonaSansExpanded-SemiBold.woff2") format("woff2");
   font-weight: 200 900;
   font-stretch: 75% 125%;
 }
@@ -153,7 +153,7 @@ body {
 
 ::backdrop {
   background: var(--bg-solid-1);
-  backdrop-filter: blur(10px);
+  //backdrop-filter: blur(10px);
 }
 
 input {
@@ -289,6 +289,11 @@ a {
   --tooltip-arrow-size: 10px;
 }
 
+@keyframes shine {
+  to {
+    background-position-x: -200%;
+  }
+}
 
 @media only screen and (max-width: 600px){
   body{

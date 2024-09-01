@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { ClientError } from "../../errors/client-error.error";
-import PostNewPublicationBodyRequestModel from "../../models/requests/body/post-new-publication.body.request.model";
-import { logger } from "../../log/log-manager.log";
-import { httpStatusCodes } from "../../config/app-constants.config";
+
+import { ClientError } from "../../errors/client-error.error.js";
+import PostNewPublicationBodyRequestModel from "../../models/requests/body/post-new-publication.body.request.model.js";
+
+import { logger } from "../../log/log-manager.log.js";
+import { httpStatusCodes } from "../../config/app-constants.config.js";
 
 /**
  * Validates the request body for the URLNewPubRouteMiddleware.

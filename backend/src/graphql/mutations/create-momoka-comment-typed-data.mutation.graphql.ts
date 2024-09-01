@@ -1,6 +1,6 @@
-import { graphql } from "../../gql";
+import { graphql } from "../../gql/index.js";
 
-const createMomokaCommentTypedDataMutationGraphql = graphql(`
+const CreateMomokaCommentTypedDataMutationGraphql = graphql(`
   mutation CreateMomokaCommentTypedData($request: MomokaCommentRequest!) {
     createMomokaCommentTypedData(request: $request) {
       id
@@ -38,4 +38,4 @@ const createMomokaCommentTypedDataMutationGraphql = graphql(`
   }
 `);
 
-export default createMomokaCommentTypedDataMutationGraphql;
+export default CreateMomokaCommentTypedDataMutationGraphql;

@@ -1,12 +1,12 @@
-import { gql } from "@urql/core";
+import { graphql } from "../../gql/index.js";
 
-const authenticateGraphql = gql/* GraphQL */ `
+const AuthenticateGraphql = graphql(/* GraphQL */ `
   mutation Authenticate($request: SignedAuthChallenge!) {
     authenticate(request: $request) {
       accessToken
       refreshToken
     }
   }
-`;
+`);
 
-export default authenticateGraphql;
+export default AuthenticateGraphql;

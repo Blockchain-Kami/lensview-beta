@@ -1,19 +1,22 @@
 import { Request, Response } from "express";
-import { PublicationResponseModelForNewPubURL } from "../models/response/publication.response.model";
-import { SearchQueryRequestModel } from "../models/requests/query/search.query.request.model";
-import { UrlExistsValidationResponseModel } from "../models/response/url-exists-validation.response.model";
-import PostNewPublicationBodyRequestModel from "../models/requests/body/post-new-publication.body.request.model";
-import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util";
-import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util";
-import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service";
-import { preprocessURLHelperUtil } from "../utils/helpers/preprocess-url.helper.util";
-import { createHashHelperUtil } from "../utils/helpers/create-hash.helper.util";
-import { createMetaDataForUrlHelperUtil } from "../utils/helpers/create-metadata.helper.util";
-import { getMainPublicationImageLensService } from "../services/lens/get-main-publication-image.lens.service";
-import { getPostMethod } from "../config/app-config.config";
-import { httpStatusCodes } from "../config/app-constants.config";
-import { imageQueue } from "../jobs/add-image-queue.job";
-import { logger } from "../log/log-manager.log";
+
+import { PublicationResponseModelForNewPubURL } from "../models/response/publication.response.model.js";
+import { SearchQueryRequestModel } from "../models/requests/query/search.query.request.model.js";
+import { UrlExistsValidationResponseModel } from "../models/response/url-exists-validation.response.model.js";
+import PostNewPublicationBodyRequestModel from "../models/requests/body/post-new-publication.body.request.model.js";
+
+import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util.js";
+import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util.js";
+import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service.js";
+import { preprocessURLHelperUtil } from "../utils/helpers/preprocess-url.helper.util.js";
+import { createHashHelperUtil } from "../utils/helpers/create-hash.helper.util.js";
+import { createMetaDataForUrlHelperUtil } from "../utils/helpers/create-metadata.helper.util.js";
+import { getMainPublicationImageLensService } from "../services/lens/get-main-publication-image.lens.service.js";
+import { getPostMethod } from "../config/app-config.config.js";
+
+import { httpStatusCodes } from "../config/app-constants.config.js";
+import { imageQueue } from "../jobs/add-image-queue.job.js";
+import { logger } from "../log/log-manager.log.js";
 
 /**
  * Handles the logic for posting a new publication.

@@ -4,13 +4,15 @@ import {
   LinkMetadata,
   TextOnlyMetadata
 } from "@lens-protocol/metadata";
-import { broadcastOnMomokaRequestLensService } from "../../services/lens/broadcast-on-momoka-request.lens.service";
-import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util";
-import { signedTypeDataForCommentHelperUtil } from "../helpers/sign-type-data.helper.util";
-import createMomokaCommentTypedDataLensService from "../../services/lens/create-momoka-comment-typed-data.lens.service";
-import { logger } from "../../log/log-manager.log";
-import { InternalServerError } from "../../errors/internal-server-error.error";
-import { httpStatusCodes } from "../../config/app-constants.config";
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
+
+import { broadcastOnMomokaRequestLensService } from "../../services/lens/broadcast-on-momoka-request.lens.service.js";
+import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util.js";
+import { signedTypeDataForCommentHelperUtil } from "../helpers/sign-type-data.helper.util.js";
+import createMomokaCommentTypedDataLensService from "../../services/lens/create-momoka-comment-typed-data.lens.service.js";
+
+import { logger } from "../../log/log-manager.log.js";
+import { httpStatusCodes } from "../../config/app-constants.config.js";
 
 export const commentMomokaPublicationUtil = async (
   parentPubId: string,

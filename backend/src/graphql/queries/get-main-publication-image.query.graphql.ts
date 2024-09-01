@@ -1,6 +1,6 @@
-import { graphql } from "../../gql";
+import { graphql } from "../../gql/index.js";
 
-const getMainPublicationImageQueryGraphql = graphql(/* GraphQL */ `
+const GetMainPublicationImageQueryGraphql = graphql(/* GraphQL */ `
   query GetPublicationsImage($request: PublicationsRequest!) {
     publications(request: $request) {
       items {
@@ -22,4 +22,4 @@ const getMainPublicationImageQueryGraphql = graphql(/* GraphQL */ `
   }
 `);
 
-export default getMainPublicationImageQueryGraphql;
+export default GetMainPublicationImageQueryGraphql;

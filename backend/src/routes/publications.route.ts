@@ -1,6 +1,7 @@
 import express from "express";
-import { getRelatedPublicationsController } from "../controllers/publications.controller";
-import { validateRequestQueryParametersMiddleware } from "../middlewares/validate-request-query-parameters.middleware";
+
+import { getRelatedPublicationsController } from "../controllers/publications.controller.js";
+import { validateRequestQueryParametersMiddleware } from "../middlewares/validate-request-query-parameters.middleware.js";
 
 const router = express.Router();
 

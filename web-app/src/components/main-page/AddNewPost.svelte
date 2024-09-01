@@ -34,11 +34,11 @@
   let contentInvalidReason = "";
   const wordLimit = 1000;
   let isContentInvalid = true;
-  let showLoginModal = false;
   export let userEnteredUrl = "";
   export let isUrlInvalid = true;
   let urlInvalidReason = "";
   let showGetTestMaticModal = false;
+  let onLoginIntialization: () => Promise<void>;
 
   const checkIfContentIsInvalid = () => {
     const wordCount = calculateWordCount(userEnteredContent);
@@ -99,7 +99,7 @@
 
   let postThroughUser = async () => {
     if (!checkIsLoggedIn()) {
-      showLoginModal = true;
+      await onLoginIntialization();
     } else {
       dialog.close();
 
@@ -108,8 +108,7 @@
         id: userPostNotificationId,
         position: "top-right",
         heading: "Post on its way!",
-        description:
-          "Your post is getting polished! Thanks for your patience.",
+        description: "Your post is getting polished! Thanks for your patience.",
         type: sendClock
       });
 
@@ -343,7 +342,7 @@
   {/if}
 </dialog>
 
-<Login bind:showLoginModal />
+<Login bind:onLoginIntialization />
 <GetTestMatic bind:showGetTestMaticModal />
 
 <style lang="scss">

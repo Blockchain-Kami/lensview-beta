@@ -4,9 +4,22 @@ const profileManagedQueryGraphql = graphql(`
   query profilesManaged($request: ProfilesManagedRequest!) {
     profilesManaged(request: $request) {
       items {
+        metadata {
+          displayName
+          picture {
+            ... on ImageSet {
+              optimized {
+                uri
+              }
+            }
+          }
+        }
         id
         handle {
           fullHandle
+        }
+        ownedBy {
+          address
         }
       }
     }

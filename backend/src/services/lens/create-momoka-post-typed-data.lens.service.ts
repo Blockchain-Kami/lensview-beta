@@ -1,7 +1,9 @@
-import type { MomokaPostRequest } from "../../gql/graphql";
-import CreateMomokaPostTypedDataMutationGraphql from "../../graphql/mutations/create-momoka-post-typed-data.mutation.graphql";
-import { logger } from "../../log/log-manager.log";
-import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util";
+import type { MomokaPostRequest } from "../../gql/graphql.js";
+
+import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util.js";
+
+import CreateMomokaPostTypedDataMutationGraphql from "../../graphql/mutations/create-momoka-post-typed-data.mutation.graphql.js";
+import { logger } from "../../log/log-manager.log.js";
 
 const createMomokaPostTypedDataLensService = async (
   request: MomokaPostRequest

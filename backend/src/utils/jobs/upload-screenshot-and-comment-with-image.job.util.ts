@@ -1,9 +1,11 @@
-import { MetadataObjectModel } from "../../models/metadata-object.model";
-import { relatedParentPublicationsLensService } from "../../services/lens/related-parent-publications.lens.service";
-import { fetchScreenshotAndUploadToIPFSJobUtil } from "./fetch-screenshot-and-upload-to-ipfs.job.util";
-import { createMetaDataForImageCommentHelperUtil } from "../helpers/create-metadata.helper.util";
-import { logger } from "../../log/log-manager.log";
-import { getCommentMethod } from "../../config/app-config.config";
+import { MetadataObjectModel } from "../../models/metadata-object.model.js";
+
+import { relatedParentPublicationsLensService } from "../../services/lens/related-parent-publications.lens.service.js";
+import { fetchScreenshotAndUploadToIPFSJobUtil } from "./fetch-screenshot-and-upload-to-ipfs.job.util.js";
+import { createMetaDataForImageCommentHelperUtil } from "../helpers/create-metadata.helper.util.js";
+import { getCommentMethod } from "../../config/app-config.config.js";
+
+import { logger } from "../../log/log-manager.log.js";
 
 export const uploadScreenshotAndCommentWithImageJobUtil = async (
   urlObj: MetadataObjectModel

@@ -1,6 +1,8 @@
 import winston from "winston";
+
 import { getNamespace } from "cls-hooked";
-import { logConfiguration } from "./log-config.log";
+
+import { logConfiguration } from "./log-config.log.js";
 
 const winstonLogger = winston.createLogger(logConfiguration);
 

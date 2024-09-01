@@ -1,32 +1,9 @@
 import { Client, createClient } from "@urql/core";
-import { profileUserStore } from "../../stores/user/profile.user.store";
-import isValidAccessTokenPresentInLocalStorageAuthenticationUtil from "./is-valid-access-token-present-in-local-storage.authentication.util";
+import getAccessRefreshTokenAuthenticationUtil from "./get-access-refresh-token.authentication.util";
 const { VITE_LENS_API_URL } = import.meta.env;
 
 const authenticatedClientAuthenticationUtil = () => {
-  const ls = localStorage || window.localStorage;
-
-  if (!ls) {
-    throw new Error("LocalStorage is not available");
-  }
-
-  if (!isValidAccessTokenPresentInLocalStorageAuthenticationUtil()) {
-    throw new Error("Invalid access token present in local storage");
-  }
-
-  const idsAuthData = ls.getItem("IDS_AUTH_DATA");
-
-  let id: string | null = null;
-  const unsub = profileUserStore.subscribe((_profile) => {
-    id = _profile?.id;
-  });
-  unsub();
-
-  if (!idsAuthData) throw new Error("No ids auth data found");
-
-  if (!id) throw new Error("No profile found");
-
-  const accessToken = JSON.parse(idsAuthData)[id].accessToken;
+  const { accessToken } = getAccessRefreshTokenAuthenticationUtil();
 
   if (!accessToken) throw new Error("No access token found");
 

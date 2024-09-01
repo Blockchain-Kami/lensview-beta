@@ -1,16 +1,19 @@
-import type { MomokaPostRequest } from "../../gql/graphql";
 import {
   ImageMetadata,
   LinkMetadata,
   TextOnlyMetadata
 } from "@lens-protocol/metadata";
-import { InternalServerError } from "../../errors/internal-server-error.error";
-import { broadcastOnMomokaRequestLensService } from "../../services/lens/broadcast-on-momoka-request.lens.service";
-import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util";
-import { signedTypeDataForPostHelperUtil } from "../helpers/sign-type-data.helper.util";
-import createMomokaPostTypedDataLensService from "../../services/lens/create-momoka-post-typed-data.lens.service";
-import { logger } from "../../log/log-manager.log";
-import { httpStatusCodes } from "../../config/app-constants.config";
+
+import type { MomokaPostRequest } from "../../gql/graphql.js";
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
+
+import { broadcastOnMomokaRequestLensService } from "../../services/lens/broadcast-on-momoka-request.lens.service.js";
+import { uploadToIPFSHelperUtil } from "../helpers/upload-to-ipfs.helper.util.js";
+import { signedTypeDataForPostHelperUtil } from "../helpers/sign-type-data.helper.util.js";
+import createMomokaPostTypedDataLensService from "../../services/lens/create-momoka-post-typed-data.lens.service.js";
+
+import { httpStatusCodes } from "../../config/app-constants.config.js";
+import { logger } from "../../log/log-manager.log.js";
 
 export const postMomokaPublicationUtil = async (
   metadata: LinkMetadata | TextOnlyMetadata | ImageMetadata

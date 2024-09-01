@@ -1,5 +1,6 @@
-import { BaseError } from "./base-error.error";
-import { httpStatusCodes } from "../config/app-constants.config";
+import { BaseError } from "./base-error.error.js";
+
+import { httpStatusCodes } from "../config/app-constants.config.js";
 
 // TODO: Put loggers inside error classes so we know which kind of error was thrown
 export class ClientError extends BaseError {

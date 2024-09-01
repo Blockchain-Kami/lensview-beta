@@ -4,14 +4,13 @@
   import { page } from "$app/stores";
   import { onMount } from "svelte";
   import {
-    home,
-    homeDualTone,
     menu,
     menuOpen,
-    search
+    search,
+    person,
+    wallet
   } from "../utils/app-icon.util";
   import Icon from "$lib/Icon.svelte";
-  import DualToneIcon from "$lib/DualToneIcon.svelte";
   import Loader from "$lib/Loader.svelte";
   import JoinForUpdates from "../components/main-page/JoinForUpdates.svelte";
   import Notifications from "svelte-notifications";
@@ -19,30 +18,20 @@
   import { fly } from "svelte/transition";
   import { quintOut } from "svelte/easing";
   import LensviewLogo from "$lib/assets/LensviewLogo.svg";
-  import {
-    reloadAPublication,
-    reloadCommentOfAPublication,
-    reloadMainPost
-  } from "../stores/reload-publication.store";
   import { MetaTags } from "svelte-meta-tags";
   import { metaTagsTitle } from "../services/metaTags";
-
   import Login from "../components/Login.svelte";
-  import getMetamaskAddressAuthenticationUtil from "../utils/authentication/get-metamask-address.authentication.util";
-  import isValidAccessTokenPresentInLsForAddressAuthenticationUtil from "../utils/authentication/is-valid-access-token-present-in-ls-for-address.authentication.util";
-  import { addressUserStore } from "../stores/user/address.user.store";
   import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
   import { profileUserStore } from "../stores/user/profile.user.store";
-  import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
   import getPictureURLUtil from "../utils/get-picture-URL.util";
   import searchPublicationAppService from "../services/app/search-publication.app.service";
-  const { VITE_CHAIN_ID } = import.meta.env;
+  import updateLoggedInStatusAuthenticationUtil from "../utils/authentication/update-logged-in-status.authentication.util";
+  import web3ModalUtil from "../utils/web3modal.util";
 
   let userEnteredUrlOrKeywords = "";
   let showJoinForUpdatesModal = false;
   let menuActive = false;
   let isSearching = false;
-  let showLoginModal = false;
   let onLoginIntialization: () => Promise<void>;
   let isThisHomePage = true;
   let currentPath = "/";
@@ -54,74 +43,12 @@
   }
 
   onMount(async () => {
-    if (
-      typeof window !== "undefined" &&
-      typeof window.ethereum !== "undefined"
-    ) {
-      try {
-        await getMetamaskAddressAuthenticationUtil(true);
-
-        let address;
-        const unsub = addressUserStore.subscribe((_address) => {
-          address = _address;
-        });
-        unsub();
-
-        if (address) {
-          const isValidAccessTokenPresentInLocalStorage =
-            await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
-
-          console.log(
-            "isValidAccessTokenPresentInLocalStorage : " +
-              isValidAccessTokenPresentInLocalStorage
-          );
-
-          if (isValidAccessTokenPresentInLocalStorage) {
-            await setProfileAuthenticationUtil();
-            isLoggedInUserStore.setLoggedInStatus(true);
-
-            setReloadMethods();
-          }
-        }
-      } catch (error) {
-        showLoginModal = false;
-        console.log(error);
-      }
-
-      accountAndChainChangedMethods();
+    try {
+      await updateLoggedInStatusAuthenticationUtil();
+    } catch (error) {
+      console.log(error);
     }
   });
-
-  const accountAndChainChangedMethods = () => {
-    let chainIDToBeUsed = VITE_CHAIN_ID;
-
-    window.ethereum.on("chainChanged", (chainId: string) => {
-      if (chainId !== chainIDToBeUsed) {
-        window.location.reload();
-      }
-    });
-
-    addressUserStore.subscribe((address) => {
-      window.ethereum.on("accountsChanged", (switchedAddress: string) => {
-        console.log("account changed: " + switchedAddress);
-        console.log("address: " + address);
-        if (address !== null && switchedAddress !== address) {
-          window.location.reload();
-        }
-      });
-    });
-  };
-
-  const setReloadMethods = () => {
-    reloadMainPost.setReloadMainPost(Date.now());
-    reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
-    reloadAPublication.setReloadAPublication(Date.now());
-  };
-
-  const openLoginModal = () => {
-    showLoginModal = true;
-    onLoginIntialization();
-  };
 
   const redirectToPostsOrSearchPage = async () => {
     console.log("Redirecting to posts or search page");
@@ -230,17 +157,34 @@
               Hello friend! Welcome to LensView.
             </div>
             <div class="menu__connect-box__btn">
-              <button on:click={openLoginModal} class="btn"> Login </button>
+              <button on:click={onLoginIntialization} class="btn">
+                Login
+              </button>
             </div>
           </div>
         {/if}
         <div class="menu__options">
-          <a href="/" class="CenterRowFlex menu__options__item">
-            <div class="menu__options__item__icon">
-              <DualToneIcon d1={home} d2={homeDualTone} />
-            </div>
-            Home
-          </a>
+          {#if $isLoggedInUserStore}
+            <button
+              on:click={onLoginIntialization}
+              class="CenterRowFlex menu__options__item"
+            >
+              <span class="menu__options__item__icon">
+                <Icon d={person} />
+              </span>
+              Manage Account
+            </button>
+          {/if}
+          <button
+            on:click={() => web3ModalUtil.open()}
+            class="CenterRowFlex menu__options__item"
+          >
+            <span class="menu__options__item__icon">
+              <Icon d={wallet} />
+            </span>
+            Wallet
+          </button>
+
           <!--                <a href="https-proxy-agent" class="CenterRowFlex menu__options__item">-->
           <!--                    <div >About</div>-->
           <!--                </a>-->
@@ -266,7 +210,7 @@
     </div>
   </main>
 
-  <Login bind:showLoginModal bind:onLoginIntialization />
+  <Login bind:onLoginIntialization />
 
   <JoinForUpdates bind:showJoinForUpdatesModal />
 </Notifications>
@@ -418,7 +362,7 @@
   }
 
   .menu__options__item__icon {
-    padding: 0.35rem;
+    padding: 0.35rem 0.5rem;
     border-radius: 50%;
     background: #091b1e;
   }

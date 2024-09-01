@@ -2,9 +2,11 @@ import type {
   LensProfileManagerRelayError,
   RelayError,
   RelaySuccess
-} from "../../gql/graphql";
-import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util";
-import { logger } from "../../log/log-manager.log";
+} from "../../gql/graphql.js";
+
+import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util.js";
+
+import { logger } from "../../log/log-manager.log.js";
 
 export async function waitUntilBroadcastIsCompleteTransactionUtil(
   broadcastResult: RelaySuccess | RelayError,
