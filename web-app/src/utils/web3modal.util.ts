@@ -3,13 +3,13 @@ import { polygon } from "viem/chains";
 import { reconnect } from "@wagmi/core";
 const { VITE_WALLET_CONNECT_PROJECT_ID } = import.meta.env;
 
-
 // Create a metadata object
 const metadata = {
-  name: "test-walletconnect",
-  description: "AppKit Example",
-  url: "https://web3modal.com", // origin must match your domain & subdomain
-  icons: ["https://avatars.githubusercontent.com/u/37784886"]
+  name: "LensView",
+  description:
+    "The omnipresent comment section to discuss, fact-check, and share your views about any web page",
+  url: "https://lensview.io/", // origin must match your domain & subdomain
+  icons: ["https://lensview.io/_app/immutable/assets/LensviewLogo.a9d110ce.svg"]
 };
 
 // Create wagmiConfig
