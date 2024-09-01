@@ -1,97 +1,138 @@
 <script lang="ts">
   import Icon from "$lib/Icon.svelte";
-  import { close, cross, tick } from "../utils/app-icon.util";
-  import Loader from "$lib/Loader.svelte";
-  import CreateLensProfile from "./CreateLensProfile.svelte";
+  import { close, tick, error } from "../utils/app-icon.util";
   import { fly } from "svelte/transition";
   import { backInOut } from "svelte/easing";
   import { getNotificationsContext } from "svelte-notifications";
-  import {
-    reloadAPublication,
-    reloadCommentOfAPublication,
-    reloadMainPost
-  } from "../stores/reload-publication.store";
-  import getMetamaskAddressAuthenticationUtil from "../utils/authentication/get-metamask-address.authentication.util";
-  import isValidAccessTokenPresentInLsForAddressAuthenticationUtil from "../utils/authentication/is-valid-access-token-present-in-ls-for-address.authentication.util";
   import { addressUserStore } from "../stores/user/address.user.store";
-  import parseNotificationObjectWithFunctionUtil from "../utils/parse-notification-object-with-function.util";
-  import { isLoggedInUserStore } from "../stores/user/is-logged-in.user.store";
-  import { idsAndHandlesUserStore } from "../stores/user/ids-and-handles.user.store";
-  import retrieveAccessTokenAuthenticationUtil from "../utils/authentication/retrieve-access-token.authentication.util";
-  import setProfileAuthenticationUtil from "../utils/authentication/set-profile.authentication.util";
+  import web3ModalUtil, { wagmiConfig } from "../utils/web3modal.util";
+  import { getAccount } from "@wagmi/core";
+  import getProfileListUsingAddressLensService from "../services/lens/get-profile-list-using-address.lens.service";
+  import logUserInAuthenticationUtil from "../utils/authentication/log-user-in.authentication.util";
+  import type { ProfileManagedLensModel } from "../models/lens/profile-managed.lens.model";
+  import getPictureURLUtil from "../utils/get-picture-URL.util";
+  import Loader from "$lib/Loader.svelte";
+  import { profileUserStore } from "../stores/user/profile.user.store";
+  import logUserOutAuthenticationUtil from "../utils/authentication/log-user-out.authentication.util";
 
   const { addNotification } = getNotificationsContext();
-  export let showLoginModal: boolean;
+  export let showLoginModal = false;
   let dialog: HTMLDialogElement;
   $: if (dialog && showLoginModal) dialog.showModal();
 
-  let loggingIn = false;
-  let showCreateLensProfileModal = false;
+  let isLoggingIn = false;
+  let isLoggingOut = false;
+  let selectedProfileId: string;
+  let fetchingProfilesList = false;
+  let profileList: ProfileManagedLensModel[] = [];
+  let prevConnectedAddress = "";
 
-  export const onLoginIntialization = async () => {
-    console.log("onLoginIntialization");
+  export const onLoginIntialization = () => {
     try {
-      await getMetamaskAddressAuthenticationUtil(true);
-      await loggedUserInIfAccessTokenPresent();
+      let loggedInAddress;
+      const unsub = profileUserStore.subscribe((response) => {
+        loggedInAddress = response?.ownedBy?.address;
+      });
+      unsub();
+      const connectedAddress = getAccount(wagmiConfig).address;
+
+      console.log("Login page: loggedInAddress: ", loggedInAddress);
+      console.log("Login page: connectedAddress: ", connectedAddress);
+
+      if (loggedInAddress) {
+        showLoginModal = true;
+        addressUserStore.setUserAddress(loggedInAddress);
+        fetchProfilesList(loggedInAddress);
+      } else if (connectedAddress) {
+        showLoginModal = true;
+        addressUserStore.setUserAddress(connectedAddress);
+        fetchProfilesList(connectedAddress);
+      } else {
+        web3ModalUtil.open();
+        web3ModalUtil.subscribeState((newState) => {
+          console.log("newState : ", newState);
+          const address = getAccount(wagmiConfig).address;
+          console.log("Account address: ", address);
+
+          if (address && address !== prevConnectedAddress) {
+            prevConnectedAddress = address;
+            showLoginModal = true;
+            web3ModalUtil.close();
+            addressUserStore.setUserAddress(address);
+            fetchProfilesList(address);
+          }
+        });
+      }
     } catch (error) {
-      dialog.close();
-      console.log(error);
-      addNotification(
-        parseNotificationObjectWithFunctionUtil((error as Error).message)
-      );
+      console.log("onLoginIntialization error: ", error);
     }
   };
 
-  const logInWithLens = async () => {
-    loggingIn = true;
+  const logInWithLens = async (id: string) => {
     try {
-      await retrieveAccessTokenAuthenticationUtil();
-      await setProfileAuthenticationUtil();
+      isLoggingIn = true;
+      const address = getAccount(wagmiConfig).address;
 
-      isLoggedInUserStore.setLoggedInStatus(true);
-      setReloadMethods();
-      loggingIn = false;
+      if (!address) {
+        prevConnectedAddress = "";
+        onLoginIntialization();
+        return;
+      }
+
+      await logUserInAuthenticationUtil(address as string, id);
+
       successfullySignInNotification();
-
-      console.log(
-        "Local Storage: " +
-          JSON.parse(localStorage.getItem("IDS_AUTH_DATA") as string)
-      );
     } catch (error) {
-      loggingIn = false;
+      console.log("error: " + error);
+      errorSignInNotification();
+    } finally {
+      isLoggingIn = false;
       dialog.close();
+    }
+  };
+
+  const logUserOut = async () => {
+    try {
+      isLoggingOut = true;
+      prevConnectedAddress = "";
+      await logUserOutAuthenticationUtil();
+      dialog.close();
+    } catch (error) {
       console.log("error: " + error);
       addNotification({
         position: "top-right",
-        heading: "Error while logging in",
-        description: (error as Error).message + ". Please try again",
-        type: cross,
-        removeAfter: 10000
+        heading: "Failed to log out",
+        description: "Please try again to log out",
+        type: error,
+        removeAfter: 6000
       });
+    } finally {
+      isLoggingOut = false;
     }
   };
 
-  const setReloadMethods = () => {
-    reloadMainPost.setReloadMainPost(Date.now());
-    reloadCommentOfAPublication.setReloadCommentOfAPublication(Date.now());
-    reloadAPublication.setReloadAPublication(Date.now());
-  };
-
-  const connect = async () => {
+  const fetchProfilesList = async (address: `0x${string}`) => {
     try {
-      await getMetamaskAddressAuthenticationUtil(false);
-      await loggedUserInIfAccessTokenPresent();
+      fetchingProfilesList = true;
+
+      profileList = await getProfileListUsingAddressLensService(address);
+
+      if (profileList?.length > 0) selectedProfileId = profileList[0].id;
     } catch (error) {
-      console.log("connect error : ", error);
-      dialog.close();
-      addNotification(
-        parseNotificationObjectWithFunctionUtil((error as Error).message)
-      );
+      console.log("error: " + error);
+      addNotification({
+        position: "top-right",
+        heading: "Failed to fetch profiles",
+        description: "Something went wrong. Please try again",
+        type: error,
+        removeAfter: 6000
+      });
+    } finally {
+      fetchingProfilesList = false;
     }
   };
 
   const successfullySignInNotification = () => {
-    dialog.close();
     addNotification({
       position: "top-right",
       heading: "Successfully logged-in",
@@ -101,32 +142,14 @@
     });
   };
 
-  // const openCreateLensProfileModal = () => {
-  //   showCreateLensProfileModal = true;
-  //   dialog.close();
-  // };
-
-  const loggedUserInIfAccessTokenPresent = async () => {
-    const isValidAccessTokenPresentInLocalStorage =
-      await isValidAccessTokenPresentInLsForAddressAuthenticationUtil();
-    console.log(
-      "isValidAccessTokenPresentInLocalStorage: " +
-        isValidAccessTokenPresentInLocalStorage
-    );
-    if (isValidAccessTokenPresentInLocalStorage) {
-      await setProfileAuthenticationUtil();
-      isLoggedInUserStore.setLoggedInStatus(true);
-      loggingIn = false;
-      setReloadMethods();
-      dialog.close();
-      addNotification({
-        position: "top-right",
-        heading: "Successfully logged in",
-        description: "You are now logged in",
-        type: tick,
-        removeAfter: 10000
-      });
-    }
+  const errorSignInNotification = () => {
+    addNotification({
+      position: "top-right",
+      heading: "Failed to login",
+      description: "Something went wrong. Please try again",
+      type: error,
+      removeAfter: 6000
+    });
   };
 </script>
 
@@ -136,12 +159,30 @@
   on:close={() => (showLoginModal = false)}
   on:click|self={() => dialog.close()}
 >
-  {#if showLoginModal}
+  {#if showLoginModal && $addressUserStore}
     <main
       on:click|stopPropagation
       transition:fly={{ y: 40, easing: backInOut, duration: 700 }}
     >
-      {#if !$addressUserStore}
+      {#if fetchingProfilesList}
+        <div class="CenterRowFlex head">
+          <div class="h3">Fetching Profiles ...</div>
+          <div class="head__close-btn">
+            <button on:click={() => dialog.close()}>
+              <Icon d={close} />
+            </button>
+          </div>
+        </div>
+        <div class="body-profiles">
+          <div class="body-profiles__profile body-profiles__profile-loader">
+            <div class="body-profiles__profile__pic-loader" />
+            <div class="body-profiles__profile__info">
+              <div class="body-profiles__profile__info__name-loader" />
+              <div class="body-profiles__profile__info__handle-loader" />
+            </div>
+          </div>
+        </div>
+      {:else if profileList.length > 0}
         <div class="CenterRowFlex head">
           <div class="h3">Login</div>
           <div class="head__close-btn">
@@ -150,122 +191,110 @@
             </button>
           </div>
         </div>
-        <div class="body">Please connect your wallet to continue</div>
+        <div class="body-profiles">
+          <h3 class="h3">
+            {profileList.length > 1 ? "Select and login" : "Login"} with your Lens
+            profile
+          </h3>
+          <p>
+            LensView uses this signature to verify that you’re the owner of this
+            profile.
+          </p>
+          {#each profileList as item}
+            <input
+              type="radio"
+              bind:group={selectedProfileId}
+              name="profile"
+              value={item?.id}
+              id={item?.id}
+            />
+            <label
+              for={item?.id}
+              class="body-profiles__profile {item?.id === selectedProfileId
+                ? 'body-profiles__profile-selected'
+                : ''}"
+            >
+              <div class="body-profiles__profile__pic">
+                <img
+                  src={getPictureURLUtil(
+                    item?.metadata?.picture?.optimized?.uri,
+                    item?.ownedBy?.address
+                  )}
+                  alt={`${item?.metadata?.displayName} profile picture`}
+                />
+              </div>
+              <div class="body-profiles__profile__info">
+                <div class="body-profiles__profile__info__name">
+                  {item?.metadata?.displayName}
+                </div>
+                <div class="body-profiles__profile__info__handle">
+                  {item?.handle?.fullHandle.slice(5)}
+                </div>
+              </div>
+              {#if item?.id === $profileUserStore?.id}
+                {#if !isLoggingOut}
+                  <button
+                    on:click={logUserOut}
+                    class="btn body-profiles__profile__logout-btn"
+                    >Log Out</button
+                  >
+                {:else}
+                  <button
+                    class="btn body-profiles__profile__logout-btn"
+                    disabled>Logging out &nbsp;&nbsp; <Loader /></button
+                  >
+                {/if}
+              {/if}
+            </label>
+          {/each}
+        </div>
         <div class="line" />
         <div class="footer">
-          <button on:click={connect} class="btn"> Connect wallet</button>
-        </div>
-      {:else if !$isLoggedInUserStore}
-        {#if !loggingIn}
-          {#if $idsAndHandlesUserStore.length > 0}
-            <div class="CenterRowFlex head">
-              <div class="h3">Login</div>
-              <div class="head__close-btn">
-                <button on:click={() => dialog.close()}>
-                  <Icon d={close} />
-                </button>
-              </div>
-            </div>
-            <div class="body">
-              Please login with Lens
-              <br />
-              <br />
-              Handle linked to
-              <span class="italic-text"
-                >{$addressUserStore.substring(0, 5) +
-                  "..." +
-                  $addressUserStore.slice(-5)}</span
-              >
-              is
-              <span class="body__handle"
-                >{$idsAndHandlesUserStore[0].handle.substring(5)}</span
-              >
-            </div>
-            <div class="line" />
-            <div class="footer">
-              <button on:click={logInWithLens} class="btn">
-                Login With Lens
-              </button>
-            </div>
+          {#if !isLoggingIn}
+            <button
+              on:click={() => logInWithLens(selectedProfileId)}
+              disabled={selectedProfileId === $profileUserStore?.id}
+              class="btn">Login with Lens</button
+            >
           {:else}
-            <div class="CenterRowFlex head">
-              <div class="h3">Oops, you don't have a Lens Handle</div>
-              <div class="head__close-btn">
-                <button on:click={() => dialog.close()}>
-                  <Icon d={close} />
-                </button>
-              </div>
-            </div>
-            <div class="body">
-              <div style="font-weight: bold">
-                But that's okay, let's get you one to unlock your full LensView
-                experience
-              </div>
-              <br />
-              If you don’t wish to claim a handle, you can still use LensView in
-              the anonymous mode by sharing your views using the
-              <span class="italic-text">“Post Anonymously”</span> button. We eagerly
-              await your contributions.
-            </div>
-            <div class="line" />
-            <div class="footer">
-              <button
-                on:click={() => window.open("https://lens.xyz/mint", "_blank")}
-                class="btn"
-              >
-                Claim your handle
-              </button>
-            </div>
-            <!--            <div class="body">-->
-            <!--              No Account found!-->
-            <!--              <br />-->
-            <!--              Please create Lens Profile to continue-->
-            <!--            </div>-->
-            <!--            <div class="line" />-->
-            <!--            <div class="footer">-->
-            <!--              <button on:click={openCreateLensProfileModal} class="btn">-->
-            <!--                Create Lens Profile-->
-            <!--              </button>-->
-            <!--            </div>-->
+            <button class="btn" disabled
+              >Logging in &nbsp;&nbsp; <Loader /></button
+            >
           {/if}
-        {:else}
-          <div class="CenterRowFlex head">
-            <div class="h3">Login</div>
-            <div class="head__close-btn">
-              <button on:click={() => dialog.close()}>
-                <Icon d={close} />
-              </button>
-            </div>
-          </div>
-          <div class="body">
-            Please login with Lens
-            <br />
-            <br />
-            Handle linked to
-            <span class="italic-text"
-              >{$addressUserStore.substring(0, 5) +
-                "..." +
-                $addressUserStore.slice(-5)}</span
-            >
-            is
-            <span class="body__handle"
-              >{$idsAndHandlesUserStore[0].handle.substring(5)}</span
-            >
-          </div>
-          <div class="line" />
-          <div class="footer">
-            <button class="btn" disabled>
-              Logging In &nbsp;
-              <Loader />
+        </div>
+      {:else}
+        <div class="CenterRowFlex head">
+          <div class="h3">Oops, you don't have a Lens Handle</div>
+          <div class="head__close-btn">
+            <button on:click={() => dialog.close()}>
+              <Icon d={close} />
             </button>
           </div>
-        {/if}
+        </div>
+        <div class="body">
+          <div style="font-weight: bold">
+            But that's okay, let's get you one to unlock your full LensView
+            experience
+          </div>
+          <br />
+          If you don’t wish to claim a handle, you can still use LensView in the
+          anonymous mode by sharing your views using the
+          <span class="italic-text">“Post Anonymously”</span> button. We eagerly
+          await your contributions.
+        </div>
+        <div class="line" />
+        <div class="footer">
+          <button
+            on:click={() => window.open("https://lens.xyz/mint", "_blank")}
+            class="btn"
+          >
+            Claim your handle
+          </button>
+        </div>
       {/if}
     </main>
   {/if}
 </dialog>
-
-<CreateLensProfile bind:showCreateLensProfileModal />
 
 <style lang="scss">
   main {
@@ -294,10 +323,78 @@
     font-style: italic;
   }
 
-  .body__handle {
+  .body-profiles {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .body-profiles input {
+    all: unset;
+  }
+
+  .body-profiles__profile {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.7rem;
+  }
+
+  .body-profiles__profile-selected,
+  .body-profiles__profile-loader {
+    background: #173b3e;
+    border-radius: 10px;
+    border: 1px solid var(--primary);
+  }
+
+  .body-profiles__profile-loader {
+    width: 23rem;
+  }
+
+  .body-profiles__profile__pic img {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    border: 2px solid #32f9ff;
+  }
+
+  .body-profiles__profile__pic-loader {
+    height: 3em;
+    width: 3rem;
+    margin-bottom: auto;
+    border-radius: 50%;
+  }
+
+  .body-profiles__profile__info__name {
     font-weight: var(--semi-medium-font-weight);
+    padding: 0.2rem 0.5rem;
+  }
+
+  .body-profiles__profile__info__name-loader {
+    width: 13rem;
+    height: 2rem;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+  }
+
+  .body-profiles__profile__info__handle {
+    padding: 0.2rem 0.5rem;
+    background: var(--bg-solid-3);
+    border-radius: 5px;
     color: var(--primary);
-    font-size: var(--medium-font-size);
+  }
+
+  .body-profiles__profile__info__handle-loader {
+    width: 9rem;
+    height: 1.5rem;
+    border-radius: 5px;
+  }
+
+  .body-profiles__profile__logout-btn {
+    margin-left: auto;
+    height: 1.2rem;
   }
 
   .line {
@@ -310,5 +407,13 @@
   .footer {
     margin-left: auto;
     padding: 1rem;
+  }
+
+  .body-profiles__profile__pic-loader,
+  .body-profiles__profile__info__name-loader,
+  .body-profiles__profile__info__handle-loader {
+    background: linear-gradient(110deg, #0d9397 8%, #63bdc8 18%, #0d9397 33%);
+    background-size: 200% 100%;
+    animation: 1s shine linear infinite;
   }
 </style>

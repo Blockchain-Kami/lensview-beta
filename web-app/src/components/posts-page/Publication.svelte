@@ -36,15 +36,24 @@
   import getPictureURLUtil from "../../utils/get-picture-URL.util";
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
   import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
+  import { getAccount } from "@wagmi/core";
+  import web3ModalUtil, { wagmiConfig } from "../../utils/web3modal.util";
+  import Tip from "../Tip.svelte";
+  import TipImage from "$lib/assets/Tip.svg";
   const { VITE_APP_LENS_ID } = import.meta.env;
+  import { tooltip } from "@svelte-plugins/tooltips";
 
   const { addNotification } = getNotificationsContext();
   let postPubId = $page.data.postPubId;
   let isPostMoreOpen = false;
-  let showLoginModal = false;
   let reaction = AppReactionType.NoReaction;
+  let showTippingModal = false;
+  let toHandle: string;
+  let toAddress: string;
+  let dialog: HTMLDialogElement;
   let upVoteCount = 0;
   let downVoteCount = 0;
+  let onLoginIntialization: () => Promise<void>;
 
   let promiseOfGetComment = getCommentBasedOnParameterPublicationUtil(
     postPubId,
@@ -196,7 +205,7 @@
       removeAfter: 10000,
       ctaBtnName: "Login",
       ctaFunction: () => {
-        showLoginModal = true;
+        onLoginIntialization();
       }
     });
   };
@@ -218,6 +227,19 @@
 
   const getHandle = (comment: CommentsPublicationLensModel) => {
     return comment.by?.handle?.fullHandle.substring(5);
+  };
+
+  const initiateTippingProcess = async (event, commentDetails) => {
+    event.stopPropagation();
+    let address = getAccount(wagmiConfig).address;
+    if (address) {
+      toHandle = commentDetails.by.handle.fullHandle.split("lens/")[1];
+      toAddress = commentDetails.by.ownedBy.address;
+      showTippingModal = true;
+    } else {
+      await web3ModalUtil.open();
+      dialog.close();
+    }
   };
 </script>
 
@@ -282,6 +304,21 @@
             {/if}
           </div>
           <div class="CenterRowFlex comment__body__top__right">
+            <div>
+              <button
+                on:click={(event) => initiateTippingProcess(event, comments[0])}
+                use:tooltip={{
+                  content: "Send A Tip",
+                  position: "left",
+                  autoPosition: true,
+                  align: "center",
+                  animation: "slide",
+                  theme: "custom-tooltip"
+                }}
+              >
+                <img src={TipImage} alt="tip" />
+              </button>
+            </div>
             <button
               on:click={(event) => sharePost(event)}
               class="CenterRowFlex comment__body__top__right__share"
@@ -389,7 +426,8 @@
   {/await}
 </section>
 
-<Login bind:showLoginModal />
+<Login bind:onLoginIntialization />
+<Tip {toAddress} {toHandle} bind:showTippingModal />
 
 <!----------------------------------------------------------------->
 

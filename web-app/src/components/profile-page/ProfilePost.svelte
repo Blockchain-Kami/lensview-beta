@@ -50,8 +50,8 @@
     LimitType.Fifty,
     true
   );
-  let showLoginModal = false;
   let isPostMoreOpen: PostMoreStatus = {};
+  let onLoginIntialization: () => Promise<void>;
 
   onMount(() => {
     reloadAPublication.subscribe(() => {
@@ -181,7 +181,7 @@
       removeAfter: 10000,
       ctaBtnName: "Login",
       ctaFunction: () => {
-        showLoginModal = true;
+        onLoginIntialization();
       }
     });
   };
@@ -457,7 +457,7 @@
   </section>
 </MediaQuery>
 
-<Login bind:showLoginModal />
+<Login bind:onLoginIntialization />
 
 <!----------------------------------------------------------------->
 

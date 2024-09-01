@@ -43,10 +43,10 @@
   const { addNotification } = getNotificationsContext();
   let mainPostPubId = $page.data.mainPostPubId;
   let relatedPostsActive = false;
-  let showLoginModal = false;
   let reaction = AppReactionType.NoReaction;
   let upVoteCount = 0;
   let downVoteCount = 0;
+  let onLoginIntialization: () => Promise<void>;
 
   let promiseOfGetMainPost = getLinkPublicationLensService(mainPostPubId);
 
@@ -178,7 +178,7 @@
       removeAfter: 10000,
       ctaBtnName: "Login",
       ctaFunction: () => {
-        showLoginModal = true;
+        onLoginIntialization();
       }
     });
   };
@@ -530,7 +530,7 @@
   {/if}
 </MediaQuery>
 
-<Login bind:showLoginModal />
+<Login bind:onLoginIntialization />
 
 <!----------------------------------------------------------------->
 
