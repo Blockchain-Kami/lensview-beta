@@ -7,7 +7,7 @@
   import { getAccount } from "@wagmi/core";
   import { wagmiConfig } from "../utils/web3modal.util";
   import web3Modal from "../utils/web3modal.util";
-  import { tokenSymbol } from "../config/app-constants.config";
+  import { tokenSymbol, tokenAddress } from "../config/app-constants.config";
   import { getNotificationsContext } from "svelte-notifications";
   import {
     sendTipUtilBonsai,
@@ -17,6 +17,7 @@
     getTokenBalanceTipUtilMatic,
     getTokenBalanceTipUtilBonsai
   } from "../utils/tips/get-token-balance.tip.util";
+  import { hasAmountApprovedGetContractTipsUtil } from "../utils/tips/get-contract.tips.util";
   import { onMount } from "svelte";
 
   const { addNotification } = getNotificationsContext();
@@ -34,18 +35,31 @@
   let tippingSuccess = false;
   let isSendingTip = false;
   let AmountInvalidReason = "";
+  let buttonValue = "Send";
   $: if (dialog && showTippingModal) dialog.showModal();
 
   onMount(() => {
     fromAddress = getAccount(wagmiConfig).address;
   });
 
-  const checkAmountIsValid = (amount: number) => {
+  const checkAmountIsValid = async (amount: number) => {
+    buttonValue = "...";
     const enteredAmount = Number(amount);
     console.log("enteredAmount", enteredAmount);
     if (enteredAmount >= 0.00001) {
       isAmountInvalid = false;
       AmountInvalidReason = "";
+      if (
+        await hasAmountApprovedGetContractTipsUtil(
+          selectedToken as keyof typeof tokenAddress,
+          fromAddress,
+          enteredAmount
+        )
+      ) {
+        buttonValue = "Send";
+      } else {
+        buttonValue = "Approve";
+      }
       return true;
     } else if (enteredAmount === 0) {
       isAmountInvalid = true;
@@ -62,7 +76,7 @@
 
   const sendTip = async () => {
     userEnteredAmount = Number(userEnteredAmount);
-    if (!checkAmountIsValid(userEnteredAmount)) {
+    if (!(await checkAmountIsValid(userEnteredAmount))) {
       return;
     }
     isSendingTip = true;
@@ -268,7 +282,7 @@
           <div class="CenterRowFlex footer__right">
             {#if !isSendingTip}
               <button class="btn" on:click={sendTip} disabled={isAmountInvalid}>
-                Send
+                {buttonValue}
               </button>
             {:else}
               <button class="btn" disabled> Sending.. </button>

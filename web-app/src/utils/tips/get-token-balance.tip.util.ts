@@ -19,7 +19,7 @@ export const getTokenBalanceTipUtilBonsai = async (address: `0x${string}`) => {
   try {
     const bonsaiBalance = await readContract(wagmiConfig, {
       abi: BONSAI_TOKEN_ABI,
-      address: tokenAddress.bonsai,
+      address: tokenAddress.BONSAI,
       functionName: "balanceOf",
       args: [address],
       account: address

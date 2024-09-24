@@ -34,7 +34,7 @@ export const sendTipUtilBonsai = async (
   try {
     const result = await writeContract(wagmiConfig, {
       abi: BONSAI_TOKEN_ABI,
-      address: tokenAddress.bonsai,
+      address: tokenAddress.BONSAI,
       functionName: "transfer",
       args: [to, parseEther(amount)],
       account: from

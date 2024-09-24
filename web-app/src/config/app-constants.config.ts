@@ -41,10 +41,14 @@ export enum localStorageKeys {
 }
 
 export enum tokenAddress {
-  bonsai = "0x3d2bD0e15829AA5C362a4144FdF4A1112fa29B5c"
+  BONSAI = "0x3d2bD0e15829AA5C362a4144FdF4A1112fa29B5c"
 }
 
 export enum tokenSymbol {
   BONSAI = "BONSAI",
   MATIC = "MATIC"
 }
+
+// TODO: Move it to .env
+export const LENSVIEW_TIPPING_ADDRESS: `0x${string}` =
+  "0xa854815e3200222E51Dd6028D2DFE6B5755F90a0";
