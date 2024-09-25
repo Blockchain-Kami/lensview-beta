@@ -14,7 +14,8 @@ export const load = (async ({ params }: LoadEvent) => {
   console.log("mainPostPubId", mainPostPubId);
   console.log("postPubId", postPubId);
 
-  const commentPubId = postPubId !== undefined && postPubId !== "" ? postPubId : mainPostPubId;
+  const commentPubId =
+    postPubId !== undefined && postPubId !== "" ? postPubId : mainPostPubId;
 
   console.log("commentPubId", commentPubId);
 

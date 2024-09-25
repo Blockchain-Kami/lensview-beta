@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { wallet, error } from "../utils/app-icon.util";
+  import { wallet, error, flightTakeoff } from "../utils/app-icon.util";
   import { backInOut } from "svelte/easing";
   import { fly } from "svelte/transition";
   import { close } from "../utils/app-icon.util.js";
@@ -18,6 +18,7 @@
     getTokenBalanceTipUtilBonsai
   } from "../utils/tips/get-token-balance.tip.util";
   import { hasAmountApprovedGetContractTipsUtil } from "../utils/tips/get-contract.tips.util";
+  import { approveTokenWriteContractUtil } from "../utils/tips/write-contract.tips.util";
   import { onMount } from "svelte";
 
   const { addNotification } = getNotificationsContext();
@@ -74,32 +75,65 @@
     return false;
   };
 
-  const sendTip = async () => {
+  const clickButtonEvent = async () => {
     userEnteredAmount = Number(userEnteredAmount);
+    if (buttonValue === "Approve") {
+      await approve(userEnteredAmount);
+    } else if (buttonValue === "Send") {
+      await sendTip(userEnteredAmount);
+    }
+  };
+
+  const approve = async (amount) => {
+    isSendingTip = true;
+    buttonValue = "Approving...";
+    const transactionStatus = await approveTokenWriteContractUtil(
+      selectedToken,
+      fromAddress,
+      amount
+    );
+    await checkAmountIsValid(amount);
+    if (transactionStatus.success && transactionStatus.result) {
+      addNotificationEvent(
+        "Tokens Approved",
+        `Your tip to ready to be sent to @${toHandle}`,
+        flightTakeoff,
+        2000
+      );
+    } else {
+      addNotificationEvent(
+        "Failed To Approve",
+        transactionStatus.error,
+        error,
+        2000
+      );
+    }
+    isSendingTip = false;
+    return;
+  };
+
+  const sendTip = async (amount) => {
     if (!(await checkAmountIsValid(userEnteredAmount))) {
       return;
     }
     isSendingTip = true;
     let tipDetails;
     if (selectedToken == tokenSymbol.BONSAI) {
-      if (userEnteredAmount > bonsaiBalance) {
+      if (amount > bonsaiBalance) {
         sendInsufficientBalanceEvent();
         return;
       }
       tipDetails = await sendTipUtilBonsai(
         fromAddress,
         toAddress,
-        userEnteredAmount.toString()
+        amount.toString()
       );
     } else if (selectedToken == tokenSymbol.MATIC) {
       if (userEnteredAmount > maticBalance) {
         sendInsufficientBalanceEvent();
         return;
       }
-      tipDetails = await sendTipUtilMatic(
-        toAddress,
-        userEnteredAmount.toString()
-      );
+      tipDetails = await sendTipUtilMatic(toAddress, amount.toString());
     }
 
     if (tipDetails.success && !tipDetails.error) {
@@ -280,13 +314,13 @@
         <div class="CenterRowFlex footer">
           <div class="footer__left" />
           <div class="CenterRowFlex footer__right">
-            {#if !isSendingTip}
-              <button class="btn" on:click={sendTip} disabled={isAmountInvalid}>
-                {buttonValue}
-              </button>
-            {:else}
-              <button class="btn" disabled> Sending.. </button>
-            {/if}
+            <button
+              class="btn"
+              on:click={clickButtonEvent}
+              disabled={isAmountInvalid || isSendingTip}
+            >
+              {buttonValue}
+            </button>
           </div>
         </div>
       {/if}

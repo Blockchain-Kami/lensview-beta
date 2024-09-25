@@ -18,10 +18,6 @@ export const hasAmountApprovedGetContractTipsUtil = async (
       args: [tokenContractAddress, fromAddress],
       account: fromAddress
     });
-    console.log(
-      "Return",
-      Number(approvedTokenAmount) / 10 ** 18 >= enteredAmount
-    );
     return Number(approvedTokenAmount) / 10 ** 18 >= enteredAmount;
   } catch (error) {
     console.log("Error occurred while checking allowance", error);

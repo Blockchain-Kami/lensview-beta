@@ -14,7 +14,7 @@ const getFormattedDateHelperUtil = (
     return getExactDate(date);
   }
 
-  return getRoughDate(date)
+  return getRoughDate(date);
 };
 
 /**
