@@ -9,16 +9,14 @@
   import web3Modal from "../utils/web3modal.util";
   import { tokenSymbol, tokenAddress } from "../config/app-constants.config";
   import { getNotificationsContext } from "svelte-notifications";
-  import {
-    sendTipUtilBonsai,
-    sendTipUtilMatic
-  } from "../utils/tips/send.tip.util";
+  import { sendTipUtilMatic } from "../utils/tips/send.tip.util";
   import {
     getTokenBalanceTipUtilMatic,
     getTokenBalanceTipUtilBonsai
   } from "../utils/tips/get-token-balance.tip.util";
   import { hasAmountApprovedGetContractTipsUtil } from "../utils/tips/get-contract.tips.util";
   import { approveTokenWriteContractUtil } from "../utils/tips/write-contract.tips.util";
+  import { tipTokenWriteContractUtil } from "../utils/tips/write-contract.tips.util";
   import { onMount } from "svelte";
 
   const { addNotification } = getNotificationsContext();
@@ -116,6 +114,7 @@
     if (!(await checkAmountIsValid(userEnteredAmount))) {
       return;
     }
+    buttonValue = "Sending...";
     isSendingTip = true;
     let tipDetails;
     if (selectedToken == tokenSymbol.BONSAI) {
@@ -123,10 +122,14 @@
         sendInsufficientBalanceEvent();
         return;
       }
-      tipDetails = await sendTipUtilBonsai(
-        fromAddress,
+      tipDetails = await tipTokenWriteContractUtil(
+        selectedToken,
         toAddress,
-        amount.toString()
+        amount.toString(),
+        123,
+        234,
+        456,
+        fromAddress
       );
     } else if (selectedToken == tokenSymbol.MATIC) {
       if (userEnteredAmount > maticBalance) {
@@ -150,6 +153,7 @@
         4000
       );
       isSendingTip = false;
+      buttonValue = "Send";
       return;
     }
   };
