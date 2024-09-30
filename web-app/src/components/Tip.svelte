@@ -9,11 +9,8 @@
   import web3Modal from "../utils/web3modal.util";
   import { tokenSymbol, tokenAddress } from "../config/app-constants.config";
   import { getNotificationsContext } from "svelte-notifications";
-  import { sendTipUtilMatic } from "../utils/tips/send.tip.util";
-  import {
-    getTokenBalanceTipUtilMatic,
-    getTokenBalanceTipUtilBonsai
-  } from "../utils/tips/get-token-balance.tip.util";
+  import { sendMaticTipUtil } from "../utils/tips/send-matic.tip.util";
+  import { getTokenBalanceGetContractTipsUtil } from "../utils/tips/get-contract.tips.util";
   import { hasAmountApprovedGetContractTipsUtil } from "../utils/tips/get-contract.tips.util";
   import { approveTokenWriteContractUtil } from "../utils/tips/write-contract.tips.util";
   import { tipTokenWriteContractUtil } from "../utils/tips/write-contract.tips.util";
@@ -25,10 +22,13 @@
   export let showTippingModal: boolean;
   export let toAddress: string;
   export let toHandle: string;
-  let maticBalance = 0;
-  let bonsaiBalance = 0;
+  let balances = {
+    MATIC: 0,
+    BONSAI: 0,
+    USDT: 0
+  };
   let fromAddress: `0x${string}`;
-  let selectedToken: string;
+  let selectedToken: keyof typeof tokenSymbol;
   let userEnteredAmount: number;
   let isAmountInvalid = true;
   let tippingSuccess = false;
@@ -66,6 +66,10 @@
     } else if (enteredAmount < 0.00001) {
       isAmountInvalid = true;
       AmountInvalidReason = "Minimum Tip Amount is 0.000001";
+    } else if (isNaN(enteredAmount)) {
+      isAmountInvalid = true;
+      AmountInvalidReason = "";
+      buttonValue = "Send";
     } else {
       isAmountInvalid = true;
       AmountInvalidReason = "Please enter a valid amount";
@@ -117,8 +121,14 @@
     buttonValue = "Sending...";
     isSendingTip = true;
     let tipDetails;
-    if (selectedToken == tokenSymbol.BONSAI) {
-      if (amount > bonsaiBalance) {
+    if (selectedToken == tokenSymbol.MATIC) {
+      if (userEnteredAmount > balances.MATIC) {
+        sendInsufficientBalanceEvent();
+        return;
+      }
+      tipDetails = await sendMaticTipUtil(toAddress, amount.toString());
+    } else {
+      if (amount > balances[selectedToken]) {
         sendInsufficientBalanceEvent();
         return;
       }
@@ -131,12 +141,6 @@
         456,
         fromAddress
       );
-    } else if (selectedToken == tokenSymbol.MATIC) {
-      if (userEnteredAmount > maticBalance) {
-        sendInsufficientBalanceEvent();
-        return;
-      }
-      tipDetails = await sendTipUtilMatic(toAddress, amount.toString());
     }
 
     if (tipDetails.success && !tipDetails.error) {
@@ -184,14 +188,10 @@
     return;
   };
 
-  const setMaticBalance = (balance) => {
-    maticBalance = balance;
-    return Math.round(maticBalance * 100) / 100;
-  };
-
-  const setBonsaiBalance = (balance) => {
-    bonsaiBalance = balance;
-    return Math.round(bonsaiBalance * 100) / 100;
+  const setBalance = (token, balance) => {
+    checkAmountIsValid(userEnteredAmount);
+    balances[token] = balance;
+    return Math.round(balance * 100) / 100;
   };
 </script>
 
@@ -268,32 +268,21 @@
             <select name="tokens" id="tokens" bind:value={selectedToken}>
               <option value="MATIC">MATIC</option>
               <option value="BONSAI" selected>BONSAI</option>
+              <option value="POINTLESS">POINTLESS</option>
+              <!--              <option value="USDC">USDC</option>-->
+              <option value="USDT">USDT</option>
             </select>
 
             <div id="token-info">
-              {#if selectedToken === "MATIC"}
-                {#await getTokenBalanceTipUtilMatic(fromAddress)}
-                  <span class="fetching">Fetching token balance...</span>
-                {:then data}
-                  <span class="available">
-                    Available: {setMaticBalance(data)}
-                  </span>
-                {:catch _error}
-                  <span class="error">Failed to load balance</span>
-                {/await}
-              {/if}
-
-              {#if selectedToken === "BONSAI"}
-                {#await getTokenBalanceTipUtilBonsai(fromAddress)}
-                  <span class="fetching">Fetching token balance...</span>
-                {:then data}
-                  <span class="available">
-                    Available: {setBonsaiBalance(data)}
-                  </span>
-                {:catch _error}
-                  <span class="error">Failed to load balance</span>
-                {/await}
-              {/if}
+              {#await getTokenBalanceGetContractTipsUtil(selectedToken, fromAddress)}
+                <span class="fetching">Fetching token balance...</span>
+              {:then amount}
+                <span class="available">
+                  Available: {setBalance(selectedToken, amount)}
+                </span>
+              {:catch _error}
+                <span class="error">Failed to load balance</span>
+              {/await}
             </div>
           </div>
         </div>
