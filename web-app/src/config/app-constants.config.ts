@@ -41,12 +41,16 @@ export enum localStorageKeys {
 }
 
 export enum tokenAddress {
-  BONSAI = "0x3d2bD0e15829AA5C362a4144FdF4A1112fa29B5c"
+  BONSAI = "0x3d2bD0e15829AA5C362a4144FdF4A1112fa29B5c",
+  USDT = "0x7FFB3d637014488b63fb9858E279385685AFc1e2",
+  POINTLESS = "0x9B8cc6320F22325759B7D2CA5CD27347bB4eCD86"
 }
 
 export enum tokenSymbol {
+  MATIC = "MATIC",
   BONSAI = "BONSAI",
-  MATIC = "MATIC"
+  USDT = "USDT",
+  POINTLESS = "POINTLESS"
 }
 
 // TODO: Move it to .env
