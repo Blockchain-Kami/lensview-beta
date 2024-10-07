@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { wallet, error } from "../utils/app-icon.util";
+  import { wallet, error, flightTakeoff } from "../utils/app-icon.util";
   import { backInOut } from "svelte/easing";
   import { fly } from "svelte/transition";
   import { close } from "../utils/app-icon.util.js";
@@ -7,16 +7,13 @@
   import { getAccount } from "@wagmi/core";
   import { wagmiConfig } from "../utils/web3modal.util";
   import web3Modal from "../utils/web3modal.util";
-  import { tokenSymbol } from "../config/app-constants.config";
+  import { tokenSymbol, tokenAddress } from "../config/app-constants.config";
   import { getNotificationsContext } from "svelte-notifications";
-  import {
-    sendTipUtilBonsai,
-    sendTipUtilMatic
-  } from "../utils/tips/send.tip.util";
-  import {
-    getTokenBalanceTipUtilMatic,
-    getTokenBalanceTipUtilBonsai
-  } from "../utils/tips/get-token-balance.tip.util";
+  import { sendMaticTipUtil } from "../utils/tips/send-matic.tip.util";
+  import { getTokenBalanceGetContractTipsUtil } from "../utils/tips/get-contract.tips.util";
+  import { hasAmountApprovedGetContractTipsUtil } from "../utils/tips/get-contract.tips.util";
+  import { approveTokenWriteContractUtil } from "../utils/tips/write-contract.tips.util";
+  import { tipTokenWriteContractUtil } from "../utils/tips/write-contract.tips.util";
   import { onMount } from "svelte";
 
   const { addNotification } = getNotificationsContext();
@@ -25,27 +22,43 @@
   export let showTippingModal: boolean;
   export let toAddress: string;
   export let toHandle: string;
-  let maticBalance = 0;
-  let bonsaiBalance = 0;
+  let balances = {
+    MATIC: 0,
+    BONSAI: 0,
+    USDT: 0
+  };
   let fromAddress: `0x${string}`;
-  let selectedToken: string;
+  let selectedToken: keyof typeof tokenSymbol;
   let userEnteredAmount: number;
   let isAmountInvalid = true;
   let tippingSuccess = false;
   let isSendingTip = false;
   let AmountInvalidReason = "";
+  let buttonValue = "Send";
   $: if (dialog && showTippingModal) dialog.showModal();
 
   onMount(() => {
     fromAddress = getAccount(wagmiConfig).address;
   });
 
-  const checkAmountIsValid = (amount: number) => {
+  const checkAmountIsValid = async (amount: number) => {
+    buttonValue = "...";
     const enteredAmount = Number(amount);
     console.log("enteredAmount", enteredAmount);
     if (enteredAmount >= 0.00001) {
       isAmountInvalid = false;
       AmountInvalidReason = "";
+      if (
+        await hasAmountApprovedGetContractTipsUtil(
+          selectedToken as keyof typeof tokenAddress,
+          fromAddress,
+          enteredAmount
+        )
+      ) {
+        buttonValue = "Send";
+      } else {
+        buttonValue = "Approve";
+      }
       return true;
     } else if (enteredAmount === 0) {
       isAmountInvalid = true;
@@ -53,6 +66,10 @@
     } else if (enteredAmount < 0.00001) {
       isAmountInvalid = true;
       AmountInvalidReason = "Minimum Tip Amount is 0.000001";
+    } else if (isNaN(enteredAmount)) {
+      isAmountInvalid = true;
+      AmountInvalidReason = "";
+      buttonValue = "Send";
     } else {
       isAmountInvalid = true;
       AmountInvalidReason = "Please enter a valid amount";
@@ -60,31 +77,69 @@
     return false;
   };
 
-  const sendTip = async () => {
+  const clickButtonEvent = async () => {
     userEnteredAmount = Number(userEnteredAmount);
-    if (!checkAmountIsValid(userEnteredAmount)) {
+    if (buttonValue === "Approve") {
+      await approve(userEnteredAmount);
+    } else if (buttonValue === "Send") {
+      await sendTip(userEnteredAmount);
+    }
+  };
+
+  const approve = async (amount) => {
+    isSendingTip = true;
+    buttonValue = "Approving...";
+    const transactionStatus = await approveTokenWriteContractUtil(
+      selectedToken,
+      fromAddress,
+      amount
+    );
+    await checkAmountIsValid(amount);
+    if (transactionStatus.success && transactionStatus.result) {
+      addNotificationEvent(
+        "Tokens Approved",
+        `Your tip to ready to be sent to @${toHandle}`,
+        flightTakeoff,
+        2000
+      );
+    } else {
+      addNotificationEvent(
+        "Failed To Approve",
+        transactionStatus.error,
+        error,
+        2000
+      );
+    }
+    isSendingTip = false;
+    return;
+  };
+
+  const sendTip = async (amount) => {
+    if (!(await checkAmountIsValid(userEnteredAmount))) {
       return;
     }
+    buttonValue = "Sending...";
     isSendingTip = true;
     let tipDetails;
-    if (selectedToken == tokenSymbol.BONSAI) {
-      if (userEnteredAmount > bonsaiBalance) {
+    if (selectedToken == tokenSymbol.MATIC) {
+      if (userEnteredAmount > balances.MATIC) {
         sendInsufficientBalanceEvent();
         return;
       }
-      tipDetails = await sendTipUtilBonsai(
-        fromAddress,
-        toAddress,
-        userEnteredAmount.toString()
-      );
-    } else if (selectedToken == tokenSymbol.MATIC) {
-      if (userEnteredAmount > maticBalance) {
+      tipDetails = await sendMaticTipUtil(toAddress, amount.toString());
+    } else {
+      if (amount > balances[selectedToken]) {
         sendInsufficientBalanceEvent();
         return;
       }
-      tipDetails = await sendTipUtilMatic(
+      tipDetails = await tipTokenWriteContractUtil(
+        selectedToken,
         toAddress,
-        userEnteredAmount.toString()
+        amount.toString(),
+        123,
+        234,
+        456,
+        fromAddress
       );
     }
 
@@ -102,6 +157,7 @@
         4000
       );
       isSendingTip = false;
+      buttonValue = "Send";
       return;
     }
   };
@@ -132,14 +188,10 @@
     return;
   };
 
-  const setMaticBalance = (balance) => {
-    maticBalance = balance;
-    return Math.round(maticBalance * 100) / 100;
-  };
-
-  const setBonsaiBalance = (balance) => {
-    bonsaiBalance = balance;
-    return Math.round(bonsaiBalance * 100) / 100;
+  const setBalance = (token, balance) => {
+    checkAmountIsValid(userEnteredAmount);
+    balances[token] = balance;
+    return Math.round(balance * 100) / 100;
   };
 </script>
 
@@ -216,32 +268,21 @@
             <select name="tokens" id="tokens" bind:value={selectedToken}>
               <option value="MATIC">MATIC</option>
               <option value="BONSAI" selected>BONSAI</option>
+              <option value="POINTLESS">POINTLESS</option>
+              <!--              <option value="USDC">USDC</option>-->
+              <option value="USDT">USDT</option>
             </select>
 
             <div id="token-info">
-              {#if selectedToken === "MATIC"}
-                {#await getTokenBalanceTipUtilMatic(fromAddress)}
-                  <span class="fetching">Fetching token balance...</span>
-                {:then data}
-                  <span class="available">
-                    Available: {setMaticBalance(data)}
-                  </span>
-                {:catch _error}
-                  <span class="error">Failed to load balance</span>
-                {/await}
-              {/if}
-
-              {#if selectedToken === "BONSAI"}
-                {#await getTokenBalanceTipUtilBonsai(fromAddress)}
-                  <span class="fetching">Fetching token balance...</span>
-                {:then data}
-                  <span class="available">
-                    Available: {setBonsaiBalance(data)}
-                  </span>
-                {:catch _error}
-                  <span class="error">Failed to load balance</span>
-                {/await}
-              {/if}
+              {#await getTokenBalanceGetContractTipsUtil(selectedToken, fromAddress)}
+                <span class="fetching">Fetching token balance...</span>
+              {:then amount}
+                <span class="available">
+                  Available: {setBalance(selectedToken, amount)}
+                </span>
+              {:catch _error}
+                <span class="error">Failed to load balance</span>
+              {/await}
             </div>
           </div>
         </div>
@@ -266,13 +307,13 @@
         <div class="CenterRowFlex footer">
           <div class="footer__left" />
           <div class="CenterRowFlex footer__right">
-            {#if !isSendingTip}
-              <button class="btn" on:click={sendTip} disabled={isAmountInvalid}>
-                Send
-              </button>
-            {:else}
-              <button class="btn" disabled> Sending.. </button>
-            {/if}
+            <button
+              class="btn"
+              on:click={clickButtonEvent}
+              disabled={isAmountInvalid || isSendingTip}
+            >
+              {buttonValue}
+            </button>
           </div>
         </div>
       {/if}
