@@ -3,7 +3,7 @@ import {
   LENSVIEW_TIPPING_ADDRESS,
   tokenSymbol
 } from "../../config/app-constants.config";
-import { tokenAddress } from "../../config/app-constants.config";
+import { tokenAddress, tokenDecimals } from "../../config/app-constants.config";
 import { wagmiConfig } from "../web3modal.util";
 import { getTokenBalanceTipUtilMatic } from "./get-token-balance.tip.util";
 import LENSVIEW_TIPPING_ABI from "../../abis/contracts/tip/tip.contract.abi.json";
@@ -29,7 +29,10 @@ export const hasAmountApprovedGetContractTipsUtil = async (
       account: fromAddress
     });
     console.log("Approved amount", approvedTokenAmount);
-    return Number(approvedTokenAmount) / 10 ** 18 >= enteredAmount;
+    return (
+      Number(approvedTokenAmount) / 10 ** tokenDecimals[selectedToken] >=
+      enteredAmount
+    );
   } catch (error) {
     console.log("Error occurred while checking allowance", error);
     return false;
@@ -65,7 +68,7 @@ export const getTokenBalanceGetContractTipsUtil = async (
       args: [address],
       account: address
     });
-    return Number(tokenBalance) / 10 ** 18;
+    return Number(tokenBalance) / 10 ** tokenDecimals[token];
   } catch (error) {
     console.log("Failed to fetch balance. Error: ", error);
     return 0;

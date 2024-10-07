@@ -1,8 +1,8 @@
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { writeContract } from "@wagmi/core";
-import { parseEther } from "viem";
 import {
   LENSVIEW_TIPPING_ADDRESS,
+  tokenDecimals,
   tokenSymbol
 } from "../../config/app-constants.config";
 import { tokenAddress } from "../../config/app-constants.config";
@@ -25,7 +25,10 @@ export const approveTokenWriteContractUtil = async (
           abi: BONSAI_TOKEN_ABI,
           address: tokenAddress.BONSAI,
           functionName: "approve",
-          args: [LENSVIEW_TIPPING_ADDRESS, parseEther(amount.toString())],
+          args: [
+            LENSVIEW_TIPPING_ADDRESS,
+            (+amount * 10 ** tokenDecimals.BONSAI).toString()
+          ],
           account: from
         });
         break;
@@ -34,7 +37,10 @@ export const approveTokenWriteContractUtil = async (
           abi: POINTLESS_TOKEN_ABI,
           address: tokenAddress.POINTLESS,
           functionName: "approve",
-          args: [LENSVIEW_TIPPING_ADDRESS, parseEther(amount.toString())],
+          args: [
+            LENSVIEW_TIPPING_ADDRESS,
+            (+amount * 10 ** tokenDecimals.POINTLESS).toString()
+          ],
           account: from
         });
         break;
@@ -43,7 +49,10 @@ export const approveTokenWriteContractUtil = async (
           abi: USDT_TOKEN_ABI,
           address: tokenAddress.USDT,
           functionName: "approve",
-          args: [LENSVIEW_TIPPING_ADDRESS, parseEther(amount.toString())],
+          args: [
+            LENSVIEW_TIPPING_ADDRESS,
+            (+amount * 10 ** tokenDecimals.USDT).toString()
+          ],
           account: from
         });
         break;
@@ -85,7 +94,7 @@ export const tipTokenWriteContractUtil = async (
       args: [
         tokenContractAddress,
         recipient,
-        parseEther(amount),
+        (+amount * 10 ** tokenDecimals[token]).toString(),
         fromProfileId,
         toProfileId,
         publicationId
