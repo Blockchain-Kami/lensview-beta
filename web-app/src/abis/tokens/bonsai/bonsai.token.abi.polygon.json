@@ -11,100 +11,36 @@
         "name": "initialSupplyOwner",
         "type": "address"
       },
-      {
-        "internalType": "uint96",
-        "name": "tokensPerNft",
-        "type": "uint96"
-      }
+      { "internalType": "uint96", "name": "tokensPerNft", "type": "uint96" }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
-  {
-    "inputs": [],
-    "name": "AlreadyInitialized",
-    "type": "error"
-  },
+  { "inputs": [], "name": "AlreadyInitialized", "type": "error" },
   {
     "inputs": [],
     "name": "ApprovalCallerNotOwnerNorApproved",
     "type": "error"
   },
-  {
-    "inputs": [],
-    "name": "DNAlreadyInitialized",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "InsufficientAllowance",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "InsufficientBalance",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "LinkMirrorContractFailed",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "MirrorAddressIsZero",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NewOwnerIsZeroAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NoHandoverRequest",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "SenderNotMirror",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "TokenDoesNotExist",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "TotalSupplyOverflow",
-    "type": "error"
-  },
+  { "inputs": [], "name": "DNAlreadyInitialized", "type": "error" },
+  { "inputs": [], "name": "InsufficientAllowance", "type": "error" },
+  { "inputs": [], "name": "InsufficientBalance", "type": "error" },
+  { "inputs": [], "name": "LinkMirrorContractFailed", "type": "error" },
+  { "inputs": [], "name": "MirrorAddressIsZero", "type": "error" },
+  { "inputs": [], "name": "NewOwnerIsZeroAddress", "type": "error" },
+  { "inputs": [], "name": "NoHandoverRequest", "type": "error" },
+  { "inputs": [], "name": "SenderNotMirror", "type": "error" },
+  { "inputs": [], "name": "TokenDoesNotExist", "type": "error" },
+  { "inputs": [], "name": "TotalSupplyOverflow", "type": "error" },
   {
     "inputs": [],
     "name": "TransferCallerNotOwnerNorApproved",
     "type": "error"
   },
-  {
-    "inputs": [],
-    "name": "TransferFromIncorrectOwner",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "TransferToZeroAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "Unauthorized",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ZeroTokensPerNft",
-    "type": "error"
-  },
+  { "inputs": [], "name": "TransferFromIncorrectOwner", "type": "error" },
+  { "inputs": [], "name": "TransferToZeroAddress", "type": "error" },
+  { "inputs": [], "name": "Unauthorized", "type": "error" },
+  { "inputs": [], "name": "ZeroTokensPerNft", "type": "error" },
   {
     "anonymous": false,
     "inputs": [
@@ -219,74 +155,33 @@
     "name": "Transfer",
     "type": "event"
   },
-  {
-    "stateMutability": "payable",
-    "type": "fallback"
-  },
+  { "stateMutability": "payable", "type": "fallback" },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "owner", "type": "address" },
+      { "internalType": "address", "name": "spender", "type": "address" }
     ],
     "name": "allowance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "spender", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "approve",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "owner", "type": "address" }
     ],
     "name": "balanceOf",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -299,11 +194,7 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "pendingOwner",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "pendingOwner", "type": "address" }
     ],
     "name": "completeOwnershipHandover",
     "outputs": [],
@@ -313,32 +204,14 @@
   {
     "inputs": [],
     "name": "decimals",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
     "stateMutability": "pure",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "a",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "internalType": "address", "name": "a", "type": "address" }],
     "name": "getSkipNFT",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -346,11 +219,7 @@
     "inputs": [],
     "name": "mirror",
     "outputs": [
-      {
-        "internalType": "contract DN404Mirror",
-        "name": "",
-        "type": "address"
-      }
+      { "internalType": "contract DN404Mirror", "name": "", "type": "address" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -358,26 +227,14 @@
   {
     "inputs": [],
     "name": "mirrorERC721",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "name",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "pure",
     "type": "function"
   },
@@ -385,30 +242,18 @@
     "inputs": [],
     "name": "owner",
     "outputs": [
-      {
-        "internalType": "address",
-        "name": "result",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "result", "type": "address" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "pendingOwner",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "pendingOwner", "type": "address" }
     ],
     "name": "ownershipHandoverExpiresAt",
     "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "result",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "result", "type": "uint256" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -429,11 +274,7 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "string",
-        "name": "baseURI_",
-        "type": "string"
-      }
+      { "internalType": "string", "name": "baseURI_", "type": "string" }
     ],
     "name": "setBaseURI",
     "outputs": [],
@@ -441,13 +282,7 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "bool",
-        "name": "skipNFT",
-        "type": "bool"
-      }
-    ],
+    "inputs": [{ "internalType": "bool", "name": "skipNFT", "type": "bool" }],
     "name": "setSkipNFT",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -456,31 +291,17 @@
   {
     "inputs": [],
     "name": "symbol",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "pure",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
     ],
     "name": "tokenURI",
     "outputs": [
-      {
-        "internalType": "string",
-        "name": "result",
-        "type": "string"
-      }
+      { "internalType": "string", "name": "result", "type": "string" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -488,84 +309,39 @@
   {
     "inputs": [],
     "name": "totalSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "transfer",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "from", "type": "address" },
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "transferFrom",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "newOwner", "type": "address" }
     ],
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
   },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
-  }
+  { "stateMutability": "payable", "type": "receive" }
 ]

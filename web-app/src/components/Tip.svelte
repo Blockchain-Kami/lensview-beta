@@ -7,14 +7,20 @@
   import { getAccount } from "@wagmi/core";
   import { wagmiConfig } from "../utils/web3modal.util";
   import web3Modal from "../utils/web3modal.util";
-  import { tokenSymbol, tokenAddress } from "../config/app-constants.config";
+  import {
+    networIds,
+    networks,
+    baseTokenSymbol,
+    polygonTokenSymbol
+  } from "../config/app-constants.config";
   import { getNotificationsContext } from "svelte-notifications";
-  import { sendMaticTipUtil } from "../utils/tips/send-matic.tip.util";
   import { getTokenBalanceGetContractTipsUtil } from "../utils/tips/get-contract.tips.util";
   import { hasAmountApprovedGetContractTipsUtil } from "../utils/tips/get-contract.tips.util";
   import { approveTokenWriteContractUtil } from "../utils/tips/write-contract.tips.util";
   import { tipTokenWriteContractUtil } from "../utils/tips/write-contract.tips.util";
   import { onMount } from "svelte";
+
+  import { switchChain } from "@wagmi/core";
 
   const { addNotification } = getNotificationsContext();
   let dialog: HTMLDialogElement;
@@ -22,13 +28,11 @@
   export let showTippingModal: boolean;
   export let toAddress: string;
   export let toHandle: string;
-  let balances = {
-    MATIC: 0,
-    BONSAI: 0,
-    USDT: 0
-  };
   let fromAddress: `0x${string}`;
-  let selectedToken: keyof typeof tokenSymbol;
+  let selectedToken:
+    | keyof typeof baseTokenSymbol
+    | keyof typeof polygonTokenSymbol;
+  let selectedNetwork = networks.BASE;
   let userEnteredAmount: number;
   let isAmountInvalid = true;
   let tippingSuccess = false;
@@ -36,6 +40,21 @@
   let AmountInvalidReason = "";
   let buttonValue = "Send";
   $: if (dialog && showTippingModal) dialog.showModal();
+
+  const networkTokens = {
+    POLYGON: [
+      { value: "BONSAI", label: "BONSAI", selected: true, balance: 0 },
+      { value: "POINTLESS", label: "POINTLESS", balance: 0 },
+      { value: "USDT", label: "USDT", balance: 0 }
+    ],
+    BASE: [
+      { value: "BONSAI", label: "BONSAI", selected: true, balance: 0 },
+      { value: "TOBY", label: "TOBY", balance: 0 }
+      // { value: "BRETT", label: "BRETT" },
+      // { value: "USDT", label: "USDT" },
+      // { value: "USDC", label: "USDC" }
+    ]
+  };
 
   onMount(() => {
     fromAddress = getAccount(wagmiConfig).address;
@@ -50,7 +69,8 @@
       AmountInvalidReason = "";
       if (
         await hasAmountApprovedGetContractTipsUtil(
-          selectedToken as keyof typeof tokenAddress,
+          selectedNetwork,
+          selectedToken,
           fromAddress,
           enteredAmount
         )
@@ -78,11 +98,35 @@
   };
 
   const clickButtonEvent = async () => {
-    userEnteredAmount = Number(userEnteredAmount);
-    if (buttonValue === "Approve") {
-      await approve(userEnteredAmount);
-    } else if (buttonValue === "Send") {
-      await sendTip(userEnteredAmount);
+    let isConnectedToTokenNetwork = await checkAndConnectToTokenNetwork();
+    if (isConnectedToTokenNetwork) {
+      userEnteredAmount = Number(userEnteredAmount);
+      if (buttonValue === "Approve") {
+        await approve(userEnteredAmount);
+      } else if (buttonValue === "Send") {
+        await sendTip(userEnteredAmount);
+      }
+    }
+  };
+
+  const checkAndConnectToTokenNetwork = async () => {
+    try {
+      const selectedNetworkId = await web3Modal.getState();
+      const tokenNetworkId = networIds[selectedNetwork];
+      if (selectedNetworkId !== tokenNetworkId) {
+        await switchChain(wagmiConfig, { chainId: tokenNetworkId });
+      }
+      return true;
+    } catch (e) {
+      dialog.close();
+      console.log("Error while switching network", e);
+      addNotificationEvent(
+        "Error while switching network",
+        "Opps! Something went wrong. Please try again.",
+        error,
+        4000
+      );
+      return false;
     }
   };
 
@@ -90,6 +134,7 @@
     isSendingTip = true;
     buttonValue = "Approving...";
     const transactionStatus = await approveTokenWriteContractUtil(
+      selectedNetwork,
       selectedToken,
       fromAddress,
       amount
@@ -121,27 +166,19 @@
     buttonValue = "Sending...";
     isSendingTip = true;
     let tipDetails;
-    if (selectedToken == tokenSymbol.MATIC) {
-      if (userEnteredAmount > balances.MATIC) {
-        sendInsufficientBalanceEvent();
-        return;
-      }
-      tipDetails = await sendMaticTipUtil(toAddress, amount.toString());
-    } else {
-      if (amount > balances[selectedToken]) {
-        sendInsufficientBalanceEvent();
-        return;
-      }
-      tipDetails = await tipTokenWriteContractUtil(
-        selectedToken,
-        toAddress,
-        amount.toString(),
-        123,
-        234,
-        456,
-        fromAddress
-      );
+    if (amount > networkTokens[selectedNetwork][selectedToken].balance) {
+      sendInsufficientBalanceEvent();
+      return;
     }
+    tipDetails = await tipTokenWriteContractUtil(
+      selectedToken,
+      toAddress,
+      amount.toString(),
+      123,
+      234,
+      456,
+      fromAddress
+    );
 
     if (tipDetails.success && !tipDetails.error) {
       userEnteredAmount = null;
@@ -161,6 +198,17 @@
       return;
     }
   };
+
+  // const showAvailableNetworks = () => {
+  //   dialog.close();
+  //   web3Modal.open({ view: "Networks" });
+  // };
+  //
+  // const switchNetwork = async () => {
+  //   console.log("chain switch");
+  //
+  //   await switchChain(wagmiConfig, { chainId: 137 });
+  // };
 
   const addNotificationEvent = (heading, description, type, removeAfter) => {
     addNotification({
@@ -189,9 +237,19 @@
   };
 
   const setBalance = (token, balance) => {
-    checkAmountIsValid(userEnteredAmount);
-    balances[token] = balance;
-    return Math.round(balance * 100) / 100;
+    try {
+      // console.log("checkAmountIsValid(userEnteredAmount)", checkAmountIsValid(userEnteredAmount));
+      if (checkAmountIsValid(userEnteredAmount)) {
+        let index = networkTokens[selectedNetwork].findIndex(
+          (val) => val.label === token
+        );
+        networkTokens[selectedNetwork][index].balance = balance;
+        return Math.round(balance * 100) / 100;
+      }
+    } catch (error) {
+      console.log("Error while fetching balance: ", error);
+      return 0;
+    }
   };
 </script>
 
@@ -263,18 +321,40 @@
               style="font-weight: bold; color: #23f9ff">@{toHandle}</span
             >
           </p>
-          <label for="tokens"> Select a token </label>
+          <br />
+          <label for="networks"> Select Network </label>
           <div>
-            <select name="tokens" id="tokens" bind:value={selectedToken}>
-              <option value="MATIC">MATIC</option>
-              <option value="BONSAI" selected>BONSAI</option>
-              <option value="POINTLESS">POINTLESS</option>
-              <!--              <option value="USDC">USDC</option>-->
-              <option value="USDT">USDT</option>
+            <select name="networks" id="networks" bind:value={selectedNetwork}>
+              <option value="POLYGON">Polygon</option>
+              <option value="BASE" selected>Base</option>
             </select>
-
+          </div>
+          <label for="tokens"> Select A token </label>
+          <div>
+            <!--{#if selectedNetwork === networks.POLYGON}-->
+            <!--  <select name="tokens" id="tokens" bind:value={selectedToken}>-->
+            <!--    <option value="MATIC">MATIC</option>-->
+            <!--    <option value="BONSAI" selected>BONSAI</option>-->
+            <!--    <option value="POINTLESS">POINTLESS</option>-->
+            <!--    <option value="USDT">USDT</option>-->
+            <!--  </select>-->
+            <!--{:else}-->
+            <!--  <select name="tokens" id="tokens" bind:value={selectedToken}>-->
+            <!--    <option value="BENJI">BENJI</option>-->
+            <!--    <option value="BRETT">BRETT</option>-->
+            <!--    <option value="USDT">USDT</option>-->
+            <!--    <option value="USDC">USDC</option>-->
+            <!--  </select>-->
+            <!--{/if}-->
+            <select name="tokens" id="tokens" bind:value={selectedToken}>
+              {#each networkTokens[selectedNetwork] as token}
+                <option value={token.value} selected={token.selected}
+                  >{token.label}</option
+                >
+              {/each}
+            </select>
             <div id="token-info">
-              {#await getTokenBalanceGetContractTipsUtil(selectedToken, fromAddress)}
+              {#await getTokenBalanceGetContractTipsUtil(selectedNetwork, selectedToken, fromAddress)}
                 <span class="fetching">Fetching token balance...</span>
               {:then amount}
                 <span class="available">
