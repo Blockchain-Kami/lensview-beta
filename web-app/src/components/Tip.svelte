@@ -3,6 +3,10 @@
   import { backInOut } from "svelte/easing";
   import { fly } from "svelte/transition";
   import { close } from "../utils/app-icon.util.js";
+  import {
+    polygonLogo,
+    baseLogo
+  } from "../lib/assets/base64/network-logo.base64.asset.json";
   import Icon from "$lib/Icon.svelte";
   import { getAccount } from "@wagmi/core";
   import { wagmiConfig } from "../utils/web3modal.util";
@@ -49,8 +53,8 @@
     ],
     BASE: [
       { value: "BONSAI", label: "BONSAI", selected: true, balance: 0 },
-      { value: "TOBY", label: "TOBY", balance: 0 }
-      // { value: "BRETT", label: "BRETT" },
+      { value: "TOBY", label: "TOBY", balance: 0 },
+      { value: "TOSHI", label: "TOSHI", balance: 0 }
       // { value: "USDT", label: "USDT" },
       // { value: "USDC", label: "USDC" }
     ]
@@ -98,65 +102,51 @@
   };
 
   const clickButtonEvent = async () => {
-    let isConnectedToTokenNetwork = await checkAndConnectToTokenNetwork();
-    if (isConnectedToTokenNetwork) {
+    try {
+      await switchChain(wagmiConfig, { chainId: networIds[selectedNetwork] });
       userEnteredAmount = Number(userEnteredAmount);
       if (buttonValue === "Approve") {
         await approve(userEnteredAmount);
       } else if (buttonValue === "Send") {
         await sendTip(userEnteredAmount);
       }
-    }
-  };
-
-  const checkAndConnectToTokenNetwork = async () => {
-    try {
-      const selectedNetworkId = await web3Modal.getState();
-      const tokenNetworkId = networIds[selectedNetwork];
-      if (selectedNetworkId !== tokenNetworkId) {
-        await switchChain(wagmiConfig, { chainId: tokenNetworkId });
-      }
-      return true;
-    } catch (e) {
-      dialog.close();
-      console.log("Error while switching network", e);
-      addNotificationEvent(
-        "Error while switching network",
-        "Opps! Something went wrong. Please try again.",
-        error,
-        4000
-      );
-      return false;
+    } catch (error) {
+      console.log("Error", error);
     }
   };
 
   const approve = async (amount) => {
-    isSendingTip = true;
-    buttonValue = "Approving...";
-    const transactionStatus = await approveTokenWriteContractUtil(
-      selectedNetwork,
-      selectedToken,
-      fromAddress,
-      amount
-    );
-    await checkAmountIsValid(amount);
-    if (transactionStatus.success && transactionStatus.result) {
-      addNotificationEvent(
-        "Tokens Approved",
-        `Your tip to ready to be sent to @${toHandle}`,
-        flightTakeoff,
-        2000
+    try {
+      isSendingTip = true;
+      buttonValue = "Approving...";
+      const transactionStatus = await approveTokenWriteContractUtil(
+        selectedNetwork,
+        selectedToken,
+        fromAddress,
+        amount
       );
-    } else {
-      addNotificationEvent(
-        "Failed To Approve",
-        transactionStatus.error,
-        error,
-        2000
-      );
+      await checkAmountIsValid(amount);
+      if (transactionStatus.success && transactionStatus.result) {
+        addNotificationEvent(
+          "Tokens Approved",
+          `Your tip to ready to be sent to @${toHandle}`,
+          flightTakeoff,
+          2000
+        );
+      } else {
+        addNotificationEvent(
+          "Failed To Approve",
+          transactionStatus.error,
+          error,
+          2000
+        );
+      }
+      isSendingTip = false;
+      return;
+    } catch (e) {
+      console.log("Error while approving", e);
+      addNotificationEvent("Failed To Approve", e.message, error, 2000);
     }
-    isSendingTip = false;
-    return;
   };
 
   const sendTip = async (amount) => {
@@ -166,14 +156,16 @@
     buttonValue = "Sending...";
     isSendingTip = true;
     let tipDetails;
-    if (amount > networkTokens[selectedNetwork][selectedToken].balance) {
+    let index = getTokenIndex(selectedToken);
+    if (amount > networkTokens[selectedNetwork][index].balance) {
       sendInsufficientBalanceEvent();
       return;
     }
     tipDetails = await tipTokenWriteContractUtil(
+      selectedNetwork,
       selectedToken,
       toAddress,
-      amount.toString(),
+      amount,
       123,
       234,
       456,
@@ -240,9 +232,7 @@
     try {
       // console.log("checkAmountIsValid(userEnteredAmount)", checkAmountIsValid(userEnteredAmount));
       if (checkAmountIsValid(userEnteredAmount)) {
-        let index = networkTokens[selectedNetwork].findIndex(
-          (val) => val.label === token
-        );
+        let index = getTokenIndex(token);
         networkTokens[selectedNetwork][index].balance = balance;
         return Math.round(balance * 100) / 100;
       }
@@ -250,6 +240,12 @@
       console.log("Error while fetching balance: ", error);
       return 0;
     }
+  };
+
+  const getTokenIndex = (token) => {
+    return networkTokens[selectedNetwork].findIndex(
+      (val) => val.label === token
+    );
   };
 </script>
 
@@ -321,31 +317,27 @@
               style="font-weight: bold; color: #23f9ff">@{toHandle}</span
             >
           </p>
-          <br />
-          <label for="networks"> Select Network </label>
-          <div>
-            <select name="networks" id="networks" bind:value={selectedNetwork}>
-              <option value="POLYGON">Polygon</option>
-              <option value="BASE" selected>Base</option>
-            </select>
+
+          <div class="network-selection">
+            <button
+              type="button"
+              class:selected={selectedNetwork === networks.BASE}
+              on:click={() => (selectedNetwork = networks.BASE)}
+            >
+              <img src={baseLogo} alt="Base Logo" />
+              Base
+            </button>
+            <button
+              type="button"
+              class:selected={selectedNetwork === networks.POLYGON}
+              on:click={() => (selectedNetwork = networks.POLYGON)}
+            >
+              <img src={polygonLogo} alt="Polygon Logo" />
+              Polygon
+            </button>
           </div>
           <label for="tokens"> Select A token </label>
           <div>
-            <!--{#if selectedNetwork === networks.POLYGON}-->
-            <!--  <select name="tokens" id="tokens" bind:value={selectedToken}>-->
-            <!--    <option value="MATIC">MATIC</option>-->
-            <!--    <option value="BONSAI" selected>BONSAI</option>-->
-            <!--    <option value="POINTLESS">POINTLESS</option>-->
-            <!--    <option value="USDT">USDT</option>-->
-            <!--  </select>-->
-            <!--{:else}-->
-            <!--  <select name="tokens" id="tokens" bind:value={selectedToken}>-->
-            <!--    <option value="BENJI">BENJI</option>-->
-            <!--    <option value="BRETT">BRETT</option>-->
-            <!--    <option value="USDT">USDT</option>-->
-            <!--    <option value="USDC">USDC</option>-->
-            <!--  </select>-->
-            <!--{/if}-->
             <select name="tokens" id="tokens" bind:value={selectedToken}>
               {#each networkTokens[selectedNetwork] as token}
                 <option value={token.value} selected={token.selected}
@@ -517,5 +509,30 @@
   .error {
     color: #ff4500; /* Orange red color for error */
     //margin-left: 225px;
+  }
+
+  .network-selection button {
+    border: none;
+    background-color: #1f4045;
+    padding: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    opacity: 50%;
+  }
+
+  .network-selection img {
+    height: 20px;
+    width: 20px;
+    margin-right: 8px;
+  }
+
+  .network-selection button.selected {
+    background-color: #2b5a60; /* Highlight selected button */
+    color: white;
+    cursor: default;
+    opacity: 100%;
   }
 </style>

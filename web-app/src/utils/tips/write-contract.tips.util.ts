@@ -11,12 +11,13 @@ import {
   polygonTokenDecimals,
   polygonTokenSymbol
 } from "../../config/app-constants.config";
-import { wagmiConfigBase, wagmiConfigPolygon } from "../web3modal.util";
+import { wagmiConfig } from "../web3modal.util";
 import BONSAI_TOKEN_ABI_POLYGON from "../../abis/tokens/bonsai/bonsai.token.abi.polygon.json";
 import BONSAI_TOKEN_ABI_BASE from "../../abis/tokens/bonsai/bonsai.token.abi.base.json";
 import USDT_TOKEN_ABI from "../../abis/tokens/usdt/usdt.token.abi.json";
 import POINTLESS_TOKEN_ABI from "../../abis/tokens/pointless/pointless.token.abi.json";
 import TOBY_TOKEN_ABI from "../../abis/tokens/toby/toby.token.abi.json";
+import TOSI_BASE_TOKEN_ABI from "../../abis/tokens/base/toshi.base.token.abi.json";
 import { setVariablesTipUtil } from "./set-variables-tip.util";
 
 export const approveTokenWriteContractUtil = async (
@@ -26,11 +27,7 @@ export const approveTokenWriteContractUtil = async (
   amount: number
 ) => {
   try {
-    let tokenContractAddress,
-      decimals,
-      wagmiConfig,
-      lensviewTippingAddress,
-      ABI;
+    let tokenContractAddress, decimals, lensviewTippingAddress, ABI;
     if (selectedNetwork === networks.POLYGON) {
       tokenContractAddress =
         polygonTokenAddresses[
@@ -40,52 +37,51 @@ export const approveTokenWriteContractUtil = async (
         polygonTokenDecimals[
           selectedToken as keyof typeof polygonTokenDecimals
         ];
-      wagmiConfig = wagmiConfigPolygon;
       lensviewTippingAddress = LENSVIEW_TIPPING_ADDRESS_POLYGON;
 
       switch (selectedToken) {
-        case "BONSAI":
+        case polygonTokenSymbol.BONSAI:
           ABI = BONSAI_TOKEN_ABI_POLYGON;
           break;
-        case "POINTLESS":
+        case polygonTokenSymbol.POINTLESS:
           // @ts-ignore
           ABI = POINTLESS_TOKEN_ABI;
           break;
-        case "USDT":
+        case polygonTokenSymbol.USDT:
           ABI = USDT_TOKEN_ABI;
           break;
         default:
-          throw new Error("Invalid Token Received");
+          return null;
       }
     } else {
       tokenContractAddress =
         baseTokenAddresses[selectedToken as keyof typeof baseTokenAddresses];
       decimals =
         baseTokenDecimals[selectedToken as keyof typeof baseTokenDecimals];
-      wagmiConfig = wagmiConfigBase;
       lensviewTippingAddress = LENSVIEW_TIPPING_ADDRESS_BASE;
 
       switch (selectedToken) {
-        case "BONSAI":
+        case baseTokenSymbol.BONSAI:
           // @ts-ignore
           ABI = BONSAI_TOKEN_ABI_BASE;
           break;
-        case "POINTLESS":
+        case baseTokenSymbol.TOBY:
           // @ts-ignore
-          ABI = POINTLESS_TOKEN_ABI;
-          break;
-        case "TOBY":
           ABI = TOBY_TOKEN_ABI;
           break;
+        case baseTokenSymbol.TOSHI:
+          ABI = TOSI_BASE_TOKEN_ABI;
+          break;
         default:
-          throw new Error("Invalid Token Received");
+          return null;
       }
     }
+    const bigIntAmount = BigInt(amount * 10 ** decimals).toString();
     const tx = await writeContract(wagmiConfig, {
       abi: ABI,
       address: tokenContractAddress,
       functionName: "approve",
-      args: [lensviewTippingAddress, (+amount * 10 ** decimals).toString()],
+      args: [lensviewTippingAddress, bigIntAmount],
       account: from
     });
     const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {
@@ -102,7 +98,7 @@ export const approveTokenWriteContractUtil = async (
     return {
       success: false,
       result: null,
-      error: error
+      error: "Failed to approve amount"
     };
   }
 };
@@ -111,7 +107,7 @@ export const tipTokenWriteContractUtil = async (
   selectedNetwork: keyof typeof networks,
   selectedToken: keyof typeof baseTokenSymbol | keyof typeof polygonTokenSymbol,
   recipient: `0x${string}`,
-  amount: string,
+  amount: number,
   fromProfileId: number | null,
   toProfileId: number,
   publicationId: number,
@@ -121,10 +117,9 @@ export const tipTokenWriteContractUtil = async (
     const variables = setVariablesTipUtil(selectedNetwork, selectedToken);
     const tokenContractAddress = variables.tokenContractAddress;
     const decimals = variables.decimals;
-    const wagmiConfig = variables.wagmiConfig;
     const lensviewTippingAddress = variables.lensviewTippingAddress;
     const ABI = variables.ABI;
-
+    const bigIntAmount = BigInt(amount * 10 ** decimals).toString();
     const tx = await writeContract(wagmiConfig, {
       abi: ABI,
       address: lensviewTippingAddress,
@@ -132,7 +127,7 @@ export const tipTokenWriteContractUtil = async (
       args: [
         tokenContractAddress,
         recipient,
-        (+amount * 10 ** decimals).toString(),
+        bigIntAmount,
         fromProfileId,
         toProfileId,
         publicationId

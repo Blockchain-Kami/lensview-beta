@@ -70,26 +70,24 @@ export enum polygonTokenAddresses {
 
 export enum baseTokenSymbol {
   TOBY = "TOBY",
-  BONSAI = "BONSAI"
+  BONSAI = "BONSAI",
+  TOSHI = "TOSHI"
 }
 
 export enum baseTokenDecimals {
   TOBY = 18,
-  BONSAI = 18
+  BONSAI = 18,
+  TOSHI = 18
 }
 export enum baseTokenAddresses {
   TOBY = "0xb8D98a102b0079B69FFbc760C8d857A31653e56e",
-  BONSAI = "0x474f4cb764df9da079D94052fED39625c147C12C"
+  BONSAI = "0x474f4cb764df9da079D94052fED39625c147C12C",
+  TOSHI = "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4"
 }
 
 export const tokenSymbol = {
   POLYGON: polygonTokenSymbol,
   BASE: baseTokenSymbol
-};
-
-export const tokenDecimals = {
-  POLYGON: polygonTokenDecimals,
-  BASE: baseTokenDecimals
 };
 
 export const tokenAddress = {
