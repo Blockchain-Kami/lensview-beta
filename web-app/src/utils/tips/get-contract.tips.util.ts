@@ -14,6 +14,7 @@ import BONSAI_TOKEN_BASE_ABI from "../../abis/tokens/bonsai/bonsai.token.abi.bas
 import USDT_TOKEN_ABI from "../../abis/tokens/usdt/usdt.token.abi.json";
 import POINTLESS_TOKEN_ABI from "../../abis/tokens/pointless/pointless.token.abi.json";
 import TOBY_TOKEN_ABI from "../../abis/tokens/toby/toby.token.abi.json";
+import TOSHI_BASE_TOKEN_ABI from "../../abis/tokens/base/toshi.base.token.abi.json";
 import { setVariablesTipUtil } from "./set-variables-tip.util";
 
 export const hasAmountApprovedGetContractTipsUtil = async (
@@ -74,7 +75,7 @@ export const getTokenBalanceGetContractTipsUtil = async (
           ABI = POINTLESS_TOKEN_ABI;
           break;
         default:
-          throw new Error("Invalid Token Received");
+          return 0;
       }
       wagmiConfig = wagmiConfigPolygon;
     } else {
@@ -90,8 +91,11 @@ export const getTokenBalanceGetContractTipsUtil = async (
         case baseTokenSymbol.TOBY:
           ABI = TOBY_TOKEN_ABI;
           break;
+        case baseTokenSymbol.TOSHI:
+          ABI = TOSHI_BASE_TOKEN_ABI;
+          break;
         default:
-          throw new Error("Invalid Token Received");
+          return 0;
       }
       wagmiConfig = wagmiConfigBase;
     }
