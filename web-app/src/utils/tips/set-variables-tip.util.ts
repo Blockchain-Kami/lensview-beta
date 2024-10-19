@@ -10,8 +10,8 @@ import {
   polygonTokenSymbol
 } from "../../config/app-constants.config";
 import { wagmiConfigBase, wagmiConfigPolygon } from "../web3modal.util";
-import LENSVIEW_TIPPING_ABI_POLYGON from "../../abis/contracts/tip/lensview-tip.contract.polygon.abi.json";
-import LENSVIEW_TIPPING_ABI_BASE from "../../abis/contracts/tip/lensview-tip.contract.base.abi.json";
+import LENSVIEW_TIPPING_CONTRACT_POLYGON_ABI from "../../abis/contracts/polygon/lensview-tip.polygon.contract.abi.json";
+import LENSVIEW_TIPPING_CONTRACT_BASE_ABI from "../../abis/contracts/base/lensview-tip.base.contract.abi.json";
 
 export const setVariablesTipUtil = (
   selectedNetwork: keyof typeof networks,
@@ -31,7 +31,7 @@ export const setVariablesTipUtil = (
       polygonTokenDecimals[selectedToken as keyof typeof polygonTokenDecimals];
     wagmiConfig = wagmiConfigPolygon;
     lensviewTippingAddress = LENSVIEW_TIPPING_ADDRESS_POLYGON;
-    ABI = LENSVIEW_TIPPING_ABI_POLYGON;
+    ABI = LENSVIEW_TIPPING_CONTRACT_POLYGON_ABI;
   } else {
     tokenContractAddress =
       baseTokenAddresses[selectedToken as keyof typeof baseTokenAddresses];
@@ -39,7 +39,7 @@ export const setVariablesTipUtil = (
       baseTokenDecimals[selectedToken as keyof typeof baseTokenDecimals];
     wagmiConfig = wagmiConfigBase;
     lensviewTippingAddress = LENSVIEW_TIPPING_ADDRESS_BASE;
-    ABI = LENSVIEW_TIPPING_ABI_BASE;
+    ABI = LENSVIEW_TIPPING_CONTRACT_BASE_ABI;
   }
   return {
     tokenContractAddress,

@@ -9,12 +9,12 @@ import {
   polygonTokenSymbol
 } from "../../config/app-constants.config";
 import { wagmiConfigBase, wagmiConfigPolygon } from "../web3modal.util";
-import BONSAI_TOKEN_ABI from "../../abis/tokens/bonsai/bonsai.token.abi.polygon.json";
-import BONSAI_TOKEN_BASE_ABI from "../../abis/tokens/bonsai/bonsai.token.abi.base.json";
-import USDT_TOKEN_ABI from "../../abis/tokens/usdt/usdt.token.abi.json";
-import POINTLESS_TOKEN_ABI from "../../abis/tokens/pointless/pointless.token.abi.json";
-import TOBY_TOKEN_ABI from "../../abis/tokens/toby/toby.token.abi.json";
-import TOSHI_BASE_TOKEN_ABI from "../../abis/tokens/base/toshi.base.token.abi.json";
+import BONSAI_TOKEN_POLYGON_ABI from "../../abis/contracts/polygon/bonsai-token.polygon.contract.abi.json";
+import BONSAI_TOKEN_BASE_ABI from "../../abis/contracts/base/bonsai-token.base.contract.abi.json";
+import USDT_TOKEN_POLYGON_ABI from "../../abis/contracts/polygon/usdt-token.polygon.contract.abi.json";
+import POINTLESS_TOKEN_POLYGON_ABI from "../../abis/contracts/polygon/pointless-token.polygon.contract.abi.json";
+import TOBY_TOKEN_BASE_ABI from "../../abis/contracts/base/toby-token.base.contract.abi.json";
+import TOSHI_TOKEN_BASE_ABI from "../../abis/contracts/base/toshi-token.base.contract.abi.json";
 import { setVariablesTipUtil } from "./set-variables-tip.util";
 
 export const hasAmountApprovedGetContractTipsUtil = async (
@@ -65,14 +65,14 @@ export const getTokenBalanceGetContractTipsUtil = async (
         ];
       switch (selectedToken) {
         case polygonTokenSymbol.BONSAI:
-          ABI = BONSAI_TOKEN_ABI;
+          ABI = BONSAI_TOKEN_POLYGON_ABI;
           break;
         case polygonTokenSymbol.USDT:
-          ABI = USDT_TOKEN_ABI;
+          ABI = USDT_TOKEN_POLYGON_ABI;
           break;
         case polygonTokenSymbol.POINTLESS:
           // @ts-ignore
-          ABI = POINTLESS_TOKEN_ABI;
+          ABI = POINTLESS_TOKEN_POLYGON_ABI;
           break;
         default:
           return 0;
@@ -89,10 +89,10 @@ export const getTokenBalanceGetContractTipsUtil = async (
           ABI = BONSAI_TOKEN_BASE_ABI;
           break;
         case baseTokenSymbol.TOBY:
-          ABI = TOBY_TOKEN_ABI;
+          ABI = TOBY_TOKEN_BASE_ABI;
           break;
         case baseTokenSymbol.TOSHI:
-          ABI = TOSHI_BASE_TOKEN_ABI;
+          ABI = TOSHI_TOKEN_BASE_ABI;
           break;
         default:
           return 0;

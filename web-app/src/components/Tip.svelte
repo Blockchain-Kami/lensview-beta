@@ -289,8 +289,8 @@
               </div>
               <br />
               <p>
-                Your contributions help our Viewers to keep doing what they love
-                the most!
+                Your contributions help our viewers keep doing what they love
+                most!
               </p>
             </div>
           </div>
@@ -322,7 +322,10 @@
             <button
               type="button"
               class:selected={selectedNetwork === networks.BASE}
-              on:click={() => (selectedNetwork = networks.BASE)}
+              on:click={() => {
+                selectedNetwork = networks.BASE;
+                selectedToken = baseTokenSymbol.BONSAI;
+              }}
             >
               <img src={baseLogo} alt="Base Logo" />
               Base
@@ -330,7 +333,10 @@
             <button
               type="button"
               class:selected={selectedNetwork === networks.POLYGON}
-              on:click={() => (selectedNetwork = networks.POLYGON)}
+              on:click={() => {
+                selectedNetwork = networks.POLYGON;
+                selectedToken = polygonTokenSymbol.BONSAI;
+              }}
             >
               <img src={polygonLogo} alt="Polygon Logo" />
               Polygon
