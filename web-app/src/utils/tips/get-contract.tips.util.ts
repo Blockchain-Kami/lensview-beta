@@ -1,35 +1,46 @@
 import { readContract } from "@wagmi/core";
 import {
-  LENSVIEW_TIPPING_ADDRESS,
-  tokenSymbol
+  baseTokenAddresses,
+  baseTokenDecimals,
+  baseTokenSymbol,
+  networks,
+  polygonTokenAddresses,
+  polygonTokenDecimals,
+  polygonTokenSymbol
 } from "../../config/app-constants.config";
-import { tokenAddress } from "../../config/app-constants.config";
-import { wagmiConfig } from "../web3modal.util";
-import { getTokenBalanceTipUtilMatic } from "./get-token-balance.tip.util";
-import LENSVIEW_TIPPING_ABI from "../../abis/contracts/tip/tip.contract.abi.json";
-import BONSAI_TOKEN_ABI from "../../abis/tokens/bonsai/bonsai.token.abi.json";
-import USDT_TOKEN_ABI from "../../abis/tokens/usdt/usdt.token.abi.json";
-import POINTLESS_TOKEN_ABI from "../../abis/tokens/pointless/pointless.token.abi.json";
+import { wagmiConfigBase, wagmiConfigPolygon } from "../web3modal.util";
+import BONSAI_TOKEN_POLYGON_ABI from "../../abis/contracts/polygon/bonsai-token.polygon.contract.abi.json";
+import BONSAI_TOKEN_BASE_ABI from "../../abis/contracts/base/bonsai-token.base.contract.abi.json";
+import USDT_TOKEN_POLYGON_ABI from "../../abis/contracts/polygon/usdt-token.polygon.contract.abi.json";
+import POINTLESS_TOKEN_POLYGON_ABI from "../../abis/contracts/polygon/pointless-token.polygon.contract.abi.json";
+import TOBY_TOKEN_BASE_ABI from "../../abis/contracts/base/toby-token.base.contract.abi.json";
+import TOSHI_TOKEN_BASE_ABI from "../../abis/contracts/base/toshi-token.base.contract.abi.json";
+import { setVariablesTipUtil } from "./set-variables-tip.util";
 
 export const hasAmountApprovedGetContractTipsUtil = async (
-  selectedToken: keyof typeof tokenSymbol,
+  selectedNetwork: keyof typeof networks,
+  selectedToken: keyof typeof baseTokenSymbol | keyof typeof polygonTokenSymbol,
   fromAddress: `0x${string}`,
   enteredAmount: number
 ) => {
   try {
-    if (selectedToken === tokenSymbol.MATIC) {
-      return true;
-    }
-    const tokenContractAddress: `0x${string}` = tokenAddress[selectedToken];
+    const variables = setVariablesTipUtil(selectedNetwork, selectedToken);
+    const tokenContractAddress = variables.tokenContractAddress;
+    const decimals = variables.decimals;
+    const wagmiConfig = variables.wagmiConfig;
+    const lensviewTippingAddress = variables.lensviewTippingAddress;
+    const ABI = variables.ABI;
+
+    // Check allowance
     const approvedTokenAmount = await readContract(wagmiConfig, {
-      abi: LENSVIEW_TIPPING_ABI,
-      address: LENSVIEW_TIPPING_ADDRESS,
+      abi: ABI,
+      address: lensviewTippingAddress,
       functionName: "checkAllowance",
       args: [tokenContractAddress, fromAddress],
       account: fromAddress
     });
     console.log("Approved amount", approvedTokenAmount);
-    return Number(approvedTokenAmount) / 10 ** 18 >= enteredAmount;
+    return Number(approvedTokenAmount) / 10 ** decimals >= enteredAmount;
   } catch (error) {
     console.log("Error occurred while checking allowance", error);
     return false;
@@ -37,26 +48,56 @@ export const hasAmountApprovedGetContractTipsUtil = async (
 };
 
 export const getTokenBalanceGetContractTipsUtil = async (
-  token: keyof typeof tokenSymbol,
+  selectedNetwork: keyof typeof networks,
+  selectedToken: keyof typeof baseTokenSymbol | keyof typeof polygonTokenSymbol,
   address: `0x${string}`
 ) => {
   try {
-    let tokenContractAddress, ABI;
-    switch (token) {
-      case "BONSAI":
-        tokenContractAddress = tokenAddress.BONSAI;
-        ABI = BONSAI_TOKEN_ABI;
-        break;
-      case "USDT":
-        tokenContractAddress = tokenAddress.USDT;
-        ABI = USDT_TOKEN_ABI;
-        break;
-      case "POINTLESS":
-        tokenContractAddress = tokenAddress.POINTLESS;
-        ABI = POINTLESS_TOKEN_ABI;
-        break;
-      case "MATIC":
-        return await getTokenBalanceTipUtilMatic(address);
+    let wagmiConfig, ABI, decimals, tokenContractAddress;
+    if (selectedNetwork === networks.POLYGON) {
+      tokenContractAddress =
+        polygonTokenAddresses[
+          selectedToken as keyof typeof polygonTokenAddresses
+        ];
+      decimals =
+        polygonTokenDecimals[
+          selectedToken as keyof typeof polygonTokenDecimals
+        ];
+      switch (selectedToken) {
+        case polygonTokenSymbol.BONSAI:
+          ABI = BONSAI_TOKEN_POLYGON_ABI;
+          break;
+        case polygonTokenSymbol.USDT:
+          ABI = USDT_TOKEN_POLYGON_ABI;
+          break;
+        case polygonTokenSymbol.POINTLESS:
+          // @ts-ignore
+          ABI = POINTLESS_TOKEN_POLYGON_ABI;
+          break;
+        default:
+          return 0;
+      }
+      wagmiConfig = wagmiConfigPolygon;
+    } else {
+      tokenContractAddress =
+        baseTokenAddresses[selectedToken as keyof typeof baseTokenAddresses];
+      decimals =
+        baseTokenDecimals[selectedToken as keyof typeof baseTokenDecimals];
+      switch (selectedToken) {
+        case baseTokenSymbol.BONSAI:
+          // @ts-ignore
+          ABI = BONSAI_TOKEN_BASE_ABI;
+          break;
+        case baseTokenSymbol.TOBY:
+          ABI = TOBY_TOKEN_BASE_ABI;
+          break;
+        case baseTokenSymbol.TOSHI:
+          ABI = TOSHI_TOKEN_BASE_ABI;
+          break;
+        default:
+          return 0;
+      }
+      wagmiConfig = wagmiConfigBase;
     }
     const tokenBalance = await readContract(wagmiConfig, {
       abi: ABI,
@@ -65,7 +106,7 @@ export const getTokenBalanceGetContractTipsUtil = async (
       args: [address],
       account: address
     });
-    return Number(tokenBalance) / 10 ** 18;
+    return Number(tokenBalance) / 10 ** decimals;
   } catch (error) {
     console.log("Failed to fetch balance. Error: ", error);
     return 0;

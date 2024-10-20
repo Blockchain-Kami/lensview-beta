@@ -3,18 +3,28 @@
   import { backInOut } from "svelte/easing";
   import { fly } from "svelte/transition";
   import { close } from "../utils/app-icon.util.js";
+  import {
+    polygonLogo,
+    baseLogo
+  } from "../lib/assets/base64/network-logo.base64.asset.json";
   import Icon from "$lib/Icon.svelte";
   import { getAccount } from "@wagmi/core";
   import { wagmiConfig } from "../utils/web3modal.util";
   import web3Modal from "../utils/web3modal.util";
-  import { tokenSymbol, tokenAddress } from "../config/app-constants.config";
+  import {
+    networIds,
+    networks,
+    baseTokenSymbol,
+    polygonTokenSymbol
+  } from "../config/app-constants.config";
   import { getNotificationsContext } from "svelte-notifications";
-  import { sendMaticTipUtil } from "../utils/tips/send-matic.tip.util";
   import { getTokenBalanceGetContractTipsUtil } from "../utils/tips/get-contract.tips.util";
   import { hasAmountApprovedGetContractTipsUtil } from "../utils/tips/get-contract.tips.util";
   import { approveTokenWriteContractUtil } from "../utils/tips/write-contract.tips.util";
   import { tipTokenWriteContractUtil } from "../utils/tips/write-contract.tips.util";
   import { onMount } from "svelte";
+
+  import { switchChain } from "@wagmi/core";
 
   const { addNotification } = getNotificationsContext();
   let dialog: HTMLDialogElement;
@@ -22,13 +32,11 @@
   export let showTippingModal: boolean;
   export let toAddress: string;
   export let toHandle: string;
-  let balances = {
-    MATIC: 0,
-    BONSAI: 0,
-    USDT: 0
-  };
   let fromAddress: `0x${string}`;
-  let selectedToken: keyof typeof tokenSymbol;
+  let selectedToken:
+    | keyof typeof baseTokenSymbol
+    | keyof typeof polygonTokenSymbol;
+  let selectedNetwork = networks.BASE;
   let userEnteredAmount: number;
   let isAmountInvalid = true;
   let tippingSuccess = false;
@@ -36,6 +44,21 @@
   let AmountInvalidReason = "";
   let buttonValue = "Send";
   $: if (dialog && showTippingModal) dialog.showModal();
+
+  const networkTokens = {
+    POLYGON: [
+      { value: "BONSAI", label: "BONSAI", selected: true, balance: 0 },
+      { value: "POINTLESS", label: "POINTLESS", balance: 0 },
+      { value: "USDT", label: "USDT", balance: 0 }
+    ],
+    BASE: [
+      { value: "BONSAI", label: "BONSAI", selected: true, balance: 0 },
+      { value: "TOBY", label: "TOBY", balance: 0 },
+      { value: "TOSHI", label: "TOSHI", balance: 0 }
+      // { value: "USDT", label: "USDT" },
+      // { value: "USDC", label: "USDC" }
+    ]
+  };
 
   onMount(() => {
     fromAddress = getAccount(wagmiConfig).address;
@@ -50,7 +73,8 @@
       AmountInvalidReason = "";
       if (
         await hasAmountApprovedGetContractTipsUtil(
-          selectedToken as keyof typeof tokenAddress,
+          selectedNetwork,
+          selectedToken,
           fromAddress,
           enteredAmount
         )
@@ -78,40 +102,51 @@
   };
 
   const clickButtonEvent = async () => {
-    userEnteredAmount = Number(userEnteredAmount);
-    if (buttonValue === "Approve") {
-      await approve(userEnteredAmount);
-    } else if (buttonValue === "Send") {
-      await sendTip(userEnteredAmount);
+    try {
+      await switchChain(wagmiConfig, { chainId: networIds[selectedNetwork] });
+      userEnteredAmount = Number(userEnteredAmount);
+      if (buttonValue === "Approve") {
+        await approve(userEnteredAmount);
+      } else if (buttonValue === "Send") {
+        await sendTip(userEnteredAmount);
+      }
+    } catch (error) {
+      console.log("Error", error);
     }
   };
 
   const approve = async (amount) => {
-    isSendingTip = true;
-    buttonValue = "Approving...";
-    const transactionStatus = await approveTokenWriteContractUtil(
-      selectedToken,
-      fromAddress,
-      amount
-    );
-    await checkAmountIsValid(amount);
-    if (transactionStatus.success && transactionStatus.result) {
-      addNotificationEvent(
-        "Tokens Approved",
-        `Your tip to ready to be sent to @${toHandle}`,
-        flightTakeoff,
-        2000
+    try {
+      isSendingTip = true;
+      buttonValue = "Approving...";
+      const transactionStatus = await approveTokenWriteContractUtil(
+        selectedNetwork,
+        selectedToken,
+        fromAddress,
+        amount
       );
-    } else {
-      addNotificationEvent(
-        "Failed To Approve",
-        transactionStatus.error,
-        error,
-        2000
-      );
+      await checkAmountIsValid(amount);
+      if (transactionStatus.success && transactionStatus.result) {
+        addNotificationEvent(
+          "Tokens Approved",
+          `Your tip to ready to be sent to @${toHandle}`,
+          flightTakeoff,
+          2000
+        );
+      } else {
+        addNotificationEvent(
+          "Failed To Approve",
+          transactionStatus.error,
+          error,
+          2000
+        );
+      }
+      isSendingTip = false;
+      return;
+    } catch (e) {
+      console.log("Error while approving", e);
+      addNotificationEvent("Failed To Approve", e.message, error, 2000);
     }
-    isSendingTip = false;
-    return;
   };
 
   const sendTip = async (amount) => {
@@ -121,27 +156,21 @@
     buttonValue = "Sending...";
     isSendingTip = true;
     let tipDetails;
-    if (selectedToken == tokenSymbol.MATIC) {
-      if (userEnteredAmount > balances.MATIC) {
-        sendInsufficientBalanceEvent();
-        return;
-      }
-      tipDetails = await sendMaticTipUtil(toAddress, amount.toString());
-    } else {
-      if (amount > balances[selectedToken]) {
-        sendInsufficientBalanceEvent();
-        return;
-      }
-      tipDetails = await tipTokenWriteContractUtil(
-        selectedToken,
-        toAddress,
-        amount.toString(),
-        123,
-        234,
-        456,
-        fromAddress
-      );
+    let index = getTokenIndex(selectedToken);
+    if (amount > networkTokens[selectedNetwork][index].balance) {
+      sendInsufficientBalanceEvent();
+      return;
     }
+    tipDetails = await tipTokenWriteContractUtil(
+      selectedNetwork,
+      selectedToken,
+      toAddress,
+      amount,
+      123,
+      234,
+      456,
+      fromAddress
+    );
 
     if (tipDetails.success && !tipDetails.error) {
       userEnteredAmount = null;
@@ -161,6 +190,17 @@
       return;
     }
   };
+
+  // const showAvailableNetworks = () => {
+  //   dialog.close();
+  //   web3Modal.open({ view: "Networks" });
+  // };
+  //
+  // const switchNetwork = async () => {
+  //   console.log("chain switch");
+  //
+  //   await switchChain(wagmiConfig, { chainId: 137 });
+  // };
 
   const addNotificationEvent = (heading, description, type, removeAfter) => {
     addNotification({
@@ -189,9 +229,23 @@
   };
 
   const setBalance = (token, balance) => {
-    checkAmountIsValid(userEnteredAmount);
-    balances[token] = balance;
-    return Math.round(balance * 100) / 100;
+    try {
+      // console.log("checkAmountIsValid(userEnteredAmount)", checkAmountIsValid(userEnteredAmount));
+      if (checkAmountIsValid(userEnteredAmount)) {
+        let index = getTokenIndex(token);
+        networkTokens[selectedNetwork][index].balance = balance;
+        return Math.round(balance * 100) / 100;
+      }
+    } catch (error) {
+      console.log("Error while fetching balance: ", error);
+      return 0;
+    }
+  };
+
+  const getTokenIndex = (token) => {
+    return networkTokens[selectedNetwork].findIndex(
+      (val) => val.label === token
+    );
   };
 </script>
 
@@ -235,8 +289,8 @@
               </div>
               <br />
               <p>
-                Your contributions help our Viewers to keep doing what they love
-                the most!
+                Your contributions help our viewers keep doing what they love
+                most!
               </p>
             </div>
           </div>
@@ -263,18 +317,42 @@
               style="font-weight: bold; color: #23f9ff">@{toHandle}</span
             >
           </p>
-          <label for="tokens"> Select a token </label>
+
+          <div class="network-selection">
+            <button
+              type="button"
+              class:selected={selectedNetwork === networks.BASE}
+              on:click={() => {
+                selectedNetwork = networks.BASE;
+                selectedToken = baseTokenSymbol.BONSAI;
+              }}
+            >
+              <img src={baseLogo} alt="Base Logo" />
+              Base
+            </button>
+            <button
+              type="button"
+              class:selected={selectedNetwork === networks.POLYGON}
+              on:click={() => {
+                selectedNetwork = networks.POLYGON;
+                selectedToken = polygonTokenSymbol.BONSAI;
+              }}
+            >
+              <img src={polygonLogo} alt="Polygon Logo" />
+              Polygon
+            </button>
+          </div>
+          <label for="tokens"> Select A token </label>
           <div>
             <select name="tokens" id="tokens" bind:value={selectedToken}>
-              <option value="MATIC">MATIC</option>
-              <option value="BONSAI" selected>BONSAI</option>
-              <option value="POINTLESS">POINTLESS</option>
-              <!--              <option value="USDC">USDC</option>-->
-              <option value="USDT">USDT</option>
+              {#each networkTokens[selectedNetwork] as token}
+                <option value={token.value} selected={token.selected}
+                  >{token.label}</option
+                >
+              {/each}
             </select>
-
             <div id="token-info">
-              {#await getTokenBalanceGetContractTipsUtil(selectedToken, fromAddress)}
+              {#await getTokenBalanceGetContractTipsUtil(selectedNetwork, selectedToken, fromAddress)}
                 <span class="fetching">Fetching token balance...</span>
               {:then amount}
                 <span class="available">
@@ -437,5 +515,30 @@
   .error {
     color: #ff4500; /* Orange red color for error */
     //margin-left: 225px;
+  }
+
+  .network-selection button {
+    border: none;
+    background-color: #1f4045;
+    padding: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    opacity: 50%;
+  }
+
+  .network-selection img {
+    height: 20px;
+    width: 20px;
+    margin-right: 8px;
+  }
+
+  .network-selection button.selected {
+    background-color: #2b5a60; /* Highlight selected button */
+    color: white;
+    cursor: default;
+    opacity: 100%;
   }
 </style>
