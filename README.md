@@ -10,7 +10,8 @@ LensView is revolutionizing the way people interact with the internet by creatin
 ## 🏄🏿‍♂️ LensView's Browser Extension
 
 <a href="https://chromewebstore.google.com/detail/lensview/bhbcbfcabkodjhgkjccnoflnffcfkfnd" target="_blank" rel="noreferrer">
-    <img alt="Available in the Chrome Web Store" src="https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/HRs9MPufa1J1h5glNhut.png" width="256">
+   <img alt="Available on Chrome Web Store" src="https://miro.medium.com/v2/resize:fit:379/1*LPpOEvAjDGOz0AY0mnPW0A.png" width="26">
+    Available on Chrome Web Store
 </a>
 
 ![lensview extension](images/lensview-extension.jpg)
@@ -23,8 +24,11 @@ LensView is revolutionizing the way people interact with the internet by creatin
 
 ## 🏆Awards/Recognitions
 
-### <a href="https://www.youtube.com/watch?v=O5WXx-31A9I&t=2790s"  target="_blank">Witness the moment</a>🔗
+### <a href="https://devfolio.co/projects/lensview-70b2"  target="_blank">View Prize</a>🔗
 
+![coinbase-prize.jpg](images/coinbase-prize.jpg)
+
+### <a href="https://www.youtube.com/watch?v=O5WXx-31A9I&t=2790s"  target="_blank">Witness the moment</a>🔗
 
 ![encode-prize.jpg](images/encode-prize.jpg)
 ![eth-global.jpg](images/eth-global.jpg)
