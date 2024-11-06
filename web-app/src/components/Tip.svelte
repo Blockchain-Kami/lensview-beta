@@ -5,7 +5,8 @@
   import { close } from "../utils/app-icon.util.js";
   import {
     polygonLogo,
-    baseLogo
+    baseLogo,
+    lineaLogo
   } from "../lib/assets/base64/network-logo.base64.asset.json";
   import Icon from "$lib/Icon.svelte";
   import { getAccount } from "@wagmi/core";
@@ -15,7 +16,8 @@
     networIds,
     networks,
     baseTokenSymbol,
-    polygonTokenSymbol
+    polygonTokenSymbol,
+    lineaTokenSymbol
   } from "../config/app-constants.config";
   import { getNotificationsContext } from "svelte-notifications";
   import { getTokenBalanceGetContractTipsUtil } from "../utils/tips/get-contract.tips.util";
@@ -35,7 +37,8 @@
   let fromAddress: `0x${string}`;
   let selectedToken:
     | keyof typeof baseTokenSymbol
-    | keyof typeof polygonTokenSymbol;
+    | keyof typeof polygonTokenSymbol
+    | keyof typeof lineaTokenSymbol;
   let selectedNetwork = networks.BASE;
   let userEnteredAmount: number;
   let isAmountInvalid = true;
@@ -47,16 +50,21 @@
 
   const networkTokens = {
     POLYGON: [
-      { value: "BONSAI", label: "BONSAI", selected: true, balance: 0 },
+      { value: "BONSAI", label: "BONSAI", balance: 0 },
       { value: "POINTLESS", label: "POINTLESS", balance: 0 },
       { value: "USDT", label: "USDT", balance: 0 }
     ],
     BASE: [
-      { value: "BONSAI", label: "BONSAI", selected: true, balance: 0 },
+      { value: "BONSAI", label: "BONSAI", balance: 0 },
       { value: "TOBY", label: "TOBY", balance: 0 },
       { value: "TOSHI", label: "TOSHI", balance: 0 }
       // { value: "USDT", label: "USDT" },
       // { value: "USDC", label: "USDC" }
+    ],
+    LINEA: [
+      { value: "FOXY", label: "FOXY", balance: 0 },
+      { value: "USDC", label: "USDC", balance: 0 },
+      { value: "USDT", label: "USDT", balance: 0 }
     ]
   };
 
@@ -190,17 +198,6 @@
       return;
     }
   };
-
-  // const showAvailableNetworks = () => {
-  //   dialog.close();
-  //   web3Modal.open({ view: "Networks" });
-  // };
-  //
-  // const switchNetwork = async () => {
-  //   console.log("chain switch");
-  //
-  //   await switchChain(wagmiConfig, { chainId: 137 });
-  // };
 
   const addNotificationEvent = (heading, description, type, removeAfter) => {
     addNotification({
@@ -341,14 +338,24 @@
               <img src={polygonLogo} alt="Polygon Logo" />
               Polygon
             </button>
+
+            <button
+              type="button"
+              class:selected={selectedNetwork === networks.LINEA}
+              on:click={() => {
+                selectedNetwork = networks.LINEA;
+                selectedToken = lineaTokenSymbol.FOXY;
+              }}
+            >
+              <img src={lineaLogo} alt="Linea Logo" />
+              Linea
+            </button>
           </div>
-          <label for="tokens"> Select A token </label>
+          <label for="tokens"> Select A Token </label>
           <div>
             <select name="tokens" id="tokens" bind:value={selectedToken}>
               {#each networkTokens[selectedNetwork] as token}
-                <option value={token.value} selected={token.selected}
-                  >{token.label}</option
-                >
+                <option value={token.value}>{token.label}</option>
               {/each}
             </select>
             <div id="token-info">

@@ -42,12 +42,14 @@ export enum localStorageKeys {
 
 export enum networks {
   POLYGON = "POLYGON",
-  BASE = "BASE"
+  BASE = "BASE",
+  LINEA = "LINEA"
 }
 
 export enum networIds {
   POLYGON = 137,
-  BASE = 8453
+  BASE = 8453,
+  LINEA = 59144
 }
 
 export enum polygonTokenSymbol {
@@ -85,14 +87,34 @@ export enum baseTokenAddresses {
   TOSHI = "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4"
 }
 
+export enum lineaTokenSymbol {
+  USDC = "USDC",
+  USDT = "USDT",
+  FOXY = "FOXY"
+}
+
+export enum lineaTokenDecimals {
+  USDC = 6,
+  USDT = 6,
+  FOXY = 18
+}
+
+export enum lineaTokenAddresses {
+  USDC = "0x176211869ca2b568f2a7d4ee941e073a821ee1ff",
+  USDT = "0xA219439258ca9da29E9Cc4cE5596924745e12B93",
+  FOXY = "0x5FBDF89403270a1846F5ae7D113A989F850d1566"
+}
+
 export const tokenSymbol = {
   POLYGON: polygonTokenSymbol,
-  BASE: baseTokenSymbol
+  BASE: baseTokenSymbol,
+  LINEA: lineaTokenSymbol
 };
 
 export const tokenAddress = {
   POLYGON: polygonTokenAddresses,
-  BASE: baseTokenAddresses
+  BASE: baseTokenAddresses,
+  LINEA: lineaTokenAddresses
 };
 
 // TODO: Move it to .env
@@ -101,3 +123,5 @@ export const LENSVIEW_TIPPING_ADDRESS_POLYGON: `0x${string}` =
 
 export const LENSVIEW_TIPPING_ADDRESS_BASE: `0x${string}` =
   "0x85f02dD9C2D5169aFa734bf2DF44305960cC25e5";
+export const LENSVIEW_TIPPING_ADDRESS_LINEA: `0x${string}` =
+  "0xA216Cde70866AC34212122a51d898e6e0B2d76B2";
