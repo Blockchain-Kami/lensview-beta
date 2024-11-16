@@ -1,5 +1,5 @@
 import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi";
-import { polygon } from "viem/chains";
+import { polygon, base, linea } from "viem/chains";
 import { reconnect } from "@wagmi/core";
 const { VITE_WALLET_CONNECT_PROJECT_ID } = import.meta.env;
 
@@ -13,7 +13,7 @@ const metadata = {
 };
 
 // Create wagmiConfig
-const chains = [polygon] as const;
+const chains = [polygon, base, linea] as const;
 export const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId: VITE_WALLET_CONNECT_PROJECT_ID,
@@ -27,6 +27,49 @@ export const wagmiConfig = defaultWagmiConfig({
   enableCoinbase: false,
   enableInjected: false
 });
+
+export const wagmiConfigBase = defaultWagmiConfig({
+  chains: [base],
+  projectId: VITE_WALLET_CONNECT_PROJECT_ID,
+  metadata,
+  auth: {
+    email: true,
+    socials: ["google", "x", "github", "discord", "apple"],
+    showWallets: true,
+    walletFeatures: true
+  },
+  enableCoinbase: false,
+  enableInjected: false
+});
+
+export const wagmiConfigPolygon = defaultWagmiConfig({
+  chains: [polygon],
+  projectId: VITE_WALLET_CONNECT_PROJECT_ID,
+  metadata,
+  auth: {
+    email: true,
+    socials: ["google", "x", "github", "discord", "apple"],
+    showWallets: true,
+    walletFeatures: true
+  },
+  enableCoinbase: false,
+  enableInjected: false
+});
+
+export const wagmiConfigLinea = defaultWagmiConfig({
+  chains: [linea],
+  projectId: VITE_WALLET_CONNECT_PROJECT_ID,
+  metadata,
+  auth: {
+    email: true,
+    socials: ["google", "x", "github", "discord", "apple"],
+    showWallets: true,
+    walletFeatures: true
+  },
+  enableCoinbase: false,
+  enableInjected: false
+});
+
 reconnect(wagmiConfig);
 
 const web3ModalUtil = createWeb3Modal({

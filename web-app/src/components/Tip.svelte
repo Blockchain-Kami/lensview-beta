@@ -1,23 +1,32 @@
 <script lang="ts">
-  import { wallet, error } from "../utils/app-icon.util";
+  import { wallet, error, flightTakeoff } from "../utils/app-icon.util";
   import { backInOut } from "svelte/easing";
   import { fly } from "svelte/transition";
   import { close } from "../utils/app-icon.util.js";
+  import {
+    polygonLogo,
+    baseLogo,
+    lineaLogo
+  } from "../lib/assets/base64/network-logo.base64.asset.json";
   import Icon from "$lib/Icon.svelte";
   import { getAccount } from "@wagmi/core";
   import { wagmiConfig } from "../utils/web3modal.util";
   import web3Modal from "../utils/web3modal.util";
-  import { tokenSymbol } from "../config/app-constants.config";
+  import {
+    networIds,
+    networks,
+    baseTokenSymbol,
+    polygonTokenSymbol,
+    lineaTokenSymbol
+  } from "../config/app-constants.config";
   import { getNotificationsContext } from "svelte-notifications";
-  import {
-    sendTipUtilBonsai,
-    sendTipUtilMatic
-  } from "../utils/tips/send.tip.util";
-  import {
-    getTokenBalanceTipUtilMatic,
-    getTokenBalanceTipUtilBonsai
-  } from "../utils/tips/get-token-balance.tip.util";
+  import { getTokenBalanceGetContractTipsUtil } from "../utils/tips/get-contract.tips.util";
+  import { hasAmountApprovedGetContractTipsUtil } from "../utils/tips/get-contract.tips.util";
+  import { approveTokenWriteContractUtil } from "../utils/tips/write-contract.tips.util";
+  import { tipTokenWriteContractUtil } from "../utils/tips/write-contract.tips.util";
   import { onMount } from "svelte";
+
+  import { switchChain } from "@wagmi/core";
 
   const { addNotification } = getNotificationsContext();
   let dialog: HTMLDialogElement;
@@ -25,27 +34,63 @@
   export let showTippingModal: boolean;
   export let toAddress: string;
   export let toHandle: string;
-  let maticBalance = 0;
-  let bonsaiBalance = 0;
   let fromAddress: `0x${string}`;
-  let selectedToken: string;
+  let selectedToken:
+    | keyof typeof baseTokenSymbol
+    | keyof typeof polygonTokenSymbol
+    | keyof typeof lineaTokenSymbol;
+  let selectedNetwork = networks.BASE;
   let userEnteredAmount: number;
   let isAmountInvalid = true;
   let tippingSuccess = false;
   let isSendingTip = false;
   let AmountInvalidReason = "";
+  let buttonValue = "Send";
   $: if (dialog && showTippingModal) dialog.showModal();
+
+  const networkTokens = {
+    POLYGON: [
+      { value: "BONSAI", label: "BONSAI", balance: 0 },
+      { value: "POINTLESS", label: "POINTLESS", balance: 0 },
+      { value: "USDT", label: "USDT", balance: 0 }
+    ],
+    BASE: [
+      { value: "BONSAI", label: "BONSAI", balance: 0 },
+      { value: "TOBY", label: "TOBY", balance: 0 },
+      { value: "TOSHI", label: "TOSHI", balance: 0 }
+      // { value: "USDT", label: "USDT" },
+      // { value: "USDC", label: "USDC" }
+    ],
+    LINEA: [
+      { value: "FOXY", label: "FOXY", balance: 0 },
+      { value: "USDC", label: "USDC", balance: 0 },
+      { value: "USDT", label: "USDT", balance: 0 }
+    ]
+  };
 
   onMount(() => {
     fromAddress = getAccount(wagmiConfig).address;
   });
 
-  const checkAmountIsValid = (amount: number) => {
+  const checkAmountIsValid = async (amount: number) => {
+    buttonValue = "...";
     const enteredAmount = Number(amount);
     console.log("enteredAmount", enteredAmount);
     if (enteredAmount >= 0.00001) {
       isAmountInvalid = false;
       AmountInvalidReason = "";
+      if (
+        await hasAmountApprovedGetContractTipsUtil(
+          selectedNetwork,
+          selectedToken,
+          fromAddress,
+          enteredAmount
+        )
+      ) {
+        buttonValue = "Send";
+      } else {
+        buttonValue = "Approve";
+      }
       return true;
     } else if (enteredAmount === 0) {
       isAmountInvalid = true;
@@ -53,6 +98,10 @@
     } else if (enteredAmount < 0.00001) {
       isAmountInvalid = true;
       AmountInvalidReason = "Minimum Tip Amount is 0.000001";
+    } else if (isNaN(enteredAmount)) {
+      isAmountInvalid = true;
+      AmountInvalidReason = "";
+      buttonValue = "Send";
     } else {
       isAmountInvalid = true;
       AmountInvalidReason = "Please enter a valid amount";
@@ -60,33 +109,76 @@
     return false;
   };
 
-  const sendTip = async () => {
-    userEnteredAmount = Number(userEnteredAmount);
-    if (!checkAmountIsValid(userEnteredAmount)) {
+  const clickButtonEvent = async () => {
+    try {
+      await switchChain(wagmiConfig, { chainId: networIds[selectedNetwork] });
+      userEnteredAmount = Number(userEnteredAmount);
+      if (buttonValue === "Approve") {
+        await approve(userEnteredAmount);
+      } else if (buttonValue === "Send") {
+        await sendTip(userEnteredAmount);
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+  };
+
+  const approve = async (amount) => {
+    try {
+      isSendingTip = true;
+      buttonValue = "Approving...";
+      const transactionStatus = await approveTokenWriteContractUtil(
+        selectedNetwork,
+        selectedToken,
+        fromAddress,
+        amount
+      );
+      await checkAmountIsValid(amount);
+      if (transactionStatus.success && transactionStatus.result) {
+        addNotificationEvent(
+          "Tokens Approved",
+          `Your tip to ready to be sent to @${toHandle}`,
+          flightTakeoff,
+          2000
+        );
+      } else {
+        addNotificationEvent(
+          "Failed To Approve",
+          transactionStatus.error,
+          error,
+          2000
+        );
+      }
+      isSendingTip = false;
+      return;
+    } catch (e) {
+      console.log("Error while approving", e);
+      addNotificationEvent("Failed To Approve", e.message, error, 2000);
+    }
+  };
+
+  const sendTip = async (amount) => {
+    if (!(await checkAmountIsValid(userEnteredAmount))) {
       return;
     }
+    buttonValue = "Sending...";
     isSendingTip = true;
     let tipDetails;
-    if (selectedToken == tokenSymbol.BONSAI) {
-      if (userEnteredAmount > bonsaiBalance) {
-        sendInsufficientBalanceEvent();
-        return;
-      }
-      tipDetails = await sendTipUtilBonsai(
-        fromAddress,
-        toAddress,
-        userEnteredAmount.toString()
-      );
-    } else if (selectedToken == tokenSymbol.MATIC) {
-      if (userEnteredAmount > maticBalance) {
-        sendInsufficientBalanceEvent();
-        return;
-      }
-      tipDetails = await sendTipUtilMatic(
-        toAddress,
-        userEnteredAmount.toString()
-      );
+    let index = getTokenIndex(selectedToken);
+    if (amount > networkTokens[selectedNetwork][index].balance) {
+      sendInsufficientBalanceEvent();
+      return;
     }
+    tipDetails = await tipTokenWriteContractUtil(
+      selectedNetwork,
+      selectedToken,
+      toAddress,
+      amount,
+      123,
+      234,
+      456,
+      fromAddress
+    );
 
     if (tipDetails.success && !tipDetails.error) {
       userEnteredAmount = null;
@@ -102,6 +194,7 @@
         4000
       );
       isSendingTip = false;
+      buttonValue = "Send";
       return;
     }
   };
@@ -132,14 +225,24 @@
     return;
   };
 
-  const setMaticBalance = (balance) => {
-    maticBalance = balance;
-    return Math.round(maticBalance * 100) / 100;
+  const setBalance = (token, balance) => {
+    try {
+      // console.log("checkAmountIsValid(userEnteredAmount)", checkAmountIsValid(userEnteredAmount));
+      if (checkAmountIsValid(userEnteredAmount)) {
+        let index = getTokenIndex(token);
+        networkTokens[selectedNetwork][index].balance = balance;
+        return Math.round(balance * 100) / 100;
+      }
+    } catch (error) {
+      console.log("Error while fetching balance: ", error);
+      return 0;
+    }
   };
 
-  const setBonsaiBalance = (balance) => {
-    bonsaiBalance = balance;
-    return Math.round(bonsaiBalance * 100) / 100;
+  const getTokenIndex = (token) => {
+    return networkTokens[selectedNetwork].findIndex(
+      (val) => val.label === token
+    );
   };
 </script>
 
@@ -183,8 +286,8 @@
               </div>
               <br />
               <p>
-                Your contributions help our Viewers to keep doing what they love
-                the most!
+                Your contributions help our viewers keep doing what they love
+                most!
               </p>
             </div>
           </div>
@@ -211,37 +314,60 @@
               style="font-weight: bold; color: #23f9ff">@{toHandle}</span
             >
           </p>
-          <label for="tokens"> Select a token </label>
+
+          <div class="network-selection">
+            <button
+              type="button"
+              class:selected={selectedNetwork === networks.BASE}
+              on:click={() => {
+                selectedNetwork = networks.BASE;
+                selectedToken = baseTokenSymbol.BONSAI;
+              }}
+            >
+              <img src={baseLogo} alt="Base Logo" />
+              Base
+            </button>
+            <button
+              type="button"
+              class:selected={selectedNetwork === networks.POLYGON}
+              on:click={() => {
+                selectedNetwork = networks.POLYGON;
+                selectedToken = polygonTokenSymbol.BONSAI;
+              }}
+            >
+              <img src={polygonLogo} alt="Polygon Logo" />
+              Polygon
+            </button>
+
+            <button
+              type="button"
+              class:selected={selectedNetwork === networks.LINEA}
+              on:click={() => {
+                selectedNetwork = networks.LINEA;
+                selectedToken = lineaTokenSymbol.FOXY;
+              }}
+            >
+              <img src={lineaLogo} alt="Linea Logo" />
+              Linea
+            </button>
+          </div>
+          <label for="tokens"> Select A Token </label>
           <div>
             <select name="tokens" id="tokens" bind:value={selectedToken}>
-              <option value="MATIC">MATIC</option>
-              <option value="BONSAI" selected>BONSAI</option>
+              {#each networkTokens[selectedNetwork] as token}
+                <option value={token.value}>{token.label}</option>
+              {/each}
             </select>
-
             <div id="token-info">
-              {#if selectedToken === "MATIC"}
-                {#await getTokenBalanceTipUtilMatic(fromAddress)}
-                  <span class="fetching">Fetching token balance...</span>
-                {:then data}
-                  <span class="available">
-                    Available: {setMaticBalance(data)}
-                  </span>
-                {:catch _error}
-                  <span class="error">Failed to load balance</span>
-                {/await}
-              {/if}
-
-              {#if selectedToken === "BONSAI"}
-                {#await getTokenBalanceTipUtilBonsai(fromAddress)}
-                  <span class="fetching">Fetching token balance...</span>
-                {:then data}
-                  <span class="available">
-                    Available: {setBonsaiBalance(data)}
-                  </span>
-                {:catch _error}
-                  <span class="error">Failed to load balance</span>
-                {/await}
-              {/if}
+              {#await getTokenBalanceGetContractTipsUtil(selectedNetwork, selectedToken, fromAddress)}
+                <span class="fetching">Fetching token balance...</span>
+              {:then amount}
+                <span class="available">
+                  Available: {setBalance(selectedToken, amount)}
+                </span>
+              {:catch _error}
+                <span class="error">Failed to load balance</span>
+              {/await}
             </div>
           </div>
         </div>
@@ -266,13 +392,13 @@
         <div class="CenterRowFlex footer">
           <div class="footer__left" />
           <div class="CenterRowFlex footer__right">
-            {#if !isSendingTip}
-              <button class="btn" on:click={sendTip} disabled={isAmountInvalid}>
-                Send
-              </button>
-            {:else}
-              <button class="btn" disabled> Sending.. </button>
-            {/if}
+            <button
+              class="btn"
+              on:click={clickButtonEvent}
+              disabled={isAmountInvalid || isSendingTip}
+            >
+              {buttonValue}
+            </button>
           </div>
         </div>
       {/if}
@@ -396,5 +522,30 @@
   .error {
     color: #ff4500; /* Orange red color for error */
     //margin-left: 225px;
+  }
+
+  .network-selection button {
+    border: none;
+    background-color: #1f4045;
+    padding: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    opacity: 50%;
+  }
+
+  .network-selection img {
+    height: 20px;
+    width: 20px;
+    margin-right: 8px;
+  }
+
+  .network-selection button.selected {
+    background-color: #2b5a60; /* Highlight selected button */
+    color: white;
+    cursor: default;
+    opacity: 100%;
   }
 </style>
