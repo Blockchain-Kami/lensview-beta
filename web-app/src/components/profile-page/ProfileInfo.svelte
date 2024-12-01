@@ -29,6 +29,7 @@
   import web3ModalUtil, { wagmiConfig } from "../../utils/web3modal.util";
   import TipImage from "$lib/assets/Tip.svg";
   import Tip from "../Tip.svelte";
+  import { tooltip } from "@svelte-plugins/tooltips";
 
   const { addNotification } = getNotificationsContext();
   let promiseOfGetProfile = getProfileUsingIdLensService($page.data.profileId);
@@ -267,6 +268,14 @@
           <button
             on:click={initiateTippingProcess(response)}
             style="cursor: pointer"
+            use:tooltip={{
+              content: "Send A Tip",
+              position: "right",
+              autoPosition: true,
+              align: "center",
+              animation: "slide",
+              theme: "custom-tooltip"
+            }}
           >
             <img src={TipImage} alt="tip" />
           </button>

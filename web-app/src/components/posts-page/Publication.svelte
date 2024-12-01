@@ -41,6 +41,7 @@
   import Tip from "../Tip.svelte";
   import TipImage from "$lib/assets/Tip.svg";
   const { VITE_APP_LENS_ID } = import.meta.env;
+  import { tooltip } from "@svelte-plugins/tooltips";
 
   const { addNotification } = getNotificationsContext();
   let postPubId = $page.data.postPubId;
@@ -229,8 +230,6 @@
   };
 
   const initiateTippingProcess = async (event, commentDetails) => {
-    console.log("------------sendTip--------------");
-    console.log("commentDetails", commentDetails);
     event.stopPropagation();
     let address = getAccount(wagmiConfig).address;
     if (address) {
@@ -308,6 +307,14 @@
             <div>
               <button
                 on:click={(event) => initiateTippingProcess(event, comments[0])}
+                use:tooltip={{
+                  content: "Send A Tip",
+                  position: "left",
+                  autoPosition: true,
+                  align: "center",
+                  animation: "slide",
+                  theme: "custom-tooltip"
+                }}
               >
                 <img src={TipImage} alt="tip" />
               </button>
