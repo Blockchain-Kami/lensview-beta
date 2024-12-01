@@ -1,6 +1,8 @@
-import { polygonGasPriceService } from "../../services/polygon-gas-price.service";
-import { logger } from "../../log/log-manager.log";
-import { InternalServerError } from "../../errors/internal-server-error.error";
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
+
+import { polygonGasPriceService } from "../../services/polygon-gas-price.service.js";
+
+import { logger } from "../../log/log-manager.log.js";
 
 // get max fees from gas station
 

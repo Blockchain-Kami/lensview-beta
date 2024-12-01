@@ -1,14 +1,15 @@
-import { InternalServerError } from "../../errors/internal-server-error.error";
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
 import {
   LimitType,
   PublicationsRequest,
   PublicationsWhere
-} from "../../gql/graphql";
-import { TAG_IMAGE_PUB } from "../../config/env.config";
-import { logger } from "../../log/log-manager.log";
-import { httpStatusCodes } from "../../config/app-constants.config";
-import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util";
-import getMainPublicationImageQueryGraphql from "../../graphql/queries/get-main-publication-image.query.graphql";
+} from "../../gql/graphql.js";
+
+import { TAG_IMAGE_PUB } from "../../config/env.config.js";
+import { logger } from "../../log/log-manager.log.js";
+import { httpStatusCodes } from "../../config/app-constants.config.js";
+import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util.js";
+import GetMainPublicationImageQueryGraphql from "../../graphql/queries/get-main-publication-image.query.graphql.js";
 
 export const getMainPublicationImageLensService = async (
   publicationID: string
@@ -39,7 +40,7 @@ export const getMainPublicationImageLensService = async (
     );
 
     const result = await getBaseClientHelperUtil
-      .query(getMainPublicationImageQueryGraphql, {
+      .query(GetMainPublicationImageQueryGraphql, {
         request: publicationsRequest
       })
       .toPromise();

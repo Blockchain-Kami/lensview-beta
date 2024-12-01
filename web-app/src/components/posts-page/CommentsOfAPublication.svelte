@@ -1,5 +1,6 @@
 <script lang="ts">
   import {
+    ai,
     copy,
     cross,
     login,
@@ -40,6 +41,14 @@
   import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
   import MediaQuery from "$lib/MediaQuery.svelte";
   import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
+  import SummarizePublications from "./SummarizePublications.svelte";
+  import { TotalImagePostsStore } from "../../stores/total-image-posts.store";
+  import { getAccount } from "@wagmi/core";
+  import web3ModalUtil, { wagmiConfig } from "../../utils/web3modal.util";
+  import Tip from "../Tip.svelte";
+  import TipImage from "$lib/assets/Tip.svg";
+  import { tooltip } from "@svelte-plugins/tooltips";
+
   const { VITE_APP_LENS_ID } = import.meta.env;
   const { VITE_IMAGE_PUB } = import.meta.env;
 
@@ -51,8 +60,14 @@
   let commentPubId = $page.data.commentPubId;
   let isCommentMoreOpen: CommentMoreStatus = {};
   let selectedFilterType = CommentFilterType.LatestComments;
-  let showLoginModal = false;
   let reactionDetails: ReactionDetailsModel = {};
+  let isSummaryOpen = false;
+  let totalImagePostCount = 0;
+  let toHandle: string;
+  let toAddress: string;
+  let showTippingModal = false;
+  let dialog: HTMLDialogElement;
+  let onLoginIntialization: () => Promise<void>;
 
   let promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
     commentPubId,
@@ -60,6 +75,7 @@
   );
 
   const updatedpromiseOfGetComments = () => {
+    resetTotalImagePosts();
     promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
       commentPubId,
       LimitType.Fifty,
@@ -68,6 +84,7 @@
   };
 
   $: if (commentPubId !== $page.data.commentPubId) {
+    resetTotalImagePosts();
     commentPubId = $page.data.commentPubId;
     promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
       commentPubId,
@@ -78,6 +95,8 @@
   }
 
   onMount(() => {
+    console.log("On Mount called for commentsOfPublication");
+    resetTotalImagePosts();
     reloadCommentOfAPublication.subscribe((val) => {
       console.log("Reloaded comment of a publication" + val);
       promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
@@ -221,7 +240,7 @@
       removeAfter: 10000,
       ctaBtnName: "Login",
       ctaFunction: () => {
-        showLoginModal = true;
+        onLoginIntialization();
       }
     });
   };
@@ -252,6 +271,34 @@
   const getHandle = (comment: CommentsPublicationLensModel) => {
     return comment.by?.handle?.fullHandle.substring(5);
   };
+
+  const updateTotalImagePosts = () => {
+    totalImagePostCount++;
+    TotalImagePostsStore.setTotalImagePosts(totalImagePostCount);
+    return "";
+  };
+
+  const resetTotalImagePosts = () => {
+    isSummaryOpen = false;
+    totalImagePostCount = 0;
+    TotalImagePostsStore.setTotalImagePosts(0);
+  };
+
+  const initiateTippingProcess = async (event, commentDetails) => {
+    console.log("------------sendTip--------------");
+    console.log("commentDetails", commentDetails);
+    event.preventDefault();
+    event.stopPropagation();
+    let address = getAccount(wagmiConfig).address;
+    if (address) {
+      toHandle = commentDetails.by.handle.fullHandle.split("/")[1];
+      toAddress = commentDetails.by.ownedBy.address;
+      showTippingModal = true;
+    } else {
+      await web3ModalUtil.open();
+      dialog.close();
+    }
+  };
 </script>
 
 <!----------------------------- HTML ----------------------------->
@@ -270,15 +317,31 @@
         </select>
       </div>
       <hr class="filter__line" />
-      <div class="filter__comment-count">
-        {#if $page.data.postPubId === undefined}
-          {$totalPostsStore} &nbsp;Posts
-        {:else}
-          {$totalCommentsStore} &nbsp;Comments
-        {/if}
-      </div>
+      {#if $page.data.postPubId === undefined}
+        <button
+          on:click={() => {
+            isSummaryOpen = true;
+          }}
+          disabled={isSummaryOpen ||
+            $totalPostsStore - $TotalImagePostsStore === 0}
+          class="CenterRowFlex filter__comment-count btn-alt"
+        >
+          <span class="CenterRowFlex">
+            <Icon d={ai} size="1.7em" viewBox="-2 -2 24 24" />
+          </span>
+          Summarize
+          {$totalPostsStore - $TotalImagePostsStore} Posts
+        </button>
+      {:else}
+        <div class="filter__comment-count">
+          {$totalCommentsStore} &nbsp;Comment(s)
+        </div>
+      {/if}
     </div>
     <div class="CenterColumnFlex body">
+      {#if isSummaryOpen}
+        <SummarizePublications mainPubId={commentPubId} bind:isSummaryOpen />
+      {/if}
       {#await promiseOfGetComments}
         <div class="comment">
           <div class="comment__pic__loader" />
@@ -369,6 +432,22 @@
                     {/if}
                   </div>
                   <div class="CenterRowFlex comment__body__top__right">
+                    <div>
+                      <button
+                        on:click={(event) =>
+                          initiateTippingProcess(event, comment)}
+                        use:tooltip={{
+                          content: "Send A Tip",
+                          position: "left",
+                          autoPosition: true,
+                          align: "center",
+                          animation: "slide",
+                          theme: "custom-tooltip"
+                        }}
+                      >
+                        <img src={TipImage} alt="tip" />
+                      </button>
+                    </div>
                     <div
                       class="CenterRowFlex comment__body__top__right__reaction"
                     >
@@ -501,6 +580,8 @@
                 </div>
               </div>
             </a>
+          {:else}
+            {updateTotalImagePosts()}
           {/if}
         {/each}
       {/await}
@@ -508,7 +589,8 @@
   </section>
 </MediaQuery>
 
-<Login bind:showLoginModal />
+<Login bind:onLoginIntialization />
+<Tip {toAddress} {toHandle} bind:showTippingModal />
 
 <!---------------------------------------------------------------->
 
@@ -541,6 +623,8 @@
   }
 
   .filter__comment-count {
+    gap: 0.7rem;
+    padding: 0.3em 1.2em;
     margin-left: auto;
     min-width: fit-content;
   }
@@ -701,12 +785,6 @@
     height: 5rem;
     border-radius: 10px;
     margin-top: 1rem;
-  }
-
-  @keyframes shine {
-    to {
-      background-position-x: -200%;
-    }
   }
 
   .comment__body__top__left__loader,

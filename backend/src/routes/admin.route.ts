@@ -1,9 +1,14 @@
 import express from "express";
-import { validateSecretAdminMiddleware } from "../middlewares/admin/validate-secret.admin.middleware";
+
+import {
+  validateSecretAdminMiddleware,
+  validateUpdatePostImageMiddleware
+} from "../middlewares/admin/validate-secret.admin.middleware.js";
 import {
   addImageToPostAdminController,
-  approveSignlessAdminController
-} from "../controllers/admin.controller";
+  approveSignlessAdminController,
+  updateMainPostImageController
+} from "../controllers/admin.controller.js";
 
 const router = express.Router();
 
@@ -17,6 +22,12 @@ router.post(
   "/approve-signless",
   validateSecretAdminMiddleware,
   approveSignlessAdminController
+);
+
+router.post(
+  "/update-post-image",
+  validateUpdatePostImageMiddleware,
+  updateMainPostImageController
 );
 
 export default router;

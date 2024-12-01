@@ -1,10 +1,14 @@
 import express from "express";
-import { postAnonymousCommentController } from "../controllers/comments.controller";
-import { putAnonymousCommentController } from "../controllers/comments.controller";
+
+import {
+  getSummaryCommentController,
+  postAnonymousCommentController
+} from "../controllers/comments.controller.js";
+import { putAnonymousCommentController } from "../controllers/comments.controller.js";
 import {
   validatePostAnonymousCommentRequestMiddleware,
   validatePutAnonymousCommentRequestMiddleware
-} from "../middlewares/comments/validate-request.comments.middleware";
+} from "../middlewares/comments/validate-request.comments.middleware.js";
 
 const router = express.Router();
 
@@ -18,5 +22,7 @@ router.put(
   validatePutAnonymousCommentRequestMiddleware,
   putAnonymousCommentController
 );
+
+router.get("/summarize", getSummaryCommentController);
 
 export default router;

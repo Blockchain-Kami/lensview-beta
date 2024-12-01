@@ -1,6 +1,7 @@
-import { relatedParentPublicationsLensService } from "../../services/lens/related-parent-publications.lens.service";
-import { FAILURE, SUCCESS } from "../../config/app-constants.config";
-import { logger } from "../../log/log-manager.log";
+import { relatedParentPublicationsLensService } from "../../services/lens/related-parent-publications.lens.service.js";
+
+import { FAILURE, SUCCESS } from "../../config/app-constants.config.js";
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Finds publications related to the input string.

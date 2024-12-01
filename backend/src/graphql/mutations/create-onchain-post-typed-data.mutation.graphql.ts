@@ -1,6 +1,6 @@
-import { graphql } from "../../gql";
+import { graphql } from "../../gql/index.js";
 
-const createOnchainPostTypedDataMutationGraphql = graphql(`
+const CreateOnchainPostTypedDataMutationGraphql = graphql(`
   mutation CreateOnchainPostTypedData($request: OnchainPostRequest!) {
     createOnchainPostTypedData(request: $request) {
       id
@@ -33,4 +33,4 @@ const createOnchainPostTypedDataMutationGraphql = graphql(`
   }
 `);
 
-export default createOnchainPostTypedDataMutationGraphql;
+export default CreateOnchainPostTypedDataMutationGraphql;

@@ -1,4 +1,4 @@
-import { graphql } from "../../gql";
+import { graphql } from "../../gql/index.js";
 
 const BroadcastOnMomokaMutationGraphql = graphql(`
   mutation BroadcastOnMomoka($request: BroadcastRequest!) {

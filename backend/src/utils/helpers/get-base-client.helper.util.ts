@@ -1,5 +1,6 @@
 import { cacheExchange, Client, createClient, fetchExchange } from "@urql/core";
-import { LENS_API_URL } from "../../config/env.config";
+
+import { LENS_API_URL } from "../../config/env.config.js";
 
 const getBaseClientHelperUtil: Client = createClient({
   url: LENS_API_URL,

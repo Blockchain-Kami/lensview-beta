@@ -23,12 +23,12 @@
   let inputInvalidReason = "";
   const wordLimit = 1000;
   let isInputInvalid = true;
-  let showLoginModal = false;
   let postPubId = $page.data.postPubId;
   let isThisComment = postPubId !== undefined;
   let pubId = isThisComment ? postPubId : $page.data.mainPostPubId;
   let pubBtnName = isThisComment ? "Comment" : "Post";
   let showGetTestMaticModal = false;
+  let onLoginIntialization: () => Promise<void>;
 
   $: if (postPubId !== $page.data.postPubId) {
     postPubId = $page.data.postPubId;
@@ -97,7 +97,7 @@
 
   let postThroughUser = async () => {
     if (!checkIsLoggedIn()) {
-      showLoginModal = true;
+      await onLoginIntialization();
     } else {
       isPublishing = true;
       try {
@@ -153,7 +153,7 @@
         addNotification({
           position: "top-right",
           heading: `Failed To ${pubBtnName}`,
-          description: `Your ${pubBtnName.toLowerCase()} was not ${pubBtnName.toLowerCase()}ed anonymously. Please try again`,
+          description: `Your ${pubBtnName.toLowerCase()} was not ${pubBtnName.toLowerCase()}ed. Please try again`,
           type: cross,
           removeAfter: 20000
         });
@@ -315,7 +315,7 @@
   </div>
 </section>
 
-<Login bind:showLoginModal />
+<Login bind:onLoginIntialization />
 <GetTestMatic bind:showGetTestMaticModal />
 
 <!----------------------------------------------------------------->

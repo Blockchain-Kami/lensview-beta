@@ -1,5 +1,6 @@
 import crypto from "crypto";
-import { logger } from "../../log/log-manager.log";
+
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Creates SHA-1 hash of the given URL.

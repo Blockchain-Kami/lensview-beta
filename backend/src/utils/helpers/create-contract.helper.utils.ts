@@ -1,5 +1,6 @@
 import { ethers, Interface, InterfaceAbi } from "ethers";
-import { getSigner } from "./sign-type-data.helper.util";
+
+import { getSigner } from "./sign-type-data.helper.util.js";
 
 export const createContractHelperUtils = (
   contractAddress: string,

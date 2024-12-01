@@ -1,8 +1,11 @@
 import { URL } from "url";
-import { websiteSpecificCleaningHelperUtil } from "./website-specific-cleaning.helper.util";
-import { ClientError } from "../../errors/client-error.error";
-import { httpStatusCodes } from "../../config/app-constants.config";
-import { logger } from "../../log/log-manager.log";
+
+import { ClientError } from "../../errors/client-error.error.js";
+
+import { websiteSpecificCleaningHelperUtil } from "./website-specific-cleaning.helper.util.js";
+
+import { httpStatusCodes } from "../../config/app-constants.config.js";
+import { logger } from "../../log/log-manager.log.js";
 
 /**
  * Preprocess and clean the URL before storing.

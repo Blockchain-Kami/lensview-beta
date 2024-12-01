@@ -1,7 +1,9 @@
-import { MomokaPostRequest } from "../../gql/graphql";
-import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util";
-import createMomokaPostProfileManagerGraphql from "../../graphql/mutations/create-momoka-post-profile-manager.mutation.graphql";
-import { logger } from "../../log/log-manager.log";
+import { MomokaPostRequest } from "../../gql/graphql.js";
+
+import { getAuthenticatedClientAuthenticationUtil } from "../../utils/authentication/get-authenticated-client.authentication.util.js";
+
+import CreateMomokaPostProfileManagerGraphql from "../../graphql/mutations/create-momoka-post-profile-manager.mutation.graphql.js";
+import { logger } from "../../log/log-manager.log.js";
 
 const createMomokaPostWithProfileManagerLensService = async (
   request: MomokaPostRequest
@@ -15,7 +17,7 @@ const createMomokaPostWithProfileManagerLensService = async (
   );
   const authenticateClient = await getAuthenticatedClientAuthenticationUtil();
   const result = await authenticateClient
-    .mutation(createMomokaPostProfileManagerGraphql, {
+    .mutation(CreateMomokaPostProfileManagerGraphql, {
       request
     })
     .toPromise();

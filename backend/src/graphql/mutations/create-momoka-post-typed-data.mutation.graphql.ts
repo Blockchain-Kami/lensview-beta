@@ -1,6 +1,6 @@
-import { graphql } from "../../gql";
+import { graphql } from "../../gql/index.js";
 
-const CreateMomokaPostTypedDataMutationGraphql = graphql(`
+const CreateMomokaPostTypedDataMutationGraphql = graphql(/*GraphQL*/ `
   mutation CreateMomokaPostTypedData($request: MomokaPostRequest!) {
     createMomokaPostTypedData(request: $request) {
       id
