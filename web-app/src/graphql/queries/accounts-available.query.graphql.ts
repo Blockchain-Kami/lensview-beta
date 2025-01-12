@@ -1,33 +1,11 @@
 import { graphql } from "../../gql";
+import "../fragments/account/account-fields.fragment.graphql";
 
 const accountsAvailableQueryGraphql = graphql(`
   query AccountsAvailable($request: AccountsAvailableRequest!) {
     accountsAvailable(request: $request) {
       items {
-        ... on AccountOwned {
-          account {
-            address
-            owner
-            username {
-              value
-              id
-            }
-            metadata {
-              name
-              picture
-              id
-            }
-          }
-          addedAt
-        }
         ... on AccountManaged {
-          permissions {
-            canTransferTokens
-            canTransferNative
-            canSetMetadataUri
-            canExecuteTransactions
-          }
-          addedAt
           account {
             owner
             address

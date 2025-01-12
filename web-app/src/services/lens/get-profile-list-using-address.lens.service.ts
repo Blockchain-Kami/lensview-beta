@@ -1,5 +1,6 @@
 import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
 import accountsAvailableQueryGraphql from "../../graphql/queries/accounts-available.query.graphql";
+import type { ProfileManagedLensModel } from "../../models/lens/profile-managed.lens.model";
 
 const getProfileListUsingAddressLensService = async (address: string) => {
   console.log("getProfileListUsingAddressLensService address", address);
@@ -12,7 +13,7 @@ const getProfileListUsingAddressLensService = async (address: string) => {
     })
     .toPromise();
 
-  return response.data?.accountsAvailable?.items;
+  return response.data?.accountsAvailable?.items as ProfileManagedLensModel[];
 };
 
 export default getProfileListUsingAddressLensService;

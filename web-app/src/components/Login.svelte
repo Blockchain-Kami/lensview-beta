@@ -9,11 +9,11 @@
   import { getAccount } from "@wagmi/core";
   import getProfileListUsingAddressLensService from "../services/lens/get-profile-list-using-address.lens.service";
   import logUserInAuthenticationUtil from "../utils/authentication/log-user-in.authentication.util";
-  import type { ProfileManagedLensModel } from "../models/lens/profile-managed.lens.model";
   import getPictureURLUtil from "../utils/get-picture-URL.util";
   import Loader from "$lib/Loader.svelte";
   import { profileUserStore } from "../stores/user/profile.user.store";
   import logUserOutAuthenticationUtil from "../utils/authentication/log-user-out.authentication.util";
+  import type { ProfileManagedLensModel } from "../models/lens/profile-managed.lens.model";
 
   const { addNotification } = getNotificationsContext();
   export let showLoginModal = false;
@@ -24,7 +24,7 @@
   let isLoggingOut = false;
   let selectedProfileId: string;
   let fetchingProfilesList = false;
-  let profileList = [];
+  let profileList: ProfileManagedLensModel[] = [];
   let prevConnectedAddress = "";
 
   export const onLoginIntialization = () => {
@@ -115,9 +115,11 @@
     try {
       fetchingProfilesList = true;
 
-      profileList = await getProfileListUsingAddressLensService(address);
+      const response = await getProfileListUsingAddressLensService(address);
+      profileList = response ?? [];
 
-      if (profileList?.length > 0) selectedProfileId = profileList[0]?.account?.address;
+      if (profileList?.length > 0)
+        selectedProfileId = profileList[1]?.account?.address;
     } catch (error) {
       console.log("error: " + error);
       addNotification({
@@ -201,51 +203,54 @@
             profile.
           </p>
           {#each profileList as item}
-            <input
-              type="radio"
-              bind:group={selectedProfileId}
-              name="profile"
-              value={item?.account?.address}
-              id={item?.account?.address}
-            />
-            <label
-              for={item?.account?.address}
-              class="body-profiles__profile {item?.account?.address === selectedProfileId
-                ? 'body-profiles__profile-selected'
-                : ''}"
-            >
-              <div class="body-profiles__profile__pic">
-                <img
-                  src={getPictureURLUtil(
-                    item?.metadata?.picture,
-                    item?.account?.address
-                  )}
-                  alt={`${item?.account?.metadata?.name} profile picture`}
-                />
-              </div>
-              <div class="body-profiles__profile__info">
-                <div class="body-profiles__profile__info__name">
-                  {item?.account?.metadata?.name}
+            {#if item?.__typename === "AccountManaged"}
+              <input
+                type="radio"
+                bind:group={selectedProfileId}
+                name="profile"
+                value={item?.account?.address}
+                id={item?.account?.address}
+              />
+              <label
+                for={item?.account?.address}
+                class="body-profiles__profile {item?.account?.address ===
+                selectedProfileId
+                  ? 'body-profiles__profile-selected'
+                  : ''}"
+              >
+                <div class="body-profiles__profile__pic">
+                  <img
+                    src={getPictureURLUtil(
+                      item?.account?.metadata?.picture,
+                      item?.account?.address
+                    )}
+                    alt={`${item?.account?.metadata?.name} profile picture`}
+                  />
                 </div>
-                <div class="body-profiles__profile__info__handle">
-                  {item?.account?.username?.value.slice(5)}
+                <div class="body-profiles__profile__info">
+                  <div class="body-profiles__profile__info__name">
+                    {item?.account?.metadata?.name}
+                  </div>
+                  <div class="body-profiles__profile__info__handle">
+                    {item?.account?.username?.value.slice(5)}
+                  </div>
                 </div>
-              </div>
-              {#if item?.account?.username.id === $profileUserStore?.id}
-                {#if !isLoggingOut}
-                  <button
-                    on:click={logUserOut}
-                    class="btn body-profiles__profile__logout-btn"
-                    >Log Out</button
-                  >
-                {:else}
-                  <button
-                    class="btn body-profiles__profile__logout-btn"
-                    disabled>Logging out &nbsp;&nbsp; <Loader /></button
-                  >
+                {#if item?.account?.username.id === $profileUserStore?.id}
+                  {#if !isLoggingOut}
+                    <button
+                      on:click={logUserOut}
+                      class="btn body-profiles__profile__logout-btn"
+                      >Log Out</button
+                    >
+                  {:else}
+                    <button
+                      class="btn body-profiles__profile__logout-btn"
+                      disabled>Logging out &nbsp;&nbsp; <Loader /></button
+                    >
+                  {/if}
                 {/if}
-              {/if}
-            </label>
+              </label>
+            {/if}
           {/each}
         </div>
         <div class="line" />

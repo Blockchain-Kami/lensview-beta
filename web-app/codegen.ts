@@ -1,8 +1,12 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
-  schema: "https://api.testnet.lens.dev/graphql",
-  documents: ["src/graphql/queries/*.ts", "src/graphql/mutations/*.ts"],
+  schema: "schema.graphql",
+  documents: [
+    "src/graphql/fragments/**/*.ts",
+    "src/graphql/queries/**/*.ts",
+    "src/graphql/mutations/**/*.ts"
+  ],
   ignoreNoDocuments: true, // for better experience with the watcher
   generates: {
     "./src/gql/": {
