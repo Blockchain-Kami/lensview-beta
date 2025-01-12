@@ -5,13 +5,15 @@ const getChallengeInfoLensService = async (address: string, id: string) => {
   console.log("getChallengeInfoLensService signedBy", address);
   console.log("getChallengeInfoLensService for", id);
 
+  const { VITE_APP_ADDRESS } = import.meta.env;
+
   return await baseClientAuthenticationUtil
-    .query(challengeMutationGraphql, {
+    .mutation(challengeMutationGraphql, {
       request: {
         accountOwner: {
           owner: address,
           account: id,
-          app: "0xe5439696f4057aF073c0FB2dc6e5e755392922e1"
+          app: VITE_APP_ADDRESS
         }
       }
     })
