@@ -12,7 +12,6 @@
     "prettier-watch": "onchange . -- prettier --write",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
-    "prepare": "cd .. && husky install backend/.husky",
     "codegen": "graphql-codegen --watch"
   },
   "author": "",
@@ -35,7 +34,7 @@
     "graphql": "^16.8.1",
     "mongoose": "^8.3.2",
     "omit-deep": "^0.3.0",
-    "puppeteer": "^21.5.2",
+    "puppeteer": "24.0.0",
     "uuid": "^9.0.1",
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^4.7.1",
