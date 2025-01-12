@@ -1,15 +1,18 @@
 import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
-import challengeQueryGraphql from "../../graphql/queries/challenge.query.graphql";
+import challengeMutationGraphql from "../../graphql/mutations/challenge.mutation.graphql";
 
 const getChallengeInfoLensService = async (address: string, id: string) => {
   console.log("getChallengeInfoLensService signedBy", address);
   console.log("getChallengeInfoLensService for", id);
 
   return await baseClientAuthenticationUtil
-    .query(challengeQueryGraphql, {
+    .query(challengeMutationGraphql, {
       request: {
-        signedBy: address,
-        for: id
+        accountOwner: {
+          owner: address,
+          account: id,
+          app: "0xe5439696f4057aF073c0FB2dc6e5e755392922e1"
+        }
       }
     })
     .toPromise();

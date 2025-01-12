@@ -1,6 +1,6 @@
 import type { PageLoad } from "./$types";
-import explorePublicationLensService from "../services/lens/explore-publication.lens.service";
+// import explorePublicationLensService from "../services/lens/explore-publication.lens.service";
 
 export const load = (async () => {
-  return await explorePublicationLensService();
+  // return await explorePublicationLensService();
 }) satisfies PageLoad;

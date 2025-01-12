@@ -3,8 +3,8 @@ import { addressUserStore } from "../../stores/user/address.user.store";
 import { idUserStore } from "../../stores/user/id.user.store";
 import { profileUserStore } from "../../stores/user/profile.user.store";
 import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
-import getProfileUsingIdLensService from "../../services/lens/get-profile-using-id.lens.service";
-import getAccessTokenUsingRefreshTokenLensService from "../../services/lens/get-access-token-using-refresh-token.lens.service";
+// import getProfileUsingIdLensService from "../../services/lens/get-profile-using-id.lens.service";
+// import getAccessTokenUsingRefreshTokenLensService from "../../services/lens/get-access-token-using-refresh-token.lens.service";
 import getAccessRefreshTokenAuthenticationUtil from "./get-access-refresh-token.authentication.util";
 import parseJwtAuthenticationUtil from "./parse-jwt.authentication.util";
 import setReloadsMethodsAuthenticationUtil from "./set-reloads-methods.authentication.util";
@@ -67,15 +67,15 @@ const isTokenValid = (token: string) => {
 
 const updateAccessTokenUsingRefreshToken = async (refreshToken: string) => {
   try {
-    const response = await getAccessTokenUsingRefreshTokenLensService(
-      refreshToken
-    );
-
-    localStorage.setItem(
-      localStorageKeys.authData,
-      JSON.stringify(response?.data?.refresh)
-    );
-    await updateLoggedInStatusAuthenticationUtil();
+    // const response = await getAccessTokenUsingRefreshTokenLensService(
+    //   refreshToken
+    // );
+    //
+    // localStorage.setItem(
+    //   localStorageKeys.authData,
+    //   JSON.stringify(response?.data?.refresh)
+    // );
+    // await updateLoggedInStatusAuthenticationUtil();
   } catch (error) {
     console.log(error);
     throw error;
@@ -94,12 +94,12 @@ const getProfilesAndUpdateData = async (idParam: string) => {
    * 1. User reload website
    * 2. Switch profile
    */
-  if (!id || id !== idParam) {
-    const response = await getProfileUsingIdLensService(idParam);
-    profileUserStore.setUserProfile(response?.data?.profile);
-    console.log("Reload called");
-    setReloadsMethodsAuthenticationUtil();
-  }
+  // if (!id || id !== idParam) {
+  //   const response = await getProfileUsingIdLensService(idParam);
+  //   profileUserStore.setUserProfile(response?.data?.profile);
+  //   console.log("Reload called");
+  //   setReloadsMethodsAuthenticationUtil();
+  // }
 };
 
 const updateAccessTokenAfterEvery30Mins = () => {

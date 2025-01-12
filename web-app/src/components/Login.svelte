@@ -24,7 +24,7 @@
   let isLoggingOut = false;
   let selectedProfileId: string;
   let fetchingProfilesList = false;
-  let profileList: ProfileManagedLensModel[] = [];
+  let profileList = [];
   let prevConnectedAddress = "";
 
   export const onLoginIntialization = () => {
@@ -117,7 +117,7 @@
 
       profileList = await getProfileListUsingAddressLensService(address);
 
-      if (profileList?.length > 0) selectedProfileId = profileList[0].id;
+      if (profileList?.length > 0) selectedProfileId = profileList[0]?.account?.address;
     } catch (error) {
       console.log("error: " + error);
       addNotification({
@@ -205,33 +205,33 @@
               type="radio"
               bind:group={selectedProfileId}
               name="profile"
-              value={item?.id}
-              id={item?.id}
+              value={item?.account?.address}
+              id={item?.account?.address}
             />
             <label
-              for={item?.id}
-              class="body-profiles__profile {item?.id === selectedProfileId
+              for={item?.account?.address}
+              class="body-profiles__profile {item?.account?.address === selectedProfileId
                 ? 'body-profiles__profile-selected'
                 : ''}"
             >
               <div class="body-profiles__profile__pic">
                 <img
                   src={getPictureURLUtil(
-                    item?.metadata?.picture?.optimized?.uri,
-                    item?.ownedBy?.address
+                    item?.metadata?.picture,
+                    item?.account?.address
                   )}
-                  alt={`${item?.metadata?.displayName} profile picture`}
+                  alt={`${item?.account?.metadata?.name} profile picture`}
                 />
               </div>
               <div class="body-profiles__profile__info">
                 <div class="body-profiles__profile__info__name">
-                  {item?.metadata?.displayName}
+                  {item?.account?.metadata?.name}
                 </div>
                 <div class="body-profiles__profile__info__handle">
-                  {item?.handle?.fullHandle.slice(5)}
+                  {item?.account?.username?.value.slice(5)}
                 </div>
               </div>
-              {#if item?.id === $profileUserStore?.id}
+              {#if item?.account?.username.id === $profileUserStore?.id}
                 {#if !isLoggingOut}
                   <button
                     on:click={logUserOut}
