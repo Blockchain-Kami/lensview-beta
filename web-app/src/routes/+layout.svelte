@@ -206,7 +206,7 @@
       </div>
     {/if}
     <div class:body-margin-on-menu-active={menuActive} class="body">
-<!--      <slot />-->
+      <slot />
     </div>
   </main>
 
