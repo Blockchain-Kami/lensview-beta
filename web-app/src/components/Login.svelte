@@ -31,7 +31,7 @@
     try {
       let loggedInAddress;
       const unsub = profileUserStore.subscribe((response) => {
-        loggedInAddress = response?.ownedBy?.address;
+        loggedInAddress = response?.account?.owner;
       });
       unsub();
       const connectedAddress = getAccount(wagmiConfig).address;
@@ -235,7 +235,7 @@
                     {item?.account?.username?.value.slice(5)}
                   </div>
                 </div>
-                {#if item?.account?.username.id === $profileUserStore?.id}
+                {#if item?.account?.username.id === $profileUserStore?.account?.address}
                   {#if !isLoggingOut}
                     <button
                       on:click={logUserOut}
@@ -258,7 +258,7 @@
           {#if !isLoggingIn}
             <button
               on:click={() => logInWithLens(selectedProfileId)}
-              disabled={selectedProfileId === $profileUserStore?.id}
+              disabled={selectedProfileId === $profileUserStore?.account?.address}
               class="btn">Login with Lens</button
             >
           {:else}

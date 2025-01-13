@@ -253,8 +253,8 @@
       {#if $isLoggedInUserStore}
         <img
           src={getPictureURLUtil(
-            $profileUserStore?.metadata?.picture?.optimized?.uri,
-            $profileUserStore?.ownedBy?.address
+            $profileUserStore?.account?.metadata?.picture,
+            $profileUserStore?.account?.owner
           )}
           alt=""
         />

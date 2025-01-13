@@ -8,7 +8,7 @@ const addUrlAppService = async (url: string) => {
 
   let handle;
   const unsub = profileUserStore.subscribe((profile) => {
-    handle = profile?.handle?.fullHandle;
+    handle = profile?.account?.username?.value;
   });
   unsub();
 

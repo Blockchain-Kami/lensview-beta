@@ -16,7 +16,7 @@ const unfollowFollowUtil = async (profileId: string) => {
   let address = "";
   const unsub = profileUserStore.subscribe((_profile) => {
     if (_profile === null) return;
-    address = _profile?.ownedBy?.address;
+    address = _profile?.account?.owner;
   });
   unsub();
 

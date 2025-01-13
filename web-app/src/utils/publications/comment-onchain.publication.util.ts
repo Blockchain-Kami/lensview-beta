@@ -27,8 +27,8 @@ const commentOnChainPublicationUtil = async (
   let address = "";
   const unsub = profileUserStore.subscribe((_profile) => {
     if (_profile === null) return;
-    handle = _profile?.handle?.fullHandle;
-    address = _profile?.ownedBy?.address;
+    handle = _profile?.account?.username?.value;
+    address = _profile?.account?.owner;
   });
   unsub();
 

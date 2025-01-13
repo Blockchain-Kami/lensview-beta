@@ -239,7 +239,7 @@
               {response?.data?.profile?.metadata?.displayName}
             </div>
           {/if}
-          {#if $page.data.profileId !== $profileUserStore?.id}
+          {#if $page.data.profileId !== $profileUserStore?.account?.address}
             <div class="profile-details__right__top__follow">
               {updateIsFollowing(
                 response?.data?.profile?.operations?.isFollowedByMe?.value

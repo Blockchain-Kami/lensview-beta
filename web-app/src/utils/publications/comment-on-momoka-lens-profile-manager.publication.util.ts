@@ -31,7 +31,7 @@ export const commentOnMomokaLensProfileManagerPublicationUtil = async (
   let handle = "";
   const unsub = profileUserStore.subscribe((_profile) => {
     if (_profile === null) return;
-    handle = _profile?.handle?.fullHandle;
+    handle = _profile?.account?.username?.value;
   });
   unsub();
 

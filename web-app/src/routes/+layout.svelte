@@ -141,14 +141,14 @@
             <div class="menu__user-box__avatar">
               <img
                 src={getPictureURLUtil(
-                  $profileUserStore?.metadata?.picture?.optimized?.uri,
-                  $profileUserStore?.ownedBy?.address
+                  $profileUserStore?.account?.metadata?.picture,
+                  $profileUserStore?.account?.owner
                 )}
                 alt=""
               />
             </div>
             <div class="menu__user-box__handle">
-              {$profileUserStore?.handle?.fullHandle.substring(5)}
+              {$profileUserStore?.account?.username?.value.substring(5)}
             </div>
           </div>
         {:else}
