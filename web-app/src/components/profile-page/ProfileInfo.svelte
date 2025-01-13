@@ -17,7 +17,7 @@
   import LensLogo from "$lib/assets/LensLogo.svg";
   import LensviewLogoFlat from "$lib/assets/LensviewLogoFlat.svg";
   import Login from "../Login.svelte";
-  // import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
   // import followFollowUtil from "../../utils/follow/follow.follow.util";
   import { getNotificationsContext } from "svelte-notifications";
   import { reloadAPublication } from "../../stores/reload-publication.store";
@@ -30,6 +30,7 @@
   import TipImage from "$lib/assets/Tip.svg";
   import Tip from "../Tip.svelte";
   import { tooltip } from "@svelte-plugins/tooltips";
+  import followUtil from "../../utils/follow.util";
 
   const { addNotification } = getNotificationsContext();
   let promiseOfGetProfile = getProfileUsingIdLensService($page.data.profileId);
@@ -48,42 +49,32 @@
   });
 
   const callFollow = async () => {
-    // let isUserLoggedIn = false;
-    // const unsub = isLoggedInUserStore.subscribe((status) => {
-    //   isUserLoggedIn = status;
-    // });
-    // unsub();
-    //
-    // if (!isUserLoggedIn) {
-    //   openLoginNotification();
-    // } else {
-    //   disableActive = true;
-    //   try {
-    //     let isSignLessEnabled = false;
-    //     const unsub3 = profileUserStore.subscribe((_profile) => {
-    //       isSignLessEnabled = !!_profile?.signless;
-    //     });
-    //     unsub3;
-    //
-    //     if (isSignLessEnabled) {
-    //       await followLensProfileManagerFollowUtil($page.data.profileId);
-    //     } else {
-    //       await followFollowUtil($page.data.profileId);
-    //     }
-    //     isFollowing = true;
-    //     disableActive = false;
-    //   } catch (_error) {
-    //     console.log("Error following user", _error);
-    //     disableActive = false;
-    //     addNotification({
-    //       position: "top-right",
-    //       heading: "Error while following",
-    //       description: "Please try again .",
-    //       type: cross,
-    //       removeAfter: 4000
-    //     });
-    //   }
-    // }
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
+    });
+    unsub();
+
+    if (!isUserLoggedIn) {
+      openLoginNotification();
+    } else {
+      disableActive = true;
+      try {
+        await followUtil($page.data.profileId);
+        isFollowing = true;
+        disableActive = false;
+      } catch (_error) {
+        console.log("Error following user", _error);
+        disableActive = false;
+        addNotification({
+          position: "top-right",
+          heading: "Error while following",
+          description: "Please try again .",
+          type: cross,
+          removeAfter: 4000
+        });
+      }
+    }
   };
 
   const callUnfollow = async () => {
