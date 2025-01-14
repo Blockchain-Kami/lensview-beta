@@ -1,8 +1,8 @@
 <script lang="ts">
   import MainPost from "../../../components/posts-page/MainPost.svelte";
-  import PostAPublication from "../../../components/posts-page/PostAPublication.svelte";
+  // import PostAPublication from "../../../components/posts-page/PostAPublication.svelte";
   import CommentsOfAPublication from "../../../components/posts-page/CommentsOfAPublication.svelte";
-  import Publication from "../../../components/posts-page/Publication.svelte";
+  // import Publication from "../../../components/posts-page/Publication.svelte";
   import { page } from "$app/stores";
   import MediaQuery from "$lib/MediaQuery.svelte";
 
@@ -19,10 +19,10 @@
   {#if matches}
     <main class="tablet">
       <MainPost />
-      {#if postPubId !== undefined}
-        <Publication />
-      {/if}
-      <PostAPublication />
+      <!--{#if postPubId !== undefined}-->
+      <!--  <Publication />-->
+      <!--{/if}-->
+<!--      <PostAPublication />-->
       <CommentsOfAPublication />
     </main>
   {:else}
@@ -31,10 +31,10 @@
         <MainPost />
       </div>
       <div class="right">
-        {#if postPubId !== undefined && postPubId !== ""}
-          <Publication />
-        {/if}
-        <PostAPublication />
+        <!--{#if postPubId !== undefined && postPubId !== ""}-->
+        <!--  <Publication />-->
+        <!--{/if}-->
+        <!--<PostAPublication />-->
         <CommentsOfAPublication />
       </div>
     </main>

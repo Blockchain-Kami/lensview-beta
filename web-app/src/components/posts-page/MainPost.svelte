@@ -14,7 +14,7 @@
     thumbUpAlt,
     unfoldMore
   } from "../../utils/app-icon.util";
-  import RelatedPost from "./RelatedPost.svelte";
+  // import RelatedPost from "./RelatedPost.svelte";
   import { page } from "$app/stores";
   import { getNotificationsContext } from "svelte-notifications";
   import MediaQuery from "$lib/MediaQuery.svelte";
@@ -26,19 +26,19 @@
     metaTagsImageUrl,
     metaTagsTitle
   } from "../../services/metaTags";
-  import getLinkPublicationLensService from "../../services/lens/get-link-publication.lens.service";
-  import getImageCommentLensService from "../../services/lens/get-image-comment.lens.service";
-  import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  // import getImageCommentLensService from "../../services/lens/get-image-comment.lens.service";
+  // import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
   import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
   import { AppReactionType } from "../../config/app-constants.config";
   import getReactionBasedOnLoginStatusHelperUtil from "../../utils/helper/get-reaction-based-on-login-status.helper.util";
   import { totalPostsStore } from "../../stores/total-posts.store";
-  import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
-  import addReactionLensService from "../../services/lens/add-reaction.lens.service";
-  import { mainPostImageUrlStore } from "../../stores/main-post-image-url.store";
+  // import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
+  // import addReactionLensService from "../../services/lens/add-reaction.lens.service";
+  // import { mainPostImageUrlStore } from "../../stores/main-post-image-url.store";
   import { mainPostUrlStore } from "../../stores/main-post-url.store";
   import NoWebPageImg from "$lib/assets/NoWebPageImg.png";
   import { TotalImagePostsStore } from "../../stores/total-image-posts.store";
+  import getLinkPostLensService from "../../services/lens/get-link-post.lens.service";
 
   const { addNotification } = getNotificationsContext();
   let mainPostPubId = $page.data.mainPostPubId;
@@ -48,17 +48,17 @@
   let downVoteCount = 0;
   let onLoginIntialization: () => Promise<void>;
 
-  let promiseOfGetMainPost = getLinkPublicationLensService(mainPostPubId);
+  let promiseOfGetMainPost = getLinkPostLensService(mainPostPubId);
 
   $: if (mainPostPubId !== $page.data.mainPostPubId) {
     mainPostPubId = $page.data.mainPostPubId;
-    promiseOfGetMainPost = getLinkPublicationLensService(mainPostPubId);
+    promiseOfGetMainPost = getLinkPostLensService(mainPostPubId);
   }
 
   onMount(() => {
     reloadMainPost.subscribe((val) => {
       console.log("Reloaded main post" + val);
-      promiseOfGetMainPost = getLinkPublicationLensService(mainPostPubId);
+      promiseOfGetMainPost = getLinkPostLensService(mainPostPubId);
     });
   });
 
@@ -84,88 +84,88 @@
     event: Event,
     passedReaction: AppReactionType
   ) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    let isUserLoggedIn = false;
-    const unsub = isLoggedInUserStore.subscribe((status) => {
-      isUserLoggedIn = status;
-    });
-    unsub();
-
-    if (!isUserLoggedIn) {
-      openLoginNotification();
-    } else {
-      try {
-        if (reaction !== AppReactionType.NoReaction) {
-          await callRemoveReaction(event, reaction);
-        }
-
-        reaction = passedReaction;
-        upVoteCount =
-          passedReaction === AppReactionType.UpVote
-            ? upVoteCount + 1
-            : upVoteCount;
-        downVoteCount =
-          passedReaction === AppReactionType.DownVote
-            ? downVoteCount + 1
-            : downVoteCount;
-
-        await addReactionLensService(mainPostPubId, passedReaction);
-      } catch (error) {
-        console.log("Error while reacting", error);
-
-        addNotification({
-          position: "top-right",
-          heading: "Error while reacting",
-          description: "Please try again .",
-          type: cross,
-          removeAfter: 4000
-        });
-      }
-    }
+    // event.preventDefault();
+    // event.stopPropagation();
+    //
+    // let isUserLoggedIn = false;
+    // const unsub = isLoggedInUserStore.subscribe((status) => {
+    //   isUserLoggedIn = status;
+    // });
+    // unsub();
+    //
+    // if (!isUserLoggedIn) {
+    //   openLoginNotification();
+    // } else {
+    //   try {
+    //     if (reaction !== AppReactionType.NoReaction) {
+    //       await callRemoveReaction(event, reaction);
+    //     }
+    //
+    //     reaction = passedReaction;
+    //     upVoteCount =
+    //       passedReaction === AppReactionType.UpVote
+    //         ? upVoteCount + 1
+    //         : upVoteCount;
+    //     downVoteCount =
+    //       passedReaction === AppReactionType.DownVote
+    //         ? downVoteCount + 1
+    //         : downVoteCount;
+    //
+    //     await addReactionLensService(mainPostPubId, passedReaction);
+    //   } catch (error) {
+    //     console.log("Error while reacting", error);
+    //
+    //     addNotification({
+    //       position: "top-right",
+    //       heading: "Error while reacting",
+    //       description: "Please try again .",
+    //       type: cross,
+    //       removeAfter: 4000
+    //     });
+    //   }
+    // }
   };
 
   const callRemoveReaction = async (
     event: Event,
     passedReaction: AppReactionType
   ) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    let isUserLoggedIn = false;
-    const unsub = isLoggedInUserStore.subscribe((status) => {
-      isUserLoggedIn = status;
-    });
-    unsub();
-
-    if (!isUserLoggedIn) {
-      openLoginNotification();
-    } else {
-      try {
-        reaction = AppReactionType.NoReaction;
-        upVoteCount =
-          passedReaction === AppReactionType.UpVote
-            ? upVoteCount - 1
-            : upVoteCount;
-        downVoteCount =
-          passedReaction === AppReactionType.DownVote
-            ? downVoteCount - 1
-            : downVoteCount;
-
-        await removeReactionLensService(mainPostPubId, passedReaction);
-      } catch (error) {
-        console.log("Error while reacting", error);
-
-        addNotification({
-          position: "top-right",
-          heading: "Error removing",
-          description: "Error while removing your reaction. Please try again .",
-          type: cross,
-          removeAfter: 4000
-        });
-      }
-    }
+    // event.preventDefault();
+    // event.stopPropagation();
+    //
+    // let isUserLoggedIn = false;
+    // const unsub = isLoggedInUserStore.subscribe((status) => {
+    //   isUserLoggedIn = status;
+    // });
+    // unsub();
+    //
+    // if (!isUserLoggedIn) {
+    //   openLoginNotification();
+    // } else {
+    //   try {
+    //     reaction = AppReactionType.NoReaction;
+    //     upVoteCount =
+    //       passedReaction === AppReactionType.UpVote
+    //         ? upVoteCount - 1
+    //         : upVoteCount;
+    //     downVoteCount =
+    //       passedReaction === AppReactionType.DownVote
+    //         ? downVoteCount - 1
+    //         : downVoteCount;
+    //
+    //     await removeReactionLensService(mainPostPubId, passedReaction);
+    //   } catch (error) {
+    //     console.log("Error while reacting", error);
+    //
+    //     addNotification({
+    //       position: "top-right",
+    //       heading: "Error removing",
+    //       description: "Error while removing your reaction. Please try again .",
+    //       type: cross,
+    //       removeAfter: 4000
+    //     });
+    //   }
+    // }
   };
 
   const openLoginNotification = () => {
@@ -211,11 +211,11 @@
   };
 
   const updateMainPostImageUrlStore = (imageUrl: string | undefined) => {
-    if (imageUrl === undefined)
-      mainPostImageUrlStore.setMainPostImageUrl("empty");
-    else mainPostImageUrlStore.setMainPostImageUrl(imageUrl);
-
-    return "";
+    // if (imageUrl === undefined)
+    //   mainPostImageUrlStore.setMainPostImageUrl("empty");
+    // else mainPostImageUrlStore.setMainPostImageUrl(imageUrl);
+    //
+    // return "";
   };
 
   const updateMainPostUrlStore = (url: string | undefined) => {
@@ -244,9 +244,9 @@
             </button>
           </div>
           <div class="related-posts-body">
-            <RelatedPost
-              searchURLOrKeywords={"https://www.youtube.com/watch?app=desktop&v=Fmr0auKkgbk&pp=ygUJdGVjaHdpc2Vy"}
-            />
+<!--            <RelatedPost-->
+<!--              searchURLOrKeywords={"https://www.youtube.com/watch?app=desktop&v=Fmr0auKkgbk&pp=ygUJdGVjaHdpc2Vy"}-->
+<!--            />-->
           </div>
         {:else}
           <button
@@ -259,23 +259,23 @@
         {/if}
       {:then mainPostPub}
         <a href={`/posts/${mainPostPubId}`} class="tablet__main-post">
-          {#await getImageCommentLensService(mainPostPub?.id)}
-            <div class="tablet__main-post__image__loader" />
-          {:then fetchedImageUrl}
-            {updateMainPostImageUrlStore(fetchedImageUrl)}
-            {updateMetaTagsImageUrl(fetchedImageUrl)}
-            <div
-              class="tablet__main-post__image"
-              style={fetchedImageUrl
-                ? ` height: ${30}rem `
-                : ` height: ${23}rem `}
-            >
-              <img
-                src={fetchedImageUrl ? fetchedImageUrl : NoWebPageImg}
-                alt=""
-              />
-            </div>
-          {/await}
+          <!--{#await getImageCommentLensService(mainPostPub?.slug)}-->
+          <!--  <div class="tablet__main-post__image__loader" />-->
+          <!--{:then fetchedImageUrl}-->
+          <!--  {updateMainPostImageUrlStore(fetchedImageUrl)}-->
+          <!--  {updateMetaTagsImageUrl(fetchedImageUrl)}-->
+          <!--  <div-->
+          <!--    class="tablet__main-post__image"-->
+          <!--    style={fetchedImageUrl-->
+          <!--      ? ` height: ${30}rem `-->
+          <!--      : ` height: ${23}rem `}-->
+          <!--  >-->
+          <!--    <img-->
+          <!--      src={fetchedImageUrl ? fetchedImageUrl : NoWebPageImg}-->
+          <!--      alt=""-->
+          <!--    />-->
+          <!--  </div>-->
+          <!--{/await}-->
           <a
             class="CenterRowFlex tablet__main-post__url"
             href={mainPostPub?.metadata?.sharingLink}
@@ -373,9 +373,9 @@
             </button>
           </div>
           <div class="related-posts-body">
-            <RelatedPost
-              searchURLOrKeywords={mainPostPub?.metadata?.sharingLink}
-            />
+<!--            <RelatedPost-->
+<!--              searchURLOrKeywords={mainPostPub?.metadata?.sharingLink}-->
+<!--            />-->
           </div>
         {:else}
           <button
@@ -396,10 +396,10 @@
         </div>
         <div class="h2 related-posts-head">Related Posts</div>
         <div class="related-posts-body">
-          <RelatedPost searchURLOrKeywords={""} />
+<!--          <RelatedPost searchURLOrKeywords={""} />-->
         </div>
       {:then mainPostPub}
-        {#await getImageCommentLensService(mainPostPub?.id)}
+        {#await getImageCommentLensService(mainPostPub?.slug)}
           <div class="image__loader" />
         {:then imageUrl}
           {updateMainPostImageUrlStore(imageUrl)}
@@ -521,9 +521,9 @@
         </div>
         <div class="h2 related-posts-head">Related Posts</div>
         <div class="related-posts-body">
-          <RelatedPost
-            searchURLOrKeywords={mainPostPub?.metadata?.sharingLink}
-          />
+<!--          <RelatedPost-->
+<!--            searchURLOrKeywords={mainPostPub?.metadata?.sharingLink}-->
+<!--          />-->
         </div>
       {/await}
     </section>
