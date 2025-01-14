@@ -14,7 +14,7 @@ const authenticateLensService = async (request: SignedAuthChallenge) => {
   logger.info(
     "authenticate.lens.service.ts: authenticateService: Execution Started."
   );
-  const data =  await baseClientHelperUtil
+  const data = await baseClientHelperUtil
     .mutation(AuthenticateGraphql, { request })
     .toPromise();
   // console.log(data);

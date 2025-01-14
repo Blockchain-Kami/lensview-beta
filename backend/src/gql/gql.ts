@@ -1,6 +1,6 @@
 /* eslint-disable */
-import * as types from './graphql.js';
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+import * as types from "./graphql.js";
+import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
 
 /**
  * Map of all GraphQL operations in the project.
@@ -13,8 +13,12 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  mutation Authenticate($request: SignedAuthChallenge!) {\n    authenticate(request: $request) {\n      ... on AuthenticationTokens {\n        accessToken\n      }\n      ... on WrongSignerError {\n        reason\n      }\n      ... on ExpiredChallengeError {\n        reason\n      }\n      ... on ForbiddenError {\n        reason\n      }\n    }\n  }\n": types.AuthenticateDocument,
-    "\n  mutation Challenge($request: ChallengeRequest!) {\n    challenge(request: $request) {\n      id\n      text\n    }\n  }\n": types.ChallengeDocument,
+  "\n  mutation Authenticate($request: SignedAuthChallenge!) {\n    authenticate(request: $request) {\n      ... on AuthenticationTokens {\n        accessToken\n      }\n      ... on WrongSignerError {\n        reason\n      }\n      ... on ExpiredChallengeError {\n        reason\n      }\n      ... on ForbiddenError {\n        reason\n      }\n    }\n  }\n":
+    types.AuthenticateDocument,
+  "\n  mutation Challenge($request: ChallengeRequest!) {\n    challenge(request: $request) {\n      id\n      text\n    }\n  }\n":
+    types.ChallengeDocument,
+  "\n  mutation Mutation($request: CreatePostRequest!) {\n    post(request: $request) {\n      ... on PostResponse {\n        hash\n      }\n      ... on SelfFundedTransactionRequest {\n        raw {\n          chainId\n          data\n          from\n          gasLimit\n          maxFeePerGas\n          maxPriorityFeePerGas\n          nonce\n          to\n          type\n          value\n        }\n      }\n      ... on SponsoredTransactionRequest {\n        raw {\n          type\n          to\n          from\n          nonce\n          gasLimit\n          maxPriorityFeePerGas\n          maxFeePerGas\n          data\n          value\n          chainId\n          customData {\n            gasPerPubdata\n            factoryDeps\n            customSignature\n            paymasterParams {\n              paymaster\n              paymasterInput\n            }\n          }\n        }\n      }\n    }\n  }\n":
+    types.MutationDocument
 };
 
 /**
@@ -34,14 +38,25 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation Authenticate($request: SignedAuthChallenge!) {\n    authenticate(request: $request) {\n      ... on AuthenticationTokens {\n        accessToken\n      }\n      ... on WrongSignerError {\n        reason\n      }\n      ... on ExpiredChallengeError {\n        reason\n      }\n      ... on ForbiddenError {\n        reason\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation Authenticate($request: SignedAuthChallenge!) {\n    authenticate(request: $request) {\n      ... on AuthenticationTokens {\n        accessToken\n      }\n      ... on WrongSignerError {\n        reason\n      }\n      ... on ExpiredChallengeError {\n        reason\n      }\n      ... on ForbiddenError {\n        reason\n      }\n    }\n  }\n"];
+export function graphql(
+  source: "\n  mutation Authenticate($request: SignedAuthChallenge!) {\n    authenticate(request: $request) {\n      ... on AuthenticationTokens {\n        accessToken\n      }\n      ... on WrongSignerError {\n        reason\n      }\n      ... on ExpiredChallengeError {\n        reason\n      }\n      ... on ForbiddenError {\n        reason\n      }\n    }\n  }\n"
+): (typeof documents)["\n  mutation Authenticate($request: SignedAuthChallenge!) {\n    authenticate(request: $request) {\n      ... on AuthenticationTokens {\n        accessToken\n      }\n      ... on WrongSignerError {\n        reason\n      }\n      ... on ExpiredChallengeError {\n        reason\n      }\n      ... on ForbiddenError {\n        reason\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation Challenge($request: ChallengeRequest!) {\n    challenge(request: $request) {\n      id\n      text\n    }\n  }\n"): (typeof documents)["\n  mutation Challenge($request: ChallengeRequest!) {\n    challenge(request: $request) {\n      id\n      text\n    }\n  }\n"];
+export function graphql(
+  source: "\n  mutation Challenge($request: ChallengeRequest!) {\n    challenge(request: $request) {\n      id\n      text\n    }\n  }\n"
+): (typeof documents)["\n  mutation Challenge($request: ChallengeRequest!) {\n    challenge(request: $request) {\n      id\n      text\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation Mutation($request: CreatePostRequest!) {\n    post(request: $request) {\n      ... on PostResponse {\n        hash\n      }\n      ... on SelfFundedTransactionRequest {\n        raw {\n          chainId\n          data\n          from\n          gasLimit\n          maxFeePerGas\n          maxPriorityFeePerGas\n          nonce\n          to\n          type\n          value\n        }\n      }\n      ... on SponsoredTransactionRequest {\n        raw {\n          type\n          to\n          from\n          nonce\n          gasLimit\n          maxPriorityFeePerGas\n          maxFeePerGas\n          data\n          value\n          chainId\n          customData {\n            gasPerPubdata\n            factoryDeps\n            customSignature\n            paymasterParams {\n              paymaster\n              paymasterInput\n            }\n          }\n        }\n      }\n    }\n  }\n"
+): (typeof documents)["\n  mutation Mutation($request: CreatePostRequest!) {\n    post(request: $request) {\n      ... on PostResponse {\n        hash\n      }\n      ... on SelfFundedTransactionRequest {\n        raw {\n          chainId\n          data\n          from\n          gasLimit\n          maxFeePerGas\n          maxPriorityFeePerGas\n          nonce\n          to\n          type\n          value\n        }\n      }\n      ... on SponsoredTransactionRequest {\n        raw {\n          type\n          to\n          from\n          nonce\n          gasLimit\n          maxPriorityFeePerGas\n          maxFeePerGas\n          data\n          value\n          chainId\n          customData {\n            gasPerPubdata\n            factoryDeps\n            customSignature\n            paymasterParams {\n              paymaster\n              paymasterInput\n            }\n          }\n        }\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
 }
 
-export type DocumentType<TDocumentNode extends DocumentNode<any, any>> = TDocumentNode extends DocumentNode<  infer TType,  any>  ? TType  : never;
+export type DocumentType<TDocumentNode extends DocumentNode<any, any>> =
+  TDocumentNode extends DocumentNode<infer TType, any> ? TType : never;
