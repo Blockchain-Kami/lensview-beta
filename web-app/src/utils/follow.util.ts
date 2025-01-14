@@ -1,6 +1,7 @@
 import createFollowLensService from "../services/lens/create-follow.lens.service";
 import waitUntilTxCompleteUtil from "./wait-until-tx-complete.util";
 import sponsoredTransactionUtil from "./sponsored-transaction.util";
+import selfFundedTransactionUtil from "./self-funded-transaction.util";
 
 // For more information on hoisting accounts,
 // visit: https://viem.sh/docs/accounts/local.html#optional-hoist-the-account
@@ -15,9 +16,15 @@ const followUtil = async (profileId: string) => {
 
     txHash = response?.hash;
   } else if (response?.__typename === "SponsoredTransactionRequest") {
-    console.log("raw : ", response?.raw);
+    console.log("SponsoredTransactionRequest raw");
 
     txHash = await sponsoredTransactionUtil(response?.raw);
+  } else if (response?.__typename === "SelfFundedTransactionRequest") {
+    console.log("SelfFundedTransactionRequest raw");
+
+    txHash = await selfFundedTransactionUtil(response?.raw);
+  } else if (response?.__typename === "TransactionWillFail") {
+    throw new Error(response?.reason);
   }
 
   return waitUntilTxCompleteUtil(txHash, Date.now());
