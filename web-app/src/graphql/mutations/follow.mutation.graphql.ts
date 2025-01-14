@@ -10,7 +10,28 @@ const followMutationGraphql = graphql(`
         ...SelfFundedTransactionRequestFields
       }
       ... on SponsoredTransactionRequest {
-        ...SponsoredTransactionRequestFields
+        reason
+        raw {
+          chainId
+          data
+          from
+          gasLimit
+          maxFeePerGas
+          maxPriorityFeePerGas
+          nonce
+          to
+          type
+          value
+          customData {
+            customSignature
+            factoryDeps
+            gasPerPubdata
+            paymasterParams {
+              paymaster
+              paymasterInput
+            }
+          }
+        }
       }
       ... on TransactionWillFail {
         reason
