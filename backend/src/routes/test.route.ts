@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 
 import { getAuthenticatedClientAuthenticationUtil } from "../utils/authentication/get-authenticated-client.authentication.util.js";
+import { postAnonymousCommentController } from "../controllers/test.controller.js";
 
 const router = express.Router();
 
@@ -9,6 +10,17 @@ router.get("/authenticate", async (req: Request, res: Response) => {
     await getAuthenticatedClientAuthenticationUtil();
     res.status(200).send("Authenticated");
   } catch (e) {
+    res.status(500).send({
+      message: "Failed to authenticate " + e
+    });
+  }
+});
+
+router.post("/comment", async (req: Request, res: Response) => {
+  try {
+    await postAnonymousCommentController(req, res);
+  } catch (e) {
+    console.log(e);
     res.status(500).send({
       message: "Failed to authenticate " + e
     });

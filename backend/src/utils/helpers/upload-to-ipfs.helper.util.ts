@@ -21,7 +21,6 @@ export const uploadToIPFSHelperUtil = async (data: string): Promise<string> => {
     );
     const uri = await storage.upload(JSON.parse(data));
     const url = storage.resolveScheme(uri);
-    console.log(url);
     logger.info(
       "upload-to-ipfs.helper.util.ts: uploadToIPFSHelperUtil: Stored publication metadata. URL: " +
         url

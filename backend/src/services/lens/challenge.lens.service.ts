@@ -1,9 +1,9 @@
-import {ChallengeRequest} from "../../gql/graphql.js";
+import { ChallengeRequest } from "../../gql/graphql.js";
 
 import baseClient from "../../utils/helpers/base-client.helper.util.js";
 import ChallengeQueryGraphql from "../../graphql/mutations/challenge.mutation.graphql.js";
-import {logger} from "../../log/log-manager.log.js";
-import {InternalServerError} from "../../errors/internal-server-error.error.js";
+import { logger } from "../../log/log-manager.log.js";
+import { InternalServerError } from "../../errors/internal-server-error.error.js";
 
 /**
  * Retrieves challenge information using the lens service.
