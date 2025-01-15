@@ -368,7 +368,7 @@
         {#each commentsData ?? [] as comment, index}
           {#if !comment?.metadata?.tags?.includes(VITE_IMAGE_PUB)}
             <a
-              href={`/posts/${$page.data.mainPostPubId}/${comment?.id}`}
+              href={`/posts/${$page.data.mainPostPubId}/${comment?.slug}`}
               class="comment"
             >
               <a href={`/profile/${getHandle(comment)}`} class="comment__pic">
