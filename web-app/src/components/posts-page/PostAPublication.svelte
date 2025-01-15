@@ -13,8 +13,7 @@
   import updateCommentAnonymouslyAppService from "../../services/app/update-comment-anonymously.app.service";
   import { mainPostImageUrlStore } from "../../stores/main-post-image-url.store";
   import { mainPostUrlStore } from "../../stores/main-post-url.store";
-  import commentOnMomokaLensProfileManagerPublicationUtil from "../../utils/publications/comment-on-momoka-lens-profile-manager.publication.util";
-  import commentOnMomokaPublicationUtil from "../../utils/publications/comment-on-momoka.publication.util";
+  import createCommentUtil from "../../utils/create-comment.util";
   const { VITE_USER_COMMENT } = import.meta.env;
   const { VITE_USER_POST } = import.meta.env;
 
@@ -119,29 +118,13 @@
         });
         unsub2();
 
-        let isSignLessEnabled = false;
-        const unsub3 = profileUserStore.subscribe((_profile) => {
-          isSignLessEnabled = !!_profile?.signless;
-        });
-        unsub3;
-
-        if (isSignLessEnabled) {
-          await commentOnMomokaLensProfileManagerPublicationUtil(
-            pubId,
-            userEnteredContent,
-            postOrCommentHash,
-            mainPostUrl,
-            mainPostImageUrl
-          );
-        } else {
-          await commentOnMomokaPublicationUtil(
-            pubId,
-            userEnteredContent,
-            postOrCommentHash,
-            mainPostUrl,
-            mainPostImageUrl
-          );
-        }
+        await createCommentUtil(
+          pubId,
+          userEnteredContent,
+          postOrCommentHash,
+          mainPostUrl,
+          mainPostImageUrl
+        );
 
         isPublishing = false;
         userEnteredContent = "";

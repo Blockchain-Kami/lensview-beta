@@ -6,6 +6,7 @@ import selfFundedTransactionUtil from "./self-funded-transaction.util";
 // For more information on hoisting accounts,
 // visit: https://viem.sh/docs/accounts/local.html#optional-hoist-the-account
 
+//TODO: During unfollow implementation make it create follow
 const followUtil = async (profileId: string) => {
   const response = await createFollowLensService(profileId);
 
