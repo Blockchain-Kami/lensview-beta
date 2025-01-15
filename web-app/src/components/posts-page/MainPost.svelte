@@ -360,7 +360,7 @@
                 {mainPostPub?.metadata?.attributes[0]?.value}
               </div>
               <div class="tablet__main-post__info__bottom__time">
-                {getFormattedDateHelperUtil(mainPostPub?.createdAt)}
+                {getFormattedDateHelperUtil(mainPostPub?.timestamp)}
               </div>
             </div>
           </div>
@@ -399,15 +399,15 @@
 <!--          <RelatedPost searchURLOrKeywords={""} />-->
         </div>
       {:then mainPostPub}
-        {#await getImageCommentLensService(mainPostPub?.slug)}
-          <div class="image__loader" />
-        {:then imageUrl}
-          {updateMainPostImageUrlStore(imageUrl)}
-          {updateMetaTagsImageUrl(imageUrl)}
-          <a href={`/posts/${mainPostPubId}`}>
-            <img src={imageUrl} alt="" />
-          </a>
-        {/await}
+        <!--{#await getImageCommentLensService(mainPostPub?.slug)}-->
+        <!--  <div class="image__loader" />-->
+        <!--{:then imageUrl}-->
+        <!--  {updateMainPostImageUrlStore(imageUrl)}-->
+        <!--  {updateMetaTagsImageUrl(imageUrl)}-->
+        <!--  <a href={`/posts/${mainPostPubId}`}>-->
+        <!--    <img src={imageUrl} alt="" />-->
+        <!--  </a>-->
+        <!--{/await}-->
         <div class="CenterColumnFlex main-post">
           <a
             href={`/posts/${mainPostPubId}`}
@@ -433,7 +433,7 @@
                 </div>
               </a>
               <div class="main-post__content__top__time">
-                {getFormattedDateHelperUtil(mainPostPub?.createdAt)}
+                {getFormattedDateHelperUtil(mainPostPub?.timestamp)}
               </div>
               <div class="CenterRowFlex main-post__content__top__more">
                 <Icon d={moreVert} />

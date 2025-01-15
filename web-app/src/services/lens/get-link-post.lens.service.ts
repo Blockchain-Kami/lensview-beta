@@ -2,6 +2,7 @@ import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
 import authenticatedClientAuthenticationUtil from "../../utils/authentication/authenticated-client.authentication.util";
 import linkPostQueryGraphql from "../../graphql/queries/link-post.query.graphql";
 import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
+import type { LinkPostLensModel } from "../../models/lens/link-post.lens.model";
 
 const getLinkPostLensService = async (postId: string) => {
   console.log("getLinkPostLensService postId", postId);
@@ -31,7 +32,7 @@ const getLinkPostLensService = async (postId: string) => {
       .toPromise();
   }
 
-  return result?.data?.post;
+  return result?.data?.post as LinkPostLensModel;
 };
 
 export default getLinkPostLensService;
