@@ -18,7 +18,13 @@ const documents = {
   "\n  mutation Challenge($request: ChallengeRequest!) {\n    challenge(request: $request) {\n      id\n      text\n    }\n  }\n":
     types.ChallengeDocument,
   "\n  mutation Mutation($request: CreatePostRequest!) {\n    post(request: $request) {\n      ... on PostResponse {\n        hash\n      }\n      ... on SelfFundedTransactionRequest {\n        raw {\n          chainId\n          data\n          from\n          gasLimit\n          maxFeePerGas\n          maxPriorityFeePerGas\n          nonce\n          to\n          type\n          value\n        }\n      }\n      ... on SponsoredTransactionRequest {\n        raw {\n          type\n          to\n          from\n          nonce\n          gasLimit\n          maxPriorityFeePerGas\n          maxFeePerGas\n          data\n          value\n          chainId\n          customData {\n            gasPerPubdata\n            factoryDeps\n            customSignature\n            paymasterParams {\n              paymaster\n              paymasterInput\n            }\n          }\n        }\n      }\n    }\n  }\n":
-    types.MutationDocument
+    types.MutationDocument,
+  "\n  query ImageComments($request: PostsRequest!) {\n    posts(request: $request) {\n      items {\n        ... on Post {\n          metadata {\n            ... on ImageMetadata {\n              image {\n                item\n              }\n              tags\n            }\n          }\n          root {\n            slug\n          }\n        }\n      }\n    }\n  }\n":
+    types.ImageCommentsDocument,
+  "\n  query RelatedPosts($request: PostsRequest!) {\n    posts(request: $request) {\n      items {\n        ... on Post {\n          slug\n          metadata {\n            ... on ImageMetadata {\n              tags\n              title\n              content\n            }\n          }\n        }\n      }\n    }\n  }\n":
+    types.RelatedPostsDocument,
+  "\n  query TransactionStatus($request: TransactionStatusRequest!) {\n    transactionStatus(request: $request) {\n      ... on FinishedTransactionStatus {\n        blockTimestamp\n      }\n      ... on PendingTransactionStatus {\n        blockTimestamp\n      }\n      ... on NotIndexedYetStatus {\n        reason\n      }\n      ... on FailedTransactionStatus {\n        reason\n      }\n    }\n  }\n":
+    types.TransactionStatusDocument
 };
 
 /**
@@ -53,6 +59,24 @@ export function graphql(
 export function graphql(
   source: "\n  mutation Mutation($request: CreatePostRequest!) {\n    post(request: $request) {\n      ... on PostResponse {\n        hash\n      }\n      ... on SelfFundedTransactionRequest {\n        raw {\n          chainId\n          data\n          from\n          gasLimit\n          maxFeePerGas\n          maxPriorityFeePerGas\n          nonce\n          to\n          type\n          value\n        }\n      }\n      ... on SponsoredTransactionRequest {\n        raw {\n          type\n          to\n          from\n          nonce\n          gasLimit\n          maxPriorityFeePerGas\n          maxFeePerGas\n          data\n          value\n          chainId\n          customData {\n            gasPerPubdata\n            factoryDeps\n            customSignature\n            paymasterParams {\n              paymaster\n              paymasterInput\n            }\n          }\n        }\n      }\n    }\n  }\n"
 ): (typeof documents)["\n  mutation Mutation($request: CreatePostRequest!) {\n    post(request: $request) {\n      ... on PostResponse {\n        hash\n      }\n      ... on SelfFundedTransactionRequest {\n        raw {\n          chainId\n          data\n          from\n          gasLimit\n          maxFeePerGas\n          maxPriorityFeePerGas\n          nonce\n          to\n          type\n          value\n        }\n      }\n      ... on SponsoredTransactionRequest {\n        raw {\n          type\n          to\n          from\n          nonce\n          gasLimit\n          maxPriorityFeePerGas\n          maxFeePerGas\n          data\n          value\n          chainId\n          customData {\n            gasPerPubdata\n            factoryDeps\n            customSignature\n            paymasterParams {\n              paymaster\n              paymasterInput\n            }\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query ImageComments($request: PostsRequest!) {\n    posts(request: $request) {\n      items {\n        ... on Post {\n          metadata {\n            ... on ImageMetadata {\n              image {\n                item\n              }\n              tags\n            }\n          }\n          root {\n            slug\n          }\n        }\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query ImageComments($request: PostsRequest!) {\n    posts(request: $request) {\n      items {\n        ... on Post {\n          metadata {\n            ... on ImageMetadata {\n              image {\n                item\n              }\n              tags\n            }\n          }\n          root {\n            slug\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query RelatedPosts($request: PostsRequest!) {\n    posts(request: $request) {\n      items {\n        ... on Post {\n          slug\n          metadata {\n            ... on ImageMetadata {\n              tags\n              title\n              content\n            }\n          }\n        }\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query RelatedPosts($request: PostsRequest!) {\n    posts(request: $request) {\n      items {\n        ... on Post {\n          slug\n          metadata {\n            ... on ImageMetadata {\n              tags\n              title\n              content\n            }\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  query TransactionStatus($request: TransactionStatusRequest!) {\n    transactionStatus(request: $request) {\n      ... on FinishedTransactionStatus {\n        blockTimestamp\n      }\n      ... on PendingTransactionStatus {\n        blockTimestamp\n      }\n      ... on NotIndexedYetStatus {\n        reason\n      }\n      ... on FailedTransactionStatus {\n        reason\n      }\n    }\n  }\n"
+): (typeof documents)["\n  query TransactionStatus($request: TransactionStatusRequest!) {\n    transactionStatus(request: $request) {\n      ... on FinishedTransactionStatus {\n        blockTimestamp\n      }\n      ... on PendingTransactionStatus {\n        blockTimestamp\n      }\n      ... on NotIndexedYetStatus {\n        reason\n      }\n      ... on FailedTransactionStatus {\n        reason\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

@@ -28,10 +28,11 @@ export const getAuthenticatedClientAuthenticationUtil: () => Promise<Client> =
       );
       let accessToken = null;
       const challengeRequest: ChallengeRequest = {
+        // TODO: Repalce with .env variables
         accountOwner: {
-          account: "0x2B15998b5D690Ea8CdCc275c841093d2354bb510",
+          account: "0xA800F8980093E660b962E47E3474D8629ba35146",
           app: "0xe5439696f4057aF073c0FB2dc6e5e755392922e1",
-          owner: "0x92506959f5df5C7474B22a6D46A2af324593907a"
+          owner: APP_ADDRESS
         }
       };
       // Query challenge info
