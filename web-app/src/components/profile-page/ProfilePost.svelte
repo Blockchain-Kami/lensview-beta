@@ -23,21 +23,20 @@
   import getLinkPreviewHtmlHelperUtil from "../../utils/helper/get-link-preview-html.helper.util";
   import Icon from "$lib/Icon.svelte";
   import { page } from "$app/stores";
-  import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
-  import addReactionLensService from "../../services/lens/add-reaction.lens.service";
-  import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
+  // import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  // import addReactionLensService from "../../services/lens/add-reaction.lens.service";
+  // import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
   import getReactionBasedOnLoginStatusHelperUtil from "../../utils/helper/get-reaction-based-on-login-status.helper.util";
   import type { ReactionDetailsModel } from "../../models/reactionDetails.model";
-  import getCommentByProfileIdPublicationUtil from "../../utils/publications/get-comment-by-profileId.publication.util";
-  import { LimitType } from "../../gql/graphql";
   import MediaQuery from "$lib/MediaQuery.svelte";
   import getImageCommentLensService from "../../services/lens/get-image-comment.lens.service";
   import Login from "../Login.svelte";
   import { getNotificationsContext } from "svelte-notifications";
   import { reloadAPublication } from "../../stores/reload-publication.store";
   import { onMount } from "svelte";
-  import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
   import NoWebPageImg from "$lib/assets/NoWebPageImg.png";
+  import getProfilePostsLensService from "../../services/lens/get-profile-posts.lens.service";
+  import type { CommentLensModel } from "../../models/lens/comment.lens.model";
 
   type PostMoreStatus = {
     [key: string]: boolean;
@@ -45,21 +44,13 @@
 
   const { addNotification } = getNotificationsContext();
   let reactionDetails: ReactionDetailsModel = {};
-  let promiseOfGetComments = getCommentByProfileIdPublicationUtil(
-    $page.data.profileId,
-    LimitType.Fifty,
-    true
-  );
+  let promiseOfGetComments = getProfilePostsLensService($page.data.profileId);
   let isPostMoreOpen: PostMoreStatus = {};
   let onLoginIntialization: () => Promise<void>;
 
   onMount(() => {
     reloadAPublication.subscribe(() => {
-      promiseOfGetComments = getCommentByProfileIdPublicationUtil(
-        $page.data.profileId,
-        LimitType.Fifty,
-        true
-      );
+      promiseOfGetComments = getProfilePostsLensService($page.data.profileId);
     });
   });
 
@@ -74,54 +65,54 @@
     pubID: string,
     reaction: AppReactionType
   ) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    let isUserLoggedIn = false;
-    const unsub = isLoggedInUserStore.subscribe((status) => {
-      isUserLoggedIn = status;
-    });
-    unsub();
-
-    if (!isUserLoggedIn) {
-      openLoginNotification();
-    } else {
-      try {
-        if (reactionDetails[pubID]["reaction"] !== null) {
-          await callRemoveReaction(
-            event,
-            pubID,
-            reactionDetails[pubID]["reaction"]
-          );
-        }
-
-        const localUpVoteCount =
-          reaction === AppReactionType.UpVote
-            ? reactionDetails[pubID]["upVoteCount"] + 1
-            : reactionDetails[pubID]["upVoteCount"];
-        const localDownVoteCount =
-          reaction === AppReactionType.DownVote
-            ? reactionDetails[pubID]["downVoteCount"] + 1
-            : reactionDetails[pubID]["downVoteCount"];
-        reactionDetails[pubID] = {
-          reaction: reaction,
-          upVoteCount: localUpVoteCount,
-          downVoteCount: localDownVoteCount
-        };
-
-        await addReactionLensService(pubID, reaction);
-      } catch (error) {
-        console.log("Error while reacting", error);
-
-        addNotification({
-          position: "top-right",
-          heading: "Error while reacting",
-          description: "Please try again .",
-          type: cross,
-          removeAfter: 4000
-        });
-      }
-    }
+    // event.preventDefault();
+    // event.stopPropagation();
+    //
+    // let isUserLoggedIn = false;
+    // const unsub = isLoggedInUserStore.subscribe((status) => {
+    //   isUserLoggedIn = status;
+    // });
+    // unsub();
+    //
+    // if (!isUserLoggedIn) {
+    //   openLoginNotification();
+    // } else {
+    //   try {
+    //     if (reactionDetails[pubID]["reaction"] !== null) {
+    //       await callRemoveReaction(
+    //         event,
+    //         pubID,
+    //         reactionDetails[pubID]["reaction"]
+    //       );
+    //     }
+    //
+    //     const localUpVoteCount =
+    //       reaction === AppReactionType.UpVote
+    //         ? reactionDetails[pubID]["upVoteCount"] + 1
+    //         : reactionDetails[pubID]["upVoteCount"];
+    //     const localDownVoteCount =
+    //       reaction === AppReactionType.DownVote
+    //         ? reactionDetails[pubID]["downVoteCount"] + 1
+    //         : reactionDetails[pubID]["downVoteCount"];
+    //     reactionDetails[pubID] = {
+    //       reaction: reaction,
+    //       upVoteCount: localUpVoteCount,
+    //       downVoteCount: localDownVoteCount
+    //     };
+    //
+    //     await addReactionLensService(pubID, reaction);
+    //   } catch (error) {
+    //     console.log("Error while reacting", error);
+    //
+    //     addNotification({
+    //       position: "top-right",
+    //       heading: "Error while reacting",
+    //       description: "Please try again .",
+    //       type: cross,
+    //       removeAfter: 4000
+    //     });
+    //   }
+    // }
   };
 
   const callRemoveReaction = async (
@@ -129,46 +120,46 @@
     pubID: string,
     reaction: AppReactionType
   ) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    let isUserLoggedIn = false;
-    const unsub = isLoggedInUserStore.subscribe((status) => {
-      isUserLoggedIn = status;
-    });
-    unsub();
-
-    if (!isUserLoggedIn) {
-      openLoginNotification();
-    } else {
-      try {
-        const localUpVoteCount =
-          reaction === AppReactionType.UpVote
-            ? reactionDetails[pubID]["upVoteCount"] - 1
-            : reactionDetails[pubID]["upVoteCount"];
-        const localDownVoteCount =
-          reaction === AppReactionType.DownVote
-            ? reactionDetails[pubID]["downVoteCount"] - 1
-            : reactionDetails[pubID]["downVoteCount"];
-        reactionDetails[pubID] = {
-          reaction: AppReactionType.NoReaction,
-          upVoteCount: localUpVoteCount,
-          downVoteCount: localDownVoteCount
-        };
-
-        await removeReactionLensService(pubID, reaction);
-      } catch (error) {
-        console.log("Error while reacting", error);
-
-        addNotification({
-          position: "top-right",
-          heading: "Error removing",
-          description: "Error while removing your reaction. Please try again .",
-          type: cross,
-          removeAfter: 4000
-        });
-      }
-    }
+    // event.preventDefault();
+    // event.stopPropagation();
+    //
+    // let isUserLoggedIn = false;
+    // const unsub = isLoggedInUserStore.subscribe((status) => {
+    //   isUserLoggedIn = status;
+    // });
+    // unsub();
+    //
+    // if (!isUserLoggedIn) {
+    //   openLoginNotification();
+    // } else {
+    //   try {
+    //     const localUpVoteCount =
+    //       reaction === AppReactionType.UpVote
+    //         ? reactionDetails[pubID]["upVoteCount"] - 1
+    //         : reactionDetails[pubID]["upVoteCount"];
+    //     const localDownVoteCount =
+    //       reaction === AppReactionType.DownVote
+    //         ? reactionDetails[pubID]["downVoteCount"] - 1
+    //         : reactionDetails[pubID]["downVoteCount"];
+    //     reactionDetails[pubID] = {
+    //       reaction: AppReactionType.NoReaction,
+    //       upVoteCount: localUpVoteCount,
+    //       downVoteCount: localDownVoteCount
+    //     };
+    //
+    //     await removeReactionLensService(pubID, reaction);
+    //   } catch (error) {
+    //     console.log("Error while reacting", error);
+    //
+    //     addNotification({
+    //       position: "top-right",
+    //       heading: "Error removing",
+    //       description: "Error while removing your reaction. Please try again .",
+    //       type: cross,
+    //       removeAfter: 4000
+    //     });
+    //   }
+    // }
   };
 
   const openLoginNotification = () => {
@@ -186,7 +177,7 @@
     });
   };
 
-  const updateReactionDetails = (post: CommentsPublicationLensModel) => {
+  const updateReactionDetails = (post: CommentLensModel) => {
     const pubID = post?.id;
     const passedUpVoteStatus = post?.operations?.hasUpVoted;
     const passedDownVoteStatus = post?.operations?.hasDownVoted;
@@ -219,7 +210,7 @@
     });
   };
 
-  const getMainPostUrl = (post: CommentsPublicationLensModel) => {
+  const getMainPostUrl = (post: CommentLensModel) => {
     const url = post?.metadata?.attributes.find(
       (item) => item.key === AttributeKeyType.mainPostUrl
     )?.value;
@@ -245,8 +236,8 @@
     {:then postData}
       {#if postData.length > 0}
         {#each postData as post}
-          <a href={`/posts/${post?.root?.id}/${post?.id}`} class="card">
-            {#await getImageCommentLensService(post?.root?.id)}
+          <a href={`/posts/${post?.root?.slug}/${post?.slug}`} class="card">
+            {#await getImageCommentLensService(post?.root?.slug)}
               <div class="card__left card__left-loader" />
             {:then imageUrl}
               <div class="card__left">
@@ -270,27 +261,27 @@
                 <div class="card__right__content__pic">
                   <img
                     src={getPictureURLUtil(
-                      post?.by?.metadata?.picture?.optimized?.uri,
-                      post?.by?.ownedBy?.address
+                      post?.author?.metadata?.picture,
+                      post?.author?.owner
                     )}
                     alt="avatar"
                   />
                 </div>
                 <div class="card__right__content__body">
                   <div class="CenterRowFlex card__right__content__body__top">
-                    <div
+                    <dauthor
                       class="CenterRowFlex card__right__content__body__top__left"
                     >
-                      {#if post?.by?.metadata?.displayName !== undefined && post?.by?.metadata?.displayName !== null}
+                      {#if post?.author?.metadata?.name !== undefined && post?.author?.metadata?.name !== null}
                         <div
                           class="card__right__content__body__top__left__name"
                         >
                           {#if matches}
-                            {post?.by?.metadata?.displayName.substring(0, 5)}
-                            {#if post?.by?.metadata?.displayName.length > 5}..{/if}
+                            {post?.author?.metadata?.name.substring(0, 5)}
+                            {#if post?.author?.metadata?.name.length > 5}..{/if}
                           {:else}
-                            {post?.by?.metadata?.displayName.substring(0, 15)}
-                            {#if post?.by?.metadata?.displayName.length > 15}..{/if}
+                            {post?.author?.metadata?.name.substring(0, 15)}
+                            {#if post?.author?.metadata?.name.length > 15}..{/if}
                           {/if}
                         </div>
                         <div
@@ -301,13 +292,13 @@
                       <div
                         class="card__right__content__body__top__left__handle"
                       >
-                        {post?.by?.handle?.fullHandle.substring(5)}
+                        {post?.author?.username?.value.substring(5)}
                       </div>
                       <div class="card__right__content__body__top__left__dot" />
                       <div class="card__right__content__body__top__left__date">
-                        {getFormattedDateHelperUtil(post?.createdAt)}
+                        {getFormattedDateHelperUtil(post?.timestamp)}
                       </div>
-                    </div>
+                    </dauthor>
                     <div
                       class="CenterRowFlex card__right__content__body__top__right"
                     >

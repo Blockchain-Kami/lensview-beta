@@ -1,6 +1,6 @@
 <script lang="ts">
   import ProfileInfo from "../../../components/profile-page/ProfileInfo.svelte";
-  // import ProfilePost from "../../../components/profile-page/ProfilePost.svelte";
+  import ProfilePost from "../../../components/profile-page/ProfilePost.svelte";
   import { feather, modeComment } from "../../../utils/app-icon.util";
   import Icon from "$lib/Icon.svelte";
   import { tooltip } from "@svelte-plugins/tooltips";
@@ -31,7 +31,7 @@
       <span>&nbsp; LV Comments</span>
     </button>
   </nav>
-<!--  <ProfilePost />-->
+  <ProfilePost />
 </main>
 
 <!----------------------------------------------------------------->
