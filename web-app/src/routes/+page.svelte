@@ -12,8 +12,8 @@
     thumbUp,
     trendingUp
   } from "../utils/app-icon.util";
-  // import AddNewPost from "../components/main-page/AddNewPost.svelte";
-  // import IntroPrompt from "../components/main-page/IntroPrompt.svelte";
+  import AddNewPost from "../components/main-page/AddNewPost.svelte";
+  import IntroPrompt from "../components/main-page/IntroPrompt.svelte";
   import { getNotificationsContext } from "svelte-notifications";
   import DOMPurify from "dompurify";
   import { Tooltip } from "@svelte-plugins/tooltips";
@@ -124,7 +124,7 @@
 </div>
 <MediaQuery query="(max-width: 825px)" let:matches>
   <section>
-<!--    <IntroPrompt />-->
+    <IntroPrompt />
     <div class="body">
       {#each data?.items as item}
         {#if item?.author?.address === VITE_APP_LENS_ID}
@@ -298,16 +298,16 @@
         {/if}
       {/each}
     </div>
-<!--    <button-->
-<!--      on:click={() => (showAddNewPostModal = true)}-->
-<!--      class="CenterRowFlex add__post"-->
-<!--    >-->
-<!--      <Icon d={plus} color="#000" strokeWidth={0.8} />-->
-<!--    </button>-->
+    <button
+      on:click={() => (showAddNewPostModal = true)}
+      class="CenterRowFlex add__post"
+    >
+      <Icon d={plus} color="#000" strokeWidth={0.8} />
+    </button>
   </section>
 </MediaQuery>
 
-<!--<AddNewPost {userEnteredUrl} {isUrlInvalid} bind:showAddNewPostModal />-->
+<AddNewPost {userEnteredUrl} {isUrlInvalid} bind:showAddNewPostModal />
 
 <!----------------------------------------------------------------->
 
