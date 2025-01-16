@@ -1,10 +1,10 @@
 import {
-  // image,
+  image,
   link,
-  // MediaImageMimeType,
-  MetadataAttributeType
+  MediaImageMimeType,
+  MetadataAttributeType,
   // MetadataLicenseType, PublicationMainFocus,
-  // textOnly
+  textOnly
 } from "@lens-protocol/metadata";
 
 import { MetadataObjectModel } from "../../models/metadata-object.model.js";
@@ -14,10 +14,10 @@ import { createTagsHelperUtil } from "./helpers.helpers.util.js";
 import {
   SOURCE_APP_ID,
   APP_LENS_HANDLE,
-  // TAG_IMAGE_PUB,
+  TAG_IMAGE_PUB,
   TAG_ANONYMOUS_PUB,
-  // TAG_USER_COMMENT,
-  // TAG_USER_POST,
+  TAG_USER_COMMENT,
+  TAG_USER_POST,
   TAG_USER_PUB
 } from "../../config/env.config.js";
 import { logger } from "../../log/log-manager.log.js";
@@ -100,145 +100,186 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
   );
   return linkMetadata;
 };
-//
-// export const createMetaDataForAnonymousCommentHelperUtil = (
-//   comment: string,
-//   mainPostUrl: string,
-//   mainPostImageUrl: string,
-//   isThisComment: boolean
-// ) => {
-//   logger.info(
-//     "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Execution Started."
-//   );
-//   logger.info(
-//     "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Input Parameters: " +
-//       JSON.stringify({
-//         comment,
-//         mainPostImageUrl,
-//         isThisComment
-//       })
-//   );
-//   const tags = [TAG_ANONYMOUS_PUB];
-//   if (isThisComment) {
-//     tags.push(TAG_USER_COMMENT);
-//   } else {
-//     tags.push(TAG_USER_POST);
-//   }
-//   const textOnlyMetadata = textOnly({
-//     locale: "en-US",
-//     tags,
-//     appId: SOURCE_APP_ID,
-//     attributes: [
-//       {
-//         key: "creator",
-//         type: MetadataAttributeType.STRING,
-//         value: APP_LENS_HANDLE
-//       },
-//       {
-//         key: "app",
-//         type: MetadataAttributeType.STRING,
-//         value: SOURCE_APP_ID
-//       },
-//       {
-//         key: "createdOn",
-//         type: MetadataAttributeType.STRING,
-//         value: `${new Date().toJSON().slice(0, 10)}`
-//       },
-//       {
-//         key: "mainPostUrl",
-//         type: MetadataAttributeType.STRING,
-//         value: mainPostUrl
-//       },
-//       {
-//         key: "mainPostImageUrl",
-//         type: MetadataAttributeType.STRING,
-//         value: mainPostImageUrl
-//       },
-//       {
-//         key: "category",
-//         type: MetadataAttributeType.STRING,
-//         value: "LensView Beta User"
-//       }
-//     ],
-//     content: comment
-//     //TODO: Check for below fields usage
-//     // encryptedWith: PublicationMetadataLitEncryption,
-//     // hideFromFeed: false,
-//   });
-//   logger.info(
-//     "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Metadata for Comment Publication: " +
-//       JSON.stringify(textOnlyMetadata)
-//   );
-//   logger.info(
-//     "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Execution Ended."
-//   );
-//   return textOnlyMetadata;
-// };
-//
-// export const createMetaDataForImageCommentHelperUtil = (
-//   urlObj: MetadataObjectModel
-// ) => {
-//   logger.info(
-//     "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Execution Started."
-//   );
-//   logger.info(
-//     "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Input Parameters: " +
-//       JSON.stringify(urlObj)
-//   );
-//   const imageMetadata = image({
-//     locale: "en-US",
-//     tags: [TAG_IMAGE_PUB],
-//     appId: SOURCE_APP_ID,
-//     attributes: [
-//       {
-//         key: "creator",
-//         type: MetadataAttributeType.STRING,
-//         value: APP_LENS_HANDLE
-//       },
-//       {
-//         key: "app",
-//         type: MetadataAttributeType.STRING,
-//         value: SOURCE_APP_ID
-//       },
-//       {
-//         key: "createdOn",
-//         type: MetadataAttributeType.STRING,
-//         value: `${new Date().toJSON().slice(0, 10)}`
-//       },
-//       {
-//         key: "category",
-//         type: MetadataAttributeType.STRING,
-//         value: "LensView Beta User"
-//       }
-//     ],
-//     image: {
-//       item: `${urlObj.image}`,
-//       type: MediaImageMimeType.PNG,
-//       altTag: urlObj.url,
-//       license: MetadataLicenseType.CCO
-//     },
-//     attachments: [
-//       {
-//         item: `${urlObj.image}`,
-//         type: MediaImageMimeType.PNG,
-//         altTag: urlObj.url,
-//         license: MetadataLicenseType.CCO
-//       }
-//     ],
-//     title: `LensView Post by ${APP_LENS_HANDLE}`,
-//     content: `Image link for the LensView Publication: ${urlObj.image}`
-//     //TODO: Check for below fields usage
-//     // content: EncryptableMarkdown
-//     // attachments: [PublicationMetadataMediaVideo],
-//     // hideFromFeed: true,
-//     // encryptedWith: PublicationMetadataLitEncryption,
-//   });
-//   logger.info(
-//     "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Metadata for Comment Publication: " +
-//       JSON.stringify(imageMetadata)
-//   );
-//   logger.info(
-//     "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Execution Ended."
-//   );
-//   return imageMetadata;
-// };
+
+export const createMetaDataForAnonymousCommentHelperUtil = (
+  comment: string,
+  mainPostUrl: string,
+  mainPostImageUrl: string,
+  isThisComment: boolean
+) => {
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Execution Started."
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Input Parameters: " +
+      JSON.stringify({
+        comment,
+        mainPostImageUrl,
+        isThisComment
+      })
+  );
+  const tags = [TAG_ANONYMOUS_PUB];
+  if (isThisComment) {
+    tags.push(TAG_USER_COMMENT);
+  } else {
+    tags.push(TAG_USER_POST);
+  }
+  const textOnlyMetadata = textOnly({
+    locale: "en-US",
+    tags,
+    // appId: SOURCE_APP_ID,
+    attributes: [
+      {
+        key: "creator",
+        type: MetadataAttributeType.STRING,
+        value: APP_LENS_HANDLE
+      },
+      {
+        key: "app",
+        type: MetadataAttributeType.STRING,
+        value: SOURCE_APP_ID
+      },
+      {
+        key: "createdOn",
+        type: MetadataAttributeType.STRING,
+        value: `${new Date().toJSON().slice(0, 10)}`
+      },
+      {
+        key: "mainPostUrl",
+        type: MetadataAttributeType.STRING,
+        value: mainPostUrl
+      },
+      {
+        key: "mainPostImageUrl",
+        type: MetadataAttributeType.STRING,
+        value: mainPostImageUrl
+      },
+      {
+        key: "category",
+        type: MetadataAttributeType.STRING,
+        value: "LensView Beta User"
+      }
+    ],
+    content: comment
+    //TODO: Check for below fields usage
+    // encryptedWith: PublicationMetadataLitEncryption,
+    // hideFromFeed: false,
+  });
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Metadata for Comment Publication: " +
+      JSON.stringify(textOnlyMetadata)
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForAnonymousCommentHelperUtil: Execution Ended."
+  );
+  return textOnlyMetadata;
+};
+
+export const createMetaDataForImageCommentHelperUtil = (
+  publicationID: string,
+  urlObj: MetadataObjectModel
+) => {
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Execution Started."
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Input Parameters: " +
+      JSON.stringify(urlObj)
+  );
+  const imageMetadata = image({
+    locale: "en-US",
+    tags: [TAG_IMAGE_PUB, publicationID],
+    // appId: SOURCE_APP_ID,
+    attributes: [
+      {
+        key: "creator",
+        type: MetadataAttributeType.STRING,
+        value: APP_LENS_HANDLE
+      },
+      {
+        key: "app",
+        type: MetadataAttributeType.STRING,
+        value: SOURCE_APP_ID
+      },
+      {
+        key: "createdOn",
+        type: MetadataAttributeType.STRING,
+        value: `${new Date().toJSON().slice(0, 10)}`
+      },
+      {
+        key: "category",
+        type: MetadataAttributeType.STRING,
+        value: "LensView Beta User"
+      }
+    ],
+    image: {
+      item: `${urlObj.image}`,
+      type: MediaImageMimeType.PNG
+    },
+    attachments: [
+      {
+        item: `${urlObj.image}`,
+        type: MediaImageMimeType.PNG
+      }
+    ],
+    title: `LensView Post by ${APP_LENS_HANDLE}`,
+    content: `Image link for the LensView Publication: ${urlObj.image}`
+    //TODO: Check for below fields usage
+    // content: EncryptableMarkdown
+    // attachments: [PublicationMetadataMediaVideo],
+    // hideFromFeed: true,
+    // encryptedWith: PublicationMetadataLitEncryption,
+  });
+
+  // const imageMetadata = image({
+  //   locale: "en-US",
+  //   tags: [TAG_IMAGE_PUB, "byr4vp4rgfqayqzb34"],
+  //   attributes: [
+  //     {
+  //       key: "creator",
+  //       type: MetadataAttributeType.STRING,
+  //       value: APP_LENS_HANDLE
+  //     },
+  //     {
+  //       key: "app",
+  //       type: MetadataAttributeType.STRING,
+  //       value: SOURCE_APP_ID
+  //     },
+  //     {
+  //       key: "createdOn",
+  //       type: MetadataAttributeType.STRING,
+  //       value: `${new Date().toJSON().slice(0, 10)}`
+  //     },
+  //     {
+  //       key: "category",
+  //       type: MetadataAttributeType.STRING,
+  //       value: "LensView Beta User"
+  //     }
+  //   ],
+  //   image: {
+  //     item: "https://i.imghippo.com/files/zgKN9350BEs.png",
+  //     type: MediaImageMimeType.PNG
+  //   },
+  //   attachments: [
+  //     {
+  //       item: "https://i.imghippo.com/files/zgKN9350BEs.png",
+  //       type: MediaImageMimeType.PNG
+  //     }
+  //   ],
+  //   title: `LensView Post by ${APP_LENS_HANDLE}`,
+  //   content: `Image link for the LensView Publication: https://i.imghippo.com/files/zgKN9350BEs.png`
+  //   //TODO: Check for below fields usage
+  //   // content: EncryptableMarkdown
+  //   // attachments: [PublicationMetadataMediaVideo],
+  //   // hideFromFeed: true,
+  //   // encryptedWith: PublicationMetadataLitEncryption,
+  // });
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Metadata for Comment Publication: " +
+      JSON.stringify(imageMetadata)
+  );
+  logger.info(
+    "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Execution Ended."
+  );
+  return imageMetadata;
+};

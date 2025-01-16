@@ -6498,6 +6498,96 @@ export type MutationMutation = {
     | { __typename?: "TransactionWillFail" };
 };
 
+export type ImageCommentsQueryVariables = Exact<{
+  request: PostsRequest;
+}>;
+
+export type ImageCommentsQuery = {
+  __typename?: "Query";
+  posts: {
+    __typename?: "PaginatedAnyPostsResult";
+    items: Array<
+      | {
+          __typename?: "Post";
+          metadata:
+            | { __typename?: "ArticleMetadata" }
+            | { __typename?: "AudioMetadata" }
+            | { __typename?: "CheckingInMetadata" }
+            | { __typename?: "EmbedMetadata" }
+            | { __typename?: "EventMetadata" }
+            | {
+                __typename?: "ImageMetadata";
+                tags?: Array<any> | null;
+                image: { __typename?: "MediaImage"; item: any };
+              }
+            | { __typename?: "LinkMetadata" }
+            | { __typename?: "LivestreamMetadata" }
+            | { __typename?: "MintMetadata" }
+            | { __typename?: "SpaceMetadata" }
+            | { __typename?: "StoryMetadata" }
+            | { __typename?: "TextOnlyMetadata" }
+            | { __typename?: "ThreeDMetadata" }
+            | { __typename?: "TransactionMetadata" }
+            | { __typename?: "VideoMetadata" };
+          root?: { __typename?: "Post"; slug: any } | null;
+        }
+      | { __typename?: "Repost" }
+    >;
+  };
+};
+
+export type RelatedPostsQueryVariables = Exact<{
+  request: PostsRequest;
+}>;
+
+export type RelatedPostsQuery = {
+  __typename?: "Query";
+  posts: {
+    __typename?: "PaginatedAnyPostsResult";
+    items: Array<
+      | {
+          __typename?: "Post";
+          slug: any;
+          metadata:
+            | { __typename?: "ArticleMetadata" }
+            | { __typename?: "AudioMetadata" }
+            | { __typename?: "CheckingInMetadata" }
+            | { __typename?: "EmbedMetadata" }
+            | { __typename?: "EventMetadata" }
+            | {
+                __typename?: "ImageMetadata";
+                tags?: Array<any> | null;
+                title?: string | null;
+                content: any;
+              }
+            | { __typename?: "LinkMetadata" }
+            | { __typename?: "LivestreamMetadata" }
+            | { __typename?: "MintMetadata" }
+            | { __typename?: "SpaceMetadata" }
+            | { __typename?: "StoryMetadata" }
+            | { __typename?: "TextOnlyMetadata" }
+            | { __typename?: "ThreeDMetadata" }
+            | { __typename?: "TransactionMetadata" }
+            | { __typename?: "VideoMetadata" };
+        }
+      | { __typename?: "Repost" }
+    >;
+  };
+};
+
+export type TransactionStatusQueryVariables = Exact<{
+  request: TransactionStatusRequest;
+}>;
+
+export type TransactionStatusQuery = {
+  __typename?: "Query";
+  transactionStatus:
+    | { __typename?: "FailedTransactionStatus"; reason: string }
+    | { __typename?: "FinishedTransactionStatus"; blockTimestamp: any }
+    | { __typename?: "NotIndexedYetStatus"; reason: string }
+    | { __typename?: "PendingTransactionStatus"; blockTimestamp: any };
+};
+
 export const AuthenticateDocument = {
   kind: "Document",
   definitions: [
@@ -6905,3 +6995,359 @@ export const MutationDocument = {
     }
   ]
 } as unknown as DocumentNode<MutationMutation, MutationMutationVariables>;
+export const ImageCommentsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "ImageComments" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "request" }
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "PostsRequest" }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "posts" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "request" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "request" }
+                }
+              }
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "items" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "InlineFragment",
+                        typeCondition: {
+                          kind: "NamedType",
+                          name: { kind: "Name", value: "Post" }
+                        },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "metadata" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "InlineFragment",
+                                    typeCondition: {
+                                      kind: "NamedType",
+                                      name: {
+                                        kind: "Name",
+                                        value: "ImageMetadata"
+                                      }
+                                    },
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "image"
+                                          },
+                                          selectionSet: {
+                                            kind: "SelectionSet",
+                                            selections: [
+                                              {
+                                                kind: "Field",
+                                                name: {
+                                                  kind: "Name",
+                                                  value: "item"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "tags" }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "root" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "slug" }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<ImageCommentsQuery, ImageCommentsQueryVariables>;
+export const RelatedPostsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "RelatedPosts" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "request" }
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "PostsRequest" }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "posts" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "request" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "request" }
+                }
+              }
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "items" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "InlineFragment",
+                        typeCondition: {
+                          kind: "NamedType",
+                          name: { kind: "Name", value: "Post" }
+                        },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "slug" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "metadata" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "InlineFragment",
+                                    typeCondition: {
+                                      kind: "NamedType",
+                                      name: {
+                                        kind: "Name",
+                                        value: "ImageMetadata"
+                                      }
+                                    },
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "tags" }
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "title" }
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "content"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<RelatedPostsQuery, RelatedPostsQueryVariables>;
+export const TransactionStatusDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "TransactionStatus" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "request" }
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "TransactionStatusRequest" }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "transactionStatus" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "request" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "request" }
+                }
+              }
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "InlineFragment",
+                  typeCondition: {
+                    kind: "NamedType",
+                    name: { kind: "Name", value: "FinishedTransactionStatus" }
+                  },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "blockTimestamp" }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: "InlineFragment",
+                  typeCondition: {
+                    kind: "NamedType",
+                    name: { kind: "Name", value: "PendingTransactionStatus" }
+                  },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "blockTimestamp" }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: "InlineFragment",
+                  typeCondition: {
+                    kind: "NamedType",
+                    name: { kind: "Name", value: "NotIndexedYetStatus" }
+                  },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "reason" } }
+                    ]
+                  }
+                },
+                {
+                  kind: "InlineFragment",
+                  typeCondition: {
+                    kind: "NamedType",
+                    name: { kind: "Name", value: "FailedTransactionStatus" }
+                  },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "reason" } }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<
+  TransactionStatusQuery,
+  TransactionStatusQueryVariables
+>;

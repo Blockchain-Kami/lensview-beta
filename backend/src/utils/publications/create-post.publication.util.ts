@@ -31,13 +31,6 @@ export const createTextPostPublicationUtil = async (
 
     const request: CreatePostRequest = {
       contentUri: ipfsResultUri
-      // you can play around with open actions modules here all request
-      // objects are in `publication-open-action-options.ts`
-      // openActionModules: [simpleCollectAmountAndLimit(address)],
-      //
-      // you can play around with reference modules here
-      // all request objects are in `publication-reference-module-options.ts`,
-      // referenceModule: referenceModuleFollowOnly,
     };
     return await createTextPost(request);
   } catch (error) {
@@ -52,20 +45,57 @@ export const createTextPostPublicationUtil = async (
   }
 };
 
-const createTextPost = async (postRequest: CreatePostRequest) => {
+export const createCommentPublicationUtil = async (
+  publicationID: string,
+  metadata: LinkMetadata | TextOnlyMetadata | ImageMetadata
+) => {
+  try {
+    logger.info(
+      "create-post.publication.util.ts: createTextPostPublicationUtil: Execution Started."
+    );
+    //TODO: Check in production weather we need "@lens-protocol/metadata", if it works putting in
+    // devDependencies then keep it or go with schema approach that there in "api-examples" repo
+    // https://docs.lens.xyz/docs/publication-metadata#json-schemas
+    const ipfsResultUri = await uploadToIPFSHelperUtil(
+      JSON.stringify(metadata)
+    );
+
+    const request: CreatePostRequest = {
+      contentUri: ipfsResultUri,
+      commentOn: {
+        post: publicationID
+      }
+    };
+    return await createTextPost(request);
+  } catch (error) {
+    logger.error(
+      "create-post.publication.util.ts: createTextPostPublicationUtil: Failed to create post on Momoka. Error: " +
+        error
+    );
+    throw new InternalServerError(
+      "Failed to create post on Momoka",
+      httpStatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+};
+
+const createTextPost = async (
+  postRequest: CreatePostRequest
+): Promise<string> => {
   logger.info(
     "create-post.publication.publication.util.ts: createTextPost: Execution Started."
   );
   try {
     const transaction = await createTextPostLensService(postRequest);
     if (transaction.__typename === "SponsoredTransactionRequest") {
-      const hash = await sendEip712Transaction(walletClient, {
+      return await sendEip712Transaction(walletClient, {
         account: walletClient.account,
         ...sponsoredTransactionDataHelperUtil(transaction.raw)
       });
-      console.log(hash);
-      return;
+    } else if (transaction.__typename === "PostResponse") {
+      return transaction.hash;
     }
+    return "";
   } catch (error) {
     console.log(error);
     logger.error(
