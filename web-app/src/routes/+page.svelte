@@ -27,7 +27,7 @@
     metaTagsImageUrl,
     metaTagsTitle
   } from "../services/metaTags";
-  // import getImageCommentLensService from "../services/lens/get-image-comment.lens.service";
+  import getImageCommentLensService from "../services/lens/get-image-comment.lens.service";
   import getPictureURLUtil from "../utils/get-picture-URL.util";
   import getFormattedDateHelperUtil from "../utils/helper/get-formatted-date.helper.util";
   import { goto } from "$app/navigation";
@@ -137,52 +137,52 @@
               class="card"
               class:card__hover-effect={isInView[item?.slug] && matches}
             >
-              <!--{#await getImageCommentLensService(item?.slug)}-->
-              <!--  <div class="card__image-loader" />-->
-              <!--{:then fetchedImageUrl}-->
-              <!--  <div-->
-              <!--    class="card__image"-->
-              <!--    style="background-image: url({fetchedImageUrl-->
-              <!--      ? fetchedImageUrl-->
-              <!--      : NoWebPageImg})"-->
-              <!--    class:card__image__hover-effect={isInView[item?.slug] &&-->
-              <!--      matches}-->
-              <!--  >-->
-              <!--    <div class="CenterRowFlex card__image__layer1">-->
-              <!--      <div class="CenterRowFlex card__image__layer1__posts-count">-->
-              <!--        <Icon d={modeComment} />-->
-              <!--        {item?.stats?.comments}-->
-              <!--      </div>-->
-              <!--      <button-->
-              <!--        class="card__image__layer1__more-icon"-->
-              <!--        on:click={(event) =>-->
-              <!--          openCloseCardsMore(event, item?.slug)}-->
-              <!--      >-->
-              <!--        <Icon d={moreHoriz} />-->
-              <!--      </button>-->
-              <!--    </div>-->
-              <!--    {#if isCardsMoreOpen[item?.slug]}-->
-              <!--      <div class="CenterColumnFlex card__image__more">-->
-              <!--        <button-->
-              <!--          on:click={(event) => sharePost(event, item?.slug)}-->
-              <!--          class="CenterRowFlex card__image__more__share"-->
-              <!--        >-->
-              <!--          <span-->
-              <!--            class="CenterRowFlex card__image__more__share__icon"-->
-              <!--          >-->
-              <!--            <Icon d={share} size="1.2em" />-->
-              <!--          </span>-->
-              <!--          Share-->
-              <!--        </button>-->
-              <!--      </div>-->
-              <!--    {/if}-->
-              <!--  </div>-->
-              <!--{:catch _error}-->
-              <!--  <div-->
-              <!--    class="card__image"-->
-              <!--    style="background-image: url({NoWebPageImg})"-->
-              <!--  />-->
-              <!--{/await}-->
+              {#await getImageCommentLensService(item?.slug)}
+                <div class="card__image-loader" />
+              {:then fetchedImageUrl}
+                <div
+                  class="card__image"
+                  style="background-image: url({fetchedImageUrl
+                    ? fetchedImageUrl
+                    : NoWebPageImg})"
+                  class:card__image__hover-effect={isInView[item?.slug] &&
+                    matches}
+                >
+                  <div class="CenterRowFlex card__image__layer1">
+                    <div class="CenterRowFlex card__image__layer1__posts-count">
+                      <Icon d={modeComment} />
+                      {item?.stats?.comments}
+                    </div>
+                    <button
+                      class="card__image__layer1__more-icon"
+                      on:click={(event) =>
+                        openCloseCardsMore(event, item?.slug)}
+                    >
+                      <Icon d={moreHoriz} />
+                    </button>
+                  </div>
+                  {#if isCardsMoreOpen[item?.slug]}
+                    <div class="CenterColumnFlex card__image__more">
+                      <button
+                        on:click={(event) => sharePost(event, item?.slug)}
+                        class="CenterRowFlex card__image__more__share"
+                      >
+                        <span
+                          class="CenterRowFlex card__image__more__share__icon"
+                        >
+                          <Icon d={share} size="1.2em" />
+                        </span>
+                        Share
+                      </button>
+                    </div>
+                  {/if}
+                </div>
+              {:catch _error}
+                <div
+                  class="card__image"
+                  style="background-image: url({NoWebPageImg})"
+                />
+              {/await}
               <div class="CenterRowFlex card__info">
                 <div class="CenterRowFlex card__info__reaction">
                   <div class="CenterRowFlex card__info__reaction__val">

@@ -26,7 +26,7 @@
     metaTagsImageUrl,
     metaTagsTitle
   } from "../../services/metaTags";
-  // import getImageCommentLensService from "../../services/lens/get-image-comment.lens.service";
+  import getImageCommentLensService from "../../services/lens/get-image-comment.lens.service";
   // import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
   import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
   import { AppReactionType } from "../../config/app-constants.config";
@@ -34,7 +34,7 @@
   import { totalPostsStore } from "../../stores/total-posts.store";
   // import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
   // import addReactionLensService from "../../services/lens/add-reaction.lens.service";
-  // import { mainPostImageUrlStore } from "../../stores/main-post-image-url.store";
+  import { mainPostImageUrlStore } from "../../stores/main-post-image-url.store";
   import { mainPostUrlStore } from "../../stores/main-post-url.store";
   import NoWebPageImg from "$lib/assets/NoWebPageImg.png";
   import { TotalImagePostsStore } from "../../stores/total-image-posts.store";
@@ -211,11 +211,11 @@
   };
 
   const updateMainPostImageUrlStore = (imageUrl: string | undefined) => {
-    // if (imageUrl === undefined)
-    //   mainPostImageUrlStore.setMainPostImageUrl("empty");
-    // else mainPostImageUrlStore.setMainPostImageUrl(imageUrl);
-    //
-    // return "";
+    if (imageUrl === undefined)
+      mainPostImageUrlStore.setMainPostImageUrl("empty");
+    else mainPostImageUrlStore.setMainPostImageUrl(imageUrl);
+
+    return "";
   };
 
   const updateMainPostUrlStore = (url: string | undefined) => {
@@ -259,23 +259,23 @@
         {/if}
       {:then mainPostPub}
         <a href={`/posts/${mainPostPubId}`} class="tablet__main-post">
-          <!--{#await getImageCommentLensService(mainPostPub?.slug)}-->
-          <!--  <div class="tablet__main-post__image__loader" />-->
-          <!--{:then fetchedImageUrl}-->
-          <!--  {updateMainPostImageUrlStore(fetchedImageUrl)}-->
-          <!--  {updateMetaTagsImageUrl(fetchedImageUrl)}-->
-          <!--  <div-->
-          <!--    class="tablet__main-post__image"-->
-          <!--    style={fetchedImageUrl-->
-          <!--      ? ` height: ${30}rem `-->
-          <!--      : ` height: ${23}rem `}-->
-          <!--  >-->
-          <!--    <img-->
-          <!--      src={fetchedImageUrl ? fetchedImageUrl : NoWebPageImg}-->
-          <!--      alt=""-->
-          <!--    />-->
-          <!--  </div>-->
-          <!--{/await}-->
+          {#await getImageCommentLensService(mainPostPub?.slug)}
+            <div class="tablet__main-post__image__loader" />
+          {:then fetchedImageUrl}
+            {updateMainPostImageUrlStore(fetchedImageUrl)}
+            {updateMetaTagsImageUrl(fetchedImageUrl)}
+            <div
+              class="tablet__main-post__image"
+              style={fetchedImageUrl
+                ? ` height: ${30}rem `
+                : ` height: ${23}rem `}
+            >
+              <img
+                src={fetchedImageUrl ? fetchedImageUrl : NoWebPageImg}
+                alt=""
+              />
+            </div>
+          {/await}
           <a
             class="CenterRowFlex tablet__main-post__url"
             href={mainPostPub?.metadata?.sharingLink}
@@ -399,15 +399,15 @@
 <!--          <RelatedPost searchURLOrKeywords={""} />-->
         </div>
       {:then mainPostPub}
-        <!--{#await getImageCommentLensService(mainPostPub?.slug)}-->
-        <!--  <div class="image__loader" />-->
-        <!--{:then imageUrl}-->
-        <!--  {updateMainPostImageUrlStore(imageUrl)}-->
-        <!--  {updateMetaTagsImageUrl(imageUrl)}-->
-        <!--  <a href={`/posts/${mainPostPubId}`}>-->
-        <!--    <img src={imageUrl} alt="" />-->
-        <!--  </a>-->
-        <!--{/await}-->
+        {#await getImageCommentLensService(mainPostPub?.slug)}
+          <div class="image__loader" />
+        {:then imageUrl}
+          {updateMainPostImageUrlStore(imageUrl)}
+          {updateMetaTagsImageUrl(imageUrl)}
+          <a href={`/posts/${mainPostPubId}`}>
+            <img src={imageUrl} alt="" />
+          </a>
+        {/await}
         <div class="CenterColumnFlex main-post">
           <a
             href={`/posts/${mainPostPubId}`}
