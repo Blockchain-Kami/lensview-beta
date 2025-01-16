@@ -12,8 +12,8 @@
     thumbUp,
     trendingUp
   } from "../utils/app-icon.util";
-  import AddNewPost from "../components/main-page/AddNewPost.svelte";
-  import IntroPrompt from "../components/main-page/IntroPrompt.svelte";
+  // import AddNewPost from "../components/main-page/AddNewPost.svelte";
+  // import IntroPrompt from "../components/main-page/IntroPrompt.svelte";
   import { getNotificationsContext } from "svelte-notifications";
   import DOMPurify from "dompurify";
   import { Tooltip } from "@svelte-plugins/tooltips";
@@ -27,16 +27,14 @@
     metaTagsImageUrl,
     metaTagsTitle
   } from "../services/metaTags";
-  import getImageCommentLensService from "../services/lens/get-image-comment.lens.service";
-  import getCommentBasedOnParameterPublicationUtil from "../utils/publications/get-comment-based-on-parameter.publication.util";
-  import { LimitType } from "../gql/graphql";
+  // import getImageCommentLensService from "../services/lens/get-image-comment.lens.service";
   import getPictureURLUtil from "../utils/get-picture-URL.util";
   import getFormattedDateHelperUtil from "../utils/helper/get-formatted-date.helper.util";
-  import { CommentFilterType } from "../config/app-constants.config";
-  import type { CommentsPublicationLensModel } from "../models/lens/comments-publication.lens.model";
   import { goto } from "$app/navigation";
   import NoWebPageImg from "$lib/assets/NoWebPageImg.png";
   import { page } from "$app/stores";
+  import getCommentsLensService from "../services/lens/get-comments.lens.service";
+  import type { CommentLensModel } from "../models/lens/comment.lens.model";
   const { VITE_APP_LENS_ID } = import.meta.env;
 
   type KeyStringValBoolean = {
@@ -104,8 +102,8 @@
     });
   };
 
-  const getHandle = (comment: CommentsPublicationLensModel) => {
-    return comment.by?.handle?.fullHandle.substring(5);
+  const getHandle = (comment: CommentLensModel) => {
+    return comment.author?.username?.value.substring(5);
   };
 
   const redirectToProfile = (event: Event, handle: string) => {
@@ -126,64 +124,65 @@
 </div>
 <MediaQuery query="(max-width: 825px)" let:matches>
   <section>
-    <IntroPrompt />
+<!--    <IntroPrompt />-->
     <div class="body">
-      {#each data.items as item}
-        {#if item?.by?.id === VITE_APP_LENS_ID}
+      {#each data?.items as item}
+        {#if item?.author?.address === VITE_APP_LENS_ID}
           <a
-            href={"/posts/" + item?.id}
+            href={"/posts/" + item?.slug}
             use:inview={options}
-            on:inview_change={(event) => handleChange(event, item?.id)}
+            on:inview_change={(event) => handleChange(event, item?.slug)}
           >
             <div
               class="card"
-              class:card__hover-effect={isInView[item?.id] && matches}
+              class:card__hover-effect={isInView[item?.slug] && matches}
             >
-              {#await getImageCommentLensService(item?.id)}
-                <div class="card__image-loader" />
-              {:then fetchedImageUrl}
-                <div
-                  class="card__image"
-                  style="background-image: url({fetchedImageUrl
-                    ? fetchedImageUrl
-                    : NoWebPageImg})"
-                  class:card__image__hover-effect={isInView[item?.id] &&
-                    matches}
-                >
-                  <div class="CenterRowFlex card__image__layer1">
-                    <div class="CenterRowFlex card__image__layer1__posts-count">
-                      <Icon d={modeComment} />
-                      {item?.stats?.comments}
-                    </div>
-                    <button
-                      class="card__image__layer1__more-icon"
-                      on:click={(event) => openCloseCardsMore(event, item?.id)}
-                    >
-                      <Icon d={moreHoriz} />
-                    </button>
-                  </div>
-                  {#if isCardsMoreOpen[item?.id]}
-                    <div class="CenterColumnFlex card__image__more">
-                      <button
-                        on:click={(event) => sharePost(event, item?.id)}
-                        class="CenterRowFlex card__image__more__share"
-                      >
-                        <span
-                          class="CenterRowFlex card__image__more__share__icon"
-                        >
-                          <Icon d={share} size="1.2em" />
-                        </span>
-                        Share
-                      </button>
-                    </div>
-                  {/if}
-                </div>
-              {:catch _error}
-                <div
-                  class="card__image"
-                  style="background-image: url({NoWebPageImg})"
-                />
-              {/await}
+              <!--{#await getImageCommentLensService(item?.slug)}-->
+              <!--  <div class="card__image-loader" />-->
+              <!--{:then fetchedImageUrl}-->
+              <!--  <div-->
+              <!--    class="card__image"-->
+              <!--    style="background-image: url({fetchedImageUrl-->
+              <!--      ? fetchedImageUrl-->
+              <!--      : NoWebPageImg})"-->
+              <!--    class:card__image__hover-effect={isInView[item?.slug] &&-->
+              <!--      matches}-->
+              <!--  >-->
+              <!--    <div class="CenterRowFlex card__image__layer1">-->
+              <!--      <div class="CenterRowFlex card__image__layer1__posts-count">-->
+              <!--        <Icon d={modeComment} />-->
+              <!--        {item?.stats?.comments}-->
+              <!--      </div>-->
+              <!--      <button-->
+              <!--        class="card__image__layer1__more-icon"-->
+              <!--        on:click={(event) =>-->
+              <!--          openCloseCardsMore(event, item?.slug)}-->
+              <!--      >-->
+              <!--        <Icon d={moreHoriz} />-->
+              <!--      </button>-->
+              <!--    </div>-->
+              <!--    {#if isCardsMoreOpen[item?.slug]}-->
+              <!--      <div class="CenterColumnFlex card__image__more">-->
+              <!--        <button-->
+              <!--          on:click={(event) => sharePost(event, item?.slug)}-->
+              <!--          class="CenterRowFlex card__image__more__share"-->
+              <!--        >-->
+              <!--          <span-->
+              <!--            class="CenterRowFlex card__image__more__share__icon"-->
+              <!--          >-->
+              <!--            <Icon d={share} size="1.2em" />-->
+              <!--          </span>-->
+              <!--          Share-->
+              <!--        </button>-->
+              <!--      </div>-->
+              <!--    {/if}-->
+              <!--  </div>-->
+              <!--{:catch _error}-->
+              <!--  <div-->
+              <!--    class="card__image"-->
+              <!--    style="background-image: url({NoWebPageImg})"-->
+              <!--  />-->
+              <!--{/await}-->
               <div class="CenterRowFlex card__info">
                 <div class="CenterRowFlex card__info__reaction">
                   <div class="CenterRowFlex card__info__reaction__val">
@@ -205,11 +204,11 @@
                     </div>
                   </a>
                   <div class="card__info__content__time">
-                    {getFormattedDateHelperUtil(item?.createdAt)}
+                    {getFormattedDateHelperUtil(item?.timestamp)}
                   </div>
                 </div>
               </div>
-              {#await getCommentBasedOnParameterPublicationUtil(item?.id, LimitType.Ten, CommentFilterType.FirstMostRelevantComments)}
+              {#await getCommentsLensService(item?.slug)}
                 <div class="CenterRowFlex card__post">
                   <div class="card__post__user-pic-loader" />
                   <div class="card__post__info">
@@ -230,8 +229,8 @@
                     >
                       <img
                         src={getPictureURLUtil(
-                          comments[0]?.by?.metadata?.picture?.optimized?.uri,
-                          comments[0]?.by?.ownedBy?.address
+                          comments[0]?.author?.metadata?.picture,
+                          comments[0]?.author?.owner
                         )}
                         alt="avatar"
                       />
@@ -247,7 +246,7 @@
                           {getHandle(comments[0]).substring(0, 12)}
                           {getHandle(comments[0]).length > 17 ? "..." : ""}
                         </button>
-                        {#if comments[0].by?.id === VITE_APP_LENS_ID}
+                        {#if comments[0].author?.address === VITE_APP_LENS_ID}
                           <Tooltip
                             content="This post was made by an anonymous user!"
                             position="top"
@@ -279,7 +278,7 @@
                           </div>
                         </div>
                         <div class="card__post__info__head__time">
-                          {getFormattedDateHelperUtil(comments[0].createdAt)}
+                          {getFormattedDateHelperUtil(comments[0].timestamp)}
                         </div>
                       </div>
                       <div class="card__post__info__body">
@@ -299,16 +298,16 @@
         {/if}
       {/each}
     </div>
-    <button
-      on:click={() => (showAddNewPostModal = true)}
-      class="CenterRowFlex add__post"
-    >
-      <Icon d={plus} color="#000" strokeWidth={0.8} />
-    </button>
+<!--    <button-->
+<!--      on:click={() => (showAddNewPostModal = true)}-->
+<!--      class="CenterRowFlex add__post"-->
+<!--    >-->
+<!--      <Icon d={plus} color="#000" strokeWidth={0.8} />-->
+<!--    </button>-->
   </section>
 </MediaQuery>
 
-<AddNewPost {userEnteredUrl} {isUrlInvalid} bind:showAddNewPostModal />
+<!--<AddNewPost {userEnteredUrl} {isUrlInvalid} bind:showAddNewPostModal />-->
 
 <!----------------------------------------------------------------->
 
