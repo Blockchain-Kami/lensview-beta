@@ -3,7 +3,7 @@ import {
   link,
   MediaImageMimeType,
   MetadataAttributeType,
-  MetadataLicenseType,
+  // MetadataLicenseType, PublicationMainFocus,
   textOnly
 } from "@lens-protocol/metadata";
 
@@ -55,7 +55,6 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
   const linkMetadata = link({
     locale: "en-US",
     tags: tags,
-    appId: SOURCE_APP_ID,
     attributes: [
       {
         key: "creator",
@@ -87,6 +86,11 @@ export const createMetaDataForUrlHelperUtil = (urlObj: MetadataObjectModel) => {
     // "encryptedWith": PublicationMetadataLitEncryption,
     // "hideFromFeed": true,
   });
+
+  // const linkMetadata = textOnly({
+  //   // sharingLink: urlObj.url,
+  //   content: `just posted something interesting about`
+  // });
   logger.info(
     "create-metadata.helper.util.ts: createMetaDataForUrlHelperUtil: Metadata for Link Publication: " +
       JSON.stringify(linkMetadata)
@@ -123,7 +127,7 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
   const textOnlyMetadata = textOnly({
     locale: "en-US",
     tags,
-    appId: SOURCE_APP_ID,
+    // appId: SOURCE_APP_ID,
     attributes: [
       {
         key: "creator",
@@ -172,6 +176,7 @@ export const createMetaDataForAnonymousCommentHelperUtil = (
 };
 
 export const createMetaDataForImageCommentHelperUtil = (
+  publicationID: string,
   urlObj: MetadataObjectModel
 ) => {
   logger.info(
@@ -183,8 +188,8 @@ export const createMetaDataForImageCommentHelperUtil = (
   );
   const imageMetadata = image({
     locale: "en-US",
-    tags: [TAG_IMAGE_PUB],
-    appId: SOURCE_APP_ID,
+    tags: [TAG_IMAGE_PUB, publicationID],
+    // appId: SOURCE_APP_ID,
     attributes: [
       {
         key: "creator",
@@ -209,16 +214,12 @@ export const createMetaDataForImageCommentHelperUtil = (
     ],
     image: {
       item: `${urlObj.image}`,
-      type: MediaImageMimeType.PNG,
-      altTag: urlObj.url,
-      license: MetadataLicenseType.CCO
+      type: MediaImageMimeType.PNG
     },
     attachments: [
       {
         item: `${urlObj.image}`,
-        type: MediaImageMimeType.PNG,
-        altTag: urlObj.url,
-        license: MetadataLicenseType.CCO
+        type: MediaImageMimeType.PNG
       }
     ],
     title: `LensView Post by ${APP_LENS_HANDLE}`,
@@ -229,6 +230,50 @@ export const createMetaDataForImageCommentHelperUtil = (
     // hideFromFeed: true,
     // encryptedWith: PublicationMetadataLitEncryption,
   });
+
+  // const imageMetadata = image({
+  //   locale: "en-US",
+  //   tags: [TAG_IMAGE_PUB, "byr4vp4rgfqayqzb34"],
+  //   attributes: [
+  //     {
+  //       key: "creator",
+  //       type: MetadataAttributeType.STRING,
+  //       value: APP_LENS_HANDLE
+  //     },
+  //     {
+  //       key: "app",
+  //       type: MetadataAttributeType.STRING,
+  //       value: SOURCE_APP_ID
+  //     },
+  //     {
+  //       key: "createdOn",
+  //       type: MetadataAttributeType.STRING,
+  //       value: `${new Date().toJSON().slice(0, 10)}`
+  //     },
+  //     {
+  //       key: "category",
+  //       type: MetadataAttributeType.STRING,
+  //       value: "LensView Beta User"
+  //     }
+  //   ],
+  //   image: {
+  //     item: "https://i.imghippo.com/files/zgKN9350BEs.png",
+  //     type: MediaImageMimeType.PNG
+  //   },
+  //   attachments: [
+  //     {
+  //       item: "https://i.imghippo.com/files/zgKN9350BEs.png",
+  //       type: MediaImageMimeType.PNG
+  //     }
+  //   ],
+  //   title: `LensView Post by ${APP_LENS_HANDLE}`,
+  //   content: `Image link for the LensView Publication: https://i.imghippo.com/files/zgKN9350BEs.png`
+  //   //TODO: Check for below fields usage
+  //   // content: EncryptableMarkdown
+  //   // attachments: [PublicationMetadataMediaVideo],
+  //   // hideFromFeed: true,
+  //   // encryptedWith: PublicationMetadataLitEncryption,
+  // });
   logger.info(
     "create-metadata.helper.util.ts: createMetaDataForImageCommentHelperUtil: Metadata for Comment Publication: " +
       JSON.stringify(imageMetadata)

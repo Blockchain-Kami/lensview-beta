@@ -1,15 +1,11 @@
 import { InternalServerError } from "../../errors/internal-server-error.error.js";
-import {
-  LimitType,
-  PublicationsRequest,
-  PublicationsWhere
-} from "../../gql/graphql.js";
+import { PostsRequest, PostType } from "../../gql/graphql.js";
 
 import { TAG_IMAGE_PUB } from "../../config/env.config.js";
 import { logger } from "../../log/log-manager.log.js";
 import { httpStatusCodes } from "../../config/app-constants.config.js";
-import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util.js";
-import GetMainPublicationImageQueryGraphql from "../../graphql/queries/get-main-publication-image.query.graphql.js";
+import baseClient from "../../utils/helpers/base-client.helper.util.js";
+import mainPostImageQueryGraphql from "../../graphql/queries/main-post-image.query.graphql.js";
 
 export const getMainPublicationImageLensService = async (
   publicationID: string
@@ -18,42 +14,50 @@ export const getMainPublicationImageLensService = async (
     "get-main-publication-image.lens.service.ts: getMainPublicationImageLensService: Execution Started"
   );
   try {
-    const publicationsWhere: PublicationsWhere = {
-      commentOn: {
-        id: publicationID
-      },
-      metadata: {
-        tags: {
-          oneOf: [TAG_IMAGE_PUB] //imagePub
-        }
-      }
-    };
+    // const publicationsWhere: PublicationsWhere = {
+    //   commentOn: {
+    //     id: publicationID
+    //   },
+    //   metadata: {
+    //     tags: {
+    //       oneOf: [TAG_IMAGE_PUB] //imagePub
+    //     }
+    //   }
+    // };
+    //
+    // const publicationsRequest: PublicationsRequest = {
+    //   limit: LimitType.Fifty,
+    //   where: publicationsWhere
+    // };
 
-    const publicationsRequest: PublicationsRequest = {
-      limit: LimitType.Fifty,
-      where: publicationsWhere
+    const postsRequest: PostsRequest = {
+      filter: {
+        metadata: {
+          tags: {
+            all: [TAG_IMAGE_PUB, publicationID]
+          }
+        },
+        postTypes: [PostType.Comment]
+      }
     };
 
     logger.info(
       "get-main-publication-image.lens.service.ts: getMainPublicationImageLensService: publicationsRequest: " +
-        JSON.stringify(publicationsRequest)
+        JSON.stringify(postsRequest)
     );
 
-    const result = await getBaseClientHelperUtil
-      .query(GetMainPublicationImageQueryGraphql, {
-        request: publicationsRequest
+    const result = await baseClient
+      .query(mainPostImageQueryGraphql, {
+        request: postsRequest
       })
       .toPromise();
-    const imageComment = result?.data?.publications?.items[0];
+    const imageComment = result?.data?.posts?.items[0];
     if (
-      imageComment?.__typename === "Comment" &&
-      imageComment.metadata.__typename === "ImageMetadataV3"
+      imageComment?.__typename === "Post" &&
+      imageComment.metadata.__typename === "ImageMetadata"
     ) {
-      if (
-        imageComment.metadata?.asset?.image?.__typename ===
-        "EncryptableImageSet"
-      ) {
-        const uri = imageComment.metadata.asset.image.optimized?.uri;
+      if (imageComment.metadata?.image?.__typename === "MediaImage") {
+        const uri = imageComment.metadata.image.item;
         logger.info(
           "get-main-publication-image.lens.service.ts: getMainPublicationImageLensService: uri fetched successfully: " +
             uri

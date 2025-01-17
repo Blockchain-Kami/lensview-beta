@@ -28,7 +28,7 @@ export const addImageToPublicationJobUtil = async (job: Queue.Job) => {
     );
     return;
   } catch (error) {
-    logger.info(
+    logger.error(
       "add-image-to-publication.job.ts: addImageToPublicationJobUtil: Execution Ended. Error in Execution: " +
         error
     );

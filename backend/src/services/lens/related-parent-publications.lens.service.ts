@@ -1,15 +1,12 @@
 import { InternalServerError } from "../../errors/internal-server-error.error.js";
 import {
-  LimitType,
-  PublicationsRequest,
-  PublicationsWhere,
-  PublicationType
+  PageSize,
+  PaginatedAnyPostsResult,
+  PostsRequest
 } from "../../gql/graphql.js";
-import { GetRelatedPubsLensModel } from "../../models/lens/get-related-pubs.lens.model.js";
 
-import getBaseClientHelperUtil from "../../utils/helpers/get-base-client.helper.util.js";
-import GetRelatedPubsQuery from "../../graphql/queries/get-related-publications.query.graphql.js";
-import { APP_LENS_ID, SOURCE_APP_ID } from "../../config/env.config.js";
+import baseClient from "../../utils/helpers/base-client.helper.util.js";
+import relatedPostsQuery from "../../graphql/queries/related-posts.query.graphql.js";
 import { logger } from "../../log/log-manager.log.js";
 
 /**
@@ -25,36 +22,46 @@ export const relatedParentPublicationsLensService = async (tags: string[]) => {
     "related-parent-publications.lens.service.ts: relatedParentPublicationsLensService: Input Parameter: " +
       tags
   );
-  const publicationsWhere: PublicationsWhere = {
-    from: [APP_LENS_ID],
-    publicationTypes: [PublicationType.Post],
-    metadata: {
-      tags: {
-        oneOf: tags
+  // const publicationsWhere: PublicationsWhere = {
+  //   from: [APP_LENS_ID],
+  //   publicationTypes: [PublicationType.Post],
+  //   metadata: {
+  //     tags: {
+  //       oneOf: tags
+  //     },
+  //     publishedOn: [SOURCE_APP_ID]
+  //   }
+  // };
+
+  // const publicationsRequest: PublicationsRequest = {
+  //   limit: LimitType.Fifty,
+  //   where: publicationsWhere
+  // };
+  const postsRequest: PostsRequest = {
+    filter: {
+      metadata: {
+        tags: {
+          oneOf: tags
+        }
       },
-      publishedOn: [SOURCE_APP_ID]
-    }
+      authors: ["0xA800F8980093E660b962E47E3474D8629ba35146"]
+    },
+    pageSize: PageSize.Ten
   };
-
-  const publicationsRequest: PublicationsRequest = {
-    limit: LimitType.Fifty,
-    where: publicationsWhere
-  };
-
   try {
     logger.info(
       "related-parent-publications.lens.service.ts: relatedParentPublicationsLensService: Calling getRelatedPubsQuery."
     );
     logger.info(
       "related-parent-publications.lens.service.ts: relatedParentPublicationsLensService: Input Parameter for getRelatedPubsQuery: " +
-        JSON.stringify(publicationsRequest)
+        JSON.stringify(postsRequest)
     );
-    const result = await getBaseClientHelperUtil
-      .query(GetRelatedPubsQuery, {
-        request: publicationsRequest
+    const result = await baseClient
+      .query(relatedPostsQuery, {
+        request: postsRequest
       })
       .toPromise();
-    const response = result?.data?.publications as GetRelatedPubsLensModel;
+    const response = result?.data?.posts as PaginatedAnyPostsResult;
     logger.info(
       "related-parent-publications.lens.service.ts: relatedParentPublicationsLensService: Response of getRelatedPubsQuery: " +
         JSON.stringify(response)

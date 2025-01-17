@@ -28,5 +28,5 @@ export const uploadImageFromDisk = async (
     "upload-image-from-disk.helper.util.ts: uploadImageFromDisk: Execution Ended. Image Stored at: " +
       imgCIDURL
   );
-  return createMetaDataForImageCommentHelperUtil(urlObj);
+  // return createMetaDataForImageCommentHelperUtil(urlObj);
 };
