@@ -98,7 +98,7 @@ export const postNewPublicationController = async (
       ]);
 
       if (newPublication && newPublication.items.length > 0) {
-        const publicationID = newPublication.items[0].id;
+        const publicationID = newPublication.items[0].slug;
         logger.info(
           "url.controller.ts: postNewPublicationController: Execution End. Publication Added to LensView. Publication ID: " +
             publicationID
