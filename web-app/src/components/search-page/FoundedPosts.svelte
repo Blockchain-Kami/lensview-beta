@@ -14,16 +14,12 @@
   import MediaQuery from "$lib/MediaQuery.svelte";
   import type { ObserverEventDetails, Options } from "svelte-inview";
   import { inview } from "svelte-inview";
-  // import getLinkPublicationLensService from "../../services/lens/get-link-publication.lens.service";
   import getImageCommentLensService from "../../services/lens/get-image-comment.lens.service";
-  // import getCommentBasedOnParameterPublicationUtil from "../../utils/publications/get-comment-based-on-parameter.publication.util";
-  // import { LimitType } from "../../gql/graphql";
   // import { CommentFilterType } from "../../config/app-constants.config";
   import getPictureURLUtil from "../../utils/get-picture-URL.util";
   import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
   import getRelatedPostPubIdsAppService from "../../services/app/get-related-post-pub-ids.app.service";
   import { page } from "$app/stores";
-  // import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
   import getLinkPostLensService from "../../services/lens/get-link-post.lens.service";
   import getCommentsLensService from "../../services/lens/get-comments.lens.service";
   import type { CommentLensModel } from "../../models/lens/comment.lens.model";
