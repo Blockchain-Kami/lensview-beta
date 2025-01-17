@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 
-// import { putAnonymousCommentBodyRequestModel } from "../models/requests/body/put-anonymous-comment.body.request.model.js";
+import { putAnonymousCommentBodyRequestModel } from "../models/requests/body/put-anonymous-comment.body.request.model.js";
 import {
-  // PublicationResponseModel,
+  PublicationResponseModel,
   PublicationResponseModelForPostAnonymousComment
 } from "../models/response/publication.response.model.js";
 import PostAnonymousCommentRequestBodyModel from "../models/requests/body/post-anonymous-comment.body.request.model.js";
@@ -35,6 +35,7 @@ import { httpStatusCodes } from "../config/app-constants.config.js";
 import { APP_LENS_HANDLE } from "../config/env.config.js";
 import { imageQueue } from "../jobs/add-image-queue.job.js";
 import { logger } from "../log/log-manager.log.js";
+import waitUntilTxCompleteUtil from "../utils/indexer/wait-until-tx-complete.indexer.util.js";
 
 /**
  * Adds a URL or a post comment to the system.
@@ -106,7 +107,18 @@ export const postAnonymousCommentController = async (
         "comments.controller.ts: postAnonymousCommentController: Publication Not Found. Adding URL to LensView."
       );
       const postMetadata = createMetaDataForUrlHelperUtil(urlObj);
-      await createTextPostPublicationUtil(postMetadata);
+      const hash = await createTextPostPublicationUtil(postMetadata);
+      if (hash.length === 0) {
+        logger.error(
+          "comments.controller.ts: postAnonymousCommentController: Execution End. Publication not added. Failed to add post."
+        );
+        return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
+          publicationID: null,
+          alreadyExists: false,
+          message: "Failed to add post"
+        });
+      }
+      await waitUntilTxCompleteUtil(hash, Date.now());
       imageQueue.add({ urlObj });
       const addedPublication = await relatedParentPublicationsLensService([
         urlObj.hashedURL
@@ -156,54 +168,53 @@ export const postAnonymousCommentController = async (
     });
   }
 };
-// //
-// // /**
-// //  * Handles the request to add an anonymous comment to a publication.
-// //  *
-// //  * @param {Request<unknown, unknown, putAnonymousCommentBodyRequestModel>} req - The request object containing the body with the publication ID and comment content.
-// //  * @param {Response<putAnonymousCommentResponseModel>} res - The response object used to send the success message and status code.
-// //  * @return {Promise<void>} - A promise that resolves when the comment has been successfully added.
-// //  */
-// // export const putAnonymousCommentController = async (
-// //   req: Request<unknown, unknown, putAnonymousCommentBodyRequestModel>,
-// //   res: Response<PublicationResponseModel>
-// // ) => {
-// //   const commentOnLensView = getCommentMethod();
-// //   try {
-// //     logger.info(
-// //       "comments.controller.ts: putAnonymousCommentController: Execution Started"
-// //     );
-// //     const { pubId, content, mainPostUrl, mainPostImageUrl, isThisComment } =
-// //       req.body;
-// //     const metadata = createMetaDataForAnonymousCommentHelperUtil(
-// //       content,
-// //       mainPostUrl,
-// //       mainPostImageUrl,
-// //       isThisComment
-// //     );
-// //     await commentOnLensView(pubId, metadata);
-// //     logger.info(
-// //       "comments.controller.ts: putAnonymousCommentController: Comment added to publication: " +
-// //         pubId
-// //     );
-// //     logger.info(
-// //       "comments.controller.ts: putAnonymousCommentController: Execution Ended"
-// //     );
-// //     res.status(httpStatusCodes.CREATED).send({
-// //       publicationID: pubId,
-// //       message: "Comment added successfully"
-// //     });
-// //   } catch (error) {
-// //     logger.error(
-// //       "comments.controller.ts: putAnonymousCommentController: Error in Execution: " +
-// //         error
-// //     );
-// //     res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
-// //       publicationID: req.body.pubId,
-// //       message: "Failed to ADD ANONYMOUS COMMENT to LensView"
-// //     });
-// //   }
-// // };
+
+/**
+ * Handles the request to add an anonymous comment to a publication.
+ *
+ * @param {Request<unknown, unknown, putAnonymousCommentBodyRequestModel>} req - The request object containing the body with the publication ID and comment content.
+ * @param {Response<putAnonymousCommentResponseModel>} res - The response object used to send the success message and status code.
+ * @return {Promise<void>} - A promise that resolves when the comment has been successfully added.
+ */
+export const putAnonymousCommentController = async (
+  req: Request<unknown, unknown, putAnonymousCommentBodyRequestModel>,
+  res: Response<PublicationResponseModel>
+) => {
+  try {
+    logger.info(
+      "comments.controller.ts: putAnonymousCommentController: Execution Started"
+    );
+    const { pubId, content, mainPostUrl, mainPostImageUrl, isThisComment } =
+      req.body;
+    const metadata = createMetaDataForAnonymousCommentHelperUtil(
+      content,
+      mainPostUrl,
+      mainPostImageUrl,
+      isThisComment
+    );
+    await createCommentPublicationUtil(pubId, metadata);
+    logger.info(
+      "comments.controller.ts: putAnonymousCommentController: Comment added to publication: " +
+        pubId
+    );
+    logger.info(
+      "comments.controller.ts: putAnonymousCommentController: Execution Ended"
+    );
+    res.status(httpStatusCodes.CREATED).send({
+      publicationID: pubId,
+      message: "Comment added successfully"
+    });
+  } catch (error) {
+    logger.error(
+      "comments.controller.ts: putAnonymousCommentController: Error in Execution: " +
+        error
+    );
+    res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
+      publicationID: req.body.pubId,
+      message: "Failed to ADD ANONYMOUS COMMENT to LensView"
+    });
+  }
+};
 // //
 // // export const getSummaryCommentController = async (
 // //   req: Request<unknown, unknown, unknown, SummaryQueryRequestModel>,
