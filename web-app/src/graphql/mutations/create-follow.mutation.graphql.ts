@@ -1,7 +1,7 @@
 import { graphql } from "../../gql";
 
-const followMutationGraphql = graphql(`
-  mutation Follow($request: CreateFollowRequest!) {
+const createFollowMutationGraphql = graphql(`
+  mutation CreateFollow($request: CreateFollowRequest!) {
     follow(request: $request) {
       ... on FollowResponse {
         hash
@@ -52,4 +52,4 @@ const followMutationGraphql = graphql(`
   }
 `);
 
-export default followMutationGraphql;
+export default createFollowMutationGraphql;

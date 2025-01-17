@@ -235,7 +235,7 @@
                     {item?.account?.username?.value.slice(5)}
                   </div>
                 </div>
-                {#if item?.account?.username.id === $profileUserStore?.account?.address}
+                {#if item?.account?.address === $profileUserStore?.account?.address}
                   {#if !isLoggingOut}
                     <button
                       on:click={logUserOut}
@@ -258,7 +258,8 @@
           {#if !isLoggingIn}
             <button
               on:click={() => logInWithLens(selectedProfileId)}
-              disabled={selectedProfileId === $profileUserStore?.account?.address}
+              disabled={selectedProfileId ===
+                $profileUserStore?.account?.address}
               class="btn">Login with Lens</button
             >
           {:else}

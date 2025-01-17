@@ -23,9 +23,9 @@
   import getLinkPreviewHtmlHelperUtil from "../../utils/helper/get-link-preview-html.helper.util";
   import Icon from "$lib/Icon.svelte";
   import { page } from "$app/stores";
-  // import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
-  // import addReactionLensService from "../../services/lens/add-reaction.lens.service";
-  // import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
+  import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  import addReactionLensService from "../../services/lens/add-reaction.lens.service";
+  import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
   import getReactionBasedOnLoginStatusHelperUtil from "../../utils/helper/get-reaction-based-on-login-status.helper.util";
   import type { ReactionDetailsModel } from "../../models/reactionDetails.model";
   import MediaQuery from "$lib/MediaQuery.svelte";
@@ -65,54 +65,54 @@
     pubID: string,
     reaction: AppReactionType
   ) => {
-    // event.preventDefault();
-    // event.stopPropagation();
-    //
-    // let isUserLoggedIn = false;
-    // const unsub = isLoggedInUserStore.subscribe((status) => {
-    //   isUserLoggedIn = status;
-    // });
-    // unsub();
-    //
-    // if (!isUserLoggedIn) {
-    //   openLoginNotification();
-    // } else {
-    //   try {
-    //     if (reactionDetails[pubID]["reaction"] !== null) {
-    //       await callRemoveReaction(
-    //         event,
-    //         pubID,
-    //         reactionDetails[pubID]["reaction"]
-    //       );
-    //     }
-    //
-    //     const localUpVoteCount =
-    //       reaction === AppReactionType.UpVote
-    //         ? reactionDetails[pubID]["upVoteCount"] + 1
-    //         : reactionDetails[pubID]["upVoteCount"];
-    //     const localDownVoteCount =
-    //       reaction === AppReactionType.DownVote
-    //         ? reactionDetails[pubID]["downVoteCount"] + 1
-    //         : reactionDetails[pubID]["downVoteCount"];
-    //     reactionDetails[pubID] = {
-    //       reaction: reaction,
-    //       upVoteCount: localUpVoteCount,
-    //       downVoteCount: localDownVoteCount
-    //     };
-    //
-    //     await addReactionLensService(pubID, reaction);
-    //   } catch (error) {
-    //     console.log("Error while reacting", error);
-    //
-    //     addNotification({
-    //       position: "top-right",
-    //       heading: "Error while reacting",
-    //       description: "Please try again .",
-    //       type: cross,
-    //       removeAfter: 4000
-    //     });
-    //   }
-    // }
+    event.preventDefault();
+    event.stopPropagation();
+
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
+    });
+    unsub();
+
+    if (!isUserLoggedIn) {
+      openLoginNotification();
+    } else {
+      try {
+        if (reactionDetails[pubID]["reaction"] !== null) {
+          await callRemoveReaction(
+            event,
+            pubID,
+            reactionDetails[pubID]["reaction"]
+          );
+        }
+
+        const localUpVoteCount =
+          reaction === AppReactionType.UpVote
+            ? reactionDetails[pubID]["upVoteCount"] + 1
+            : reactionDetails[pubID]["upVoteCount"];
+        const localDownVoteCount =
+          reaction === AppReactionType.DownVote
+            ? reactionDetails[pubID]["downVoteCount"] + 1
+            : reactionDetails[pubID]["downVoteCount"];
+        reactionDetails[pubID] = {
+          reaction: reaction,
+          upVoteCount: localUpVoteCount,
+          downVoteCount: localDownVoteCount
+        };
+
+        await addReactionLensService(pubID, reaction);
+      } catch (error) {
+        console.log("Error while reacting", error);
+
+        addNotification({
+          position: "top-right",
+          heading: "Error while reacting",
+          description: "Please try again .",
+          type: cross,
+          removeAfter: 4000
+        });
+      }
+    }
   };
 
   const callRemoveReaction = async (
@@ -120,46 +120,46 @@
     pubID: string,
     reaction: AppReactionType
   ) => {
-    // event.preventDefault();
-    // event.stopPropagation();
-    //
-    // let isUserLoggedIn = false;
-    // const unsub = isLoggedInUserStore.subscribe((status) => {
-    //   isUserLoggedIn = status;
-    // });
-    // unsub();
-    //
-    // if (!isUserLoggedIn) {
-    //   openLoginNotification();
-    // } else {
-    //   try {
-    //     const localUpVoteCount =
-    //       reaction === AppReactionType.UpVote
-    //         ? reactionDetails[pubID]["upVoteCount"] - 1
-    //         : reactionDetails[pubID]["upVoteCount"];
-    //     const localDownVoteCount =
-    //       reaction === AppReactionType.DownVote
-    //         ? reactionDetails[pubID]["downVoteCount"] - 1
-    //         : reactionDetails[pubID]["downVoteCount"];
-    //     reactionDetails[pubID] = {
-    //       reaction: AppReactionType.NoReaction,
-    //       upVoteCount: localUpVoteCount,
-    //       downVoteCount: localDownVoteCount
-    //     };
-    //
-    //     await removeReactionLensService(pubID, reaction);
-    //   } catch (error) {
-    //     console.log("Error while reacting", error);
-    //
-    //     addNotification({
-    //       position: "top-right",
-    //       heading: "Error removing",
-    //       description: "Error while removing your reaction. Please try again .",
-    //       type: cross,
-    //       removeAfter: 4000
-    //     });
-    //   }
-    // }
+    event.preventDefault();
+    event.stopPropagation();
+
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
+    });
+    unsub();
+
+    if (!isUserLoggedIn) {
+      openLoginNotification();
+    } else {
+      try {
+        const localUpVoteCount =
+          reaction === AppReactionType.UpVote
+            ? reactionDetails[pubID]["upVoteCount"] - 1
+            : reactionDetails[pubID]["upVoteCount"];
+        const localDownVoteCount =
+          reaction === AppReactionType.DownVote
+            ? reactionDetails[pubID]["downVoteCount"] - 1
+            : reactionDetails[pubID]["downVoteCount"];
+        reactionDetails[pubID] = {
+          reaction: AppReactionType.NoReaction,
+          upVoteCount: localUpVoteCount,
+          downVoteCount: localDownVoteCount
+        };
+
+        await removeReactionLensService(pubID, reaction);
+      } catch (error) {
+        console.log("Error while reacting", error);
+
+        addNotification({
+          position: "top-right",
+          heading: "Error removing",
+          description: "Error while removing your reaction. Please try again .",
+          type: cross,
+          removeAfter: 4000
+        });
+      }
+    }
   };
 
   const openLoginNotification = () => {

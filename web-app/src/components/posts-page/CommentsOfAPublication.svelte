@@ -36,11 +36,10 @@
   import getLinkPreviewHtmlHelperUtil from "../../utils/helper/get-link-preview-html.helper.util";
   import { totalPostsStore } from "../../stores/total-posts.store";
   import { totalCommentsStore } from "../../stores/total-comments.store";
-  // import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
-  // import addReactionLensService from "../../services/lens/add-reaction.lens.service";
-  // import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
+  import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  import addReactionLensService from "../../services/lens/add-reaction.lens.service";
+  import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
   import MediaQuery from "$lib/MediaQuery.svelte";
-  import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
   import SummarizePublications from "./SummarizePublications.svelte";
   import { TotalImagePostsStore } from "../../stores/total-image-posts.store";
   import { getAccount } from "@wagmi/core";
@@ -49,7 +48,7 @@
   import TipImage from "$lib/assets/Tip.svg";
   import { tooltip } from "@svelte-plugins/tooltips";
   import getCommentsLensService from "../../services/lens/get-comments.lens.service";
-  import type {CommentLensModel} from "../../models/lens/comment.lens.model";
+  import type { CommentLensModel } from "../../models/lens/comment.lens.model";
 
   const { VITE_APP_LENS_ID } = import.meta.env;
   const { VITE_IMAGE_PUB } = import.meta.env;
@@ -85,7 +84,7 @@
   $: if (commentPubId !== $page.data.commentPubId) {
     resetTotalImagePosts();
     commentPubId = $page.data.commentPubId;
-    promiseOfGetComments = getCommentsLensService(commentPubId)
+    promiseOfGetComments = getCommentsLensService(commentPubId);
     console.log("Changed commentPubId : ", $page.data.commentPubId);
   }
 
@@ -94,7 +93,7 @@
     resetTotalImagePosts();
     reloadCommentOfAPublication.subscribe((val) => {
       console.log("Reloaded comment of a publication" + val);
-      promiseOfGetComments = getCommentsLensService(commentPubId)
+      promiseOfGetComments = getCommentsLensService(commentPubId);
     });
   });
 
@@ -124,54 +123,54 @@
     pubID: string,
     reaction: AppReactionType
   ) => {
-    // event.preventDefault();
-    // event.stopPropagation();
-    //
-    // let isUserLoggedIn = false;
-    // const unsub = isLoggedInUserStore.subscribe((status) => {
-    //   isUserLoggedIn = status;
-    // });
-    // unsub();
-    //
-    // if (!isUserLoggedIn) {
-    //   openLoginNotification();
-    // } else {
-    //   try {
-    //     if (reactionDetails[pubID]["reaction"] !== null) {
-    //       await callRemoveReaction(
-    //         event,
-    //         pubID,
-    //         reactionDetails[pubID]["reaction"]
-    //       );
-    //     }
-    //
-    //     const localUpVoteCount =
-    //       reaction === AppReactionType.UpVote
-    //         ? reactionDetails[pubID]["upVoteCount"] + 1
-    //         : reactionDetails[pubID]["upVoteCount"];
-    //     const localDownVoteCount =
-    //       reaction === AppReactionType.DownVote
-    //         ? reactionDetails[pubID]["downVoteCount"] + 1
-    //         : reactionDetails[pubID]["downVoteCount"];
-    //     reactionDetails[pubID] = {
-    //       reaction: reaction,
-    //       upVoteCount: localUpVoteCount,
-    //       downVoteCount: localDownVoteCount
-    //     };
-    //
-    //     await addReactionLensService(pubID, reaction);
-    //   } catch (error) {
-    //     console.log("Error while reacting", error);
-    //
-    //     addNotification({
-    //       position: "top-right",
-    //       heading: "Error while reacting",
-    //       description: "Please try again .",
-    //       type: cross,
-    //       removeAfter: 4000
-    //     });
-    //   }
-    // }
+    event.preventDefault();
+    event.stopPropagation();
+
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
+    });
+    unsub();
+
+    if (!isUserLoggedIn) {
+      openLoginNotification();
+    } else {
+      try {
+        if (reactionDetails[pubID]["reaction"] !== null) {
+          await callRemoveReaction(
+            event,
+            pubID,
+            reactionDetails[pubID]["reaction"]
+          );
+        }
+
+        const localUpVoteCount =
+          reaction === AppReactionType.UpVote
+            ? reactionDetails[pubID]["upVoteCount"] + 1
+            : reactionDetails[pubID]["upVoteCount"];
+        const localDownVoteCount =
+          reaction === AppReactionType.DownVote
+            ? reactionDetails[pubID]["downVoteCount"] + 1
+            : reactionDetails[pubID]["downVoteCount"];
+        reactionDetails[pubID] = {
+          reaction: reaction,
+          upVoteCount: localUpVoteCount,
+          downVoteCount: localDownVoteCount
+        };
+
+        await addReactionLensService(pubID, reaction);
+      } catch (error) {
+        console.log("Error while reacting", error);
+
+        addNotification({
+          position: "top-right",
+          heading: "Error while reacting",
+          description: "Please try again .",
+          type: cross,
+          removeAfter: 4000
+        });
+      }
+    }
   };
 
   const callRemoveReaction = async (
@@ -179,46 +178,46 @@
     pubID: string,
     reaction: AppReactionType
   ) => {
-    // event.preventDefault();
-    // event.stopPropagation();
-    //
-    // let isUserLoggedIn = false;
-    // const unsub = isLoggedInUserStore.subscribe((status) => {
-    //   isUserLoggedIn = status;
-    // });
-    // unsub();
-    //
-    // if (!isUserLoggedIn) {
-    //   openLoginNotification();
-    // } else {
-    //   try {
-    //     const localUpVoteCount =
-    //       reaction === AppReactionType.UpVote
-    //         ? reactionDetails[pubID]["upVoteCount"] - 1
-    //         : reactionDetails[pubID]["upVoteCount"];
-    //     const localDownVoteCount =
-    //       reaction === AppReactionType.DownVote
-    //         ? reactionDetails[pubID]["downVoteCount"] - 1
-    //         : reactionDetails[pubID]["downVoteCount"];
-    //     reactionDetails[pubID] = {
-    //       reaction: AppReactionType.NoReaction,
-    //       upVoteCount: localUpVoteCount,
-    //       downVoteCount: localDownVoteCount
-    //     };
-    //
-    //     await removeReactionLensService(pubID, reaction);
-    //   } catch (error) {
-    //     console.log("Error while reacting", error);
-    //
-    //     addNotification({
-    //       position: "top-right",
-    //       heading: "Error removing",
-    //       description: "Error while removing your reaction. Please try again .",
-    //       type: cross,
-    //       removeAfter: 4000
-    //     });
-    //   }
-    // }
+    event.preventDefault();
+    event.stopPropagation();
+
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
+    });
+    unsub();
+
+    if (!isUserLoggedIn) {
+      openLoginNotification();
+    } else {
+      try {
+        const localUpVoteCount =
+          reaction === AppReactionType.UpVote
+            ? reactionDetails[pubID]["upVoteCount"] - 1
+            : reactionDetails[pubID]["upVoteCount"];
+        const localDownVoteCount =
+          reaction === AppReactionType.DownVote
+            ? reactionDetails[pubID]["downVoteCount"] - 1
+            : reactionDetails[pubID]["downVoteCount"];
+        reactionDetails[pubID] = {
+          reaction: AppReactionType.NoReaction,
+          upVoteCount: localUpVoteCount,
+          downVoteCount: localDownVoteCount
+        };
+
+        await removeReactionLensService(pubID, reaction);
+      } catch (error) {
+        console.log("Error while reacting", error);
+
+        addNotification({
+          position: "top-right",
+          heading: "Error removing",
+          description: "Error while removing your reaction. Please try again .",
+          type: cross,
+          removeAfter: 4000
+        });
+      }
+    }
   };
 
   const openLoginNotification = () => {
@@ -296,17 +295,17 @@
 <MediaQuery query="(max-width: 1024px)" let:matches>
   <section>
     <div class="CenterRowFlex filter">
-      <div class="filter__label">Sorted By:</div>
-<!--      <div class="filter__type">-->
-<!--        <select-->
-<!--          bind:value={selectedFilterType}-->
-<!--          on:change={updatedpromiseOfGetComments}-->
-<!--        >-->
-<!--          <option value={CommentFilterType.MostLikedComments}>Most liked</option-->
-<!--          >-->
-<!--          <option value={CommentFilterType.LatestComments}>Latest</option>-->
-<!--        </select>-->
-<!--      </div>-->
+<!--      <div class="filter__label">Sorted By:</div>-->
+      <!--      <div class="filter__type">-->
+      <!--        <select-->
+      <!--          bind:value={selectedFilterType}-->
+      <!--          on:change={updatedpromiseOfGetComments}-->
+      <!--        >-->
+      <!--          <option value={CommentFilterType.MostLikedComments}>Most liked</option-->
+      <!--          >-->
+      <!--          <option value={CommentFilterType.LatestComments}>Latest</option>-->
+      <!--        </select>-->
+      <!--      </div>-->
       <hr class="filter__line" />
       {#if $page.data.postPubId === undefined}
         <button

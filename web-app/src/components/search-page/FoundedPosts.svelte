@@ -14,16 +14,15 @@
   import MediaQuery from "$lib/MediaQuery.svelte";
   import type { ObserverEventDetails, Options } from "svelte-inview";
   import { inview } from "svelte-inview";
-  import getLinkPublicationLensService from "../../services/lens/get-link-publication.lens.service";
   import getImageCommentLensService from "../../services/lens/get-image-comment.lens.service";
-  import getCommentBasedOnParameterPublicationUtil from "../../utils/publications/get-comment-based-on-parameter.publication.util";
-  import { LimitType } from "../../gql/graphql";
-  import { CommentFilterType } from "../../config/app-constants.config";
+  // import { CommentFilterType } from "../../config/app-constants.config";
   import getPictureURLUtil from "../../utils/get-picture-URL.util";
   import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
   import getRelatedPostPubIdsAppService from "../../services/app/get-related-post-pub-ids.app.service";
   import { page } from "$app/stores";
-  import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
+  import getLinkPostLensService from "../../services/lens/get-link-post.lens.service";
+  import getCommentsLensService from "../../services/lens/get-comments.lens.service";
+  import type { CommentLensModel } from "../../models/lens/comment.lens.model";
   const { VITE_APP_LENS_ID } = import.meta.env;
 
   type KeyStringValBoolean = {
@@ -43,8 +42,8 @@
     isInView[id] = event.detail.inView;
   };
 
-  const getHandle = (comment: CommentsPublicationLensModel) => {
-    return comment.by?.handle?.fullHandle.substring(5);
+  const getHandle = (comment: CommentLensModel) => {
+    return comment.author?.username?.value.substring(5);
   };
 </script>
 
@@ -91,7 +90,7 @@
               on:inview_change={(event) => handleChange(event, mainPostPubId)}
               class="mobile__card"
             >
-              {#await getLinkPublicationLensService(mainPostPubId)}
+              {#await getLinkPostLensService(mainPostPubId)}
                 <div class="mobile__card__image-loader" />
                 <div class="mobile__card__info__loader" />
                 <div class="CenterRowFlex mobile__card__post">
@@ -151,7 +150,7 @@
                     ...
                   </a>
                 </div>
-                {#await getCommentBasedOnParameterPublicationUtil(mainPostPubId, LimitType.Ten, CommentFilterType.FirstMostRelevantComments)}
+                {#await getCommentsLensService(mainPostPubId)}
                   <div class="CenterRowFlex mobile__card__post">
                     <div class="mobile__card__post__user-pic-loader" />
                     <div class="mobile__card__post__info">
@@ -162,7 +161,7 @@
                     </div>
                   </div>
                 {:then comments}
-                  {#if comments[0]?.by?.handle?.fullHandle === undefined}
+                  {#if comments[0]?.author?.username?.value === undefined}
                     <div class="CenterRowFlex mobile__card__post">
                       No Top Post
                     </div>
@@ -174,8 +173,8 @@
                       >
                         <img
                           src={getPictureURLUtil(
-                            comments[0]?.by?.metadata?.picture?.optimized?.uri,
-                            comments[0]?.by?.ownedBy?.address
+                            comments[0]?.author?.metadata?.picture,
+                            comments[0]?.author?.owner
                           )}
                           alt="avatar"
                         />
@@ -191,7 +190,7 @@
                             {getHandle(comments[0]).substring(0, 12)}
                             {getHandle(comments[0]).length > 12 ? "..." : ""}
                           </a>
-                          {#if comments[0]?.by?.id === VITE_APP_LENS_ID}
+                          {#if comments[0]?.author?.address === VITE_APP_LENS_ID}
                             <Tooltip
                               content="This post was made by an anonymous user!"
                               position="top"
@@ -225,7 +224,7 @@
                             </div>
                           </div>
                           <div class="mobile__card__post__info__head__time">
-                            {getFormattedDateHelperUtil(comments[0]?.createdAt)}
+                            {getFormattedDateHelperUtil(comments[0]?.timestamp)}
                           </div>
                         </div>
                         <div class="mobile__card__post__info__body">
@@ -278,7 +277,7 @@
         <div class="body">
           {#each result?.publicationIDs as mainPostPubId}
             <a href={"/posts/" + mainPostPubId} class="card">
-              {#await getLinkPublicationLensService(mainPostPubId)}
+              {#await getLinkPostLensService(mainPostPubId)}
                 <div class="card__img-box__loader" />
                 <div class="card__body">
                   <div class="card__body__info__loader" />
@@ -344,11 +343,11 @@
                       </div>
                       <div class="dot" />
                       <div class="card__body__info__details__time">
-                        {getFormattedDateHelperUtil(mainPostPub?.createdAt)}
+                        {getFormattedDateHelperUtil(mainPostPub?.timestamp)}
                       </div>
                     </div>
                   </div>
-                  {#await getCommentBasedOnParameterPublicationUtil(mainPostPubId, LimitType.Ten, CommentFilterType.FirstMostRelevantComments)}
+                  {#await getCommentsLensService(mainPostPubId)}
                     <div class="CenterRowFlex card__body__post__loader" />
                   {:then comments}
                     <div class="CenterRowFlex card__body__post">
@@ -358,8 +357,8 @@
                       >
                         <img
                           src={getPictureURLUtil(
-                            comments[0]?.by?.metadata?.picture?.optimized?.uri,
-                            comments[0]?.by?.ownedBy?.address
+                            comments[0]?.author?.metadata?.picture,
+                            comments[0]?.author?.owner
                           )}
                           alt="avatar"
                         />
@@ -372,7 +371,7 @@
                           >
                             {getHandle(comments[0])}
                           </a>
-                          {#if comments[0]?.by?.id === VITE_APP_LENS_ID}
+                          {#if comments[0]?.author?.address === VITE_APP_LENS_ID}
                             <Tooltip
                               content="This post was made by an anonymous user!"
                               position="top"
@@ -407,7 +406,7 @@
                           </div>
                           <div class="dot" />
                           <div class="card__body__post__info__head__time">
-                            {getFormattedDateHelperUtil(comments[0]?.createdAt)}
+                            {getFormattedDateHelperUtil(comments[0]?.timestamp)}
                           </div>
                         </div>
                         <div class="card__body__post__info__content">
