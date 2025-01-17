@@ -16,13 +16,23 @@ const getProfileUsingIdLensService = async (id: string) => {
   if (isUserLoggedIn) {
     return await authenticatedClientAuthenticationUtil()
       .query(profileQueryGraphql, {
-        request: { forProfileId: id }
+        accountRequest: {
+          address: id
+        },
+        statsRequest: {
+          account: id
+        }
       })
       .toPromise();
   } else {
     return await baseClientAuthenticationUtil
       .query(profileQueryGraphql, {
-        request: { forProfileId: id }
+        accountRequest: {
+          address: id
+        },
+        statsRequest: {
+          account: id
+        }
       })
       .toPromise();
   }

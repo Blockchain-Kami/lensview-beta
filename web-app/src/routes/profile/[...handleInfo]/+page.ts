@@ -5,6 +5,8 @@ import getProfileIdUsingHandleLensService from "../../../services/lens/get-profi
 export const load = (async ({ params }: LoadEvent) => {
   const handle = params.handleInfo;
 
+  console.log("handle of profile page : ", handle);
+
   if (!handle)
     throw error(404, {
       message: "Not Found",
@@ -14,9 +16,9 @@ export const load = (async ({ params }: LoadEvent) => {
   try {
     const response = await getProfileIdUsingHandleLensService(handle);
 
-    if (response?.data?.profile?.id) {
+    if (response?.data?.account?.address) {
       return {
-        profileId: response.data.profile.id
+        profileId: response.data?.account?.address
       };
     } else {
       throw error(404, {

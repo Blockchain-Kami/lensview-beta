@@ -3,12 +3,13 @@ import { addressUserStore } from "../../stores/user/address.user.store";
 import { idUserStore } from "../../stores/user/id.user.store";
 import { profileUserStore } from "../../stores/user/profile.user.store";
 import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
-import getProfileUsingIdLensService from "../../services/lens/get-profile-using-id.lens.service";
-import getAccessTokenUsingRefreshTokenLensService from "../../services/lens/get-access-token-using-refresh-token.lens.service";
+// import getProfileUsingIdLensService from "../../services/lens/get-profile-using-id.lens.service";
+// import getAccessTokenUsingRefreshTokenLensService from "../../services/lens/get-access-token-using-refresh-token.lens.service";
 import getAccessRefreshTokenAuthenticationUtil from "./get-access-refresh-token.authentication.util";
 import parseJwtAuthenticationUtil from "./parse-jwt.authentication.util";
 import setReloadsMethodsAuthenticationUtil from "./set-reloads-methods.authentication.util";
 import resetToDefaultStoreValueAuthenticationUtil from "./reset-to-default-store-value.authentication.util";
+import getProfileUsingIdLensService from "../../services/lens/get-profile-using-id.lens.service";
 
 let updateAccessTokenTimeoutId: string | number | NodeJS.Timeout | undefined;
 
@@ -39,13 +40,13 @@ const updateLoggedInStatusAuthenticationUtil = async () => {
       throw new Error("Error while updating access token using refresh token");
     }
   } else {
-    const { id, evmAddress } = parseJwtAuthenticationUtil(accessToken);
-    idUserStore.setId(id);
-    addressUserStore.setUserAddress(evmAddress);
+    const { act, sub } = parseJwtAuthenticationUtil(accessToken);
+    idUserStore.setId(act?.sub);
+    addressUserStore.setUserAddress(sub);
 
     try {
       isLoggedInUserStore.setLoggedInStatus(true);
-      await getProfilesAndUpdateData(id);
+      await getProfilesAndUpdateData(act?.sub);
       updateAccessTokenAfterEvery30Mins();
     } catch (error) {
       resetToDefaultStoreValueAuthenticationUtil();
@@ -67,15 +68,15 @@ const isTokenValid = (token: string) => {
 
 const updateAccessTokenUsingRefreshToken = async (refreshToken: string) => {
   try {
-    const response = await getAccessTokenUsingRefreshTokenLensService(
-      refreshToken
-    );
-
-    localStorage.setItem(
-      localStorageKeys.authData,
-      JSON.stringify(response?.data?.refresh)
-    );
-    await updateLoggedInStatusAuthenticationUtil();
+    // const response = await getAccessTokenUsingRefreshTokenLensService(
+    //   refreshToken
+    // );
+    //
+    // localStorage.setItem(
+    //   localStorageKeys.authData,
+    //   JSON.stringify(response?.data?.refresh)
+    // );
+    // await updateLoggedInStatusAuthenticationUtil();
   } catch (error) {
     console.log(error);
     throw error;
@@ -85,7 +86,7 @@ const updateAccessTokenUsingRefreshToken = async (refreshToken: string) => {
 const getProfilesAndUpdateData = async (idParam: string) => {
   let id: string | null = null;
   const unsub = profileUserStore.subscribe((_profile) => {
-    id = _profile?.id;
+    id = _profile?.account?.address;
   });
   unsub();
 
@@ -96,7 +97,7 @@ const getProfilesAndUpdateData = async (idParam: string) => {
    */
   if (!id || id !== idParam) {
     const response = await getProfileUsingIdLensService(idParam);
-    profileUserStore.setUserProfile(response?.data?.profile);
+    profileUserStore.setUserProfile(response);
     console.log("Reload called");
     setReloadsMethodsAuthenticationUtil();
   }

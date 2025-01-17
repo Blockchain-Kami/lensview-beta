@@ -24,8 +24,8 @@
   import type { ReactionDetailsModel } from "../../models/reactionDetails.model";
   import Autolinker from "autolinker";
   import { metaTagsDescription } from "../../services/metaTags";
-  import getCommentBasedOnParameterPublicationUtil from "../../utils/publications/get-comment-based-on-parameter.publication.util";
-  import { LimitType } from "../../gql/graphql";
+  // import getCommentBasedOnParameterPublicationUtil from "../../utils/publications/get-comment-based-on-parameter.publication.util";
+  // import { LimitType } from "../../gql/graphql";
   import {
     AppReactionType,
     CommentFilterType
@@ -36,9 +36,9 @@
   import getLinkPreviewHtmlHelperUtil from "../../utils/helper/get-link-preview-html.helper.util";
   import { totalPostsStore } from "../../stores/total-posts.store";
   import { totalCommentsStore } from "../../stores/total-comments.store";
-  import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
-  import addReactionLensService from "../../services/lens/add-reaction.lens.service";
-  import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
+  // import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
+  // import addReactionLensService from "../../services/lens/add-reaction.lens.service";
+  // import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
   import MediaQuery from "$lib/MediaQuery.svelte";
   import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
   import SummarizePublications from "./SummarizePublications.svelte";
@@ -48,6 +48,8 @@
   import Tip from "../Tip.svelte";
   import TipImage from "$lib/assets/Tip.svg";
   import { tooltip } from "@svelte-plugins/tooltips";
+  import getCommentsLensService from "../../services/lens/get-comments.lens.service";
+  import type {CommentLensModel} from "../../models/lens/comment.lens.model";
 
   const { VITE_APP_LENS_ID } = import.meta.env;
   const { VITE_IMAGE_PUB } = import.meta.env;
@@ -69,28 +71,21 @@
   let dialog: HTMLDialogElement;
   let onLoginIntialization: () => Promise<void>;
 
-  let promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
-    commentPubId,
-    LimitType.Fifty
-  );
+  let promiseOfGetComments = getCommentsLensService(commentPubId);
 
-  const updatedpromiseOfGetComments = () => {
-    resetTotalImagePosts();
-    promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
-      commentPubId,
-      LimitType.Fifty,
-      selectedFilterType
-    );
-  };
+  // const updatedpromiseOfGetComments = () => {
+  //   resetTotalImagePosts();
+  //   promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
+  //     commentPubId,
+  //     LimitType.Fifty,
+  //     selectedFilterType
+  //   );
+  // };
 
   $: if (commentPubId !== $page.data.commentPubId) {
     resetTotalImagePosts();
     commentPubId = $page.data.commentPubId;
-    promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
-      commentPubId,
-      LimitType.Fifty,
-      selectedFilterType
-    );
+    promiseOfGetComments = getCommentsLensService(commentPubId)
     console.log("Changed commentPubId : ", $page.data.commentPubId);
   }
 
@@ -99,11 +94,7 @@
     resetTotalImagePosts();
     reloadCommentOfAPublication.subscribe((val) => {
       console.log("Reloaded comment of a publication" + val);
-      promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
-        commentPubId,
-        LimitType.Fifty,
-        selectedFilterType
-      );
+      promiseOfGetComments = getCommentsLensService(commentPubId)
     });
   });
 
@@ -133,54 +124,54 @@
     pubID: string,
     reaction: AppReactionType
   ) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    let isUserLoggedIn = false;
-    const unsub = isLoggedInUserStore.subscribe((status) => {
-      isUserLoggedIn = status;
-    });
-    unsub();
-
-    if (!isUserLoggedIn) {
-      openLoginNotification();
-    } else {
-      try {
-        if (reactionDetails[pubID]["reaction"] !== null) {
-          await callRemoveReaction(
-            event,
-            pubID,
-            reactionDetails[pubID]["reaction"]
-          );
-        }
-
-        const localUpVoteCount =
-          reaction === AppReactionType.UpVote
-            ? reactionDetails[pubID]["upVoteCount"] + 1
-            : reactionDetails[pubID]["upVoteCount"];
-        const localDownVoteCount =
-          reaction === AppReactionType.DownVote
-            ? reactionDetails[pubID]["downVoteCount"] + 1
-            : reactionDetails[pubID]["downVoteCount"];
-        reactionDetails[pubID] = {
-          reaction: reaction,
-          upVoteCount: localUpVoteCount,
-          downVoteCount: localDownVoteCount
-        };
-
-        await addReactionLensService(pubID, reaction);
-      } catch (error) {
-        console.log("Error while reacting", error);
-
-        addNotification({
-          position: "top-right",
-          heading: "Error while reacting",
-          description: "Please try again .",
-          type: cross,
-          removeAfter: 4000
-        });
-      }
-    }
+    // event.preventDefault();
+    // event.stopPropagation();
+    //
+    // let isUserLoggedIn = false;
+    // const unsub = isLoggedInUserStore.subscribe((status) => {
+    //   isUserLoggedIn = status;
+    // });
+    // unsub();
+    //
+    // if (!isUserLoggedIn) {
+    //   openLoginNotification();
+    // } else {
+    //   try {
+    //     if (reactionDetails[pubID]["reaction"] !== null) {
+    //       await callRemoveReaction(
+    //         event,
+    //         pubID,
+    //         reactionDetails[pubID]["reaction"]
+    //       );
+    //     }
+    //
+    //     const localUpVoteCount =
+    //       reaction === AppReactionType.UpVote
+    //         ? reactionDetails[pubID]["upVoteCount"] + 1
+    //         : reactionDetails[pubID]["upVoteCount"];
+    //     const localDownVoteCount =
+    //       reaction === AppReactionType.DownVote
+    //         ? reactionDetails[pubID]["downVoteCount"] + 1
+    //         : reactionDetails[pubID]["downVoteCount"];
+    //     reactionDetails[pubID] = {
+    //       reaction: reaction,
+    //       upVoteCount: localUpVoteCount,
+    //       downVoteCount: localDownVoteCount
+    //     };
+    //
+    //     await addReactionLensService(pubID, reaction);
+    //   } catch (error) {
+    //     console.log("Error while reacting", error);
+    //
+    //     addNotification({
+    //       position: "top-right",
+    //       heading: "Error while reacting",
+    //       description: "Please try again .",
+    //       type: cross,
+    //       removeAfter: 4000
+    //     });
+    //   }
+    // }
   };
 
   const callRemoveReaction = async (
@@ -188,46 +179,46 @@
     pubID: string,
     reaction: AppReactionType
   ) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    let isUserLoggedIn = false;
-    const unsub = isLoggedInUserStore.subscribe((status) => {
-      isUserLoggedIn = status;
-    });
-    unsub();
-
-    if (!isUserLoggedIn) {
-      openLoginNotification();
-    } else {
-      try {
-        const localUpVoteCount =
-          reaction === AppReactionType.UpVote
-            ? reactionDetails[pubID]["upVoteCount"] - 1
-            : reactionDetails[pubID]["upVoteCount"];
-        const localDownVoteCount =
-          reaction === AppReactionType.DownVote
-            ? reactionDetails[pubID]["downVoteCount"] - 1
-            : reactionDetails[pubID]["downVoteCount"];
-        reactionDetails[pubID] = {
-          reaction: AppReactionType.NoReaction,
-          upVoteCount: localUpVoteCount,
-          downVoteCount: localDownVoteCount
-        };
-
-        await removeReactionLensService(pubID, reaction);
-      } catch (error) {
-        console.log("Error while reacting", error);
-
-        addNotification({
-          position: "top-right",
-          heading: "Error removing",
-          description: "Error while removing your reaction. Please try again .",
-          type: cross,
-          removeAfter: 4000
-        });
-      }
-    }
+    // event.preventDefault();
+    // event.stopPropagation();
+    //
+    // let isUserLoggedIn = false;
+    // const unsub = isLoggedInUserStore.subscribe((status) => {
+    //   isUserLoggedIn = status;
+    // });
+    // unsub();
+    //
+    // if (!isUserLoggedIn) {
+    //   openLoginNotification();
+    // } else {
+    //   try {
+    //     const localUpVoteCount =
+    //       reaction === AppReactionType.UpVote
+    //         ? reactionDetails[pubID]["upVoteCount"] - 1
+    //         : reactionDetails[pubID]["upVoteCount"];
+    //     const localDownVoteCount =
+    //       reaction === AppReactionType.DownVote
+    //         ? reactionDetails[pubID]["downVoteCount"] - 1
+    //         : reactionDetails[pubID]["downVoteCount"];
+    //     reactionDetails[pubID] = {
+    //       reaction: AppReactionType.NoReaction,
+    //       upVoteCount: localUpVoteCount,
+    //       downVoteCount: localDownVoteCount
+    //     };
+    //
+    //     await removeReactionLensService(pubID, reaction);
+    //   } catch (error) {
+    //     console.log("Error while reacting", error);
+    //
+    //     addNotification({
+    //       position: "top-right",
+    //       heading: "Error removing",
+    //       description: "Error while removing your reaction. Please try again .",
+    //       type: cross,
+    //       removeAfter: 4000
+    //     });
+    //   }
+    // }
   };
 
   const openLoginNotification = () => {
@@ -268,8 +259,8 @@
     return "";
   };
 
-  const getHandle = (comment: CommentsPublicationLensModel) => {
-    return comment.by?.handle?.fullHandle.substring(5);
+  const getHandle = (comment: CommentLensModel) => {
+    return comment?.author?.username?.value.substring(5);
   };
 
   const updateTotalImagePosts = () => {
@@ -306,16 +297,16 @@
   <section>
     <div class="CenterRowFlex filter">
       <div class="filter__label">Sorted By:</div>
-      <div class="filter__type">
-        <select
-          bind:value={selectedFilterType}
-          on:change={updatedpromiseOfGetComments}
-        >
-          <option value={CommentFilterType.MostLikedComments}>Most liked</option
-          >
-          <option value={CommentFilterType.LatestComments}>Latest</option>
-        </select>
-      </div>
+<!--      <div class="filter__type">-->
+<!--        <select-->
+<!--          bind:value={selectedFilterType}-->
+<!--          on:change={updatedpromiseOfGetComments}-->
+<!--        >-->
+<!--          <option value={CommentFilterType.MostLikedComments}>Most liked</option-->
+<!--          >-->
+<!--          <option value={CommentFilterType.LatestComments}>Latest</option>-->
+<!--        </select>-->
+<!--      </div>-->
       <hr class="filter__line" />
       {#if $page.data.postPubId === undefined}
         <button
@@ -374,17 +365,17 @@
           </div>
         </div>
       {:then commentsData}
-        {#each commentsData as comment, index}
-          {#if !comment?.metadata?.tags.includes(VITE_IMAGE_PUB)}
+        {#each commentsData ?? [] as comment, index}
+          {#if !comment?.metadata?.tags?.includes(VITE_IMAGE_PUB)}
             <a
-              href={`/posts/${$page.data.mainPostPubId}/${comment?.id}`}
+              href={`/posts/${$page.data.mainPostPubId}/${comment?.slug}`}
               class="comment"
             >
               <a href={`/profile/${getHandle(comment)}`} class="comment__pic">
                 <img
                   src={getPictureURLUtil(
-                    comment?.by?.metadata?.picture?.optimized?.uri,
-                    comment?.by?.ownedBy?.address
+                    comment?.author?.metadata?.picture,
+                    comment?.author?.owner
                   )}
                   alt="avatar"
                 />
@@ -392,17 +383,17 @@
               <div class="comment__body">
                 <div class="CenterRowFlex comment__body__top">
                   <div class="CenterRowFlex comment__body__top__left">
-                    {#if comment?.by?.metadata?.displayName !== undefined && comment?.by?.metadata?.displayName !== null}
+                    {#if comment?.author?.metadata?.name !== undefined && comment?.author?.metadata?.name !== null}
                       <a
                         href={`/profile/${getHandle(comment)}`}
                         class="comment__body__top__left__name"
                       >
                         {#if matches}
-                          {comment?.by?.metadata?.displayName.substring(0, 5)}
-                          {#if comment?.by?.metadata?.displayName.length > 5}..{/if}
+                          {comment?.author?.metadata?.name.substring(0, 5)}
+                          {#if comment?.author?.metadata?.name.length > 5}..{/if}
                         {:else}
-                          {comment?.by?.metadata?.displayName.substring(0, 15)}
-                          {#if comment?.by?.metadata?.displayName.length > 15}..{/if}
+                          {comment?.author?.metadata?.name.substring(0, 15)}
+                          {#if comment?.author?.metadata?.name.length > 15}..{/if}
                         {/if}
                       </a>
                       <div class="comment__body__top__left__dot" />
@@ -413,7 +404,7 @@
                     >
                       {getHandle(comment)}
                     </a>
-                    {#if comment?.by?.id === VITE_APP_LENS_ID}
+                    {#if comment?.author?.address === VITE_APP_LENS_ID}
                       <Tooltip
                         content="This post was made by an anonymous user!"
                         position="right"
@@ -548,7 +539,7 @@
                   </div>
                 </div>
                 <div class="comment__body__time">
-                  {getFormattedDateHelperUtil(comment?.createdAt)}
+                  {getFormattedDateHelperUtil(comment?.timestamp)}
                 </div>
                 <div class="comment__body__content">
                   {#if index === 0}

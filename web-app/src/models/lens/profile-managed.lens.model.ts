@@ -1,18 +1,16 @@
 export interface ProfileManagedLensModel {
-  id: string;
-  handle: {
-    fullHandle: string;
-  };
-  ownedBy: {
+  account: {
+    owner: string;
     address: string;
-  };
-  metadata: {
-    displayName: string;
-    picture: {
-      __typename: "ImageSet";
-      optimized: {
-        uri: string;
-      };
+    username: {
+      value: string;
+      id: string;
+    };
+    metadata: {
+      name: string;
+      picture: string;
+      id: string;
     };
   };
+  __typename: "AccountManaged";
 }

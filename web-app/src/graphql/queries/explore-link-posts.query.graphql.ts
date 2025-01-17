@@ -1,14 +1,15 @@
 import { graphql } from "../../gql";
 
-const explorePublicationsQueryGraphql = graphql(`
-  query ExplorePublications($request: ExplorePublicationRequest!) {
-    explorePublications(request: $request) {
+const exploreLinkPostsQueryGraphql = graphql(`
+  query ExploreLinkPosts($request: PostsRequest!) {
+    posts(request: $request) {
       items {
         ... on Post {
           id
-          createdAt
-          by {
-            id
+          slug
+          timestamp
+          author {
+            address
           }
           stats {
             comments
@@ -16,7 +17,7 @@ const explorePublicationsQueryGraphql = graphql(`
             downvotes: reactions(request: { type: DOWNVOTE })
           }
           metadata {
-            ... on LinkMetadataV3 {
+            ... on LinkMetadata {
               sharingLink
             }
           }
@@ -26,4 +27,4 @@ const explorePublicationsQueryGraphql = graphql(`
   }
 `);
 
-export default explorePublicationsQueryGraphql;
+export default exploreLinkPostsQueryGraphql;

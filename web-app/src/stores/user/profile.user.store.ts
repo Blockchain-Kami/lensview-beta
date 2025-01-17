@@ -1,13 +1,16 @@
 import { writable } from "svelte/store";
-import type { Profile } from "../../gql/graphql";
+import type { ProfileQuery } from "../../gql/graphql";
+import type { OperationResult } from "@urql/core";
+
+type ProfileStoreType = ProfileQuery | null;
 
 function manageProfile() {
-  const profile = writable<Profile | null>(null);
+  const profile = writable<ProfileStoreType>(null);
 
   return {
     subscribe: profile.subscribe,
-    setUserProfile: (fetchedProfile: Profile | null) => {
-      profile.set(fetchedProfile);
+    setUserProfile: (fetchedProfile: OperationResult<ProfileQuery> | null) => {
+      profile.set(fetchedProfile?.data ?? null);
     }
   };
 }

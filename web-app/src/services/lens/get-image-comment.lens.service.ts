@@ -1,36 +1,31 @@
 import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
-import imageCommentPublicationQueryGraphql from "../../graphql/queries/image-comment-publication.query.graphql";
+import imageCommentsQueryGraphql from "../../graphql/queries/image-comments.query.graphql";
+import { PostType } from "../../gql/graphql";
 const { VITE_IMAGE_PUB } = import.meta.env;
 
 const getImageCommentLensService = async (id: string) => {
   console.log("getImageCommentLensService id", id);
   const result = await baseClientAuthenticationUtil
-    .query(imageCommentPublicationQueryGraphql, {
+    .query(imageCommentsQueryGraphql, {
       request: {
-        where: {
-          commentOn: {
-            id: id
-          },
+        filter: {
           metadata: {
             tags: {
-              oneOf: [VITE_IMAGE_PUB]
+              all: [VITE_IMAGE_PUB, id]
             }
-          }
+          },
+          postTypes: [PostType.Comment]
         }
       }
     })
     .toPromise();
 
-  const firstComment = result?.data?.publications?.items[0];
+  const firstComment = result?.data?.posts?.items[0];
   if (
-    firstComment?.__typename === "Comment" &&
-    firstComment.metadata.__typename === "ImageMetadataV3"
+    firstComment?.__typename === "Post" &&
+    firstComment.metadata.__typename === "ImageMetadata"
   ) {
-    if (
-      firstComment.metadata?.asset?.image?.__typename === "EncryptableImageSet"
-    ) {
-      return firstComment.metadata.asset.image.optimized?.uri;
-    }
+    return firstComment.metadata?.image?.item;
   }
 };
 
