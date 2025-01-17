@@ -80,6 +80,17 @@ export const postNewPublicationController = async (
       );
       const postMetadata = createMetaDataForUrlHelperUtil(urlObj);
       const hash = await createTextPostPublicationUtil(postMetadata);
+      if (hash.length === 0) {
+        logger.error(
+          "url.controller.ts: postNewPublicationController: Execution End. Publication not added. Failed to add post."
+        );
+        return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
+          publicationID: null,
+          alreadyExists: false,
+          mainPostImageUrl: null,
+          message: "Failed to add post"
+        });
+      }
       await waitUntilTxCompleteUtil(hash, Date.now());
       imageQueue.add({ urlObj });
       const newPublication = await relatedParentPublicationsLensService([
