@@ -295,7 +295,7 @@
 <MediaQuery query="(max-width: 1024px)" let:matches>
   <section>
     <div class="CenterRowFlex filter">
-      <div class="filter__label">Sorted By:</div>
+<!--      <div class="filter__label">Sorted By:</div>-->
       <!--      <div class="filter__type">-->
       <!--        <select-->
       <!--          bind:value={selectedFilterType}-->

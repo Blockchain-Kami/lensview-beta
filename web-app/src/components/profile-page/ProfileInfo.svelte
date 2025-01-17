@@ -18,19 +18,16 @@
   import LensviewLogoFlat from "$lib/assets/LensviewLogoFlat.svg";
   import Login from "../Login.svelte";
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
-  // import followFollowUtil from "../../utils/follow/follow.follow.util";
   import { getNotificationsContext } from "svelte-notifications";
   import { reloadAPublication } from "../../stores/reload-publication.store";
   import { onMount } from "svelte";
-  // import unfollowFollowUtil from "../../utils/follow/unfollow.follow.util";
-  // import followLensProfileManagerFollowUtil from "../../utils/follow/follow-lens-profile-manager.follow.util";
-  // import unfollowLensProfileManagerFollowUtil from "../../utils/follow/unfollow-lens-profile-manager.follow.util";
   import { getAccount } from "@wagmi/core";
   import web3ModalUtil, { wagmiConfig } from "../../utils/web3modal.util";
   import TipImage from "$lib/assets/Tip.svg";
   import Tip from "../Tip.svelte";
   import { tooltip } from "@svelte-plugins/tooltips";
-  import followUtil from "../../utils/follow.util";
+  import createFollowUtil from "../../utils/create-follow.util";
+  import createUnfollowUtil from "../../utils/create-unfollow.util";
 
   const { addNotification } = getNotificationsContext();
   let promiseOfGetProfile = getProfileUsingIdLensService($page.data.profileId);
@@ -60,7 +57,7 @@
     } else {
       disableActive = true;
       try {
-        await followUtil($page.data.profileId);
+        await createFollowUtil($page.data.profileId);
         isFollowing = true;
         disableActive = false;
       } catch (_error) {
@@ -78,42 +75,32 @@
   };
 
   const callUnfollow = async () => {
-    // let isUserLoggedIn = false;
-    // const unsub = isLoggedInUserStore.subscribe((status) => {
-    //   isUserLoggedIn = status;
-    // });
-    // unsub();
-    //
-    // if (!isUserLoggedIn) {
-    //   openLoginNotification();
-    // } else {
-    //   disableActive = true;
-    //   try {
-    //     let isSignLessEnabled = false;
-    //     const unsub3 = profileUserStore.subscribe((_profile) => {
-    //       isSignLessEnabled = !!_profile?.signless;
-    //     });
-    //     unsub3;
-    //
-    //     if (isSignLessEnabled) {
-    //       await unfollowLensProfileManagerFollowUtil($page.data.profileId);
-    //     } else {
-    //       await unfollowFollowUtil($page.data.profileId);
-    //     }
-    //     isFollowing = false;
-    //     disableActive = false;
-    //   } catch (_error) {
-    //     console.log("Error following user", _error);
-    //     disableActive = false;
-    //     addNotification({
-    //       position: "top-right",
-    //       heading: "Error while unfollowing",
-    //       description: "Please try again .",
-    //       type: cross,
-    //       removeAfter: 4000
-    //     });
-    //   }
-    // }
+    let isUserLoggedIn = false;
+    const unsub = isLoggedInUserStore.subscribe((status) => {
+      isUserLoggedIn = status;
+    });
+    unsub();
+
+    if (!isUserLoggedIn) {
+      openLoginNotification();
+    } else {
+      disableActive = true;
+      try {
+        await createUnfollowUtil($page.data.profileId);
+        isFollowing = false;
+        disableActive = false;
+      } catch (_error) {
+        console.log("Error following user", _error);
+        disableActive = false;
+        addNotification({
+          position: "top-right",
+          heading: "Error while unfollowing",
+          description: "Please try again .",
+          type: cross,
+          removeAfter: 4000
+        });
+      }
+    }
   };
 
   const updateIsFollowing = (status: boolean | undefined) => {

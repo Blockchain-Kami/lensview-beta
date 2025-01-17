@@ -1,18 +1,14 @@
-import createFollowLensService from "../services/lens/create-follow.lens.service";
-import waitUntilTxCompleteUtil from "./wait-until-tx-complete.util";
 import sponsoredTransactionUtil from "./sponsored-transaction.util";
 import selfFundedTransactionUtil from "./self-funded-transaction.util";
+import waitUntilTxCompleteUtil from "./wait-until-tx-complete.util";
+import createUnfollowLensService from "../services/lens/create-unfollow.lens.service";
 
-// For more information on hoisting accounts,
-// visit: https://viem.sh/docs/accounts/local.html#optional-hoist-the-account
-
-//TODO: During unfollow implementation make it create follow
-const followUtil = async (profileId: string) => {
-  const response = await createFollowLensService(profileId);
+const createUnfollowUtil = async (profileId: string) => {
+  const response = await createUnfollowLensService(profileId);
 
   let txHash;
 
-  if (response?.__typename === "FollowResponse") {
+  if (response?.__typename === "UnfollowResponse") {
     console.log("hash : ", response?.hash);
 
     txHash = response?.hash;
@@ -31,4 +27,4 @@ const followUtil = async (profileId: string) => {
   return waitUntilTxCompleteUtil(txHash, Date.now());
 };
 
-export default followUtil;
+export default createUnfollowUtil;
