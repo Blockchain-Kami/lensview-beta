@@ -258,7 +258,8 @@
           {#if !isLoggingIn}
             <button
               on:click={() => logInWithLens(selectedProfileId)}
-              disabled={selectedProfileId === $profileUserStore?.account?.address}
+              disabled={selectedProfileId ===
+                $profileUserStore?.account?.address}
               class="btn">Login with Lens</button
             >
           {:else}
