@@ -235,7 +235,7 @@
                     {item?.account?.username?.value.slice(5)}
                   </div>
                 </div>
-                {#if item?.account?.username.id === $profileUserStore?.account?.address}
+                {#if item?.account?.address === $profileUserStore?.account?.address}
                   {#if !isLoggingOut}
                     <button
                       on:click={logUserOut}
