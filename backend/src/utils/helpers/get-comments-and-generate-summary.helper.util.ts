@@ -14,7 +14,7 @@ export const getCommentsAndGenerateSummaryHelperUtil = async (
   try {
     const textOnlyComments =
       await getTextOnlyCommentsOnPublicationLensService(publicationId);
-    if (textOnlyComments.items.length === 0) {
+    if (textOnlyComments?.items?.length === 0) {
       logger.info(
         "comments.controller.ts: getSummaryCommentController: No comments found for the publication with ID: " +
           publicationId
@@ -32,7 +32,7 @@ export const getCommentsAndGenerateSummaryHelperUtil = async (
     );
     return {
       summary: summary,
-      commentCount: textOnlyComments.items.length
+      commentCount: textOnlyComments?.items.length
     };
   } catch (error) {
     logger.error(

@@ -270,7 +270,7 @@ export const getSummaryCommentController = async (
           await updateCommentsSummaryDbUtil(
             publicationId,
             response.summary,
-            response.commentCount
+            response.commentCount || 0
           );
           logger.info(
             "comments.controller.ts: getSummaryCommentController: Execution Ended."
@@ -300,7 +300,7 @@ export const getSummaryCommentController = async (
         await addCommentsSummaryDbUtil(
           publicationId,
           response.summary,
-          response.commentCount
+          response.commentCount ? response.commentCount : 0
         );
         logger.info(
           "comments.controller.ts: getSummaryCommentController: Execution Ended."

@@ -6,5 +6,5 @@ export const isNewCommentAddedSinceLastUpdateHelperUtil = async (
 ): Promise<boolean> => {
   const textOnlyComments =
     await getTextOnlyCommentsOnPublicationLensService(publicationId);
-  return textOnlyComments.items.length > currentCommentCount;
+  return (textOnlyComments?.items.length || 0) > currentCommentCount;
 };

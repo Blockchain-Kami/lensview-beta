@@ -1,10 +1,10 @@
 import {
   PageSize,
+  PaginatedAnyPostsResult,
   PostReferencesRequest,
   PostReferenceType
 } from "../../gql/graphql.js";
 import { InternalServerError } from "../../errors/internal-server-error.error.js";
-import { GetTextOnlyCommentsLensModel } from "../../models/lens/get-text-only-comments.lens.model.js";
 
 import baseClient from "../../utils/helpers/base-client.helper.util.js";
 import { httpStatusCodes } from "../../config/app-constants.config.js";
@@ -57,8 +57,7 @@ export const getTextOnlyCommentsOnPublicationLensService = async (
       })
       .toPromise();
 
-    const comments = result?.data
-      ?.postReferences as GetTextOnlyCommentsLensModel;
+    const comments = result?.data?.postReferences as PaginatedAnyPostsResult;
     logger.info(
       "get-text-only-comments-on-publication.lens.service.ts: getTextOnlyCommentsOnPublicationLensService: Comments Fetched Successfully. Execution End."
     );

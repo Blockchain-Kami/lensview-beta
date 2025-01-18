@@ -1,14 +1,13 @@
-import { GetTextOnlyCommentsLensModel } from "../../models/lens/get-text-only-comments.lens.model.js";
-
 import { logger } from "../../log/log-manager.log.js";
+import { PaginatedAnyPostsResult, Post } from "../../gql/graphql";
 
 export const formatTextOnlyInputDataHelperUtil = (
-  texOnlyComments: GetTextOnlyCommentsLensModel
+  texOnlyComments: PaginatedAnyPostsResult
 ) => {
   logger.info(
     "format-text-only-input-data.helper.util.ts: formatTextOnlyInputDataHelperUtil: Execution Started."
   );
-  const rankWiseComments = sortComments(texOnlyComments.items);
+  const rankWiseComments = sortComments(texOnlyComments.items as Post[]);
   const commentString = getCommentsFromObject(rankWiseComments);
   logger.info(
     "format-text-only-input-data.helper.util.ts: formatTextOnlyInputDataHelperUtil: Execution Ended."
@@ -16,16 +15,16 @@ export const formatTextOnlyInputDataHelperUtil = (
   return commentString;
 };
 
-const sortComments = (comments: GetTextOnlyCommentsLensModel["items"]) => {
+const sortComments = (comments: Post[]): Post[] => {
   logger.info(
     "format-text-only-input-data.helper.util.ts: sortComments: Sorting comments based on upvote."
   );
-  return comments.sort((a, b) => b.stats?.reactions - a.stats?.reactions);
+  return comments.sort(
+    (a: Post, b: Post) => b.stats?.reactions - a.stats?.reactions
+  );
 };
 
-const getCommentsFromObject = (
-  comments: GetTextOnlyCommentsLensModel["items"]
-) => {
+const getCommentsFromObject = (comments: Post[]) => {
   logger.info(
     "format-text-only-input-data.helper.util.ts: getCommentsFromObject: Creating input string."
   );
