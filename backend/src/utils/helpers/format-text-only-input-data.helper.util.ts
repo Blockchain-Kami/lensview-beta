@@ -20,7 +20,7 @@ const sortComments = (comments: GetTextOnlyCommentsLensModel["items"]) => {
   logger.info(
     "format-text-only-input-data.helper.util.ts: sortComments: Sorting comments based on upvote."
   );
-  return comments.sort((a, b) => b.stats.upvotes - a.stats.upvotes);
+  return comments.sort((a, b) => b.stats?.reactions - a.stats?.reactions);
 };
 
 const getCommentsFromObject = (
@@ -31,8 +31,13 @@ const getCommentsFromObject = (
   );
   let inputString = ``;
   comments.forEach((comment, index) => {
-    const userComment = removeTags(comment.metadata.content);
-    inputString += "user" + index + ": " + userComment + ".\n ";
+    const userComment =
+      comment.metadata.content != null
+        ? removeTags(comment.metadata.content)
+        : " ";
+    comment.metadata.content != null
+      ? (inputString += "user" + index + ": " + userComment + ".\n ")
+      : (inputString += " ");
   });
   return inputString;
 };

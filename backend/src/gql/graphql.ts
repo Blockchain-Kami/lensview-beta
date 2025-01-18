@@ -6498,6 +6498,41 @@ export type MutationMutation = {
     | { __typename?: "TransactionWillFail" };
 };
 
+export type PostReferencesQueryVariables = Exact<{
+  request: PostReferencesRequest;
+}>;
+
+export type PostReferencesQuery = {
+  __typename?: "Query";
+  postReferences: {
+    __typename?: "PaginatedAnyPostsResult";
+    items: Array<
+      | {
+          __typename?: "Post";
+          slug: any;
+          metadata:
+            | { __typename?: "ArticleMetadata" }
+            | { __typename?: "AudioMetadata" }
+            | { __typename?: "CheckingInMetadata" }
+            | { __typename?: "EmbedMetadata" }
+            | { __typename?: "EventMetadata" }
+            | { __typename?: "ImageMetadata" }
+            | { __typename?: "LinkMetadata" }
+            | { __typename?: "LivestreamMetadata" }
+            | { __typename?: "MintMetadata" }
+            | { __typename?: "SpaceMetadata" }
+            | { __typename?: "StoryMetadata" }
+            | { __typename?: "TextOnlyMetadata"; content: any }
+            | { __typename?: "ThreeDMetadata" }
+            | { __typename?: "TransactionMetadata" }
+            | { __typename?: "VideoMetadata" };
+          stats: { __typename?: "PostStats"; reactions: number };
+        }
+      | { __typename?: "Repost" }
+    >;
+  };
+};
+
 export type ImageCommentsQueryVariables = Exact<{
   request: PostsRequest;
 }>;
@@ -6995,6 +7030,125 @@ export const MutationDocument = {
     }
   ]
 } as unknown as DocumentNode<MutationMutation, MutationMutationVariables>;
+export const PostReferencesDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "PostReferences" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "request" }
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "PostReferencesRequest" }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "postReferences" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "request" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "request" }
+                }
+              }
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "items" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "InlineFragment",
+                        typeCondition: {
+                          kind: "NamedType",
+                          name: { kind: "Name", value: "Post" }
+                        },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "slug" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "metadata" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "InlineFragment",
+                                    typeCondition: {
+                                      kind: "NamedType",
+                                      name: {
+                                        kind: "Name",
+                                        value: "TextOnlyMetadata"
+                                      }
+                                    },
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "content"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "stats" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "reactions" }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<PostReferencesQuery, PostReferencesQueryVariables>;
 export const ImageCommentsDocument = {
   kind: "Document",
   definitions: [
