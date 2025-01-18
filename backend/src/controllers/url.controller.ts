@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 
 import { PublicationResponseModelForNewPubURL } from "../models/response/publication.response.model.js";
-// import { SearchQueryRequestModel } from "../models/requests/query/search.query.request.model.js";
-// import { UrlExistsValidationResponseModel } from "../models/response/url-exists-validation.response.model.js";
+import { SearchQueryRequestModel } from "../models/requests/query/search.query.request.model.js";
+import { UrlExistsValidationResponseModel } from "../models/response/url-exists-validation.response.model.js";
 import PostNewPublicationBodyRequestModel from "../models/requests/body/post-new-publication.body.request.model.js";
 
 import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util.js";
 import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util.js";
 import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service.js";
-// import { preprocessURLHelperUtil } from "../utils/helpers/preprocess-url.helper.util.js";
-// import { createHashHelperUtil } from "../utils/helpers/create-hash.helper.util.js";
+import { preprocessURLHelperUtil } from "../utils/helpers/preprocess-url.helper.util.js";
+import { createHashHelperUtil } from "../utils/helpers/create-hash.helper.util.js";
 import { createMetaDataForUrlHelperUtil } from "../utils/helpers/create-metadata.helper.util.js";
 import { getMainPublicationImageLensService } from "../services/lens/get-main-publication-image.lens.service.js";
 // import { getPostMethod } from "../config/app-config.config.js";
@@ -135,74 +135,74 @@ export const postNewPublicationController = async (
   }
 };
 
-// /**
-//  * Validates if a URL exists and returns the corresponding publication.
-//  *
-//  * @param {Request<unknown, unknown, unknown, SearchQueryRequestModel>} req - The request object.
-//  * @param {Response<UrlExistsValidationResponseModel>} res - The response object.
-//  * @return {Promise<void>} - Returns a Promise that resolves to void.
-//  */
-// export const urlExistsValidationController = async (
-//   req: Request<unknown, unknown, unknown, SearchQueryRequestModel>,
-//   res: Response<UrlExistsValidationResponseModel>
-// ) => {
-//   try {
-//     logger.info(
-//       "url.controller.ts: urlExistsValidationController: Execution Started."
-//     );
-//     const searchQuery = req.query.search_query;
-//     const URLString = isInputTypeURLHelperUtil(searchQuery);
-//     if (URLString) {
-//       const [url, , , ,] = preprocessURLHelperUtil(URLString);
-//       logger.info(
-//         "url.controller.ts: urlExistsValidationController: Execution End. User entered a URL: Processed URL: " +
-//           url
-//       );
-//       const hashedURL = createHashHelperUtil(url);
-//       const publicationExists = await relatedParentPublicationsLensService([
-//         hashedURL
-//       ]);
-//       if (publicationExists && publicationExists.items.length > 0) {
-//         const publicationID = publicationExists.items[0].id;
-//         logger.info(
-//           "url.controller.ts: urlExistsValidationController: Execution End. Publication Found on LensView. Publication ID: " +
-//             publicationID
-//         );
-//         return res.status(httpStatusCodes.OK).send({
-//           isURL: true,
-//           publicationID: publicationID,
-//           message: "Publication Found"
-//         });
-//       } else {
-//         logger.info(
-//           "url.controller.ts: urlExistsValidationController: Execution End. Publication Not Found for URL on LensView. URL: " +
-//             url
-//         );
-//         return res.status(httpStatusCodes.OK).send({
-//           isURL: true,
-//           publicationID: null,
-//           message: "Publication Not Found"
-//         });
-//       }
-//     } else {
-//       logger.info(
-//         "url.controller.ts: urlExistsValidationController: Execution End. User entered a tag"
-//       );
-//       res.status(httpStatusCodes.OK).send({
-//         isURL: false,
-//         publicationID: null,
-//         message: "User entered a tag"
-//       });
-//     }
-//   } catch (error) {
-//     logger.error(
-//       "url.controller.ts: urlExistsValidationController: Execution End. Internal Server Error: " +
-//         error
-//     );
-//     return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
-//       isURL: false,
-//       publicationID: null,
-//       message: "Internal Server Error: " + error
-//     });
-//   }
-// };
+/**
+ * Validates if a URL exists and returns the corresponding publication.
+ *
+ * @param {Request<unknown, unknown, unknown, SearchQueryRequestModel>} req - The request object.
+ * @param {Response<UrlExistsValidationResponseModel>} res - The response object.
+ * @return {Promise<void>} - Returns a Promise that resolves to void.
+ */
+export const urlExistsValidationController = async (
+  req: Request<unknown, unknown, unknown, SearchQueryRequestModel>,
+  res: Response<UrlExistsValidationResponseModel>
+) => {
+  try {
+    logger.info(
+      "url.controller.ts: urlExistsValidationController: Execution Started."
+    );
+    const searchQuery = req.query.search_query;
+    const URLString = isInputTypeURLHelperUtil(searchQuery);
+    if (URLString) {
+      const [url, , , ,] = preprocessURLHelperUtil(URLString);
+      logger.info(
+        "url.controller.ts: urlExistsValidationController: Execution End. User entered a URL: Processed URL: " +
+          url
+      );
+      const hashedURL = createHashHelperUtil(url);
+      const publicationExists = await relatedParentPublicationsLensService([
+        hashedURL
+      ]);
+      if (publicationExists && publicationExists.items.length > 0) {
+        const publicationID = publicationExists.items[0].slug;
+        logger.info(
+          "url.controller.ts: urlExistsValidationController: Execution End. Publication Found on LensView. Publication ID: " +
+            publicationID
+        );
+        return res.status(httpStatusCodes.OK).send({
+          isURL: true,
+          publicationID: publicationID,
+          message: "Publication Found"
+        });
+      } else {
+        logger.info(
+          "url.controller.ts: urlExistsValidationController: Execution End. Publication Not Found for URL on LensView. URL: " +
+            url
+        );
+        return res.status(httpStatusCodes.OK).send({
+          isURL: true,
+          publicationID: null,
+          message: "Publication Not Found"
+        });
+      }
+    } else {
+      logger.info(
+        "url.controller.ts: urlExistsValidationController: Execution End. User entered a tag"
+      );
+      res.status(httpStatusCodes.OK).send({
+        isURL: false,
+        publicationID: null,
+        message: "User entered a tag"
+      });
+    }
+  } catch (error) {
+    logger.error(
+      "url.controller.ts: urlExistsValidationController: Execution End. Internal Server Error: " +
+        error
+    );
+    return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
+      isURL: false,
+      publicationID: null,
+      message: "Internal Server Error: " + error
+    });
+  }
+};
