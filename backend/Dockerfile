@@ -1,7 +1,7 @@
 # Below line are used to create ./build folder,
 # which is used to copy the build files from the builder stage.
 # This is done to reduce the size of the final image.
-FROM node:16.19.0-alpine3.16 AS builder
+FROM node:21-alpine3.20 AS builder
 WORKDIR /lensview-beta-backend-docker
 COPY package.json package-lock.json ./
 RUN npm ci
