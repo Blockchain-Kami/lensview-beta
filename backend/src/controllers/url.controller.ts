@@ -15,7 +15,7 @@ import { getMainPublicationImageLensService } from "../services/lens/get-main-pu
 // import { getPostMethod } from "../config/app-config.config.js";
 import { createTextPostPublicationUtil } from "../utils/publications/create-post.publication.util.js";
 import { httpStatusCodes } from "../config/app-constants.config.js";
-import { imageQueue } from "../jobs/add-image-queue.job.js";
+// import { imageQueue } from "../jobs/add-image-queue.job.js";
 import { logger } from "../log/log-manager.log.js";
 import waitUntilTxCompleteUtil from "../utils/indexer/wait-until-tx-complete.indexer.util.js";
 
@@ -92,7 +92,7 @@ export const postNewPublicationController = async (
         });
       }
       await waitUntilTxCompleteUtil(hash, Date.now());
-      imageQueue.add({ urlObj });
+      // imageQueue.add({ urlObj });
       const newPublication = await relatedParentPublicationsLensService([
         urlObj.hashedURL
       ]);

@@ -33,7 +33,7 @@ import { isNewCommentAddedSinceLastUpdateHelperUtil } from "../utils/helpers/is-
 
 import { httpStatusCodes } from "../config/app-constants.config.js";
 import { APP_LENS_HANDLE } from "../config/env.config.js";
-import { imageQueue } from "../jobs/add-image-queue.job.js";
+// import { imageQueue } from "../jobs/add-image-queue.job.js";
 import { logger } from "../log/log-manager.log.js";
 import waitUntilTxCompleteUtil from "../utils/indexer/wait-until-tx-complete.indexer.util.js";
 
@@ -119,7 +119,7 @@ export const postAnonymousCommentController = async (
         });
       }
       await waitUntilTxCompleteUtil(hash, Date.now());
-      imageQueue.add({ urlObj });
+      // imageQueue.add({ urlObj });
       const addedPublication = await relatedParentPublicationsLensService([
         urlObj.hashedURL
       ]);
