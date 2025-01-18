@@ -1,7 +1,7 @@
 import express from "express";
 
 import {
-  // getSummaryCommentController,
+  getSummaryCommentController,
   postAnonymousCommentController
 } from "../controllers/comments.controller.js";
 import { putAnonymousCommentController } from "../controllers/comments.controller.js";
@@ -23,6 +23,6 @@ router.put(
   putAnonymousCommentController
 );
 //
-// router.get("/summarize", getSummaryCommentController);
+router.get("/summarize", getSummaryCommentController);
 
 export default router;

@@ -1,14 +1,15 @@
 export interface GetTextOnlyCommentsLensModel {
-  __typename: "PaginatedPublicationsResult";
+  __typename: "PaginatedAnyPostsResult";
   items: {
-    __typename: "Comment";
+    __typename: "Post";
+    slug: string;
     metadata: {
-      __typename: "TextOnlyMetadataV3";
+      __typename: "Encryptable";
       content: string;
     };
     stats: {
-      __typename: "PublicationStats";
-      upvotes: number;
+      __typename: "PostStats";
+      reactions: number;
     };
   }[];
 }
