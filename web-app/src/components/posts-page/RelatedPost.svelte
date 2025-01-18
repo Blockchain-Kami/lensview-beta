@@ -30,6 +30,7 @@
   import getLinkPostLensService from "../../services/lens/get-link-post.lens.service";
   import getCommentsLensService from "../../services/lens/get-comments.lens.service";
   import type { CommentLensModel } from "../../models/lens/comment.lens.model";
+  import { storage } from "../../utils/ipfs.util";
   const { VITE_APP_LENS_ID } = import.meta.env;
 
   type KeyStringValBoolean = {
@@ -128,7 +129,7 @@
                 <div
                   class="card__image"
                   style="background-image: url({imageUrl
-                    ? imageUrl
+                    ? storage.resolveScheme(imageUrl)
                     : NoWebPageImg})"
                   class:card__image__hover-effect={isInView[mainPostPubId] &&
                     matches}

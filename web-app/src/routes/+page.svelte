@@ -35,6 +35,7 @@
   import { page } from "$app/stores";
   import getCommentsLensService from "../services/lens/get-comments.lens.service";
   import type { CommentLensModel } from "../models/lens/comment.lens.model";
+  import { storage } from "../utils/ipfs.util";
   const { VITE_APP_LENS_ID } = import.meta.env;
 
   type KeyStringValBoolean = {
@@ -143,7 +144,7 @@
                 <div
                   class="card__image"
                   style="background-image: url({fetchedImageUrl
-                    ? fetchedImageUrl
+                    ? storage.resolveScheme(fetchedImageUrl)
                     : NoWebPageImg})"
                   class:card__image__hover-effect={isInView[item?.slug] &&
                     matches}

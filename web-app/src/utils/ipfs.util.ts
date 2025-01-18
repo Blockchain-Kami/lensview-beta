@@ -1,11 +1,12 @@
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
 const { VITE_THIRD_WEB_CLIENT_ID } = import.meta.env;
 
+export const storage = new ThirdwebStorage({
+  clientId: VITE_THIRD_WEB_CLIENT_ID
+});
+
 export const uploadIpfs = async (data: string) => {
   // First, instantiate the thirdweb IPFS storage
-  const storage = new ThirdwebStorage({
-    clientId: VITE_THIRD_WEB_CLIENT_ID
-  });
 
   // Here we get the IPFS URI of where our metadata has been uploaded
   const uri = await storage.upload(data);

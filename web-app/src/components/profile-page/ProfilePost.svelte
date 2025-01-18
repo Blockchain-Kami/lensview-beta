@@ -37,6 +37,7 @@
   import NoWebPageImg from "$lib/assets/NoWebPageImg.png";
   import getProfilePostsLensService from "../../services/lens/get-profile-posts.lens.service";
   import type { CommentLensModel } from "../../models/lens/comment.lens.model";
+  import { storage } from "../../utils/ipfs.util";
 
   type PostMoreStatus = {
     [key: string]: boolean;
@@ -244,7 +245,7 @@
                 <div
                   class="card__left__image"
                   style="background-image: url({imageUrl
-                    ? imageUrl
+                    ? storage.resolveScheme(imageUrl)
                     : NoWebPageImg})"
                 />
               </div>

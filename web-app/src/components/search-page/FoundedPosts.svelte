@@ -23,6 +23,7 @@
   import getLinkPostLensService from "../../services/lens/get-link-post.lens.service";
   import getCommentsLensService from "../../services/lens/get-comments.lens.service";
   import type { CommentLensModel } from "../../models/lens/comment.lens.model";
+  import { storage } from "../../utils/ipfs.util";
   const { VITE_APP_LENS_ID } = import.meta.env;
 
   type KeyStringValBoolean = {
@@ -111,7 +112,9 @@
                     class:mobile__card__image__hover-effect={isInView[
                       mainPostPubId
                     ]}
-                    style="background-image: url({imageUrl})"
+                    style="background-image: url({storage.resolveScheme(
+                      imageUrl
+                    )})"
                   />
                 {:catch _error}
                   <div
@@ -290,7 +293,9 @@
                   <div class="card__img-box">
                     <div
                       class="card__img-box__image"
-                      style="background-image: url({imageUrl})"
+                      style="background-image: url({storage.resolveScheme(
+                        imageUrl
+                      )})"
                     >
                       <div
                         class="CenterRowFlex card__img-box__image__posts-count"

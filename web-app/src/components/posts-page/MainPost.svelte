@@ -39,6 +39,7 @@
   import NoWebPageImg from "$lib/assets/NoWebPageImg.png";
   import { TotalImagePostsStore } from "../../stores/total-image-posts.store";
   import getLinkPostLensService from "../../services/lens/get-link-post.lens.service";
+  import { storage } from "../../utils/ipfs.util";
 
   const { addNotification } = getNotificationsContext();
   let mainPostPubId = $page.data.mainPostPubId;
@@ -271,7 +272,9 @@
                 : ` height: ${23}rem `}
             >
               <img
-                src={fetchedImageUrl ? fetchedImageUrl : NoWebPageImg}
+                src={fetchedImageUrl
+                  ? storage.resolveScheme(fetchedImageUrl)
+                  : NoWebPageImg}
                 alt=""
               />
             </div>
@@ -405,7 +408,7 @@
           {updateMainPostImageUrlStore(imageUrl)}
           {updateMetaTagsImageUrl(imageUrl)}
           <a href={`/posts/${mainPostPubId}`}>
-            <img src={imageUrl} alt="" />
+            <img src={storage.resolveScheme(imageUrl)} alt="" />
           </a>
         {/await}
         <div class="CenterColumnFlex main-post">
