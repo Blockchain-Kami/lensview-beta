@@ -237,9 +237,11 @@ export const getSummaryCommentController = async (
         );
       if (!isNewCommentAdded) {
         const response = {
-          summary: publicationData.summary,
-          sentiment: publicationData.sentiment,
+          summary: publicationData.summary ? publicationData.summary : "",
+          sentiment: publicationData.sentiment ? publicationData.sentiment : "",
           lastUpdatedAt: publicationData.updatedAt
+            ? publicationData.updatedAt
+            : null
         };
         logger.info(
           "comments.controller.ts: getSummaryCommentController: Execution End. No new comment added since last update. Summary: " +
