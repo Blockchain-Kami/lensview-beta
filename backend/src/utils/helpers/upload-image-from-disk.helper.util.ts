@@ -16,7 +16,6 @@ export const uploadImageFromDisk = async (
   logger.info(
     "upload-image-from-disk.helper.util.ts: uploadImageFromDisk: Execution Started"
   );
-  // @ts-expect-error expected
   const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
   const __dirname = path.dirname(__filename);
 
