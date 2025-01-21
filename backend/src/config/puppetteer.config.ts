@@ -38,5 +38,6 @@ export const minimal_args = [
   "--no-zygote",
   "--password-store=basic",
   "--use-gl=swiftshader",
-  "--use-mock-keychain"
+  "--use-mock-keychain",
+  "--disable-gpu"
 ];
