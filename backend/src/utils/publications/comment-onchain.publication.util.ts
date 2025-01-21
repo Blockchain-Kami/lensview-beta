@@ -22,8 +22,16 @@ import { splitSignatureHelperUtil } from "../helpers/split-signature.helper.util
 import { createContractHelperUtils } from "../helpers/create-contract.helper.utils.js";
 import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util.js";
 
-// @ts-expect-error known issue
-import LENS_HUB_ABI from "../../abis/lens-hub-contract.abi.json" assert { type: "json" };
+import fs from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const configPath = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "../../abis/lens-hub-contract.abi.json"
+);
+
+const LENS_HUB_ABI = JSON.parse(fs.readFileSync(configPath, "utf8"));
 
 import {
   APP_ADDRESS,

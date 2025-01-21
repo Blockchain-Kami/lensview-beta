@@ -32,8 +32,16 @@ import {
 } from "../config/env.config.js";
 import { logger } from "../log/log-manager.log.js";
 
-// @ts-expect-error known issue
-import LENS_HUB_ABI from "../abis/lens-hub-contract.abi.json" assert { type: "json" };
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import fs from "node:fs";
+
+const configPath = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "../abis/lens-hub-contract.abi.json"
+);
+
+const LENS_HUB_ABI = JSON.parse(fs.readFileSync(configPath, "utf8"));
 
 /**
  * Adds an image to a post in the admin controller.

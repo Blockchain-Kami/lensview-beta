@@ -21,8 +21,16 @@ import { createContractHelperUtils } from "../helpers/create-contract.helper.uti
 import { hasTransactionBeenIndexedIndexerUtil } from "../indexer/has-transaction-been-indexed.indexer.util.js";
 import { getPolygonGasPriceHelperUtil } from "../helpers/get-polygon-gas-price.helper.utils.js";
 
-// @ts-expect-error known issue
-import LENS_HUB_ABI from "../../abis/lens-hub-contract.abi.json" assert { type: "json" };
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import fs from "node:fs";
+
+const configPath = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "../../abis/lens-hub-contract.abi.json"
+);
+
+const LENS_HUB_ABI = JSON.parse(fs.readFileSync(configPath, "utf8"));
 
 import {
   USE_GASLESS,
