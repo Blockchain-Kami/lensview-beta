@@ -80,7 +80,7 @@ export const postNewPublicationController = async (
       );
       const postMetadata = createMetaDataForUrlHelperUtil(urlObj);
       await postOnLensView(postMetadata);
-      imageQueue.add({ urlObj });
+      // imageQueue.add({ urlObj });
       const newPublication = await relatedParentPublicationsLensService([
         urlObj.hashedURL
       ]);

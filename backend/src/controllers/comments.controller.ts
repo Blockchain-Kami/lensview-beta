@@ -103,7 +103,7 @@ export const postAnonymousCommentController = async (
       );
       const postMetadata = createMetaDataForUrlHelperUtil(urlObj);
       await postOnLensView(postMetadata);
-      imageQueue.add({ urlObj });
+      // imageQueue.add({ urlObj });
       const addedPublication = await relatedParentPublicationsLensService([
         urlObj.hashedURL
       ]);
