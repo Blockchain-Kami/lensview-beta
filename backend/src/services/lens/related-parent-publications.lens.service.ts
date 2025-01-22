@@ -54,6 +54,7 @@ export const relatedParentPublicationsLensService = async (tags: string[]) => {
         request: publicationsRequest
       })
       .toPromise();
+    console.log(JSON.stringify(result));
     const response = result?.data?.publications as GetRelatedPubsLensModel;
     logger.info(
       "related-parent-publications.lens.service.ts: relatedParentPublicationsLensService: Response of getRelatedPubsQuery: " +

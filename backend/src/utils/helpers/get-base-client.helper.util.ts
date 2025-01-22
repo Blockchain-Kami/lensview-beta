@@ -1,5 +1,5 @@
+import "isomorphic-fetch";
 import { cacheExchange, Client, createClient, fetchExchange } from "@urql/core";
-
 import { LENS_API_URL } from "../../config/env.config.js";
 
 const getBaseClientHelperUtil: Client = createClient({
