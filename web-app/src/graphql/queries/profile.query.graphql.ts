@@ -1,54 +1,42 @@
 import { graphql } from "../../gql";
 
 const profileQueryGraphql = graphql(`
-  query Profile($request: ProfileRequest!) {
-    profile(request: $request) {
+  query Profile(
+    $accountRequest: AccountRequest!
+    $statsRequest: AccountStatsRequest!
+  ) {
+    account(request: $accountRequest) {
       createdAt
-      handle {
-        fullHandle
+      username {
+        value
         localName
       }
       metadata {
-        displayName
-        coverPicture {
-          optimized {
-            uri
-          }
-        }
-        picture {
-          ... on ImageSet {
-            optimized {
-              uri
-            }
-          }
-        }
+        name
+        picture
+        coverPicture
         bio
       }
-      ownedBy {
-        address
+      operations {
+        isFollowedByMe
+        isFollowingMe
       }
-      lensviewStats: stats(request: { forApps: ["LensView"] }) {
-        publications
-      }
-      stats {
+      owner
+      address
+    }
+    accountStats(request: $statsRequest) {
+      graphFollowStats {
         followers
         following
-        posts
+      }
+      feedStats {
         comments
+        posts
+        quotes
+        reacted
         reactions
-        publications
+        reposts
       }
-      id
-      operations {
-        isFollowedByMe {
-          value
-        }
-        isFollowingMe {
-          value
-        }
-      }
-      signless
-      sponsor
     }
   }
 `);

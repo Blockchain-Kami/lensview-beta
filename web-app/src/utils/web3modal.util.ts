@@ -1,7 +1,7 @@
 import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi";
-import { polygon } from "viem/chains";
 import { reconnect } from "@wagmi/core";
 const { VITE_WALLET_CONNECT_PROJECT_ID } = import.meta.env;
+import { chains } from "@lens-network/sdk/viem";
 
 // Create a metadata object
 const metadata = {
@@ -12,10 +12,11 @@ const metadata = {
   icons: ["https://lensview.io/_app/immutable/assets/LensviewLogo.a9d110ce.svg"]
 };
 
+//TODO: Check Hey code for posting, follow etc through Walletconnect
 // Create wagmiConfig
-const chains = [polygon] as const;
+const chain = [chains.testnet] as const;
 export const wagmiConfig = defaultWagmiConfig({
-  chains,
+  chains: chain,
   projectId: VITE_WALLET_CONNECT_PROJECT_ID,
   metadata,
   auth: {

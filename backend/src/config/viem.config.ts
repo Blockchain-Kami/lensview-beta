@@ -1,8 +1,8 @@
 import { createWalletClient, Hex, http } from "viem";
 import { chains } from "@lens-network/sdk/viem";
-import { APP_ADDRESS } from "./env.config.js";
+import { APP_WALLET_ADDRESS } from "./env.config.js";
 
-const account = APP_ADDRESS as Hex;
+const account = APP_WALLET_ADDRESS as Hex;
 
 export const walletClient = createWalletClient({
   account,

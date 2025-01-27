@@ -26,7 +26,6 @@
     metaTagsImageUrl,
     metaTagsTitle
   } from "../../services/metaTags";
-  import getLinkPublicationLensService from "../../services/lens/get-link-publication.lens.service";
   import getImageCommentLensService from "../../services/lens/get-image-comment.lens.service";
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
   import getFormattedDateHelperUtil from "../../utils/helper/get-formatted-date.helper.util";
@@ -39,6 +38,7 @@
   import { mainPostUrlStore } from "../../stores/main-post-url.store";
   import NoWebPageImg from "$lib/assets/NoWebPageImg.png";
   import { TotalImagePostsStore } from "../../stores/total-image-posts.store";
+  import getLinkPostLensService from "../../services/lens/get-link-post.lens.service";
 
   const { addNotification } = getNotificationsContext();
   let mainPostPubId = $page.data.mainPostPubId;
@@ -48,17 +48,17 @@
   let downVoteCount = 0;
   let onLoginIntialization: () => Promise<void>;
 
-  let promiseOfGetMainPost = getLinkPublicationLensService(mainPostPubId);
+  let promiseOfGetMainPost = getLinkPostLensService(mainPostPubId);
 
   $: if (mainPostPubId !== $page.data.mainPostPubId) {
     mainPostPubId = $page.data.mainPostPubId;
-    promiseOfGetMainPost = getLinkPublicationLensService(mainPostPubId);
+    promiseOfGetMainPost = getLinkPostLensService(mainPostPubId);
   }
 
   onMount(() => {
     reloadMainPost.subscribe((val) => {
       console.log("Reloaded main post" + val);
-      promiseOfGetMainPost = getLinkPublicationLensService(mainPostPubId);
+      promiseOfGetMainPost = getLinkPostLensService(mainPostPubId);
     });
   });
 
@@ -259,7 +259,7 @@
         {/if}
       {:then mainPostPub}
         <a href={`/posts/${mainPostPubId}`} class="tablet__main-post">
-          {#await getImageCommentLensService(mainPostPub?.id)}
+          {#await getImageCommentLensService(mainPostPub?.slug)}
             <div class="tablet__main-post__image__loader" />
           {:then fetchedImageUrl}
             {updateMainPostImageUrlStore(fetchedImageUrl)}
@@ -360,7 +360,7 @@
                 {mainPostPub?.metadata?.attributes[0]?.value}
               </div>
               <div class="tablet__main-post__info__bottom__time">
-                {getFormattedDateHelperUtil(mainPostPub?.createdAt)}
+                {getFormattedDateHelperUtil(mainPostPub?.timestamp)}
               </div>
             </div>
           </div>
@@ -399,7 +399,7 @@
           <RelatedPost searchURLOrKeywords={""} />
         </div>
       {:then mainPostPub}
-        {#await getImageCommentLensService(mainPostPub?.id)}
+        {#await getImageCommentLensService(mainPostPub?.slug)}
           <div class="image__loader" />
         {:then imageUrl}
           {updateMainPostImageUrlStore(imageUrl)}
@@ -433,7 +433,7 @@
                 </div>
               </a>
               <div class="main-post__content__top__time">
-                {getFormattedDateHelperUtil(mainPostPub?.createdAt)}
+                {getFormattedDateHelperUtil(mainPostPub?.timestamp)}
               </div>
               <div class="CenterRowFlex main-post__content__top__more">
                 <Icon d={moreVert} />

@@ -24,8 +24,8 @@
   import type { ReactionDetailsModel } from "../../models/reactionDetails.model";
   import Autolinker from "autolinker";
   import { metaTagsDescription } from "../../services/metaTags";
-  import getCommentBasedOnParameterPublicationUtil from "../../utils/publications/get-comment-based-on-parameter.publication.util";
-  import { LimitType } from "../../gql/graphql";
+  // import getCommentBasedOnParameterPublicationUtil from "../../utils/publications/get-comment-based-on-parameter.publication.util";
+  // import { LimitType } from "../../gql/graphql";
   import {
     AppReactionType,
     CommentFilterType
@@ -40,7 +40,6 @@
   import addReactionLensService from "../../services/lens/add-reaction.lens.service";
   import removeReactionLensService from "../../services/lens/remove-reaction.lens.service";
   import MediaQuery from "$lib/MediaQuery.svelte";
-  import type { CommentsPublicationLensModel } from "../../models/lens/comments-publication.lens.model";
   import SummarizePublications from "./SummarizePublications.svelte";
   import { TotalImagePostsStore } from "../../stores/total-image-posts.store";
   import { getAccount } from "@wagmi/core";
@@ -48,6 +47,8 @@
   import Tip from "../Tip.svelte";
   import TipImage from "$lib/assets/Tip.svg";
   import { tooltip } from "@svelte-plugins/tooltips";
+  import getCommentsLensService from "../../services/lens/get-comments.lens.service";
+  import type { CommentLensModel } from "../../models/lens/comment.lens.model";
 
   const { VITE_APP_LENS_ID } = import.meta.env;
   const { VITE_IMAGE_PUB } = import.meta.env;
@@ -69,28 +70,21 @@
   let dialog: HTMLDialogElement;
   let onLoginIntialization: () => Promise<void>;
 
-  let promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
-    commentPubId,
-    LimitType.Fifty
-  );
+  let promiseOfGetComments = getCommentsLensService(commentPubId);
 
-  const updatedpromiseOfGetComments = () => {
-    resetTotalImagePosts();
-    promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
-      commentPubId,
-      LimitType.Fifty,
-      selectedFilterType
-    );
-  };
+  // const updatedpromiseOfGetComments = () => {
+  //   resetTotalImagePosts();
+  //   promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
+  //     commentPubId,
+  //     LimitType.Fifty,
+  //     selectedFilterType
+  //   );
+  // };
 
   $: if (commentPubId !== $page.data.commentPubId) {
     resetTotalImagePosts();
     commentPubId = $page.data.commentPubId;
-    promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
-      commentPubId,
-      LimitType.Fifty,
-      selectedFilterType
-    );
+    promiseOfGetComments = getCommentsLensService(commentPubId);
     console.log("Changed commentPubId : ", $page.data.commentPubId);
   }
 
@@ -99,11 +93,7 @@
     resetTotalImagePosts();
     reloadCommentOfAPublication.subscribe((val) => {
       console.log("Reloaded comment of a publication" + val);
-      promiseOfGetComments = getCommentBasedOnParameterPublicationUtil(
-        commentPubId,
-        LimitType.Fifty,
-        selectedFilterType
-      );
+      promiseOfGetComments = getCommentsLensService(commentPubId);
     });
   });
 
@@ -268,8 +258,8 @@
     return "";
   };
 
-  const getHandle = (comment: CommentsPublicationLensModel) => {
-    return comment.by?.handle?.fullHandle.substring(5);
+  const getHandle = (comment: CommentLensModel) => {
+    return comment?.author?.username?.value.substring(5);
   };
 
   const updateTotalImagePosts = () => {
@@ -305,17 +295,17 @@
 <MediaQuery query="(max-width: 1024px)" let:matches>
   <section>
     <div class="CenterRowFlex filter">
-      <div class="filter__label">Sorted By:</div>
-      <div class="filter__type">
-        <select
-          bind:value={selectedFilterType}
-          on:change={updatedpromiseOfGetComments}
-        >
-          <option value={CommentFilterType.MostLikedComments}>Most liked</option
-          >
-          <option value={CommentFilterType.LatestComments}>Latest</option>
-        </select>
-      </div>
+<!--      <div class="filter__label">Sorted By:</div>-->
+      <!--      <div class="filter__type">-->
+      <!--        <select-->
+      <!--          bind:value={selectedFilterType}-->
+      <!--          on:change={updatedpromiseOfGetComments}-->
+      <!--        >-->
+      <!--          <option value={CommentFilterType.MostLikedComments}>Most liked</option-->
+      <!--          >-->
+      <!--          <option value={CommentFilterType.LatestComments}>Latest</option>-->
+      <!--        </select>-->
+      <!--      </div>-->
       <hr class="filter__line" />
       {#if $page.data.postPubId === undefined}
         <button
@@ -374,17 +364,17 @@
           </div>
         </div>
       {:then commentsData}
-        {#each commentsData as comment, index}
-          {#if !comment?.metadata?.tags.includes(VITE_IMAGE_PUB)}
+        {#each commentsData ?? [] as comment, index}
+          {#if !comment?.metadata?.tags?.includes(VITE_IMAGE_PUB)}
             <a
-              href={`/posts/${$page.data.mainPostPubId}/${comment?.id}`}
+              href={`/posts/${$page.data.mainPostPubId}/${comment?.slug}`}
               class="comment"
             >
               <a href={`/profile/${getHandle(comment)}`} class="comment__pic">
                 <img
                   src={getPictureURLUtil(
-                    comment?.by?.metadata?.picture?.optimized?.uri,
-                    comment?.by?.ownedBy?.address
+                    comment?.author?.metadata?.picture,
+                    comment?.author?.owner
                   )}
                   alt="avatar"
                 />
@@ -392,17 +382,17 @@
               <div class="comment__body">
                 <div class="CenterRowFlex comment__body__top">
                   <div class="CenterRowFlex comment__body__top__left">
-                    {#if comment?.by?.metadata?.displayName !== undefined && comment?.by?.metadata?.displayName !== null}
+                    {#if comment?.author?.metadata?.name !== undefined && comment?.author?.metadata?.name !== null}
                       <a
                         href={`/profile/${getHandle(comment)}`}
                         class="comment__body__top__left__name"
                       >
                         {#if matches}
-                          {comment?.by?.metadata?.displayName.substring(0, 5)}
-                          {#if comment?.by?.metadata?.displayName.length > 5}..{/if}
+                          {comment?.author?.metadata?.name.substring(0, 5)}
+                          {#if comment?.author?.metadata?.name.length > 5}..{/if}
                         {:else}
-                          {comment?.by?.metadata?.displayName.substring(0, 15)}
-                          {#if comment?.by?.metadata?.displayName.length > 15}..{/if}
+                          {comment?.author?.metadata?.name.substring(0, 15)}
+                          {#if comment?.author?.metadata?.name.length > 15}..{/if}
                         {/if}
                       </a>
                       <div class="comment__body__top__left__dot" />
@@ -413,7 +403,7 @@
                     >
                       {getHandle(comment)}
                     </a>
-                    {#if comment?.by?.id === VITE_APP_LENS_ID}
+                    {#if comment?.author?.address === VITE_APP_LENS_ID}
                       <Tooltip
                         content="This post was made by an anonymous user!"
                         position="right"
@@ -548,7 +538,7 @@
                   </div>
                 </div>
                 <div class="comment__body__time">
-                  {getFormattedDateHelperUtil(comment?.createdAt)}
+                  {getFormattedDateHelperUtil(comment?.timestamp)}
                 </div>
                 <div class="comment__body__content">
                   {#if index === 0}

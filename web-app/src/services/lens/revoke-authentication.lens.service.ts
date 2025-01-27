@@ -8,13 +8,13 @@ const revokeAuthenticationLensService = async () => {
 
   if (!accessToken) throw new Error("No access token found");
 
-  const { authorizationId } = parseJwtAuthenticationUtil(accessToken);
+  const { sid } = parseJwtAuthenticationUtil(accessToken);
 
-  if (!authorizationId) throw new Error("No authorization id found");
+  if (!sid) throw new Error("No authorization id found");
 
   return authenticatedClientAuthenticationUtil()
     .mutation(revokeAuthenticationMutationGraphql, {
-      request: { authorizationId }
+      request: { authenticationId: sid }
     })
     .toPromise();
 };

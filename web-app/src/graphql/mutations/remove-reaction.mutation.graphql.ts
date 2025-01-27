@@ -1,8 +1,15 @@
 import { graphql } from "../../gql";
 
 const removeReactionMutationGraphql = graphql(`
-  mutation RemoveReaction($request: ReactionRequest!) {
-    removeReaction(request: $request)
+  mutation RemoveReaction($request: UndoReactionRequest!) {
+    undoReaction(request: $request) {
+      ... on UndoReactionResponse {
+        success
+      }
+      ... on UndoReactionFailure {
+        reason
+      }
+    }
   }
 `);
 

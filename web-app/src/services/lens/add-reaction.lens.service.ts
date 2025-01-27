@@ -1,7 +1,7 @@
-import { PublicationReactionType } from "../../gql/graphql";
 import authenticatedClientAuthenticationUtil from "../../utils/authentication/authenticated-client.authentication.util";
 import addReactionMutationGraphql from "../../graphql/mutations/add-reaction.mutation.graphql";
 import { AppReactionType } from "../../config/app-constants.config";
+import { PostReactionType } from "../../gql/graphql";
 
 const addReactionLensService = async (
   publicationId: string,
@@ -12,13 +12,13 @@ const addReactionLensService = async (
 
   const userReaction =
     reaction === AppReactionType.UpVote
-      ? PublicationReactionType.Upvote
-      : PublicationReactionType.Downvote;
+      ? PostReactionType.Upvote
+      : PostReactionType.Downvote;
 
   const result = await authenticatedClientAuthenticationUtil()
     .mutation(addReactionMutationGraphql, {
       request: {
-        for: publicationId,
+        post: publicationId,
         reaction: userReaction
       }
     })

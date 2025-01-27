@@ -7,12 +7,11 @@ import challengeLensService from "../../services/lens/challenge.lens.service.js"
 
 import baseClientHelperUtil from "../helpers/base-client.helper.util.js";
 import {
-  APP_ADDRESS,
-  APP_LENS_ID,
+  APP_WALLET_ADDRESS,
   LENS_API_URL,
-  PRIVATE_KEY
+  PRIVATE_KEY,
+  APP_CONTRACT_ADDRESS
 } from "../../config/env.config.js";
-import { signer } from "../helpers/get-signer.helper.util.js";
 import { logger } from "../../log/log-manager.log.js";
 import { Wallet } from "ethers";
 
@@ -30,9 +29,9 @@ export const getAuthenticatedClientAuthenticationUtil: () => Promise<Client> =
       const challengeRequest: ChallengeRequest = {
         // TODO: Repalce with .env variables
         accountOwner: {
-          account: "0xA800F8980093E660b962E47E3474D8629ba35146",
+          account: APP_CONTRACT_ADDRESS,
           app: "0xe5439696f4057aF073c0FB2dc6e5e755392922e1",
-          owner: APP_ADDRESS
+          owner: APP_WALLET_ADDRESS
         }
       };
       // Query challenge info

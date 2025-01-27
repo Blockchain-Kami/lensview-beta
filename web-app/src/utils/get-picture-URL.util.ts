@@ -3,6 +3,7 @@ const getPictureURLUtil = (fetchedLensURL: string, ownedByAddress: string) => {
   if (
     fetchedLensURL === "" ||
     fetchedLensURL === undefined ||
+    fetchedLensURL === null ||
     fetchedLensURL.includes("ipfs")
   ) {
     return `https://cdn.stamp.fyi/avatar/eth:${ownedByAddress}?s=300`;

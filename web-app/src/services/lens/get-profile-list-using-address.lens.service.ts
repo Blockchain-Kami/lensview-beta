@@ -1,19 +1,19 @@
-import profileManagedQueryGraphql from "../../graphql/queries/profile-managed.query.graphql";
 import baseClientAuthenticationUtil from "../../utils/authentication/base-client.authentication.util";
+import accountsAvailableQueryGraphql from "../../graphql/queries/accounts-available.query.graphql";
 import type { ProfileManagedLensModel } from "../../models/lens/profile-managed.lens.model";
 
 const getProfileListUsingAddressLensService = async (address: string) => {
   console.log("getProfileListUsingAddressLensService address", address);
 
   const response = await baseClientAuthenticationUtil
-    .query(profileManagedQueryGraphql, {
+    .query(accountsAvailableQueryGraphql, {
       request: {
-        for: address
+        managedBy: address
       }
     })
     .toPromise();
 
-  return response.data?.profilesManaged?.items as ProfileManagedLensModel[];
+  return response.data?.accountsAvailable?.items as ProfileManagedLensModel[];
 };
 
 export default getProfileListUsingAddressLensService;

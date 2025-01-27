@@ -1,7 +1,7 @@
 import authenticatedClientAuthenticationUtil from "../../utils/authentication/authenticated-client.authentication.util";
 import removeReactionMutationGraphql from "../../graphql/mutations/remove-reaction.mutation.graphql";
 import { AppReactionType } from "../../config/app-constants.config";
-import { PublicationReactionType } from "../../gql/graphql";
+import { PostReactionType } from "../../gql/graphql";
 
 const removeReactionLensService = async (
   publicationId: string,
@@ -12,19 +12,19 @@ const removeReactionLensService = async (
 
   const userReaction =
     reaction === AppReactionType.UpVote
-      ? PublicationReactionType.Upvote
-      : PublicationReactionType.Downvote;
+      ? PostReactionType.Upvote
+      : PostReactionType.Downvote;
 
   const result = await authenticatedClientAuthenticationUtil()
     .mutation(removeReactionMutationGraphql, {
       request: {
-        for: publicationId,
+        post: publicationId,
         reaction: userReaction
       }
     })
     .toPromise();
 
-  return result?.data?.removeReaction;
+  return result?.data?.undoReaction;
 };
 
 export default removeReactionLensService;

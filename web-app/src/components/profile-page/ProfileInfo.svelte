@@ -18,18 +18,16 @@
   import LensviewLogoFlat from "$lib/assets/LensviewLogoFlat.svg";
   import Login from "../Login.svelte";
   import { isLoggedInUserStore } from "../../stores/user/is-logged-in.user.store";
-  import followFollowUtil from "../../utils/follow/follow.follow.util";
   import { getNotificationsContext } from "svelte-notifications";
   import { reloadAPublication } from "../../stores/reload-publication.store";
   import { onMount } from "svelte";
-  import unfollowFollowUtil from "../../utils/follow/unfollow.follow.util";
-  import followLensProfileManagerFollowUtil from "../../utils/follow/follow-lens-profile-manager.follow.util";
-  import unfollowLensProfileManagerFollowUtil from "../../utils/follow/unfollow-lens-profile-manager.follow.util";
   import { getAccount } from "@wagmi/core";
   import web3ModalUtil, { wagmiConfig } from "../../utils/web3modal.util";
   import TipImage from "$lib/assets/Tip.svg";
   import Tip from "../Tip.svelte";
   import { tooltip } from "@svelte-plugins/tooltips";
+  import createFollowUtil from "../../utils/create-follow.util";
+  import createUnfollowUtil from "../../utils/create-unfollow.util";
 
   const { addNotification } = getNotificationsContext();
   let promiseOfGetProfile = getProfileUsingIdLensService($page.data.profileId);
@@ -59,17 +57,7 @@
     } else {
       disableActive = true;
       try {
-        let isSignLessEnabled = false;
-        const unsub3 = profileUserStore.subscribe((_profile) => {
-          isSignLessEnabled = !!_profile?.signless;
-        });
-        unsub3;
-
-        if (isSignLessEnabled) {
-          await followLensProfileManagerFollowUtil($page.data.profileId);
-        } else {
-          await followFollowUtil($page.data.profileId);
-        }
+        await createFollowUtil($page.data.profileId);
         isFollowing = true;
         disableActive = false;
       } catch (_error) {
@@ -98,17 +86,7 @@
     } else {
       disableActive = true;
       try {
-        let isSignLessEnabled = false;
-        const unsub3 = profileUserStore.subscribe((_profile) => {
-          isSignLessEnabled = !!_profile?.signless;
-        });
-        unsub3;
-
-        if (isSignLessEnabled) {
-          await unfollowLensProfileManagerFollowUtil($page.data.profileId);
-        } else {
-          await unfollowFollowUtil($page.data.profileId);
-        }
+        await createUnfollowUtil($page.data.profileId);
         isFollowing = false;
         disableActive = false;
       } catch (_error) {
@@ -214,19 +192,16 @@
   {:then response}
     <div
       class="cover-image"
-      style="background-image: url({response?.data?.profile?.metadata
-        ?.coverPicture?.optimized?.uri})"
+      style="background-image: url({response?.data?.account?.metadata
+        ?.coverPicture})"
     />
     <div class="profile-details">
       <div class="CenterColumnFlex profile-details__left">
         <div class="profile-details__left__picture">
           <img
             src={getPictureURLUtil(
-              response?.data?.profile?.metadata?.picture?.__typename ===
-                "ImageSet"
-                ? response?.data?.profile?.metadata?.picture?.optimized?.uri
-                : "",
-              response?.data?.profile?.ownedBy?.address
+              response?.data?.account?.metadata?.picture,
+              response?.data?.account?.owner
             )}
             alt="avatar"
           />
@@ -234,15 +209,15 @@
       </div>
       <div class="profile-details__right">
         <div class="CenterRowFlex profile-details__right__top">
-          {#if response?.data?.profile?.metadata?.displayName}
+          {#if response?.data?.account?.metadata?.name}
             <div class="profile-details__right__top__name">
-              {response?.data?.profile?.metadata?.displayName}
+              {response?.data?.account?.metadata?.name}
             </div>
           {/if}
-          {#if $page.data.profileId !== $profileUserStore?.id}
+          {#if $page.data.profileId !== $profileUserStore?.account?.address}
             <div class="profile-details__right__top__follow">
               {updateIsFollowing(
-                response?.data?.profile?.operations?.isFollowedByMe?.value
+                response?.data?.account?.operations?.isFollowedByMe
               )}
               {#if !isFollowing}
                 <button
@@ -282,8 +257,8 @@
         </div>
         <div class="CenterRowFlex profile-details__right__middle">
           <div class="profile-details__right__middle__handle">
-            {response?.data?.profile?.handle?.fullHandle
-              ? response?.data?.profile?.handle?.fullHandle
+            {response?.data?.account?.username?.value
+              ? response?.data?.account?.username?.value
               : ""}
           </div>
           <div class="CenterRowFlex profile-details__right__middle__right">
@@ -293,7 +268,7 @@
               &nbsp;&nbsp;&nbsp;&nbsp;
               <Icon d={clock} color="#a1a1a1" />
               &nbsp; Joined {getFormattedDateHelperUtil(
-                response?.data?.profile?.createdAt,
+                response?.data?.account?.createdAt,
                 DateType.ExactDate
               )}
             </div>
@@ -302,11 +277,11 @@
             >
               &nbsp;&nbsp;&nbsp;&nbsp;
               <Icon d={followers} color="#a1a1a1" />
-              &nbsp; {response?.data?.profile?.stats?.following
-                ? response?.data?.profile?.stats?.following
+              &nbsp; {response?.data?.accountStats?.graphFollowStats?.following
+                ? response?.data?.accountStats?.graphFollowStats?.following
                 : 0} Following
             </div>
-            {#if response?.data?.profile?.operations?.isFollowingMe?.value}
+            {#if response?.data?.account?.operations?.isFollowingMe}
               <div class="profile-details__right__middle__right__follows-you">
                 Follows You
               </div>
@@ -314,8 +289,8 @@
           </div>
         </div>
         <div class="profile-details__right__bottom">
-          {response?.data?.profile?.metadata?.bio
-            ? response?.data?.profile?.metadata?.bio
+          {response?.data?.account?.metadata?.bio
+            ? response?.data?.account?.metadata?.bio
             : ""}
         </div>
       </div>
@@ -328,7 +303,7 @@
         <div class="CenterRowFlex stats__box__right">
           <div class="stats__box__right__title">Followers</div>
           <div class="stats__box__right__value">
-            {response?.data?.profile?.stats?.followers}
+            {response?.data?.accountStats?.graphFollowStats?.followers}
           </div>
         </div>
       </div>
@@ -339,7 +314,7 @@
         <div class="CenterColumnFlex stats__box__right">
           <div class="stats__box__right__title">Lens Contributions</div>
           <div class="stats__box__right__value">
-            {response?.data?.profile?.stats?.publications}
+            {response?.data?.accountStats?.feedStats?.posts}
           </div>
         </div>
       </div>
@@ -350,7 +325,7 @@
         <div class="CenterColumnFlex stats__box__right">
           <div class="stats__box__right__title">LensView Contributions</div>
           <div class="stats__box__right__value">
-            {response?.data?.profile?.lensviewStats?.publications}
+            <!-- TODO: {response?.data?.profile?.lensviewStats?.publications}-->
           </div>
         </div>
       </div>
@@ -361,7 +336,7 @@
         <div class="CenterColumnFlex stats__box__right">
           <div class="stats__box__right__title">Impressions</div>
           <div class="stats__box__right__value">
-            {response?.data?.profile?.stats?.reactions}
+            {response?.data?.accountStats?.feedStats?.reactions}
           </div>
         </div>
       </div>

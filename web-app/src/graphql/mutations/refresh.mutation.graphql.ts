@@ -3,8 +3,14 @@ import { graphql } from "../../gql";
 const refreshMutationGraphql = graphql(`
   mutation Refresh($request: RefreshRequest!) {
     refresh(request: $request) {
-      accessToken
-      refreshToken
+      ... on AuthenticationTokens {
+        accessToken
+        refreshToken
+        idToken
+      }
+      ... on ForbiddenError {
+        reason
+      }
     }
   }
 `);
