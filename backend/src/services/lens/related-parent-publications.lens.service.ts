@@ -8,6 +8,7 @@ import {
 import baseClient from "../../utils/helpers/base-client.helper.util.js";
 import relatedPostsQuery from "../../graphql/queries/related-posts.query.graphql.js";
 import { logger } from "../../log/log-manager.log.js";
+import { APP_CONTRACT_ADDRESS } from "../../config/env.config";
 
 /**
  * Retrieves the related parent publications based on a given tag.
@@ -22,21 +23,7 @@ export const relatedParentPublicationsLensService = async (tags: string[]) => {
     "related-parent-publications.lens.service.ts: relatedParentPublicationsLensService: Input Parameter: " +
       tags
   );
-  // const publicationsWhere: PublicationsWhere = {
-  //   from: [APP_LENS_ID],
-  //   publicationTypes: [PublicationType.Post],
-  //   metadata: {
-  //     tags: {
-  //       oneOf: tags
-  //     },
-  //     publishedOn: [SOURCE_APP_ID]
-  //   }
-  // };
 
-  // const publicationsRequest: PublicationsRequest = {
-  //   limit: LimitType.Fifty,
-  //   where: publicationsWhere
-  // };
   const postsRequest: PostsRequest = {
     filter: {
       metadata: {
@@ -44,7 +31,7 @@ export const relatedParentPublicationsLensService = async (tags: string[]) => {
           oneOf: tags
         }
       },
-      authors: ["0xA800F8980093E660b962E47E3474D8629ba35146"]
+      authors: [APP_CONTRACT_ADDRESS]
     },
     pageSize: PageSize.Ten
   };
