@@ -1,16 +1,16 @@
-// import { Request, Response } from "express";
-// import {
-//   AddImageToPostAdminRouteBodyRequestModel,
-//   ApproveSignlessAdminRouteBodyRequestModel
-// } from "../models/requests/body/admin-route.body.request.model.js";
-// import { PublicationResponseModel } from "../models/response/publication.response.model.js";
+import { Request, Response } from "express";
+import { AddImageToPostAdminRouteBodyRequestModel } from "../models/requests/body/admin-route.body.request.model.js";
+import { PublicationResponseModel } from "../models/response/publication.response.model.js";
 // import { RelayError, RelaySuccess } from "../gql/graphql.js";
 // import { InternalServerError } from "../errors/internal-server-error.error.js";
-//
-// import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service.js";
-// import { uploadScreenshotAndCommentWithImageJobUtil } from "../utils/jobs/upload-screenshot-and-comment-with-image.job.util.js";
-// import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util.js";
-// import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util.js";
+
+import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service.js";
+import { uploadScreenshotAndCommentWithImageJobUtil } from "../utils/jobs/upload-screenshot-and-comment-with-image.job.util.js";
+import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util.js";
+import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util.js";
+import { uploadImageFromDisk } from "../utils/helpers/upload-image-from-disk.helper.util.js";
+import { createCommentPublicationUtil } from "../utils/publications/create-post.publication.util";
+import { createMetaDataForImageCommentHelperUtil } from "../utils/helpers/create-metadata.helper.util";
 // import createChangeProfileManagersTypedDataLensService from "../services/lens/create-change-profile-managers-typed-data.lens.service.js";
 // import { signedTypeData } from "../utils/helpers/sign-type-data.helper.util.js";
 // import broadcastOnchainRequestService from "../services/lens/broadcast-onchain-request.lens.service.js";
@@ -20,83 +20,123 @@
 // import { createContractHelperUtils } from "../utils/helpers/create-contract.helper.utils.js";
 // import { hasTransactionBeenIndexedIndexerUtil } from "../utils/indexer/has-transaction-been-indexed.indexer.util.js";
 // import { getCommentMethod } from "../config/app-config.config.js";
-// import { uploadImageFromDisk } from "../utils/helpers/upload-image-from-disk.helper.util.js";
-//
-// import { httpStatusCodes } from "../config/app-constants.config.js";
-// import {
-//   APP_ADDRESS,
-//   APP_LENS_HANDLE,
-//   APP_LENS_ID,
-//   LENS_HUB_CONTRACT_ADDRESS,
-//   USE_GASLESS
-// } from "../config/env.config.js";
-// import { logger } from "../log/log-manager.log.js";
-//
-// // @ts-expect-error known issue
+
+import { httpStatusCodes } from "../config/app-constants.config.js";
+import { APP_LENS_HANDLE } from "../config/env.config.js";
+import { logger } from "../log/log-manager.log.js";
+
+// @ts-expect-error known issue
 // import LENS_HUB_ABI from "../abis/lens-hub-contract.abi.json" assert { type: "json" };
-//
-// /**
-//  * Adds an image to a post in the admin controller.
-//  *
-//  * @param {Request<unknown, unknown, AddImageToPostAdminRouteBodyRequestModel>} req - The HTTP request object.
-//  * @param {Response<PublicationResponseModel>} res - The HTTP response object.
-//  * @return {Promise<void>} A promise that resolves to nothing.
-//  */
-// export const addImageToPostAdminController = async (
-//   req: Request<unknown, unknown, AddImageToPostAdminRouteBodyRequestModel>,
-//   res: Response<PublicationResponseModel>
-// ) => {
-//   logger.info(
-//     "admin.controller.ts: addImageToPostAdminController: Execution Started."
-//   );
-//   logger.info(
-//     "admin.controller.ts: addImageToPostAdminController: Request Body: " +
-//       JSON.stringify(req.body)
-//   );
-//   try {
-//     const { url } = req.body;
-//     const urlString = isInputTypeURLHelperUtil(url);
-//     const urlObj = preprocessURLAndCreateMetadataObjectHelperUtil(
-//       urlString ? urlString : url,
-//       APP_LENS_HANDLE,
-//       null,
-//       []
-//     );
-//     const publicationExists = await relatedParentPublicationsLensService([
-//       urlObj.hashedURL
-//     ]);
-//     if (publicationExists && publicationExists.items.length > 0) {
-//       logger.info(
-//         "admin.controller.ts: addImageToPostAdminController: Publication found. Adding Image to Publication."
-//       );
-//       await uploadScreenshotAndCommentWithImageJobUtil(urlObj);
-//       logger.info(
-//         "admin.controller.ts: addImageToPostAdminController: Execution Ended. Image Added To Post."
-//       );
-//       return res.status(httpStatusCodes.CREATED).send({
-//         publicationID: publicationExists.items[0].id,
-//         message: "Image Added To Post"
-//       });
-//     } else {
-//       logger.info(
-//         "admin.controller.ts: addImageToPostAdminController: Execution Ended. Publication not found."
-//       );
-//       return res.status(httpStatusCodes.OK).send({
-//         publicationID: null,
-//         message: "Could Not Find Publication"
-//       });
-//     }
-//   } catch (error) {
-//     logger.error(
-//       "admin.controller.ts: addImageToPostAdminController: Error in execution: " +
-//         error
-//     );
-//     return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
-//       publicationID: null,
-//       message: "Error:" + error
-//     });
-//   }
-// };
+
+/**
+ * Adds an image to a post in the admin controller.
+ *
+ * @param {Request<unknown, unknown, AddImageToPostAdminRouteBodyRequestModel>} req - The HTTP request object.
+ * @param {Response<PublicationResponseModel>} res - The HTTP response object.
+ * @return {Promise<void>} A promise that resolves to nothing.
+ */
+export const addImageToPostAdminController = async (
+  req: Request<unknown, unknown, AddImageToPostAdminRouteBodyRequestModel>,
+  res: Response<PublicationResponseModel>
+) => {
+  logger.info(
+    "admin.controller.ts: addImageToPostAdminController: Execution Started."
+  );
+  logger.info(
+    "admin.controller.ts: addImageToPostAdminController: Request Body: " +
+      JSON.stringify(req.body)
+  );
+  try {
+    const { url } = req.body;
+    const urlString = isInputTypeURLHelperUtil(url);
+    const urlObj = preprocessURLAndCreateMetadataObjectHelperUtil(
+      urlString ? urlString : url,
+      APP_LENS_HANDLE,
+      null,
+      []
+    );
+    const publicationExists = await relatedParentPublicationsLensService([
+      urlObj.hashedURL
+    ]);
+    if (publicationExists && publicationExists.items.length > 0) {
+      logger.info(
+        "admin.controller.ts: addImageToPostAdminController: Publication found. Adding Image to Publication."
+      );
+      await uploadScreenshotAndCommentWithImageJobUtil(
+        urlObj,
+        publicationExists.items[0].slug
+      );
+      logger.info(
+        "admin.controller.ts: addImageToPostAdminController: Execution Ended. Image Added To Post."
+      );
+      return res.status(httpStatusCodes.CREATED).send({
+        publicationID: publicationExists.items[0].slug,
+        message: "Image Added To Post"
+      });
+    } else {
+      logger.info(
+        "admin.controller.ts: addImageToPostAdminController: Execution Ended. Publication not found."
+      );
+      return res.status(httpStatusCodes.OK).send({
+        publicationID: null,
+        message: "Could Not Find Publication"
+      });
+    }
+  } catch (error) {
+    logger.error(
+      "admin.controller.ts: addImageToPostAdminController: Error in execution: " +
+        error
+    );
+    return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
+      publicationID: null,
+      message: "Error:" + error
+    });
+  }
+};
+
+export const updateMainPostImageController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    logger.info(
+      "admin.controller.ts : updateMainPostImageController: Execution Started."
+    );
+    const { url, filename } = req.body;
+    const urlString = isInputTypeURLHelperUtil(url);
+    let urlObj = preprocessURLAndCreateMetadataObjectHelperUtil(
+      urlString ? urlString : url,
+      APP_LENS_HANDLE,
+      null,
+      []
+    );
+    const publicationExists = await relatedParentPublicationsLensService([
+      urlObj.hashedURL
+    ]);
+    urlObj = await uploadImageFromDisk(filename, urlObj);
+    const imageMetadata = createMetaDataForImageCommentHelperUtil(
+      publicationExists.items[0].slug,
+      urlObj
+    );
+    await createCommentPublicationUtil(
+      publicationExists.items[0].slug,
+      imageMetadata
+    );
+    logger.info(
+      "admin.controller.ts : updateMainPostImageController: Image Updated. Execution Ended."
+    );
+    return res.status(httpStatusCodes.OK).send({
+      message: "Image updated"
+    });
+  } catch (error) {
+    logger.info(
+      "admin.controller.ts : updateMainPostImageController: Failed. Execution Ended."
+    );
+    return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
+      message: "Failed: " + error
+    });
+  }
+};
 //
 // export const approveSignlessAdminController = async (
 //   req: Request<unknown, unknown, ApproveSignlessAdminRouteBodyRequestModel>,
@@ -167,7 +207,7 @@
 //         typedData.value.configNumber,
 //         typedData.value.switchToGivenConfig,
 //         {
-//           signer: APP_ADDRESS,
+//           signer: APP_WALLET_ADDRESS,
 //           v,
 //           r,
 //           s,
@@ -206,42 +246,5 @@
 //       "Error",
 //       httpStatusCodes.INTERNAL_SERVER_ERROR
 //     );
-//   }
-// };
-//
-// export const updateMainPostImageController = async (
-//   req: Request,
-//   res: Response
-// ) => {
-//   try {
-//     logger.info(
-//       "admin.controller.ts : updateMainPostImageController: Execution Started."
-//     );
-//     const { url, filename } = req.body;
-//     const urlString = isInputTypeURLHelperUtil(url);
-//     const urlObj = preprocessURLAndCreateMetadataObjectHelperUtil(
-//       urlString ? urlString : url,
-//       APP_LENS_HANDLE,
-//       null,
-//       []
-//     );
-//     const publicationExists = await relatedParentPublicationsLensService([
-//       urlObj.hashedURL
-//     ]);
-//     const imageMetadata = await uploadImageFromDisk(filename, urlObj);
-//     await getCommentMethod()(publicationExists.items[0].id, imageMetadata);
-//     logger.info(
-//       "admin.controller.ts : updateMainPostImageController: Image Updated. Execution Ended."
-//     );
-//     return res.status(httpStatusCodes.OK).send({
-//       message: "Image updated"
-//     });
-//   } catch (error) {
-//     logger.info(
-//       "admin.controller.ts : updateMainPostImageController: Failed. Execution Ended."
-//     );
-//     return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).send({
-//       message: "Failed: " + error
-//     });
 //   }
 // };

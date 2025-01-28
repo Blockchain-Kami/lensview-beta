@@ -8,26 +8,33 @@ import { createCommentPublicationUtil } from "../publications/create-post.public
 import { logger } from "../../log/log-manager.log.js";
 
 export const uploadScreenshotAndCommentWithImageJobUtil = async (
-  urlObj: MetadataObjectModel
+  urlObj: MetadataObjectModel,
+  parentPostID: string | null
 ) => {
   logger.info(
     "upload-screenshot-and-comment-with-image.job.ts: uploadScreenshotAndCommentWithImageJobUtil: Execution Started."
   );
   try {
     const hashedURL = urlObj.hashedURL;
-    const res = await relatedParentPublicationsLensService([hashedURL]);
-    const parentPostID = res?.items[0]?.slug;
-    const sourceURL = urlObj.url;
-    urlObj.image = await fetchScreenshotAndUploadToIPFSJobUtil(sourceURL);
-    const imageMetadata = createMetaDataForImageCommentHelperUtil(
-      parentPostID,
-      urlObj
-    );
-    await createCommentPublicationUtil(parentPostID, imageMetadata);
-    logger.info(
-      "upload-screenshot-and-comment-with-image.job.ts: uploadScreenshotAndCommentWithImageJobUtil: Execution Completed."
-    );
-    return;
+    if (parentPostID == null) {
+      const res = await relatedParentPublicationsLensService([hashedURL]);
+      parentPostID = res?.items[0]?.slug;
+      if (parentPostID == null) {
+        return;
+      } else {
+        const sourceURL = urlObj.url;
+        urlObj.image = await fetchScreenshotAndUploadToIPFSJobUtil(sourceURL);
+        const imageMetadata = createMetaDataForImageCommentHelperUtil(
+          parentPostID,
+          urlObj
+        );
+        await createCommentPublicationUtil(parentPostID, imageMetadata);
+        logger.info(
+          "upload-screenshot-and-comment-with-image.job.ts: uploadScreenshotAndCommentWithImageJobUtil: Execution Completed."
+        );
+        return;
+      }
+    }
   } catch (error) {
     logger.info(
       "upload-screenshot-and-comment-with-image.job.ts: uploadScreenshotAndCommentWithImageJobUtil: Execution Ended. Error in Execution: " +

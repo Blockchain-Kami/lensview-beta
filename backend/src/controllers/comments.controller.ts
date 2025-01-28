@@ -16,10 +16,6 @@ import {
 import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util.js";
 import { relatedParentPublicationsLensService } from "../services/lens/related-parent-publications.lens.service.js";
 import { getMainPublicationImageLensService } from "../services/lens/get-main-publication-image.lens.service.js";
-// import {
-//   // getCommentMethod,
-//   // getPostMethod
-// } from "../config/app-config.config.js";
 import {
   createCommentPublicationUtil,
   createTextPostPublicationUtil
@@ -30,12 +26,12 @@ import { getPublicationDbUtil } from "../utils/db/get-publication.db.util.js";
 import { updateCommentsSummaryDbUtil } from "../utils/db/update-comments-summary.db.util.js";
 import { getCommentsAndGenerateSummaryHelperUtil } from "../utils/helpers/get-comments-and-generate-summary.helper.util.js";
 import { isNewCommentAddedSinceLastUpdateHelperUtil } from "../utils/helpers/is-new-comment-added-since-last-update.helper.util.js";
+import waitUntilTxCompleteUtil from "../utils/indexer/wait-until-tx-complete.indexer.util.js";
 
 import { httpStatusCodes } from "../config/app-constants.config.js";
 import { APP_LENS_HANDLE } from "../config/env.config.js";
 import { imageQueue } from "../jobs/add-image-queue.job.js";
 import { logger } from "../log/log-manager.log.js";
-import waitUntilTxCompleteUtil from "../utils/indexer/wait-until-tx-complete.indexer.util.js";
 
 /**
  * Adds a URL or a post comment to the system.
