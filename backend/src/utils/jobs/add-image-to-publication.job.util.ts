@@ -22,7 +22,7 @@ export const addImageToPublicationJobUtil = async (job: Queue.Job) => {
       "add-image-to-publication.job.ts: addImageToPublicationJobUtil: URL Object: " +
         JSON.stringify(urlObj)
     );
-    await uploadScreenshotAndCommentWithImageJobUtil(urlObj);
+    await uploadScreenshotAndCommentWithImageJobUtil(urlObj, null);
     logger.info(
       "add-image-to-publication.job.ts: addImageToPublicationJobUtil: Execution Completed."
     );

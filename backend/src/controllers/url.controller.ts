@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-
 import { PublicationResponseModelForNewPubURL } from "../models/response/publication.response.model.js";
 import { SearchQueryRequestModel } from "../models/requests/query/search.query.request.model.js";
 import { UrlExistsValidationResponseModel } from "../models/response/url-exists-validation.response.model.js";
@@ -12,12 +11,12 @@ import { preprocessURLHelperUtil } from "../utils/helpers/preprocess-url.helper.
 import { createHashHelperUtil } from "../utils/helpers/create-hash.helper.util.js";
 import { createMetaDataForUrlHelperUtil } from "../utils/helpers/create-metadata.helper.util.js";
 import { getMainPublicationImageLensService } from "../services/lens/get-main-publication-image.lens.service.js";
-// import { getPostMethod } from "../config/app-config.config.js";
 import { createTextPostPublicationUtil } from "../utils/publications/create-post.publication.util.js";
+import waitUntilTxCompleteUtil from "../utils/indexer/wait-until-tx-complete.indexer.util.js";
+
 import { httpStatusCodes } from "../config/app-constants.config.js";
 import { imageQueue } from "../jobs/add-image-queue.job.js";
 import { logger } from "../log/log-manager.log.js";
-import waitUntilTxCompleteUtil from "../utils/indexer/wait-until-tx-complete.indexer.util.js";
 
 /**
  * Handles the logic for posting a new publication.
