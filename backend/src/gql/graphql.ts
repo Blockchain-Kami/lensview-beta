@@ -6444,18 +6444,20 @@ export type ChallengeMutation = {
   challenge: { __typename?: "AuthenticationChallenge"; id: any; text: string };
 };
 
-export type MutationMutationVariables = Exact<{
+export type CreatePostMutationVariables = Exact<{
   request: CreatePostRequest;
 }>;
 
-export type MutationMutation = {
+export type CreatePostMutation = {
   __typename?: "Mutation";
   post:
-    | { __typename?: "PostResponse"; hash: any }
+    | { __typename: "PostResponse"; hash: any }
     | {
-        __typename?: "SelfFundedTransactionRequest";
+        __typename: "SelfFundedTransactionRequest";
+        reason: string;
+        selfFundedReason?: SelfFundedFallbackReason | null;
         raw: {
-          __typename?: "Eip1559TransactionRequest";
+          __typename: "Eip1559TransactionRequest";
           chainId: number;
           data: any;
           from: any;
@@ -6469,9 +6471,11 @@ export type MutationMutation = {
         };
       }
     | {
-        __typename?: "SponsoredTransactionRequest";
+        __typename: "SponsoredTransactionRequest";
+        reason: string;
+        sponsoredReason?: SponsoredFallbackReason | null;
         raw: {
-          __typename?: "Eip712TransactionRequest";
+          __typename: "Eip712TransactionRequest";
           type: number;
           to: any;
           from: any;
@@ -6483,19 +6487,19 @@ export type MutationMutation = {
           value: any;
           chainId: number;
           customData: {
-            __typename?: "Eip712Meta";
+            __typename: "Eip712Meta";
             gasPerPubdata: any;
             factoryDeps: Array<any>;
             customSignature?: any | null;
             paymasterParams?: {
-              __typename?: "PaymasterParams";
+              __typename: "PaymasterParams";
               paymaster: any;
               paymasterInput: any;
             } | null;
           };
         };
       }
-    | { __typename?: "TransactionWillFail" };
+    | { __typename: "TransactionWillFail"; reason: string };
 };
 
 export type PostReferencesQueryVariables = Exact<{
@@ -6783,13 +6787,13 @@ export const ChallengeDocument = {
     }
   ]
 } as unknown as DocumentNode<ChallengeMutation, ChallengeMutationVariables>;
-export const MutationDocument = {
+export const CreatePostDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "mutation",
-      name: { kind: "Name", value: "Mutation" },
+      name: { kind: "Name", value: "CreatePost" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
@@ -6834,73 +6838,10 @@ export const MutationDocument = {
                   selectionSet: {
                     kind: "SelectionSet",
                     selections: [
-                      { kind: "Field", name: { kind: "Name", value: "hash" } }
-                    ]
-                  }
-                },
-                {
-                  kind: "InlineFragment",
-                  typeCondition: {
-                    kind: "NamedType",
-                    name: {
-                      kind: "Name",
-                      value: "SelfFundedTransactionRequest"
-                    }
-                  },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "hash" } },
                       {
                         kind: "Field",
-                        name: { kind: "Name", value: "raw" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "chainId" }
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "data" }
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "from" }
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "gasLimit" }
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "maxFeePerGas" }
-                            },
-                            {
-                              kind: "Field",
-                              name: {
-                                kind: "Name",
-                                value: "maxPriorityFeePerGas"
-                              }
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "nonce" }
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "to" }
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "type" }
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "value" }
-                            }
-                          ]
-                        }
+                        name: { kind: "Name", value: "__typename" }
                       }
                     ]
                   }
@@ -7009,19 +6950,197 @@ export const MutationDocument = {
                                             kind: "Name",
                                             value: "paymasterInput"
                                           }
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "__typename"
+                                          }
                                         }
                                       ]
                                     }
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "__typename" }
                                   }
                                 ]
                               }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "data" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "from" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "gasLimit" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "maxFeePerGas" }
+                            },
+                            {
+                              kind: "Field",
+                              name: {
+                                kind: "Name",
+                                value: "maxPriorityFeePerGas"
+                              }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "nonce" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "to" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "type" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "value" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "__typename" }
                             }
                           ]
                         }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "reason" }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "sponsoredReason" }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "__typename" }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "__typename" }
                       }
                     ]
                   }
-                }
+                },
+                {
+                  kind: "InlineFragment",
+                  typeCondition: {
+                    kind: "NamedType",
+                    name: {
+                      kind: "Name",
+                      value: "SelfFundedTransactionRequest"
+                    }
+                  },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "raw" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "chainId" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "data" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "from" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "gasLimit" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "maxFeePerGas" }
+                            },
+                            {
+                              kind: "Field",
+                              name: {
+                                kind: "Name",
+                                value: "maxPriorityFeePerGas"
+                              }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "nonce" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "to" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "type" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "value" }
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "__typename" }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "reason" }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "selfFundedReason" }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "__typename" }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "__typename" }
+                      }
+                    ]
+                  }
+                },
+                {
+                  kind: "InlineFragment",
+                  typeCondition: {
+                    kind: "NamedType",
+                    name: { kind: "Name", value: "TransactionWillFail" }
+                  },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "reason" }
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "__typename" }
+                      }
+                    ]
+                  }
+                },
+                { kind: "Field", name: { kind: "Name", value: "__typename" } }
               ]
             }
           }
@@ -7029,7 +7148,7 @@ export const MutationDocument = {
       }
     }
   ]
-} as unknown as DocumentNode<MutationMutation, MutationMutationVariables>;
+} as unknown as DocumentNode<CreatePostMutation, CreatePostMutationVariables>;
 export const PostReferencesDocument = {
   kind: "Document",
   definitions: [

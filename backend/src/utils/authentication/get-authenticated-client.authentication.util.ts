@@ -30,7 +30,7 @@ export const getAuthenticatedClientAuthenticationUtil: () => Promise<Client> =
         // TODO: Repalce with .env variables
         accountOwner: {
           account: APP_CONTRACT_ADDRESS,
-          app: "0xe5439696f4057aF073c0FB2dc6e5e755392922e1",
+          app: "0xaC19aa2402b3AC3f9Fe471D4783EC68595432465",
           owner: APP_WALLET_ADDRESS
         }
       };
@@ -93,7 +93,8 @@ export const getAuthenticatedClientAuthenticationUtil: () => Promise<Client> =
         requestPolicy: "cache-and-network",
         fetchOptions: {
           headers: {
-            "x-access-token": `Bearer ${accessToken}`
+            "x-access-token": `Bearer ${accessToken}`,
+            Origin: "https://api.lensview.io"
           }
         }
       });

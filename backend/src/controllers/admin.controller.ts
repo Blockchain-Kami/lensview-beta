@@ -25,7 +25,6 @@ import { httpStatusCodes } from "../config/app-constants.config.js";
 import { APP_LENS_HANDLE } from "../config/env.config.js";
 import { logger } from "../log/log-manager.log.js";
 
-// @ts-expect-error known issue
 // import LENS_HUB_ABI from "../abis/lens-hub-contract.abi.json" assert { type: "json" };
 
 /**

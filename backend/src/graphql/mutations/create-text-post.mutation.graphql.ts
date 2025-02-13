@@ -1,24 +1,11 @@
 import { graphql } from "../../gql/index.js";
 
 const createTextPostMutationGraphql = graphql(`
-  mutation Mutation($request: CreatePostRequest!) {
+  mutation CreatePost($request: CreatePostRequest!) {
     post(request: $request) {
       ... on PostResponse {
         hash
-      }
-      ... on SelfFundedTransactionRequest {
-        raw {
-          chainId
-          data
-          from
-          gasLimit
-          maxFeePerGas
-          maxPriorityFeePerGas
-          nonce
-          to
-          type
-          value
-        }
+        __typename
       }
       ... on SponsoredTransactionRequest {
         raw {
@@ -39,10 +26,50 @@ const createTextPostMutationGraphql = graphql(`
             paymasterParams {
               paymaster
               paymasterInput
+              __typename
             }
+            __typename
           }
+          data
+          from
+          gasLimit
+          maxFeePerGas
+          maxPriorityFeePerGas
+          nonce
+          to
+          type
+          value
+          __typename
         }
+        reason
+        sponsoredReason
+        __typename
+        __typename
       }
+      ... on SelfFundedTransactionRequest {
+        raw {
+          chainId
+          data
+          from
+          gasLimit
+          maxFeePerGas
+          maxPriorityFeePerGas
+          nonce
+          to
+          type
+          value
+          __typename
+        }
+        reason
+        selfFundedReason
+        __typename
+        __typename
+      }
+      ... on TransactionWillFail {
+        reason
+        __typename
+      }
+      __typename
     }
   }
 `);
