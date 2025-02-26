@@ -48,8 +48,6 @@ export const postAnonymousCommentController = async (
     "comments.controller.ts: postAnonymousCommentController: Execution Started"
   );
   try {
-    // const postOnLensView = getPostMethod();
-    // const commentOnLensView = getCommentMethod();
     const { url, content, userTags: tags } = req.body;
     const urlString = isInputTypeURLHelperUtil(url);
     if (!urlString) {

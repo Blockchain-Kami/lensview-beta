@@ -23,6 +23,7 @@ export const geminiTextSummaryService = async (text: string) => {
       text;
 
     const chat = model.startChat({ safetySettings, generationConfig });
+
     const summaryResponse = await chat.sendMessage(summaryPrompt);
     const summaryResult = summaryResponse.response;
     const summary = summaryResult.text();

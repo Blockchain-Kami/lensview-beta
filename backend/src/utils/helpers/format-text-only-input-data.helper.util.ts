@@ -11,7 +11,8 @@ export const formatTextOnlyInputDataHelperUtil = (
   const rankWiseComments = sortComments(texOnlyComments.items);
   const commentString = getCommentsFromObject(rankWiseComments);
   logger.info(
-    "format-text-only-input-data.helper.util.ts: formatTextOnlyInputDataHelperUtil: Execution Ended."
+    "format-text-only-input-data.helper.util.ts: formatTextOnlyInputDataHelperUtil: Execution Ended. Comment String: " +
+      commentString
   );
   return commentString;
 };

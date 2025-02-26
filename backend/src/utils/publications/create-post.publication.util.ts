@@ -87,6 +87,7 @@ const createTextPost = async (
   );
   try {
     const transaction = await createTextPostLensService(postRequest);
+    console.log("transaction.__typename", transaction.__typename);
     if (transaction.__typename === "SponsoredTransactionRequest") {
       return await sendEip712Transaction(walletClient, {
         account: walletClient.account,

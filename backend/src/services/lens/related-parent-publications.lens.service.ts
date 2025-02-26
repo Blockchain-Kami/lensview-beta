@@ -8,7 +8,7 @@ import {
 import baseClient from "../../utils/helpers/base-client.helper.util.js";
 import relatedPostsQuery from "../../graphql/queries/related-posts.query.graphql.js";
 import { logger } from "../../log/log-manager.log.js";
-import { APP_CONTRACT_ADDRESS } from "../../config/env.config";
+import { APP_CONTRACT_ADDRESS } from "../../config/env.config.js";
 
 /**
  * Retrieves the related parent publications based on a given tag.

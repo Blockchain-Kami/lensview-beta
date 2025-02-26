@@ -9,8 +9,8 @@ import { uploadScreenshotAndCommentWithImageJobUtil } from "../utils/jobs/upload
 import { isInputTypeURLHelperUtil } from "../utils/helpers/is-input-url.helper.util.js";
 import { preprocessURLAndCreateMetadataObjectHelperUtil } from "../utils/helpers/preprocess-url-and-create-metadata-object.helper.util.js";
 import { uploadImageFromDisk } from "../utils/helpers/upload-image-from-disk.helper.util.js";
-import { createCommentPublicationUtil } from "../utils/publications/create-post.publication.util";
-import { createMetaDataForImageCommentHelperUtil } from "../utils/helpers/create-metadata.helper.util";
+import { createCommentPublicationUtil } from "../utils/publications/create-post.publication.util.js";
+import { createMetaDataForImageCommentHelperUtil } from "../utils/helpers/create-metadata.helper.util.js";
 // import createChangeProfileManagersTypedDataLensService from "../services/lens/create-change-profile-managers-typed-data.lens.service.js";
 // import { signedTypeData } from "../utils/helpers/sign-type-data.helper.util.js";
 // import broadcastOnchainRequestService from "../services/lens/broadcast-onchain-request.lens.service.js";

@@ -4,7 +4,7 @@ export interface GetTextOnlyCommentsLensModel {
     __typename: "Post";
     slug: string;
     metadata: {
-      __typename: "Encryptable";
+      __typename: "ArticleMetadata";
       content: string;
     };
     stats: {
